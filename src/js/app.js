@@ -345,11 +345,13 @@ function sendActualTest() {
     const dua = essentialDuas[0];
     const msg = earlyMessages[0];
 
-    // Perfect UX branding: App Name + Emoji
-    const title = `Noor Nights 🌙`;
+    // Exact App Branding: Just the App Name
+    const title = `Noor Nights`;
     const options = {
         body: `🤲 ${msg}\n\n"${dua.arabic}"`,
+        // Big icon in the body (The Navy/Gold App Icon)
         icon: 'assets/icons/icon-512.png',
+        // Small icon in the system/header (Pure white silhouette mask)
         badge: 'assets/icons/badge-icon.png',
         tag: 'noor-nights-remind',
         renotify: true,
@@ -368,7 +370,7 @@ function sendActualTest() {
         new Notification(title, options);
     }
 
-    showMessage('Notification Sent', 'Masha\'Allah! Check your device. Notice the golden crescent moon icon and the clean, focused design.');
+    showMessage('Notification Sent', 'Masha\'Allah! Check your device. This is the official, clean notification design with our new icon.');
 }
 
 const earlyMessages = [
