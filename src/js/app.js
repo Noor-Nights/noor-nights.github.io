@@ -258,49 +258,44 @@ function updateProgress(c, t) {
     if (bar) bar.style.width = `${(c / t) * 100}%`;
     if (text) text.innerText = `${c} of ${t} tasks completed today`;
 
-    if (c === t && c > 0) {
+    // Trigger success magic only when completing the LAST item
+    // (We check if it was already completed to avoid duplicate magic)
+    if (c === t && c > 0 && !window.hasCelebrated) {
+        window.hasCelebrated = true;
         triggerConfetti();
         showMessage("Masha'Allah! ✨", "You've completed all your worship goals for tonight. May Allah accept from you!");
+    } else if (c < t) {
+        window.hasCelebrated = false;
     }
 }
 
 function triggerConfetti() {
-    const duration = 3000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    const interval = setInterval(function () {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-
-        const particleCount = 50 * (timeLeft / duration);
-        // Create simple confetti elements
-        for (let i = 0; i < 5; i++) {
+    const colors = ['#fbbf24', '#14b8a6', '#4c1d95', '#fef3c7', '#ffffff'];
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
             const conf = document.createElement('div');
+            conf.className = 'confetti-p';
             conf.style.position = 'fixed';
-            conf.style.zIndex = '9999';
-            conf.style.width = '10px';
-            conf.style.height = '10px';
-            conf.style.background = ['#fbbf24', '#14b8a6', '#fff'][Math.floor(Math.random() * 3)];
+            conf.style.zIndex = '10000';
+            conf.style.width = '12px';
+            conf.style.height = '12px';
+            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             conf.style.left = Math.random() * 100 + 'vw';
-            conf.style.top = '-10px';
-            conf.style.borderRadius = '50%';
+            conf.style.top = '-20px';
+            conf.style.borderRadius = i % 2 === 0 ? '50%' : '2px';
+            conf.style.pointerEvents = 'none';
             document.body.appendChild(conf);
 
             const animation = conf.animate([
                 { transform: `translate3d(0, 0, 0) rotate(0deg)`, opacity: 1 },
-                { transform: `translate3d(${randomInRange(-100, 100)}px, 100vh, 0) rotate(${randomInRange(0, 360)}deg)`, opacity: 0 }
+                { transform: `translate3d(${(Math.random() - 0.5) * 300}px, 105vh, 0) rotate(${Math.random() * 1000}deg)`, opacity: 0 }
             ], {
-                duration: randomInRange(2000, 4000),
+                duration: 2000 + Math.random() * 2000,
                 easing: 'cubic-bezier(0, .9, .57, 1)'
             });
             animation.onfinish = () => conf.remove();
-        }
-    }, 250);
+        }, Math.random() * 1500);
+    }
 }
 
 function requestNotifications() {
@@ -317,13 +312,12 @@ function requestNotifications() {
 }
 
 function testNotification() {
-    console.log("Test notification triggered");
     // Special check for iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
     if (isIOS && !isStandalone) {
-        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please use the button below to see how!');
+        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please tap "Install App" to see how!');
         return;
     }
 
@@ -348,24 +342,24 @@ function testNotification() {
 }
 
 function sendActualTest() {
-    const testDua = essentialDuas[0];
-    const title = `🧪 Noor Nights Test | ${testDua.arabic}`;
+    const dua = essentialDuas[0];
+    const msg = earlyMessages[0];
+    const title = `🌙 Noor Nights Test | ${dua.arabic}`;
     const options = {
-        body: "Success! You will receive reminders like this during the last 10 nights.",
+        body: `Night 1: ${msg} | (Simulated hourly reminder)`,
         icon: 'assets/icons/icon-512.png',
-        badge: 'assets/icons/icon-512.png'
+        badge: 'assets/icons/icon-512.png',
+        tag: 'noor-nights-test'
     };
 
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(registration => {
             registration.showNotification(title, options);
-        }).catch(() => {
-            new Notification(title, options);
         });
     } else {
         new Notification(title, options);
     }
-    showMessage('Notification Sent', 'Check your device for the test notification!');
+    showMessage('Notification Sent', 'Check your device! This is exactly how the hourly reminders will look during the last 10 nights.');
 }
 
 const earlyMessages = [

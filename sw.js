@@ -1,4 +1,4 @@
-const CACHE_NAME = 'noor-nights-v1';
+const CACHE_NAME = 'noor-nights-v2';
 const ASSETS = [
     '/',
     '/index.html',
