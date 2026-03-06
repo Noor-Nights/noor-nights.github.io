@@ -53,6 +53,10 @@ const TRANSLATIONS = {
             "🌟 Standing in Qiyam - pouring Dua.",
             "✨ Balance your night with Qiyam and Dua."
         ],
+        actShareFull: 'Share Dua',
+        actShareCard: 'Share Card',
+        actCopy: 'Copy',
+
     },
     ar: {
         appName: 'نور الليالي',
@@ -105,6 +109,10 @@ const TRANSLATIONS = {
             "🌟 ادعُ وأنت في صلاة القيام.",
             "✨ وازن ليلتك بين القيام والدعاء."
         ],
+        actShareFull: 'مشاركة الدعاء',
+        actShareCard: 'مشاركة البطاقة',
+        actCopy: 'نسخ',
+
     }
 };
 
@@ -112,7 +120,7 @@ let currentLang = localStorage.getItem('noor-lang') || 'en';
 
 function t(key, ...args) {
     const lang = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-    const val = (lang[key] !== undefined) ? lang[key] : TRANSLATIONS.en[key];
+    const val = (lang[key] !== undefined && lang[key] !== '') ? lang[key] : TRANSLATIONS.en[key];
     if (typeof val === 'function') return val(...args);
     return val;
 }
@@ -139,6 +147,7 @@ function applyLanguage(lang) {
 
 function toggleLanguage() {
     applyLanguage(currentLang === 'en' ? 'ar' : 'en');
+    window.dispatchEvent(new Event('languageChanged'));
     trackEvent('/lang-toggle', 'Language Toggle');
 }
 
@@ -168,7 +177,7 @@ const WATERCOLOR_PALETTES = [
 function shareFullDua(prefix, idx) {
     const list = prefix === 'jaw' ? jawamiDuas : essentialDuas;
     const dua = list[idx];
-    const text = dua.arabic + (dua.english ? '\n\n' + dua.english : '');
+    const text = dua.arabic.replace(/\n/g, '<br>') + (dua.english ? '\n\n' + dua.english : '');
     if (navigator.share) {
         navigator.share({ title: 'Noor Nights \uD83C\uDF19', text, url: window.location.href }).catch(() => { });
     } else {
@@ -206,21 +215,21 @@ function renderDuaCarousel(list, containerId, prefix) {
         slide.innerHTML = `
             <div class="dua-slide-inner">
                 <div class="slide-counter">${idx + 1} / ${list.length}</div>
-                <div class="dua-arabic-main">${dua.arabic}</div>
+                <div class="dua-arabic-main">${dua.arabic.replace(/\n/g, '<br>')}</div>
                 ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
                 <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
                 <div class="slide-actions">
                     <button class="slide-btn" onclick="shareFullDua('${prefix}', ${idx})" aria-label="Share full dua">
                         <span class="slide-btn-icon">📤</span>
-                        <span class="slide-btn-label">Share Dua</span>
+                        <span class="slide-btn-label">${t('actShareFull')}</span>
                     </button>
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
                         <span class="slide-btn-icon">📄</span>
-                        <span class="slide-btn-label">Share Card</span>
+                        <span class="slide-btn-label">${t('actShareCard')}</span>
                     </button>
-                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="Copy dua text">
+                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
                         <span class="slide-btn-icon">📋</span>
-                        <span class="slide-btn-label">Copy</span>
+                        <span class="slide-btn-label">${t('actCopy')}</span>
                     </button>
                 </div>
             </div>`;
@@ -249,12 +258,16 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     function goToSlide(idx) {
         currentSlide = Math.max(0, Math.min(idx, list.length - 1));
-        track.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+        const isRtl = document.documentElement.dir === 'rtl';
+        const sign = isRtl ? 1 : -1;
+        track.style.transform = `translateX(${sign * currentSlide * 100}%)`;
         countEl.textContent = (currentSlide + 1) + ' / ' + list.length;
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
         trackEvent('/carousel-swipe', 'Carousel: dua ' + (currentSlide + 1));
     }
+
+    window.addEventListener('languageChanged', () => goToSlide(currentSlide));
 
     prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
     nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
@@ -269,7 +282,12 @@ function renderDuaCarousel(list, containerId, prefix) {
         const dx = e.changedTouches[0].clientX - startX;
         const dy = e.changedTouches[0].clientY - startY;
         if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-            goToSlide(dx < 0 ? currentSlide + 1 : currentSlide - 1);
+            const isRtl = document.documentElement.dir === 'rtl';
+            if (isRtl) {
+                goToSlide(dx > 0 ? currentSlide + 1 : currentSlide - 1);
+            } else {
+                goToSlide(dx < 0 ? currentSlide + 1 : currentSlide - 1);
+            }
         }
     }, { passive: true });
 
@@ -295,11 +313,11 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
             <div class="card-header" style="background: ${colors[idx % colors.length]}"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="card-body">
                 <span class="badge" style="background: ${colors[(idx + 1) % colors.length]}">${dua.badge}</span>
-                <div class="arabic-text">${dua.arabic}</div>
+                <div class="arabic-text">${dua.arabic.replace(/\n/g, '<br>')}</div>
                 ${dua.english ? `<div class="translation">${dua.english}</div>` : ''}
                 <div class="share-buttons">
                     <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">📤 Share</button>
-                    <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">📋 Copy</button>
+                    <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">📋 ${t('actCopy')}</button>
                 </div>
             </div>
         `;
@@ -342,7 +360,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
 
 function rotateYoussefDua() {
     currentYoussefIdx = (currentYoussefIdx + 1) % youssefDuas.length;
-    const ar = document.getElementById('youssef-dua-arabic');
+    const ar = document.getElementById('youssef-dua.arabic.replace(/\n/g, ' < br > ')');
     const en = document.getElementById('youssef-dua-english');
     if (ar && en) {
         ar.innerText = youssefDuas[currentYoussefIdx].arabic;
@@ -469,7 +487,7 @@ function triggerDownload(url, filename) {
 
 function shareImage(type, idx) {
     let dua = type === 'ess' ? essentialDuas[idx] : jawamiDuas[idx];
-    let url = generateCanvasURL(dua.arabic, `"${dua.english}"`, dua.badge, false);
+    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
     const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
     fetch(url).then(r => r.blob()).then(blob => {
         const file = new File([blob], filename, { type: 'image/jpeg' });
@@ -481,7 +499,7 @@ function shareImage(type, idx) {
 
 function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
-    let url = generateCanvasURL(dua.arabic, `"${dua.english}"`, "", true);
+    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
     const filename = 'dua-youssef.jpg';
     fetch(url).then(r => r.blob()).then(blob => {
         const file = new File([blob], filename, { type: 'image/jpeg' });
@@ -618,7 +636,7 @@ function sendTestModeNotification() {
     const msg = msgs[testModeCount % msgs.length];
 
     const options = {
-        body: t('reminderNum', testModeCount + 1, msg) + `\n\n"${dua.arabic}"`,
+        body: t('reminderNum', testModeCount + 1, msg) + `\n\n"${dua.arabic.replace(/\n/g, '<br>')}"`,
         icon: 'assets/icons/icon-512.png',
         badge: 'assets/icons/badge-96.png',
         tag: 'noor-nights-remind',
@@ -702,7 +720,7 @@ function sendActualTest() {
     // Exact App Branding: Just the App Name
     const title = `Noor Nights`;
     const options = {
-        body: `🤲 ${msg}\n\n"${dua.arabic}"`,
+        body: `🤲 ${msg}\n\n"${dua.arabic.replace(/\n/g, '<br>')}"`,
         // Big icon in the body (The Navy/Gold App Icon)
         icon: 'assets/icons/icon-512.png',
         // Small icon in the system/header (Pure white silhouette mask)
@@ -843,7 +861,7 @@ function generateICS() {
             lines.push(`DTSTART:${sStart}`);
             lines.push(`DTEND:${sEnd}`);
             // Summary: Night X - Action | Dua Arabic (Forced LTR)
-            lines.push(`SUMMARY:\u200eNight ${night.n} - ${actionMsg} | ${dua.arabic}`);
+            lines.push(`SUMMARY:\u200eNight ${night.n} - ${actionMsg} | ${dua.arabic.replace(/\n/g, '<br>')}`);
             lines.push(`DESCRIPTION:${desc}`);
             lines.push("END:VEVENT");
         }
