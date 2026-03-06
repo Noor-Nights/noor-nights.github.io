@@ -339,7 +339,6 @@ function triggerConfetti() {
 
 let testModeInterval = null;
 let testModeCount = 0;
-const TEST_MODE_MAX = 30;              // 30 × 2 mins = 1 hour of test notifications
 const TEST_MODE_MS = 2 * 60 * 1000;  // every 2 minutes
 
 function sendTestModeNotification() {
@@ -349,7 +348,7 @@ function sendTestModeNotification() {
     const msg = msgs[testModeCount % msgs.length];
 
     const options = {
-        body: `🌙 Test ${testModeCount + 1}/${TEST_MODE_MAX} — ${msg}\n\n"${dua.arabic}"`,
+        body: `🌙 Reminder #${testModeCount + 1} — ${msg}\n\n"${dua.arabic}"`,
         icon: 'assets/icons/icon-512.png',
         badge: 'assets/icons/badge-96.png',
         tag: 'noor-nights-remind',
@@ -366,11 +365,6 @@ function sendTestModeNotification() {
     }
 
     testModeCount++;
-    if (testModeCount >= TEST_MODE_MAX) {
-        clearInterval(testModeInterval);
-        testModeInterval = null;
-        testModeCount = 0;
-    }
 }
 
 function requestNotifications() {
@@ -382,12 +376,12 @@ function requestNotifications() {
         if (p === 'granted') {
             const btn = document.getElementById('notify-btn');
             if (btn) btn.innerText = '✅ Notifications Enabled';
-            showMessage('Test Mode Active 🧪',
-                `You\'ll receive ${TEST_MODE_MAX} test notifications every 4 minutes to verify the icon & sound. Real hourly reminders start when the nights begin (Mar 9).`);
+            showMessage('🔔 Reminders Active!',
+                'You will receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).');
             testModeCount = 0;
-            sendTestModeNotification();
+            sendTestModeNotification();          // fire immediately
             if (testModeInterval) clearInterval(testModeInterval);
-            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);
+            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);  // then every 2 mins
         } else {
             showMessage('Denied', 'We need permission to send you reminders.');
         }

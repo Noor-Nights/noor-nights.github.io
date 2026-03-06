@@ -11,8 +11,8 @@
         href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="src/css/retro.css">
-    <link rel="icon" type="image/png" href="assets/icons/favicon.png">
-    <link rel="apple-touch-icon" href="assets/icons/icon-512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f1e5d1">
 </head>
@@ -182,9 +182,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             renderDuaList(essentialDuas, 'essential-duas-container', 'ess');
-            renderDuaList(jawamiDuas, 'jawami-duas-container', 'jaw');
+            renderDuaList(jawamiDuas, 'jawami-duas-container', 'jaw', null, true);
         });
     </script>
+    <!-- GoatCounter: free, no-cookie visitor analytics. Dashboard: noor-nights.goatcounter.com -->
+    <script data-goatcounter="https://noor-nights.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 
 </html>
