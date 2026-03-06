@@ -272,6 +272,29 @@ function requestNotifications() {
     } else showMessage('Error', 'Your browser does not support notifications.');
 }
 
+function testNotification() {
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission().then(p => {
+            if (p === 'granted') {
+                sendActualTest();
+            } else {
+                showMessage('Denied', 'We need permission to send you a test notification.');
+            }
+        });
+    } else {
+        sendActualTest();
+    }
+}
+
+function sendActualTest() {
+    const testDua = essentialDuas[0];
+    new Notification(`🧪 Noor Nights Test | ${testDua.arabic}`, {
+        body: "Success! You will receive reminders like this during the last 10 nights.",
+        icon: 'assets/icons/icon-512.png'
+    });
+    showMessage('Notification Sent', 'Check your device for the test notification!');
+}
+
 const earlyMessages = [
     "🤲 Pour your heart out in Dua right now.",
     "🎁 Don't forget your Sadaqah for tonight.",
@@ -409,4 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadChecklist();
     rotateYoussefDua();
     setInterval(checkAndSendNotification, 60000);
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(() => console.log('Service Worker Registered'));
+    }
 });

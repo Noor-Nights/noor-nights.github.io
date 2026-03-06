@@ -11,6 +11,9 @@
         href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="src/css/retro.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f1e5d1">
+    <link rel="apple-touch-icon" href="assets/icons/icon-512.png">
 </head>
 
 <body>
@@ -47,6 +50,11 @@
                 </div>
                 <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()">
                     🔔 Enable Daily Night Number Reminders
+                </button>
+                <button class="btn btn-outline"
+                    style="margin-top: 10px; border-style: dashed; opacity: 0.7; font-size: 0.8rem;"
+                    onclick="testNotification()">
+                    🧪 Send Test Notification
                 </button>
             </div>
         </div>
