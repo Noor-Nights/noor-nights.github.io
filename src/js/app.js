@@ -298,17 +298,61 @@ function triggerConfetti() {
     }
 }
 
+let testModeInterval = null;
+let testModeCount = 0;
+const TEST_MODE_MAX = 5;               // 5 test notifications total
+const TEST_MODE_MS  = 4 * 60 * 1000;  // every 4 minutes
+
+function sendTestModeNotification() {
+    const duas = essentialDuas.concat(jawamiDuas);
+    const dua  = duas[testModeCount % duas.length];
+    const msgs = earlyMessages.concat(lateMessages);
+    const msg  = msgs[testModeCount % msgs.length];
+
+    const options = {
+        body: `🌙 Test ${testModeCount + 1}/${TEST_MODE_MAX} — ${msg}\n\n"${dua.arabic}"`,
+        icon: 'assets/icons/icon-512.png',
+        badge: 'assets/icons/badge-96.png',
+        tag: 'noor-nights-remind',
+        renotify: true,
+        vibrate: [200, 100, 200],
+        silent: false,
+        data: { url: window.location.href }
+    };
+
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(reg => reg.showNotification('Noor Nights 🌙', options));
+    } else {
+        new Notification('Noor Nights 🌙', options);
+    }
+
+    testModeCount++;
+    if (testModeCount >= TEST_MODE_MAX) {
+        clearInterval(testModeInterval);
+        testModeInterval = null;
+        testModeCount = 0;
+    }
+}
+
 function requestNotifications() {
-    if ("Notification" in window) {
-        Notification.requestPermission().then(p => {
-            if (p === 'granted') {
-                const btn = document.getElementById('notify-btn');
-                if (btn) btn.innerText = '✅ Notifications Enabled';
-                showMessage('Success', 'Hourly reminders for the nights (7 PM - 5 AM) activated!');
-                checkAndSendNotification();
-            } else showMessage('Denied', 'We need permission to send you reminders.');
-        });
-    } else showMessage('Error', 'Your browser does not support notifications.');
+    if (!("Notification" in window)) {
+        showMessage('Error', 'Your browser does not support notifications.');
+        return;
+    }
+    Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+            const btn = document.getElementById('notify-btn');
+            if (btn) btn.innerText = '✅ Notifications Enabled';
+            showMessage('Test Mode Active 🧪',
+                `You\'ll receive ${TEST_MODE_MAX} test notifications every 4 minutes to verify the icon & sound. Real hourly reminders start when the nights begin (Mar 9).`);
+            testModeCount = 0;
+            sendTestModeNotification();
+            if (testModeInterval) clearInterval(testModeInterval);
+            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);
+        } else {
+            showMessage('Denied', 'We need permission to send you reminders.');
+        }
+    });
 }
 
 function testNotification() {
