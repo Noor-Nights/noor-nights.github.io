@@ -20,7 +20,6 @@ const TRANSLATIONS = {
             { id: 'cb-qiyam', icon: '🌌', text: 'Pray Qiyam' },
             { id: 'cb-dua', icon: '🤲', text: 'Make Dua' },
             { id: 'cb-sadaqah', icon: '🎁', text: 'Give Sadaqah' },
-            { id: 'cb-zakat', icon: '💰', text: 'Pay Zakat al-Fitr' },
             { id: 'cb-quran', icon: '📖', text: 'Recite Quran' }
         ],
         progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
@@ -60,6 +59,8 @@ const TRANSLATIONS = {
         footerMemory: 'In loving memory of',
         footerName: 'YOUSSEF ABDELKADER',
         footerSadaqah: 'This app is Sadaqah Jariyah (ongoing charity) for him.',
+        footerCanvas: 'Noor Nights App • Sadaqah Jariyah for Youssef Abdelkader',
+        zakatReminder: '💰 Remember to Pay Zakat al-Fitr before end of ramadan'
 
     },
     ar: {
@@ -80,7 +81,6 @@ const TRANSLATIONS = {
             { id: 'cb-qiyam', icon: '🌌', text: 'صلاة القيام' },
             { id: 'cb-dua', icon: '🤲', text: 'الدعاء' },
             { id: 'cb-sadaqah', icon: '🎁', text: 'إخراج الصدقة' },
-            { id: 'cb-zakat', icon: '💰', text: 'زكاة الفطر' },
             { id: 'cb-quran', icon: '📖', text: 'تلاوة القرآن' }
         ],
         progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
@@ -119,6 +119,8 @@ const TRANSLATIONS = {
         footerMemory: 'صدقة جارية عن روح',
         footerName: 'يوسف عبد القادر',
         footerSadaqah: 'هذَا التطبيق صدقة جاريةٌ له.',
+        footerCanvas: 'تطبيق نور الليالي • صدقة جارية عن روح يوسف عبد القادر',
+        zakatReminder: '💰 تذكر دفع زكاة الفطر قبل نهاية رمضان'
 
     }
 };
@@ -480,9 +482,9 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
         });
     }
 
-    ctx.font = 'bold 24px "Inter", sans-serif';
+    ctx.font = 'bold 18px "Inter", sans-serif';
     ctx.fillStyle = 'rgba(45,45,45,0.3)';
-    ctx.fillText('Noor Nights App • Sadaqah Jariyah for Youssef Abdelkader', 540, canvasHeight - 60);
+    ctx.fillText((t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef'), 540, canvasHeight - 60);
 
     return canvas.toDataURL('image/jpeg', 0.9);
 }
