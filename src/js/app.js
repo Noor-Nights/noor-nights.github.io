@@ -8,7 +8,7 @@ const TRANSLATIONS = {
         installBtn: '📲 Install App',
         countdownTitle: '⏳ Countdown to the Nights',
         calculating: 'Calculating...',
-        untilBegin: 'Until Noor Nights begin (Egypt Time)',
+        untilBegin: 'Until Last Ten Nights of Ramadan begin (Egypt Time)',
         concluded: 'The Last 10 Nights have concluded.',
         days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
         notifyBtn: '🔔 Enable Daily Night Number Reminders',
@@ -55,7 +55,7 @@ const TRANSLATIONS = {
             "✨ Balance your night with Qiyam and Dua."
         ],
         actShareFull: 'Share Dua',
-        actShareCard: 'Share Card',
+        actShareCard: 'Share',
         actCopy: 'Copy',
         footerMemory: 'In loving memory of',
         footerName: 'YOUSSEF ABDELKADER',
@@ -68,7 +68,7 @@ const TRANSLATIONS = {
         installBtn: '📲 تثبيت التطبيق',
         countdownTitle: '⏳ العد التنازلي للليالي',
         calculating: 'جارٍ الحساب...',
-        untilBegin: 'حتى بدء نور الليالي (توقيت مصر)',
+        untilBegin: 'حتى بدء العشر الأواخر من رمضان (توقيت مصر)',
         concluded: 'انتهت العشر الأواخر.',
         days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
         notifyBtn: '🔔 تفعيل تذكيرات الليالي',
@@ -114,8 +114,7 @@ const TRANSLATIONS = {
             "🌟 ادعُ وأنت في صلاة القيام.",
             "✨ وازن ليلتك بين القيام والدعاء."
         ],
-        actShareFull: 'مشاركة الدعاء',
-        actShareCard: 'مشاركة البطاقة',
+        actShareCard: 'مشاركة',
         actCopy: 'نسخ',
         footerMemory: 'صدقة جارية عن روح',
         footerName: 'يوسف عبد القادر',
@@ -227,10 +226,6 @@ function renderDuaCarousel(list, containerId, prefix) {
                 ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
                 <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
                 <div class="slide-actions">
-                    <button class="slide-btn" onclick="shareFullDua('${prefix}', ${idx})" aria-label="Share full dua">
-                        <span class="slide-btn-icon">📤</span>
-                        <span class="slide-btn-label">${t('actShareFull')}</span>
-                    </button>
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
                         <span class="slide-btn-icon">📄</span>
                         <span class="slide-btn-label">${t('actShareCard')}</span>
@@ -272,8 +267,18 @@ function renderDuaCarousel(list, containerId, prefix) {
         countEl.textContent = (currentSlide + 1) + ' / ' + list.length;
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
+
+        // Dynamically adjust track height to fit exactly the active card
+        if (track.children[currentSlide] && track.children[currentSlide].children[0]) {
+            const extra = 24; // buffer for retro box-shadows / margins
+            track.style.height = (track.children[currentSlide].children[0].offsetHeight + extra) + 'px';
+        }
+
         trackEvent('/carousel-swipe', 'Carousel: dua ' + (currentSlide + 1));
     }
+
+    // Give it a tiny delay on first render so DOM can size elements
+    setTimeout(() => goToSlide(0), 50);
 
     window.addEventListener('languageChanged', () => goToSlide(currentSlide));
 
@@ -298,8 +303,6 @@ function renderDuaCarousel(list, containerId, prefix) {
             }
         }
     }, { passive: true });
-
-    goToSlide(0);
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"

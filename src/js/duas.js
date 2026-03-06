@@ -6,40 +6,40 @@ const essentialDuas = [
         "english": "O Allah, You are Forgiving and love forgiveness, so forgive me"
     },
     {
-        "id": "night",
-        "badge": "Night Prayer",
-        "arabic": "اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ نُورُ السَّمَوَاتِ وَالْأَرْضِ",
-        "english": "O Allah, to You belongs all praise, You are the Light of the heavens and the earth"
-    },
-    {
         "id": "istighfar",
         "badge": "Sayyidul Istighfar",
-        "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ",
-        "english": "O Allah, You are my Lord, there is no deity except You. You created me and I am Your servant"
+        "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ",
+        "english": "O Allah, You are my Lord, there is no deity except You. You created me and I am Your servant, and I am keeping my promise and covenant to You as much as I can. I seek refuge in You from the evil of what I have done. I acknowledge Your blessing upon me, and I acknowledge my sin, so forgive me, for there is none who can forgive sins except You."
+    },
+    {
+        "id": "goodness",
+        "badge": "Good in both worlds",
+        "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+        "english": "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire."
+    },
+    {
+        "id": "parents",
+        "badge": "For Parents",
+        "arabic": "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+        "english": "My Lord, have mercy upon them as they brought me up [when I was] small."
+    },
+    {
+        "id": "guidance",
+        "badge": "For Guidance",
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى",
+        "english": "O Allah, I ask You for guidance, piety, chastity, and self-sufficiency."
     },
     {
         "id": "beforefast",
         "badge": "Breaking Fast / Iftar",
-        "arabic": "اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ، ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
-        "english": "O Allah, for You I have fasted, and with Your provision I have broken my fast. The thirst is gone, the veins are moistened, and the reward is confirmed, if Allah wills."
-    },
-    {
-        "id": "afterfast",
-        "badge": "Forgiveness at Iftar",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
-        "english": "O Allah, I ask You by Your mercy, which encompasses all things, that You forgive me."
-    },
-    {
-        "id": "forgiveness",
-        "badge": "Seeking Forgiveness",
-        "arabic": "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ",
-        "english": "My Lord, forgive me and accept my repentance; You are the Accepting of repentance, the Merciful"
+        "arabic": "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
+        "english": "The thirst has gone, the veins are moistened, and the reward is confirmed, if Allah wills."
     },
     {
         "id": "deeds",
         "badge": "Acceptance of Deeds",
         "arabic": "رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ",
-        "english": "Our Lord, accept [this] from us. Indeed You are the Hearing, the Knowing"
+        "english": "Our Lord, accept [this] from us. Indeed You are the Hearing, the Knowing."
     }
 ];
 
