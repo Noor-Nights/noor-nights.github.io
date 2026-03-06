@@ -246,6 +246,7 @@ h2 {
 
 .checklist-item input {
     appearance: none;
+    -webkit-appearance: none;
     width: 24px;
     height: 24px;
     margin-right: 1.2rem;
@@ -254,9 +255,7 @@ h2 {
     background: transparent;
     cursor: pointer;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-shrink: 0;
 }
 
 .checklist-item input:checked {
@@ -268,6 +267,11 @@ h2 {
     color: white;
     font-weight: bold;
     font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
 }
 
 .checklist-label {

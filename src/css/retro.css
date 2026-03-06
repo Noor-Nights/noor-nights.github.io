@@ -235,9 +235,7 @@ h2 {
     cursor: pointer;
     position: relative;
     box-shadow: 2px 2px 0px var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-shrink: 0;
 }
 
 .checklist-item input:checked {
@@ -249,6 +247,11 @@ h2 {
     color: #000;
     font-weight: 900;
     font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
 }
 
 .checklist-label {

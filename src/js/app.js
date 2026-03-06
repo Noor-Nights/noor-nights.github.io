@@ -257,6 +257,50 @@ function updateProgress(c, t) {
     const text = document.getElementById('checklist-text');
     if (bar) bar.style.width = `${(c / t) * 100}%`;
     if (text) text.innerText = `${c} of ${t} tasks completed today`;
+
+    if (c === t && c > 0) {
+        triggerConfetti();
+        showMessage("Masha'Allah! ✨", "You've completed all your worship goals for tonight. May Allah accept from you!");
+    }
+}
+
+function triggerConfetti() {
+    const duration = 3000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+
+        const particleCount = 50 * (timeLeft / duration);
+        // Create simple confetti elements
+        for (let i = 0; i < 5; i++) {
+            const conf = document.createElement('div');
+            conf.style.position = 'fixed';
+            conf.style.zIndex = '9999';
+            conf.style.width = '10px';
+            conf.style.height = '10px';
+            conf.style.background = ['#fbbf24', '#14b8a6', '#fff'][Math.floor(Math.random() * 3)];
+            conf.style.left = Math.random() * 100 + 'vw';
+            conf.style.top = '-10px';
+            conf.style.borderRadius = '50%';
+            document.body.appendChild(conf);
+
+            const animation = conf.animate([
+                { transform: `translate3d(0, 0, 0) rotate(0deg)`, opacity: 1 },
+                { transform: `translate3d(${randomInRange(-100, 100)}px, 100vh, 0) rotate(${randomInRange(0, 360)}deg)`, opacity: 0 }
+            ], {
+                duration: randomInRange(2000, 4000),
+                easing: 'cubic-bezier(0, .9, .57, 1)'
+            });
+            animation.onfinish = () => conf.remove();
+        }
+    }, 250);
 }
 
 function requestNotifications() {
@@ -273,34 +317,54 @@ function requestNotifications() {
 }
 
 function testNotification() {
+    console.log("Test notification triggered");
     // Special check for iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
     if (isIOS && !isStandalone) {
-        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please add the app to your home screen first, then open it from there to test.');
+        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please use the button below to see how!');
         return;
     }
 
-    if (Notification.permission !== "granted") {
+    if (!("Notification" in window)) {
+        showMessage('Not Supported', 'This browser does not support desktop notifications.');
+        return;
+    }
+
+    if (Notification.permission === "granted") {
+        sendActualTest();
+    } else if (Notification.permission !== "denied") {
         Notification.requestPermission().then(p => {
             if (p === 'granted') {
                 sendActualTest();
             } else {
-                showMessage('Denied', 'We need permission to send you a test notification.');
+                showMessage('Denied', 'We need permission to send you a test notification. Please check your browser settings.');
             }
         });
     } else {
-        sendActualTest();
+        showMessage('Blocked', 'Notifications are blocked. Please reset your browser permissions for this site to test.');
     }
 }
 
 function sendActualTest() {
     const testDua = essentialDuas[0];
-    new Notification(`🧪 Noor Nights Test | ${testDua.arabic}`, {
+    const title = `🧪 Noor Nights Test | ${testDua.arabic}`;
+    const options = {
         body: "Success! You will receive reminders like this during the last 10 nights.",
-        icon: 'assets/icons/icon-512.png'
-    });
+        icon: 'assets/icons/icon-512.png',
+        badge: 'assets/icons/icon-512.png'
+    };
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, options);
+        }).catch(() => {
+            new Notification(title, options);
+        });
+    } else {
+        new Notification(title, options);
+    }
     showMessage('Notification Sent', 'Check your device for the test notification!');
 }
 
@@ -434,11 +498,23 @@ function downloadICS() {
     } catch (err) { alert("Download failed."); }
 }
 
+let currentChecklistKey = "";
+function checkDayChange() {
+    let d = new Date(getCurrentTime());
+    if (d.getHours() >= 18) d.setDate(d.getDate() + 1);
+    const key = `ramadan_checklist_${d.toISOString().split('T')[0]}`;
+    if (key !== currentChecklistKey) {
+        currentChecklistKey = key;
+        loadChecklist();
+    }
+}
+
 // Global Initialization
 document.addEventListener('DOMContentLoaded', () => {
     updateCountdown();
     setInterval(updateCountdown, 1000);
-    loadChecklist();
+    checkDayChange();
+    setInterval(checkDayChange, 60000); // Check for day change every minute
     rotateYoussefDua();
     setInterval(checkAndSendNotification, 60000);
 
@@ -447,4 +523,37 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.serviceWorker.register('sw.js')
             .then(() => console.log('Service Worker Registered'));
     }
+
+    // Show install button for iOS manually
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIOS && !isStandalone) {
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) installBtn.style.display = 'inline-flex';
+    }
 });
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+function handleInstallClick() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+        showMessage('How to Install on iPhone', '1. Tap the Share button (square with arrow) at the bottom.\n2. Scroll down and tap "Add to Home Screen".\n3. Tap "Add" in the top right.');
+    } else if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        showMessage('Install App', 'To install this app, tap your browser\'s menu (three dots) and select "Install App" or "Add to Home Screen".');
+    }
+}
