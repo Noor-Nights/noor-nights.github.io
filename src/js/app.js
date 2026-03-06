@@ -352,7 +352,7 @@ function sendActualTest() {
         // Big icon in the body (The Navy/Gold App Icon)
         icon: 'assets/icons/icon-512.png',
         // Small icon in the system/header (Pure white silhouette mask)
-        badge: 'assets/icons/badge-v2.png',
+        badge: 'assets/icons/badge-96.png',
         tag: 'noor-nights-remind',
         renotify: true,
         vibrate: [200, 100, 200],
@@ -414,10 +414,21 @@ function checkAndSendNotification() {
                 earlyMessages[hrIdx % earlyMessages.length] :
                 lateMessages[(hrIdx - 4) % lateMessages.length];
 
-            new Notification(`\u200eNight ${nightNum}: ${actionMsg} | ${dua.arabic}`, {
+            const notifOptions = {
                 body: `Night ${nightNum} of 10 reminder`,
-                icon: 'favicon.ico'
-            });
+                icon: 'assets/icons/icon-512.png',
+                badge: 'assets/icons/badge-96.png',
+                tag: 'noor-nights-remind',
+                renotify: true,
+                vibrate: [200, 100, 200],
+                silent: false,
+                data: { url: window.location.href }
+            };
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(`\u200eNight ${nightNum}: ${actionMsg}`, notifOptions));
+            } else {
+                new Notification(`\u200eNight ${nightNum}: ${actionMsg}`, notifOptions);
+            }
             lastNotificationHour = hours;
         }
     }
