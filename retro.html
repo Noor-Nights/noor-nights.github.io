@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Noor Nights | Vintage Worship Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="src/css/retro.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="art-header">❦ ☾ ❦</div>
+            <h1>Noor Nights</h1>
+            <div class="subtitle">Retro Edition • Vintage Worship Companion</div>
+            <div style="margin-top: 1.5rem;">
+                <a href="index.html"
+                    style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-right: 1rem;">📱
+                    Modern Edition</a>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <h2 style="justify-content: center; margin-bottom: 0;">Countdown to Last 10 Nights</h2>
+                <div class="status-text" id="countdown-status">Loading...</div>
+                <div class="countdown-display" id="countdown-timer">
+                    <div class="time-box"><span class="time-value" id="days">00</span><span
+                            class="time-label">Days</span></div>
+                    <div class="time-box"><span class="time-value" id="hours">00</span><span
+                            class="time-label">Hours</span></div>
+                    <div class="time-box"><span class="time-value" id="minutes">00</span><span
+                            class="time-label">Mins</span></div>
+                    <div class="time-box"><span class="time-value" id="seconds">00</span><span
+                            class="time-label">Secs</span></div>
+                </div>
+                <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()">
+                    🔔 Enable Daily Night Number Reminders
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="background: var(--win-pink)">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <h2>✅ Daily Checklist</h2>
+                <div id="checklist-container"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="checklist-progress"></div>
+                </div>
+                <div class="progress-text" id="checklist-text">0 of 5 tasks completed today</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" style="background: var(--win-green)">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <h2>📅 Add to My Calendar</h2>
+                <button class="btn" onclick="downloadICS()">📅 Download Calendar (.ics)</button>
+                <div id="calendar-success" class="success-box"
+                    style="display:none; margin-top: 15px; padding: 15px; background: rgba(255, 184, 0, 0.1); border-radius: 8px; border: 1px solid var(--amber-glow);">
+                    <h4 style="color: var(--amber-glow); margin-bottom: 8px;">🎉 Successfully Downloaded!</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
+                        <div>
+                            <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">Google Calendar:</p>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
+                                <li>Go to <b>Settings</b> > <b>Import & Export</b>.</li>
+                                <li>Upload <code>noor-nights.ics</code>.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">Apple Calendar:</p>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
+                                <li>Open the file or drag into Calendar.</li>
+                                <li>Select a calendar and click <b>OK</b>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="essential-duas-container">
+            <div class="card-header" style="background: var(--win-orange)">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <h2>🤲 Essential Ramadan Duas</h2>
+            </div>
+        </div>
+
+        <div class="card" id="jawami-duas-container">
+            <div class="card-header" style="background: var(--win-blue)">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <h2 style="white-space: nowrap;">📖 Jawami' ad-Du'a</h2>
+            </div>
+        </div>
+
+        <footer class="dedication-footer">
+            <div class="card-header" style="background: var(--win-orange)">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="card-body">
+                <div class="footer-arabic-text">إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>
+                <div class="dedication">
+                    <p style="color: var(--text-muted); font-weight: 600;">In loving memory of</p>
+                    <h3>YOUSSEF ABDELKADER</h3>
+                    <p class="footer-arabic-text" style="font-size: 1.4rem; color:var(--text-muted)">رَحِمَهُ اللَّهُ
+                    </p>
+                </div>
+                <div id="dynamic-youssef-dua" class="dua-card">
+                    <div id="youssef-dua-arabic" class="arabic-text" style="font-size: 1.5rem; text-align: center;">
+                    </div>
+                    <div id="youssef-dua-english" class="translation" style="text-align: center;"></div>
+                </div>
+                <div class="sadaqah-message">
+                    <p>This app is <strong>Sadaqah Jariyah</strong> (ongoing charity) for him.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="msg-modal" class="modal">
+        <div class="modal-content">
+            <div class="card-header">
+                <span id="modal-title" style="font-weight: 800; text-transform: uppercase;">System Message</span>
+                <div style="flex: 1"></div>
+                <button class="close-modal"
+                    onclick="document.getElementById('msg-modal').style.display='none'">X</button>
+            </div>
+            <div class="card-body">
+                <p id="modal-desc" style="font-weight: 600;"></p>
+                <button class="btn" style="width: auto; padding: 0.5rem 2rem;"
+                    onclick="document.getElementById('msg-modal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/js/duas.js"></script>
+    <script src="src/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDuaList(essentialDuas, 'essential-duas-container', 'ess');
+            renderDuaList(jawamiDuas, 'jawami-duas-container', 'jaw');
+        });
+    </script>
+</body>
+
+</html>

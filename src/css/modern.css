@@ -1,0 +1,410 @@
+:root {
+    /* Color Palette - Ramadan Creative Vibes */
+    --midnight-blue: #0a1128;
+    --royal-purple: #4c1d95;
+    --warm-gold: #f59e0b;
+    --emerald-teal: #14b8a6;
+    --amber-glow: #fbbf24;
+    --deep-emerald: #059669;
+    --cream-beige: #fef3c7;
+    --bg-gradient: linear-gradient(135deg, #0a1128 0%, #1e3a5f 50%, #4c1d95 100%);
+    --card-gradient: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1));
+    --text: #f1f5f9;
+    --text-muted: #cbd5e1;
+}
+
+body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Animated stars overlay */
+.stars-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0, 0, 0, 0));
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.4;
+    animation: twinkle 10s infinite;
+    z-index: -1;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeIn 1s ease-out;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.art-header {
+    font-size: 3rem;
+    margin-bottom: -1rem;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+    animation: pulse-glow 3s infinite alternate;
+}
+
+@keyframes pulse-glow {
+    from {
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+    }
+
+    to {
+        text-shadow: 0 0 25px rgba(251, 191, 36, 0.8), 0 0 50px rgba(251, 191, 36, 0.2);
+    }
+}
+
+h1 {
+    font-family: 'Readex Pro', sans-serif;
+    color: var(--amber-glow);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-family: 'Readex Pro', sans-serif;
+    font-size: 1.6rem;
+    color: var(--emerald-teal);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(20, 184, 166, 0.3);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtitle {
+    color: var(--cream-beige);
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.card {
+    background: var(--card-gradient);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+}
+
+.countdown-display {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.time-box {
+    background: rgba(10, 17, 40, 0.6);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    padding: 1.25rem 1rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.time-value {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--amber-glow);
+    line-height: 1;
+    display: block;
+    font-family: 'Readex Pro', sans-serif;
+}
+
+.time-label {
+    font-size: 0.85rem;
+    color: var(--cream-beige);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.status-text {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--amber-glow);
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.btn {
+    background: linear-gradient(135deg, var(--emerald-teal), var(--deep-emerald));
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.btn-outline {
+    background: rgba(20, 184, 166, 0.1);
+    border: 2px solid var(--emerald-teal);
+    color: #fff;
+    margin-top: 1rem;
+}
+
+.share-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.btn-share {
+    flex: 1;
+    white-space: nowrap;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.checklist-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.checklist-item input {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-right: 1.2rem;
+    border: 2px solid var(--emerald-teal);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.checklist-item input:checked {
+    background: var(--emerald-teal);
+}
+
+.checklist-item input:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.checklist-label {
+    flex-grow: 1;
+    font-size: 1.15rem;
+    color: var(--text);
+}
+
+.checklist-item input:checked+.checklist-label {
+    color: var(--emerald-teal);
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-top: 2rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald-teal), var(--amber-glow));
+    width: 0%;
+    transition: width 0.8s;
+}
+
+.progress-text {
+    text-align: right;
+    font-size: 0.95rem;
+    color: var(--cream-beige);
+    margin-top: 0.5rem;
+}
+
+.dua-card {
+    background: rgba(10, 17, 40, 0.4);
+    border-left: 5px solid var(--amber-glow);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 16px 16px 0;
+    transition: all 0.3s;
+}
+
+.arabic-text {
+    font-family: 'Amiri', serif;
+    font-size: 2.2rem;
+    color: var(--amber-glow);
+    text-align: right;
+    direction: rtl;
+    margin-bottom: 1.2rem;
+    line-height: 2;
+    white-space: pre-wrap;
+}
+
+.translation {
+    color: var(--cream-beige);
+    font-size: 1.05rem;
+}
+
+.badge {
+    display: inline-block;
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--amber-glow);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    text-transform: uppercase;
+}
+
+.dedication-footer {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+    border-top: 3px solid var(--emerald-teal);
+    padding: 2rem;
+    text-align: center;
+    border-radius: 20px;
+}
+
+.dedication h3 {
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    margin: 1rem 0;
+}
+
+.footer-arabic-text {
+    font-family: 'Amiri', serif;
+    font-size: 1.5rem;
+    color: var(--amber-glow);
+}
+
+.sadaqah-message {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--midnight-blue);
+    padding: 2.5rem;
+    border-radius: 24px;
+    border: 1px solid var(--emerald-teal);
+    max-width: 90%;
+    width: 450px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .time-value {
+        font-size: 2rem;
+    }
+
+    .time-box {
+        min-width: 60px;
+        padding: 1rem 0.5rem;
+    }
+}
