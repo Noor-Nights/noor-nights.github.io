@@ -59,23 +59,6 @@ Simply open `index.html` in any modern web browser to begin.
 
 ---
 
-## 🌐 Deployment to GitHub Pages
-
-This project is built to be a static site, making it perfectly suited for GitHub Pages.
-
-1. Create a new repository on GitHub.
-2. Push the files:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initialize Noor Nights"
-   git remote add origin https://github.com/yourusername/reponame.git
-   git push -u origin main
-   ```
-3. Go to **Settings > Pages** in your GitHub repo and select the `main` branch to deploy.
-
----
-
 ## 🤲 Tribute
 
 This project is created to honor the memory of **Youssef Abdelkader**. We ask Allah to grant him mercy, widen his grave, and admit him to the highest levels of Paradise. Ameen.
