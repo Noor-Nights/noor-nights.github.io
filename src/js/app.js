@@ -344,12 +344,20 @@ function testNotification() {
 function sendActualTest() {
     const dua = essentialDuas[0];
     const msg = earlyMessages[0];
-    const title = `🌙 Noor Nights Test | ${dua.arabic}`;
+
+    // Perfect UX branding: App Name + Emoji
+    const title = `Noor Nights 🌙`;
     const options = {
-        body: `Night 1: ${msg} | (Simulated hourly reminder)`,
+        body: `🤲 ${msg}\n\n"${dua.arabic}"`,
         icon: 'assets/icons/icon-512.png',
-        badge: 'assets/icons/icon-512.png',
-        tag: 'noor-nights-test'
+        badge: 'assets/icons/badge-icon.png',
+        tag: 'noor-nights-remind',
+        renotify: true,
+        vibrate: [200, 100, 200],
+        silent: false,
+        data: {
+            url: window.location.href
+        }
     };
 
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -359,7 +367,8 @@ function sendActualTest() {
     } else {
         new Notification(title, options);
     }
-    showMessage('Notification Sent', 'Check your device! This is exactly how the hourly reminders will look during the last 10 nights.');
+
+    showMessage('Notification Sent', 'Masha\'Allah! Check your device. Notice the golden crescent moon icon and the clean, focused design.');
 }
 
 const earlyMessages = [

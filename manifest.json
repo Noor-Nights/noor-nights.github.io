@@ -1,11 +1,12 @@
 {
-  "name": "Noor Nights",
+  "name": "🌙 Noor Nights",
   "short_name": "Noor Nights",
   "description": "Spiritual tracking for the last ten nights of Ramadan.",
   "start_url": "index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0a0a1a",
-  "theme_color": "#0a0a1a",
+  "background_color": "#0a1128",
+  "theme_color": "#0a1128",
   "icons": [
     {
       "src": "assets/icons/icon-512.png",
