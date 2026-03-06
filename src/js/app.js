@@ -151,178 +151,18 @@ function trackEvent(path, title) {
     }
 }
 
-// ═══════════════════════════════════════════════════
-// INTERNATIONALIZATION (i18n)
-// ═══════════════════════════════════════════════════
-const TRANSLATIONS = {
-    en: {
-        appName: 'Noor Nights',
-        subtitle: 'Illuminate your worship in the last ten nights',
-        installBtn: '📲 Install App',
-        countdownTitle: '⏳ Countdown to the Nights',
-        calculating: 'Calculating...',
-        untilBegin: 'Until Noor Nights begin (Egypt Time)',
-        concluded: 'The Last 10 Nights have concluded.',
-        days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
-        notifyBtn: '🔔 Enable Daily Night Number Reminders',
-        notifyEnabled: '✅ Notifications Enabled',
-        testBtn: '🧪 Send Test Notification',
-        checklistTitle: '✅ Worship Checklist',
-        tasks: [
-            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh/Qiyam' },
-            { id: 'cb-dua',      icon: '🤲', text: 'Make Dua' },
-            { id: 'cb-sadaqah',  icon: '🎁', text: 'Give Sadaqah' },
-            { id: 'cb-zakat',    icon: '💰', text: 'Pay Zakat al-Fitr' },
-            { id: 'cb-quran',    icon: '📖', text: 'Recite Quran' }
-        ],
-        progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
-        calendarTitle: '📅 Add to My Calendar',
-        calendarDesc: 'Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).',
-        calendarBtn: '📅 Download Calendar (.ics)',
-        essentialTitle: '🤲 Essential Duas',
-        jamawiTitle: "📖 Jawami' ad-Du'a",
-        jamawiSubtitle: "Comprehensive prayers from the Prophet (ﷺ)",
-        nightStatus: (n) => `Tonight is Night ${n} of 10`,
-        nightSubStatus: 'Make the most of it 🌙',
-        reminderActive: '🔔 Reminders Active!',
-        reminderMsg: "You'll receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).",
-        notifTitle: 'Noor Nights 🌙',
-        reminderNum: (n, msg) => `🌙 Reminder #${n} — ${msg}`,
-        denied: 'Denied',
-        deniedMsg: 'We need permission to send you reminders.',
-        error: 'Error',
-        errorMsg: 'Your browser does not support notifications.',
-        mashaallah: "Masha'Allah! ✨",
-        mashaallahMsg: "You've completed all your worship goals for tonight. May Allah accept from you!",
-        showMore: (n) => `📖 Show ${n} more duas`,
-        showLess: '🔼 Show less',
-        earlyMessages: [
-            "🤲 Pour your heart out in Dua right now.",
-            "🎁 Don't forget your Sadaqah for tonight.",
-            "✨ Focus on your Dua and Sadaqah tonight."
-        ],
-        lateMessages: [
-            "🌙 Time for Qiyam & standing in prayer.",
-            "🌟 Standing in Qiyam - pouring Dua.",
-            "✨ Balance your night with Qiyam and Dua."
-        ],
-    },
-    ar: {
-        appName: 'نور الليالي',
-        subtitle: 'أنِر عبادتك في العشر الأواخر',
-        installBtn: '�� تثبيت التطبيق',
-        countdownTitle: '⏳ العد التنازلي للليالي',
-        calculating: 'جارٍ الحساب...',
-        untilBegin: 'حتى بدء نور الليالي (توقيت مصر)',
-        concluded: 'انتهت العشر الأواخر.',
-        days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
-        notifyBtn: '🔔 تفعيل تذكيرات الليالي',
-        notifyEnabled: '✅ تم تفعيل الإشعارات',
-        testBtn: '🧪 إرسال إشعار تجريبي',
-        checklistTitle: '✅ قائمة العبادات',
-        tasks: [
-            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح والقيام' },
-            { id: 'cb-dua',      icon: '🤲', text: 'الدعاء' },
-            { id: 'cb-sadaqah',  icon: '🎁', text: 'إخراج الصدقة' },
-            { id: 'cb-zakat',    icon: '💰', text: 'زكاة الفطر' },
-            { id: 'cb-quran',    icon: '📖', text: 'تلاوة القرآن' }
-        ],
-        progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
-        calendarTitle: '📅 أضف إلى التقويم',
-        calendarDesc: 'احصل على تذكيرات يومية عند أذان المغرب لجميع العشر ليالٍ (توقيت مصر).',
-        calendarBtn: '📅 تحميل التقويم (.ics)',
-        essentialTitle: '🤲 أدعية أساسية',
-        jamawiTitle: '�� جوامع الدعاء',
-        jamawiSubtitle: 'أدعية جامعة من النبي ﷺ',
-        nightStatus: (n) => `الليلة هي الليلة ${n} من العشر`,
-        nightSubStatus: 'استثمرها 🌙',
-        reminderActive: '🔔 التذكيرات مفعّلة!',
-        reminderMsg: 'ستتلقى تذكيراً بالدعاء كل دقيقتين طالما هذا التبويب مفتوح. تبدأ التذكيرات الفعلية مع بدء الليالي (9 مارس).',
-        notifTitle: 'نور الليالي 🌙',
-        reminderNum: (n, msg) => `🌙 تذكير #${n} — ${msg}`,
-        denied: 'مرفوض',
-        deniedMsg: 'نحتاج إذناً لإرسال التذكيرات.',
-        error: 'خطأ',
-        errorMsg: 'متصفحك لا يدعم الإشعارات.',
-        mashaallah: 'ما شاء الله! ✨',
-        mashaallahMsg: 'أتممت جميع أهداف العبادة لهذه الليلة. تقبّل الله منك!',
-        showMore: (n) => `📖 عرض ${n} دعاء إضافياً`,
-        showLess: '🔼 عرض أقل',
-        earlyMessages: [
-            "🤲 أفرغ قلبك في الدعاء الآن.",
-            "🎁 لا تنسَ صدقتك لهذه الليلة.",
-            "✨ ركّز على الدعاء والصدقة الليلة."
-        ],
-        lateMessages: [
-            "🌙 وقت القيام والصلاة.",
-            "🌟 ادعُ وأنت في صلاة القيام.",
-            "✨ وازن ليلتك بين القيام والدعاء."
-        ],
-    }
-};
-
-let currentLang = localStorage.getItem('noor-lang') || 'en';
-
-function t(key, ...args) {
-    const lang = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-    const val = (lang[key] !== undefined) ? lang[key] : TRANSLATIONS.en[key];
-    if (typeof val === 'function') return val(...args);
-    return val;
-}
-
-function applyLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('noor-lang', lang);
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    // Update all static i18n elements
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.textContent = t(el.getAttribute('data-i18n'));
-    });
-    // Update lang toggle button label
-    const langBtn = document.getElementById('lang-toggle');
-    if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
-    // Refresh dynamic sections
-    updateCountdown();
-    loadChecklist();
-    // Keep notify button state
-    const notifyBtn = document.getElementById('notify-btn');
-    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
-        notifyBtn.textContent = t('notifyEnabled');
-    } else if (notifyBtn) {
-        notifyBtn.textContent = t('notifyBtn');
-    }
-}
-
-function toggleLanguage() {
-    applyLanguage(currentLang === 'en' ? 'ar' : 'en');
-    trackEvent('/lang-toggle', 'Language Toggle');
-}
-
-// ═══════════════════════════════════════════════════
-// ANALYTICS EVENT TRACKING
-// ═══════════════════════════════════════════════════
-function trackEvent(path, title) {
-    if (window.goatcounter && window.goatcounter.count) {
-        window.goatcounter.count({ path, title, event: true });
-    }
-}
-
-// ═══════════════════════════════════════════════════
-// CORE APPLICATION LOGIC
-// ═══════════════════════════════════════════════════
-urrentYoussefIdx = new Date().getDate() % youssefDuas.length;
+let currentYoussefIdx = new Date().getDate() % youssefDuas.length;
 
 
 // ═══════════════════════════════════════════════════
 // DUA CAROUSEL (Jawami' section)
 // ═══════════════════════════════════════════════════
 const WATERCOLOR_PALETTES = [
-    { blob1: 'rgba(251,191,36,0.09)',  blob2: 'rgba(124,58,237,0.07)',  border: 'rgba(251,191,36,0.18)'  },
-    { blob1: 'rgba(20,184,166,0.08)',  blob2: 'rgba(251,191,36,0.07)',  border: 'rgba(20,184,166,0.18)'  },
-    { blob1: 'rgba(168,85,247,0.08)',  blob2: 'rgba(20,184,166,0.07)',  border: 'rgba(168,85,247,0.18)'  },
-    { blob1: 'rgba(245,158,11,0.08)',  blob2: 'rgba(168,85,247,0.07)', border: 'rgba(245,158,11,0.18)'  },
-    { blob1: 'rgba(16,185,129,0.08)',  blob2: 'rgba(251,191,36,0.07)',  border: 'rgba(16,185,129,0.18)'  },
+    { blob1: 'rgba(251,191,36,0.09)', blob2: 'rgba(124,58,237,0.07)', border: 'rgba(251,191,36,0.18)' },
+    { blob1: 'rgba(20,184,166,0.08)', blob2: 'rgba(251,191,36,0.07)', border: 'rgba(20,184,166,0.18)' },
+    { blob1: 'rgba(168,85,247,0.08)', blob2: 'rgba(20,184,166,0.07)', border: 'rgba(168,85,247,0.18)' },
+    { blob1: 'rgba(245,158,11,0.08)', blob2: 'rgba(168,85,247,0.07)', border: 'rgba(245,158,11,0.18)' },
+    { blob1: 'rgba(16,185,129,0.08)', blob2: 'rgba(251,191,36,0.07)', border: 'rgba(16,185,129,0.18)' },
 ];
 
 function shareFullDua(prefix, idx) {
@@ -330,7 +170,7 @@ function shareFullDua(prefix, idx) {
     const dua = list[idx];
     const text = dua.arabic + (dua.english ? '\n\n' + dua.english : '');
     if (navigator.share) {
-        navigator.share({ title: 'Noor Nights \uD83C\uDF19', text, url: window.location.href }).catch(() => {});
+        navigator.share({ title: 'Noor Nights \uD83C\uDF19', text, url: window.location.href }).catch(() => { });
     } else {
         navigator.clipboard.writeText(text)
             .then(() => showMessage('\u2705 Copied!', 'Dua copied to clipboard.'))
@@ -363,27 +203,27 @@ function renderDuaCarousel(list, containerId, prefix) {
         slide.style.setProperty('--card-border', pal.border);
         slide.setAttribute('aria-label', 'Dua ' + (idx + 1));
 
-        slide.innerHTML =
-            '<div class="dua-slide-inner">' +
-                '<div class="slide-counter">' + (idx + 1) + ' / ' + list.length + '</div>' +
-                '<div class="dua-arabic-main">' + dua.arabic + '</div>' +
-                (dua.english ? '<div class="dua-english-main">' + dua.english + '</div>' : '') +
-                '<div class="dua-badge-row"><span class="slide-badge">' + dua.badge + '</span></div>' +
-                '<div class="slide-actions">' +
-                    '<button class="slide-btn" onclick="shareFullDua('' + prefix + '',' + idx + ')" aria-label="Share full dua">' +
-                        '<span class="slide-btn-icon">\uD83D\uDCE4</span>' +
-                        '<span class="slide-btn-label">Share Dua</span>' +
-                    '</button>' +
-                    '<button class="slide-btn" onclick="shareImage('' + prefix + '',' + idx + ')" aria-label="Share card image">' +
-                        '<span class="slide-btn-icon">\uD83D\uDCC4</span>' +
-                        '<span class="slide-btn-label">Share Card</span>' +
-                    '</button>' +
-                    '<button class="slide-btn" onclick="copyText('' + prefix + '',' + idx + ')" aria-label="Copy dua text">' +
-                        '<span class="slide-btn-icon">\uD83D\uDCCB</span>' +
-                        '<span class="slide-btn-label">Copy</span>' +
-                    '</button>' +
-                '</div>' +
-            '</div>';
+        slide.innerHTML = `
+            <div class="dua-slide-inner">
+                <div class="slide-counter">${idx + 1} / ${list.length}</div>
+                <div class="dua-arabic-main">${dua.arabic}</div>
+                ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
+                <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
+                <div class="slide-actions">
+                    <button class="slide-btn" onclick="shareFullDua('${prefix}', ${idx})" aria-label="Share full dua">
+                        <span class="slide-btn-icon">📤</span>
+                        <span class="slide-btn-label">Share Dua</span>
+                    </button>
+                    <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
+                        <span class="slide-btn-icon">📄</span>
+                        <span class="slide-btn-label">Share Card</span>
+                    </button>
+                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="Copy dua text">
+                        <span class="slide-btn-icon">📋</span>
+                        <span class="slide-btn-label">Copy</span>
+                    </button>
+                </div>
+            </div>`;
 
         track.appendChild(slide);
     });
@@ -403,9 +243,9 @@ function renderDuaCarousel(list, containerId, prefix) {
     carousel.appendChild(nav);
     body.appendChild(carousel);
 
-    const prevBtn  = document.getElementById(prevId);
-    const nextBtn  = document.getElementById(nextId);
-    const countEl  = document.getElementById(countId);
+    const prevBtn = document.getElementById(prevId);
+    const nextBtn = document.getElementById(nextId);
+    const countEl = document.getElementById(countId);
 
     function goToSlide(idx) {
         currentSlide = Math.max(0, Math.min(idx, list.length - 1));
@@ -769,8 +609,7 @@ function triggerConfetti() {
 let testModeInterval = null;
 let testModeCount = 0;
 const TEST_MODE_MAX = 30;             // 30 × 2 min = exactly 1 hour
-const TEST_MODE_MAX = 30;             // 30 × 2 min = exactly 1 hour
-const TEST_MODE_MS  = 2 * 60 * 1000;  // every 2 minutes
+const TEST_MODE_MS = 2 * 60 * 1000;  // every 2 minutes
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
@@ -890,7 +729,7 @@ function sendActualTest() {
 
 // earlyMessages & lateMessages are now in TRANSLATIONS — use t('earlyMessages') / t('lateMessages')
 const earlyMessages = TRANSLATIONS.en.earlyMessages;
-const lateMessages  = TRANSLATIONS.en.lateMessages;
+const lateMessages = TRANSLATIONS.en.lateMessages;
 
 
 
@@ -920,7 +759,7 @@ function checkAndSendNotification() {
             const dua = duaList[idx];
 
             const earlyMsgs = t('earlyMessages');
-            const lateMsgs   = t('lateMessages');
+            const lateMsgs = t('lateMessages');
             const actionMsg = hrIdx < 4 ?
                 earlyMsgs[hrIdx % earlyMsgs.length] :
                 lateMsgs[(hrIdx - 4) % lateMsgs.length];
