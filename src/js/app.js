@@ -339,14 +339,14 @@ function triggerConfetti() {
 
 let testModeInterval = null;
 let testModeCount = 0;
-const TEST_MODE_MAX = 5;               // 5 test notifications total
-const TEST_MODE_MS  = 2 * 60 * 1000;  // every 2 minutes
+const TEST_MODE_MAX = 30;              // 30 × 2 mins = 1 hour of test notifications
+const TEST_MODE_MS = 2 * 60 * 1000;  // every 2 minutes
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
-    const dua  = duas[testModeCount % duas.length];
+    const dua = duas[testModeCount % duas.length];
     const msgs = earlyMessages.concat(lateMessages);
-    const msg  = msgs[testModeCount % msgs.length];
+    const msg = msgs[testModeCount % msgs.length];
 
     const options = {
         body: `🌙 Test ${testModeCount + 1}/${TEST_MODE_MAX} — ${msg}\n\n"${dua.arabic}"`,
