@@ -273,6 +273,15 @@ function requestNotifications() {
 }
 
 function testNotification() {
+    // Special check for iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIOS && !isStandalone) {
+        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please add the app to your home screen first, then open it from there to test.');
+        return;
+    }
+
     if (Notification.permission !== "granted") {
         Notification.requestPermission().then(p => {
             if (p === 'granted') {
