@@ -352,7 +352,7 @@ function sendActualTest() {
         // Big icon in the body (The Navy/Gold App Icon)
         icon: 'assets/icons/icon-512.png',
         // Small icon in the system/header (Pure white silhouette mask)
-        badge: 'assets/icons/badge-icon.png',
+        badge: 'assets/icons/badge-v2.png',
         tag: 'noor-nights-remind',
         renotify: true,
         vibrate: [200, 100, 200],

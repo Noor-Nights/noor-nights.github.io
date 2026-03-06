@@ -1,4 +1,4 @@
-const CACHE_NAME = 'noor-nights-v4';
+const CACHE_NAME = 'noor-nights-v5';
 const ASSETS = [
     '/',
     '/index.html',
@@ -9,7 +9,8 @@ const ASSETS = [
     '/src/js/app.js',
     '/src/js/duas.js',
     '/assets/icons/icon-512.png',
-    '/assets/icons/badge-icon.png'
+    '/assets/icons/favicon.png',
+    '/assets/icons/badge-v2.png'
 ];
 
 self.addEventListener('install', (event) => {
