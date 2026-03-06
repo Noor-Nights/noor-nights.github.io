@@ -720,6 +720,9 @@ h2 {
     direction: rtl;
 }
 
-[dir="rtl"] h2 {
-    flex-direction: row-reverse;
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3 {
+    text-align: right;
+    justify-content: flex-start;
 }

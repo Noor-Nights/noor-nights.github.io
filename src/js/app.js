@@ -16,7 +16,8 @@ const TRANSLATIONS = {
         testBtn: '🧪 Send Test Notification',
         checklistTitle: '✅ Worship Checklist',
         tasks: [
-            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh/Qiyam' },
+            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh' },
+            { id: 'cb-qiyam', icon: '🌌', text: 'Pray Qiyam' },
             { id: 'cb-dua', icon: '🤲', text: 'Make Dua' },
             { id: 'cb-sadaqah', icon: '🎁', text: 'Give Sadaqah' },
             { id: 'cb-zakat', icon: '💰', text: 'Pay Zakat al-Fitr' },
@@ -56,10 +57,13 @@ const TRANSLATIONS = {
         actShareFull: 'Share Dua',
         actShareCard: 'Share Card',
         actCopy: 'Copy',
+        footerMemory: 'In loving memory of',
+        footerName: 'YOUSSEF ABDELKADER',
+        footerSadaqah: 'This app is Sadaqah Jariyah (ongoing charity) for him.',
 
     },
     ar: {
-        appName: 'نور الليالي',
+        appName: 'ليالي النور',
         subtitle: 'أنِر عبادتك في العشر الأواخر',
         installBtn: '📲 تثبيت التطبيق',
         countdownTitle: '⏳ العد التنازلي للليالي',
@@ -72,7 +76,8 @@ const TRANSLATIONS = {
         testBtn: '🧪 إرسال إشعار تجريبي',
         checklistTitle: '✅ قائمة العبادات',
         tasks: [
-            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح والقيام' },
+            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح' },
+            { id: 'cb-qiyam', icon: '🌌', text: 'صلاة القيام' },
             { id: 'cb-dua', icon: '🤲', text: 'الدعاء' },
             { id: 'cb-sadaqah', icon: '🎁', text: 'إخراج الصدقة' },
             { id: 'cb-zakat', icon: '💰', text: 'زكاة الفطر' },
@@ -112,6 +117,9 @@ const TRANSLATIONS = {
         actShareFull: 'مشاركة الدعاء',
         actShareCard: 'مشاركة البطاقة',
         actCopy: 'نسخ',
+        footerMemory: 'صدقة جارية عن روح',
+        footerName: 'يوسف عبد القادر',
+        footerSadaqah: 'هذَا التطبيق صدقة جاريةٌ له.',
 
     }
 };
@@ -360,7 +368,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
 
 function rotateYoussefDua() {
     currentYoussefIdx = (currentYoussefIdx + 1) % youssefDuas.length;
-    const ar = document.getElementById('youssef-dua.arabic.replace(/\n/g, ' < br > ')');
+    const ar = document.getElementById('youssef-dua-arabic');
     const en = document.getElementById('youssef-dua-english');
     if (ar && en) {
         ar.innerText = youssefDuas[currentYoussefIdx].arabic;
@@ -572,10 +580,10 @@ function loadChecklist() {
         label.querySelector('input').addEventListener('change', () => {
             data[task.id] = label.querySelector('input').checked;
             localStorage.setItem(key, JSON.stringify(data));
-            updateProgress(document.querySelectorAll('#checklist-container input:checked').length, 5);
+            updateProgress(document.querySelectorAll('#checklist-container input:checked').length, getChecklistTasks().length);
         });
     });
-    updateProgress(completed, 5);
+    updateProgress(completed, getChecklistTasks().length);
 }
 
 function updateProgress(c, tot) {

@@ -68,7 +68,6 @@ header {
     animation: fadeIn 1s ease-out;
     border-bottom: 1px solid rgba(251, 191, 36, 0.2);
     padding-bottom: 1.5rem;
-    position: relative;
 }
 
 @keyframes fadeIn {
@@ -419,14 +418,14 @@ h2 {
 /* ── Language Toggle Button ── */
 .lang-toggle-btn {
     position: absolute;
-    top: 1rem;
-    right: 1.5rem;
+    top: 15px;
+    right: 15px;
     z-index: 999;
     background: rgba(20, 184, 166, 0.12);
     border: 1.5px solid var(--emerald-teal);
     color: var(--emerald-teal);
     padding: 0.4rem 1rem;
-    border-radius: 50px;
+    border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -443,7 +442,7 @@ h2 {
 /* ── RTL (Arabic) Support ── */
 [dir="rtl"] .lang-toggle-btn {
     right: auto;
-    left: 1.5rem;
+    left: 15px;
 }
 
 [dir="rtl"] .dua-card {
@@ -469,8 +468,11 @@ h2 {
     direction: rtl;
 }
 
-[dir="rtl"] h2 {
-    flex-direction: row-reverse;
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3 {
+    text-align: right;
+    justify-content: flex-start;
 }
 
 /* ── Collapsible Dua List ── */
