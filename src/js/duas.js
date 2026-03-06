@@ -19,15 +19,15 @@ const essentialDuas = [
     },
     {
         "id": "beforefast",
-        "badge": "Before Breaking Fast",
-        "arabic": "اللَّهُمَّ إِنِّي لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ",
-        "english": "O Allah, for You I have fasted, in You I believe, upon You I rely, and with Your provision I break my fast"
+        "badge": "Breaking Fast / Iftar",
+        "arabic": "اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ، ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
+        "english": "O Allah, for You I have fasted, and with Your provision I have broken my fast. The thirst is gone, the veins are moistened, and the reward is confirmed, if Allah wills."
     },
     {
         "id": "afterfast",
-        "badge": "After Breaking Fast",
-        "arabic": "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ، وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
-        "english": "The thirst is gone, the veins are moistened, and the reward is confirmed, if Allah wills"
+        "badge": "Forgiveness at Iftar",
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
+        "english": "O Allah, I ask You by Your mercy, which encompasses all things, that You forgive me."
     },
     {
         "id": "forgiveness",

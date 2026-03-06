@@ -468,11 +468,15 @@ h2 {
     direction: rtl;
 }
 
-[dir="rtl"] h1,
-[dir="rtl"] h2,
-[dir="rtl"] h3 {
+[dir="rtl"] h2 {
     text-align: right;
     justify-content: flex-start;
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h3 {
+    text-align: center;
+    justify-content: center;
 }
 
 /* ── Collapsible Dua List ── */
@@ -531,7 +535,7 @@ h2 {
 .dua-carousel-track {
     display: flex;
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    align-items: stretch;
+    align-items: center;
 }
 
 .dua-slide {
