@@ -16,7 +16,6 @@ Dedicated as **Sadaqah Jariyah** (ongoing charity) in loving memory of **Youssef
 - **🔔 Hourly Notifications:** Enable browser-based reminders for each hour of the sacred nights.
 - **🎨 Multiple Themes:**
     - **Modern:** A sleek, dark interface with animated stars.
-    - **Classic:** A vintage, elegant aesthetic with Lora and Playfair typography.
     - **Retro:** 90s OS-inspired UI for a nostalgic and focused experience.
 
 ---
@@ -27,7 +26,6 @@ Simply open `index.html` in any modern web browser to begin.
 
 ### Themes:
 - **Default (Modern):** [`index.html`](index.html)
-- **Classic:** [`classic.html`](classic.html)
 - **Retro:** [`retro.html`](retro.html)
 
 ---
@@ -40,14 +38,12 @@ Simply open `index.html` in any modern web browser to begin.
 │   └── icons/          # Future placeholder for custom icons
 ├── src/
 │   ├── css/
-│   │   ├── classic.css
 │   │   ├── modern.css
 │   │   └── retro.css
 │   └── js/
 │       ├── app.js       # Core logic (Timer, Checklist, Notifications, Sharing)
 │       └── duas.js      # Supplication data arrays
 ├── index.html           # Modern theme entry point
-├── classic.html         # Classic theme entry point
 ├── retro.html           # Retro theme entry point
 └── README.md            # You are here
 ```
