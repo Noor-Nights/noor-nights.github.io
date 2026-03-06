@@ -414,3 +414,47 @@ h2 {
         padding: 1rem 0.5rem;
     }
 }
+
+/* ── Collapsible Dua List ── */
+.dua-card--hidden {
+    display: none;
+}
+
+.dua-card--visible-extra {
+    display: block;
+    animation: fadeSlideIn 0.35s ease-out both;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dua-toggle-btn {
+    display: block;
+    margin: 0.5rem auto 1rem;
+    width: auto;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    border-radius: 50px;
+    background: rgba(20, 184, 166, 0.08);
+    border: 2px solid rgba(20, 184, 166, 0.5);
+    color: var(--emerald-teal);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.dua-toggle-btn:hover {
+    background: rgba(20, 184, 166, 0.18);
+    border-color: var(--emerald-teal);
+    transform: translateY(-2px);
+}

@@ -1,7 +1,9 @@
 // Core Application Logic for Noor Nights
 let currentYoussefIdx = new Date().getDate() % youssefDuas.length;
 
-function renderDuaList(list, containerId, prefix, cardColors) {
+const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
+
+function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const body = container.querySelector('.card-body');
@@ -10,6 +12,10 @@ function renderDuaList(list, containerId, prefix, cardColors) {
     list.forEach((dua, idx) => {
         const card = document.createElement('div');
         card.className = 'dua-card';
+        // If collapsible, hide cards beyond the preview count initially
+        if (collapsible && idx >= JAWAMI_PREVIEW) {
+            card.classList.add('dua-card--hidden');
+        }
         card.innerHTML = `
             <div class="card-header" style="background: ${colors[idx % colors.length]}"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="card-body">
@@ -24,6 +30,39 @@ function renderDuaList(list, containerId, prefix, cardColors) {
         `;
         body.appendChild(card);
     });
+
+    // Add Show More / Show Less toggle for collapsible lists
+    if (collapsible && list.length > JAWAMI_PREVIEW) {
+        const remaining = list.length - JAWAMI_PREVIEW;
+        let expanded = false;
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn btn-outline dua-toggle-btn';
+        toggleBtn.id = `toggle-${containerId}`;
+        toggleBtn.innerHTML = `📖 Show ${remaining} more duas`;
+
+        toggleBtn.addEventListener('click', () => {
+            expanded = !expanded;
+            const hidden = body.querySelectorAll('.dua-card--hidden, .dua-card--visible-extra');
+            if (expanded) {
+                body.querySelectorAll('.dua-card--hidden').forEach(c => {
+                    c.classList.remove('dua-card--hidden');
+                    c.classList.add('dua-card--visible-extra');
+                });
+                toggleBtn.innerHTML = `🔼 Show less`;
+            } else {
+                body.querySelectorAll('.dua-card--visible-extra').forEach((c, i) => {
+                    c.classList.remove('dua-card--visible-extra');
+                    c.classList.add('dua-card--hidden');
+                });
+                toggleBtn.innerHTML = `📖 Show ${remaining} more duas`;
+                // Scroll back to section header smoothly
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+
+        body.appendChild(toggleBtn);
+    }
 }
 
 function rotateYoussefDua() {
@@ -301,7 +340,7 @@ function triggerConfetti() {
 let testModeInterval = null;
 let testModeCount = 0;
 const TEST_MODE_MAX = 5;               // 5 test notifications total
-const TEST_MODE_MS  = 4 * 60 * 1000;  // every 4 minutes
+const TEST_MODE_MS  = 2 * 60 * 1000;  // every 2 minutes
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
