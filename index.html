@@ -22,9 +22,10 @@
     <div class="stars-overlay"></div>
     <div class="container">
         <header>
+            <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div class="art-header">✨ 🌙 ✨</div>
-            <h1>Noor Nights</h1>
-            <div class="subtitle">Illuminate your worship in the last ten nights</div>
+            <h1 data-i18n="appName">Noor Nights</h1>
+            <div class="subtitle" data-i18n="subtitle">Illuminate your worship in the last ten nights</div>
             <div style="margin-top: 1rem;">
                 <a href="retro.html" style="color: var(--emerald-teal); text-decoration: none; font-size: 0.9rem;">🖥️
                     Retro Edition</a>
@@ -33,35 +34,31 @@
                 <button id="install-btn" class="btn btn-outline"
                     style="display: none; width: auto; padding: 0.5rem 1.5rem; font-size: 0.9rem;"
                     onclick="handleInstallClick()">
-                    📲 Install App
+                    <span data-i18n="installBtn">📲 Install App</span>
                 </button>
             </div>
         </header>
 
         <div class="card">
-            <h2>⏳ Countdown to the Nights</h2>
+            <h2 data-i18n="countdownTitle">⏳ Countdown to the Nights</h2>
             <div class="status-text" id="countdown-status">Calculating...</div>
             <div class="countdown-display" id="countdown-timer">
-                <div class="time-box"><span class="time-value" id="days">00</span><span class="time-label">Days</span>
+                <div class="time-box"><span class="time-value" id="days">00</span><span class="time-label" data-i18n="days">Days</span>
                 </div>
-                <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label">Hours</span>
+                <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label" data-i18n="hours">Hours</span>
                 </div>
                 <div class="time-box"><span class="time-value" id="minutes">00</span><span
-                        class="time-label">Mins</span></div>
+                        class="time-label" data-i18n="mins">Mins</span></div>
                 <div class="time-box"><span class="time-value" id="seconds">00</span><span
-                        class="time-label">Secs</span></div>
+                        class="time-label" data-i18n="secs">Secs</span></div>
             </div>
-            <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()">
-                🔔 Enable Daily Night Number Reminders
-            </button>
+            <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()" data-i18n="notifyBtn">🔔 Enable Daily Night Number Reminders</button>
             <button class="btn btn-outline" style="margin-top: 10px; border-style: dashed; opacity: 0.7;"
-                onclick="testNotification()">
-                🧪 Send Test Notification
-            </button>
+                onclick="testNotification()" data-i18n="testBtn">🧪 Send Test Notification</button>
         </div>
 
         <div class="card">
-            <h2>✅ Worship Checklist</h2>
+            <h2 data-i18n="checklistTitle">✅ Worship Checklist</h2>
             <div id="checklist-container"></div>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="checklist-progress"></div>
@@ -70,9 +67,9 @@
         </div>
 
         <div class="card">
-            <h2>📅 Add to My Calendar</h2>
-            <p>Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).</p>
-            <button class="btn" onclick="downloadICS()">📅 Download Calendar (.ics)</button>
+            <h2 data-i18n="calendarTitle">📅 Add to My Calendar</h2>
+            <p data-i18n="calendarDesc">Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).</p>
+            <button class="btn" onclick="downloadICS()" data-i18n="calendarBtn">📅 Download Calendar (.ics)</button>
             <div id="calendar-success" class="success-box"
                 style="display:none; margin-top: 15px; padding: 15px; background: rgba(52, 211, 153, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
                 <h4 style="color: var(--neon-cyan); margin-bottom: 8px;">🎉 Successfully Downloaded!</h4>
@@ -98,14 +95,14 @@
 
         <div class="card" id="essential-duas-container">
             <div class="card-body">
-                <h2>🤲 Essential Duas</h2>
+                <h2 data-i18n="essentialTitle">🤲 Essential Duas</h2>
             </div>
         </div>
 
         <div id="jawami-duas-container" class="card">
             <div class="card-body">
-                <h2>📖 Jawami' ad-Du'a</h2>
-                <p class="subtitle" style="margin-bottom:1.5rem">Comprehensive prayers from the Prophet (ﷺ)</p>
+                <h2 data-i18n="jamawiTitle">📖 Jawami' ad-Du'a</h2>
+                <p class="subtitle" style="margin-bottom:1.5rem" data-i18n="jamawiSubtitle">Comprehensive prayers from the Prophet (ﷺ)</p>
             </div>
         </div>
 

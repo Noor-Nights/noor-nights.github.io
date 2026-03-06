@@ -415,6 +415,59 @@ h2 {
     }
 }
 
+/* ── Language Toggle Button ── */
+.lang-toggle-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 999;
+    background: rgba(20, 184, 166, 0.12);
+    border: 1.5px solid var(--emerald-teal);
+    color: var(--emerald-teal);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', 'Amiri', sans-serif;
+    backdrop-filter: blur(8px);
+}
+
+.lang-toggle-btn:hover {
+    background: rgba(20, 184, 166, 0.25);
+    transform: translateY(-1px);
+}
+
+/* ── RTL (Arabic) Support ── */
+[dir="rtl"] .lang-toggle-btn {
+    right: auto;
+    left: 1rem;
+}
+
+[dir="rtl"] .dua-card {
+    border-left: none;
+    border-right: 5px solid var(--amber-glow);
+    border-radius: 16px 0 0 16px;
+}
+
+[dir="rtl"] .checklist-item input {
+    margin-right: 0;
+    margin-left: 1.2rem;
+}
+
+[dir="rtl"] .progress-text {
+    text-align: left;
+}
+
+[dir="rtl"] .share-buttons {
+    direction: rtl;
+}
+
+[dir="rtl"] h2 {
+    flex-direction: row-reverse;
+}
+
 /* ── Collapsible Dua List ── */
 .dua-card--hidden {
     display: none;

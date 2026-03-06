@@ -1,5 +1,317 @@
-// Core Application Logic for Noor Nights
-let currentYoussefIdx = new Date().getDate() % youssefDuas.length;
+// ═══════════════════════════════════════════════════
+// INTERNATIONALIZATION (i18n) — EN / AR
+// ═══════════════════════════════════════════════════
+const TRANSLATIONS = {
+    en: {
+        appName: 'Noor Nights',
+        subtitle: 'Illuminate your worship in the last ten nights',
+        installBtn: '📲 Install App',
+        countdownTitle: '⏳ Countdown to the Nights',
+        calculating: 'Calculating...',
+        untilBegin: 'Until Noor Nights begin (Egypt Time)',
+        concluded: 'The Last 10 Nights have concluded.',
+        days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
+        notifyBtn: '🔔 Enable Daily Night Number Reminders',
+        notifyEnabled: '✅ Notifications Enabled',
+        testBtn: '🧪 Send Test Notification',
+        checklistTitle: '✅ Worship Checklist',
+        tasks: [
+            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh/Qiyam' },
+            { id: 'cb-dua', icon: '🤲', text: 'Make Dua' },
+            { id: 'cb-sadaqah', icon: '🎁', text: 'Give Sadaqah' },
+            { id: 'cb-zakat', icon: '💰', text: 'Pay Zakat al-Fitr' },
+            { id: 'cb-quran', icon: '📖', text: 'Recite Quran' }
+        ],
+        progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
+        calendarTitle: '📅 Add to My Calendar',
+        calendarDesc: 'Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).',
+        calendarBtn: '📅 Download Calendar (.ics)',
+        essentialTitle: '🤲 Essential Duas',
+        jamawiTitle: "📖 Jawami' ad-Du'a",
+        jamawiSubtitle: "Comprehensive prayers from the Prophet (ﷺ)",
+        nightStatus: (n) => `Tonight is Night ${n} of 10`,
+        nightSubStatus: 'Make the most of it 🌙',
+        reminderActive: '🔔 Reminders Active!',
+        reminderMsg: "You'll receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).",
+        notifTitle: 'Noor Nights 🌙',
+        reminderNum: (n, msg) => `🌙 Reminder #${n} — ${msg}`,
+        denied: 'Denied',
+        deniedMsg: 'We need permission to send you reminders.',
+        error: 'Error',
+        errorMsg: 'Your browser does not support notifications.',
+        mashaallah: "Masha'Allah! ✨",
+        mashaallahMsg: "You've completed all your worship goals for tonight. May Allah accept from you!",
+        showMore: (n) => `📖 Show ${n} more duas`,
+        showLess: '🔼 Show less',
+        earlyMessages: [
+            "🤲 Pour your heart out in Dua right now.",
+            "🎁 Don't forget your Sadaqah for tonight.",
+            "✨ Focus on your Dua and Sadaqah tonight."
+        ],
+        lateMessages: [
+            "🌙 Time for Qiyam & standing in prayer.",
+            "🌟 Standing in Qiyam - pouring Dua.",
+            "✨ Balance your night with Qiyam and Dua."
+        ],
+    },
+    ar: {
+        appName: 'نور الليالي',
+        subtitle: 'أنِر عبادتك في العشر الأواخر',
+        installBtn: '📲 تثبيت التطبيق',
+        countdownTitle: '⏳ العد التنازلي للليالي',
+        calculating: 'جارٍ الحساب...',
+        untilBegin: 'حتى بدء نور الليالي (توقيت مصر)',
+        concluded: 'انتهت العشر الأواخر.',
+        days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
+        notifyBtn: '🔔 تفعيل تذكيرات الليالي',
+        notifyEnabled: '✅ تم تفعيل الإشعارات',
+        testBtn: '🧪 إرسال إشعار تجريبي',
+        checklistTitle: '✅ قائمة العبادات',
+        tasks: [
+            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح والقيام' },
+            { id: 'cb-dua', icon: '🤲', text: 'الدعاء' },
+            { id: 'cb-sadaqah', icon: '🎁', text: 'إخراج الصدقة' },
+            { id: 'cb-zakat', icon: '💰', text: 'زكاة الفطر' },
+            { id: 'cb-quran', icon: '📖', text: 'تلاوة القرآن' }
+        ],
+        progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
+        calendarTitle: '📅 أضف إلى التقويم',
+        calendarDesc: 'احصل على تذكيرات يومية عند أذان المغرب لجميع العشر ليالٍ (توقيت مصر).',
+        calendarBtn: '📅 تحميل التقويم (.ics)',
+        essentialTitle: '🤲 أدعية أساسية',
+        jamawiTitle: '📖 جوامع الدعاء',
+        jamawiSubtitle: 'أدعية جامعة من النبي ﷺ',
+        nightStatus: (n) => `الليلة هي الليلة ${n} من العشر`,
+        nightSubStatus: 'استثمرها 🌙',
+        reminderActive: '🔔 التذكيرات مفعّلة!',
+        reminderMsg: 'ستتلقى تذكيراً بالدعاء كل دقيقتين طالما هذا التبويب مفتوح. تبدأ التذكيرات الفعلية مع بدء الليالي (9 مارس).',
+        notifTitle: 'نور الليالي 🌙',
+        reminderNum: (n, msg) => `🌙 تذكير #${n} — ${msg}`,
+        denied: 'مرفوض',
+        deniedMsg: 'نحتاج إذناً لإرسال التذكيرات.',
+        error: 'خطأ',
+        errorMsg: 'متصفحك لا يدعم الإشعارات.',
+        mashaallah: 'ما شاء الله! ✨',
+        mashaallahMsg: 'أتممت جميع أهداف العبادة لهذه الليلة. تقبّل الله منك!',
+        showMore: (n) => `📖 عرض ${n} دعاء إضافياً`,
+        showLess: '🔼 عرض أقل',
+        earlyMessages: [
+            "🤲 أفرغ قلبك في الدعاء الآن.",
+            "🎁 لا تنسَ صدقتك لهذه الليلة.",
+            "✨ ركّز على الدعاء والصدقة الليلة."
+        ],
+        lateMessages: [
+            "🌙 وقت القيام والصلاة.",
+            "🌟 ادعُ وأنت في صلاة القيام.",
+            "✨ وازن ليلتك بين القيام والدعاء."
+        ],
+    }
+};
+
+let currentLang = localStorage.getItem('noor-lang') || 'en';
+
+function t(key, ...args) {
+    const lang = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    const val = (lang[key] !== undefined) ? lang[key] : TRANSLATIONS.en[key];
+    if (typeof val === 'function') return val(...args);
+    return val;
+}
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('noor-lang', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
+    updateCountdown();
+    loadChecklist();
+    const notifyBtn = document.getElementById('notify-btn');
+    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
+        notifyBtn.textContent = t('notifyEnabled');
+    } else if (notifyBtn) {
+        notifyBtn.textContent = t('notifyBtn');
+    }
+}
+
+function toggleLanguage() {
+    applyLanguage(currentLang === 'en' ? 'ar' : 'en');
+    trackEvent('/lang-toggle', 'Language Toggle');
+}
+
+// ═══════════════════════════════════════════════════
+// ANALYTICS EVENT TRACKING (GoatCounter)
+// ═══════════════════════════════════════════════════
+function trackEvent(path, title) {
+    if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path, title, event: true });
+    }
+}
+
+// ═══════════════════════════════════════════════════
+// INTERNATIONALIZATION (i18n)
+// ═══════════════════════════════════════════════════
+const TRANSLATIONS = {
+    en: {
+        appName: 'Noor Nights',
+        subtitle: 'Illuminate your worship in the last ten nights',
+        installBtn: '📲 Install App',
+        countdownTitle: '⏳ Countdown to the Nights',
+        calculating: 'Calculating...',
+        untilBegin: 'Until Noor Nights begin (Egypt Time)',
+        concluded: 'The Last 10 Nights have concluded.',
+        days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
+        notifyBtn: '🔔 Enable Daily Night Number Reminders',
+        notifyEnabled: '✅ Notifications Enabled',
+        testBtn: '🧪 Send Test Notification',
+        checklistTitle: '✅ Worship Checklist',
+        tasks: [
+            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh/Qiyam' },
+            { id: 'cb-dua',      icon: '🤲', text: 'Make Dua' },
+            { id: 'cb-sadaqah',  icon: '🎁', text: 'Give Sadaqah' },
+            { id: 'cb-zakat',    icon: '💰', text: 'Pay Zakat al-Fitr' },
+            { id: 'cb-quran',    icon: '📖', text: 'Recite Quran' }
+        ],
+        progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
+        calendarTitle: '📅 Add to My Calendar',
+        calendarDesc: 'Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).',
+        calendarBtn: '📅 Download Calendar (.ics)',
+        essentialTitle: '🤲 Essential Duas',
+        jamawiTitle: "📖 Jawami' ad-Du'a",
+        jamawiSubtitle: "Comprehensive prayers from the Prophet (ﷺ)",
+        nightStatus: (n) => `Tonight is Night ${n} of 10`,
+        nightSubStatus: 'Make the most of it 🌙',
+        reminderActive: '🔔 Reminders Active!',
+        reminderMsg: "You'll receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).",
+        notifTitle: 'Noor Nights 🌙',
+        reminderNum: (n, msg) => `🌙 Reminder #${n} — ${msg}`,
+        denied: 'Denied',
+        deniedMsg: 'We need permission to send you reminders.',
+        error: 'Error',
+        errorMsg: 'Your browser does not support notifications.',
+        mashaallah: "Masha'Allah! ✨",
+        mashaallahMsg: "You've completed all your worship goals for tonight. May Allah accept from you!",
+        showMore: (n) => `📖 Show ${n} more duas`,
+        showLess: '🔼 Show less',
+        earlyMessages: [
+            "🤲 Pour your heart out in Dua right now.",
+            "🎁 Don't forget your Sadaqah for tonight.",
+            "✨ Focus on your Dua and Sadaqah tonight."
+        ],
+        lateMessages: [
+            "🌙 Time for Qiyam & standing in prayer.",
+            "🌟 Standing in Qiyam - pouring Dua.",
+            "✨ Balance your night with Qiyam and Dua."
+        ],
+    },
+    ar: {
+        appName: 'نور الليالي',
+        subtitle: 'أنِر عبادتك في العشر الأواخر',
+        installBtn: '�� تثبيت التطبيق',
+        countdownTitle: '⏳ العد التنازلي للليالي',
+        calculating: 'جارٍ الحساب...',
+        untilBegin: 'حتى بدء نور الليالي (توقيت مصر)',
+        concluded: 'انتهت العشر الأواخر.',
+        days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
+        notifyBtn: '🔔 تفعيل تذكيرات الليالي',
+        notifyEnabled: '✅ تم تفعيل الإشعارات',
+        testBtn: '🧪 إرسال إشعار تجريبي',
+        checklistTitle: '✅ قائمة العبادات',
+        tasks: [
+            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح والقيام' },
+            { id: 'cb-dua',      icon: '🤲', text: 'الدعاء' },
+            { id: 'cb-sadaqah',  icon: '🎁', text: 'إخراج الصدقة' },
+            { id: 'cb-zakat',    icon: '💰', text: 'زكاة الفطر' },
+            { id: 'cb-quran',    icon: '📖', text: 'تلاوة القرآن' }
+        ],
+        progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
+        calendarTitle: '📅 أضف إلى التقويم',
+        calendarDesc: 'احصل على تذكيرات يومية عند أذان المغرب لجميع العشر ليالٍ (توقيت مصر).',
+        calendarBtn: '📅 تحميل التقويم (.ics)',
+        essentialTitle: '🤲 أدعية أساسية',
+        jamawiTitle: '�� جوامع الدعاء',
+        jamawiSubtitle: 'أدعية جامعة من النبي ﷺ',
+        nightStatus: (n) => `الليلة هي الليلة ${n} من العشر`,
+        nightSubStatus: 'استثمرها 🌙',
+        reminderActive: '🔔 التذكيرات مفعّلة!',
+        reminderMsg: 'ستتلقى تذكيراً بالدعاء كل دقيقتين طالما هذا التبويب مفتوح. تبدأ التذكيرات الفعلية مع بدء الليالي (9 مارس).',
+        notifTitle: 'نور الليالي 🌙',
+        reminderNum: (n, msg) => `🌙 تذكير #${n} — ${msg}`,
+        denied: 'مرفوض',
+        deniedMsg: 'نحتاج إذناً لإرسال التذكيرات.',
+        error: 'خطأ',
+        errorMsg: 'متصفحك لا يدعم الإشعارات.',
+        mashaallah: 'ما شاء الله! ✨',
+        mashaallahMsg: 'أتممت جميع أهداف العبادة لهذه الليلة. تقبّل الله منك!',
+        showMore: (n) => `📖 عرض ${n} دعاء إضافياً`,
+        showLess: '🔼 عرض أقل',
+        earlyMessages: [
+            "🤲 أفرغ قلبك في الدعاء الآن.",
+            "🎁 لا تنسَ صدقتك لهذه الليلة.",
+            "✨ ركّز على الدعاء والصدقة الليلة."
+        ],
+        lateMessages: [
+            "🌙 وقت القيام والصلاة.",
+            "🌟 ادعُ وأنت في صلاة القيام.",
+            "✨ وازن ليلتك بين القيام والدعاء."
+        ],
+    }
+};
+
+let currentLang = localStorage.getItem('noor-lang') || 'en';
+
+function t(key, ...args) {
+    const lang = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    const val = (lang[key] !== undefined) ? lang[key] : TRANSLATIONS.en[key];
+    if (typeof val === 'function') return val(...args);
+    return val;
+}
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('noor-lang', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    // Update all static i18n elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    // Update lang toggle button label
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
+    // Refresh dynamic sections
+    updateCountdown();
+    loadChecklist();
+    // Keep notify button state
+    const notifyBtn = document.getElementById('notify-btn');
+    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
+        notifyBtn.textContent = t('notifyEnabled');
+    } else if (notifyBtn) {
+        notifyBtn.textContent = t('notifyBtn');
+    }
+}
+
+function toggleLanguage() {
+    applyLanguage(currentLang === 'en' ? 'ar' : 'en');
+    trackEvent('/lang-toggle', 'Language Toggle');
+}
+
+// ═══════════════════════════════════════════════════
+// ANALYTICS EVENT TRACKING
+// ═══════════════════════════════════════════════════
+function trackEvent(path, title) {
+    if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path, title, event: true });
+    }
+}
+
+// ═══════════════════════════════════════════════════
+// CORE APPLICATION LOGIC
+// ═══════════════════════════════════════════════════
+urrentYoussefIdx = new Date().getDate() % youssefDuas.length;
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
 
@@ -39,7 +351,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'btn btn-outline dua-toggle-btn';
         toggleBtn.id = `toggle-${containerId}`;
-        toggleBtn.innerHTML = `📖 Show ${remaining} more duas`;
+        toggleBtn.innerHTML = t('showMore', remaining);
 
         toggleBtn.addEventListener('click', () => {
             expanded = !expanded;
@@ -49,13 +361,13 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
                     c.classList.remove('dua-card--hidden');
                     c.classList.add('dua-card--visible-extra');
                 });
-                toggleBtn.innerHTML = `🔼 Show less`;
+                toggleBtn.innerHTML = t('showLess');
             } else {
                 body.querySelectorAll('.dua-card--visible-extra').forEach((c, i) => {
                     c.classList.remove('dua-card--visible-extra');
                     c.classList.add('dua-card--hidden');
                 });
-                toggleBtn.innerHTML = `📖 Show ${remaining} more duas`;
+                toggleBtn.innerHTML = t('showMore', remaining);
                 // Scroll back to section header smoothly
                 container.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -216,13 +528,7 @@ function shareYoussef() {
     }).catch(() => triggerDownload(url, filename));
 }
 
-const checklistTasks = [
-    { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh/Qiyam' },
-    { id: 'cb-dua', icon: '🤲', text: 'Make Dua' },
-    { id: 'cb-sadaqah', icon: '🎁', text: 'Give Sadaqah' },
-    { id: 'cb-zakat', icon: '💰', text: 'Pay Zakat al-Fitr' },
-    { id: 'cb-quran', icon: '📖', text: 'Recite Quran' }
-];
+function getChecklistTasks() { return t('tasks'); }
 
 function getCurrentTime() {
     let now = new Date();
@@ -245,8 +551,8 @@ function updateCountdown() {
         const n = Math.floor(Math.abs(distance) / 86400000) + 1;
         timerDisplay.style.display = 'none';
         timerStatus.innerHTML = n <= 10 ?
-            `<span style="font-size:1.8rem;">Tonight is Night ${n} of 10</span><br><span style="font-size:1rem; color:var(--text-muted)">Make the most of it 🌙</span>` :
-            "The Last 10 Nights have concluded.";
+            `<span style="font-size:1.8rem;">${t('nightStatus', n)}</span><br><span style="font-size:1rem; color:var(--text-muted)">${t('nightSubStatus')}</span>` :
+            t('concluded');
         return;
     }
 
@@ -260,7 +566,7 @@ function updateCountdown() {
     if (m) m.innerText = String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0');
     if (s) s.innerText = String(Math.floor((distance % 60000) / 1000)).padStart(2, '0');
 
-    timerStatus.innerText = "Until Noor Nights begin (Egypt Time)";
+    timerStatus.innerText = t('untilBegin');
 }
 
 function loadChecklist() {
@@ -275,7 +581,7 @@ function loadChecklist() {
     cont.innerHTML = '';
     let completed = 0;
 
-    checklistTasks.forEach(task => {
+    getChecklistTasks().forEach(task => {
         const label = document.createElement('label');
         label.className = 'checklist-item';
         const checked = !!data[task.id];
@@ -291,19 +597,19 @@ function loadChecklist() {
     updateProgress(completed, 5);
 }
 
-function updateProgress(c, t) {
+function updateProgress(c, tot) {
     const bar = document.getElementById('checklist-progress');
     const text = document.getElementById('checklist-text');
-    if (bar) bar.style.width = `${(c / t) * 100}%`;
-    if (text) text.innerText = `${c} of ${t} tasks completed today`;
+    if (bar) bar.style.width = `${(c / tot) * 100}%`;
+    if (text) text.innerText = t('progressText', c, tot);
 
     // Trigger success magic only when completing the LAST item
     // (We check if it was already completed to avoid duplicate magic)
-    if (c === t && c > 0 && !window.hasCelebrated) {
+    if (c === tot && c > 0 && !window.hasCelebrated) {
         window.hasCelebrated = true;
         triggerConfetti();
-        showMessage("Masha'Allah! ✨", "You've completed all your worship goals for tonight. May Allah accept from you!");
-    } else if (c < t) {
+        showMessage(t('mashaallah'), t('mashaallahMsg'));
+    } else if (c < tot) {
         window.hasCelebrated = false;
     }
 }
@@ -339,7 +645,9 @@ function triggerConfetti() {
 
 let testModeInterval = null;
 let testModeCount = 0;
-const TEST_MODE_MS = 2 * 60 * 1000;  // every 2 minutes
+const TEST_MODE_MAX = 30;             // 30 × 2 min = exactly 1 hour
+const TEST_MODE_MAX = 30;             // 30 × 2 min = exactly 1 hour
+const TEST_MODE_MS  = 2 * 60 * 1000;  // every 2 minutes
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
@@ -348,7 +656,7 @@ function sendTestModeNotification() {
     const msg = msgs[testModeCount % msgs.length];
 
     const options = {
-        body: `🌙 Reminder #${testModeCount + 1} — ${msg}\n\n"${dua.arabic}"`,
+        body: t('reminderNum', testModeCount + 1, msg) + `\n\n"${dua.arabic}"`,
         icon: 'assets/icons/icon-512.png',
         badge: 'assets/icons/badge-96.png',
         tag: 'noor-nights-remind',
@@ -359,17 +667,23 @@ function sendTestModeNotification() {
     };
 
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(reg => reg.showNotification('Noor Nights 🌙', options));
+        navigator.serviceWorker.ready.then(reg => reg.showNotification(t('notifTitle'), options));
     } else {
-        new Notification('Noor Nights 🌙', options);
+        new Notification(t('notifTitle'), options);
     }
 
     testModeCount++;
+    if (testModeCount >= TEST_MODE_MAX) {
+        clearInterval(testModeInterval);
+        testModeInterval = null;
+        testModeCount = 0;
+    }
 }
 
 function requestNotifications() {
+    trackEvent('/enable-reminders', 'Enable Reminders Click');
     if (!("Notification" in window)) {
-        showMessage('Error', 'Your browser does not support notifications.');
+        showMessage(t('error'), t('errorMsg'));
         return;
     }
     Notification.requestPermission().then(p => {
@@ -383,12 +697,13 @@ function requestNotifications() {
             if (testModeInterval) clearInterval(testModeInterval);
             testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);  // then every 2 mins
         } else {
-            showMessage('Denied', 'We need permission to send you reminders.');
+            showMessage(t('denied'), t('deniedMsg'));
         }
     });
 }
 
 function testNotification() {
+    trackEvent('/test-notification', 'Test Notification');
     // Special check for iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
@@ -450,17 +765,11 @@ function sendActualTest() {
     showMessage('Notification Sent', 'Masha\'Allah! Check your device. This is the official, clean notification design with our new icon.');
 }
 
-const earlyMessages = [
-    "🤲 Pour your heart out in Dua right now.",
-    "🎁 Don't forget your Sadaqah for tonight.",
-    "✨ Focus on your Dua and Sadaqah tonight."
-];
+// earlyMessages & lateMessages are now in TRANSLATIONS — use t('earlyMessages') / t('lateMessages')
+const earlyMessages = TRANSLATIONS.en.earlyMessages;
+const lateMessages  = TRANSLATIONS.en.lateMessages;
 
-const lateMessages = [
-    "🌙 Time for Qiyam & standing in prayer.",
-    "🌟 Standing in Qiyam - pouring Dua.",
-    "✨ Balance your night with Qiyam and Dua."
-];
+
 
 let lastNotificationHour = -1;
 function checkAndSendNotification() {
@@ -487,9 +796,11 @@ function checkAndSendNotification() {
             const idx = Math.abs(hrIdx) % duaList.length;
             const dua = duaList[idx];
 
+            const earlyMsgs = t('earlyMessages');
+            const lateMsgs   = t('lateMessages');
             const actionMsg = hrIdx < 4 ?
-                earlyMessages[hrIdx % earlyMessages.length] :
-                lateMessages[(hrIdx - 4) % lateMessages.length];
+                earlyMsgs[hrIdx % earlyMsgs.length] :
+                lateMsgs[(hrIdx - 4) % lateMsgs.length];
 
             const notifOptions = {
                 body: `Night ${nightNum} of 10 reminder`,
@@ -581,6 +892,7 @@ function generateICS() {
 }
 
 function downloadICS() {
+    trackEvent('/download-ics', 'Download Calendar');
     try {
         const content = generateICS();
         const url = URL.createObjectURL(new Blob([content], { type: 'text/calendar;charset=utf-8' }));
@@ -610,6 +922,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(checkDayChange, 60000); // Check for day change every minute
     rotateYoussefDua();
     setInterval(checkAndSendNotification, 60000);
+
+    // Apply saved language preference
+    applyLanguage(currentLang);
+
+    // Apply saved language on load
+    applyLanguage(currentLang);
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
