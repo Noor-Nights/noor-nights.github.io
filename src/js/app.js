@@ -60,7 +60,12 @@ const TRANSLATIONS = {
         footerName: 'YOUSSEF ABDELKADER',
         footerSadaqah: 'This app is Sadaqah Jariyah (ongoing charity) for him.',
         footerCanvas: 'Noor Nights App • Sadaqah Jariyah for Youssef Abdelkader',
-        zakatReminder: '💰 Remember to Pay Zakat al-Fitr before end of ramadan'
+        zakatReminder: '💰 Remember to Pay Zakat al-Fitr before end of ramadan',
+        blessingTitle: 'The Blessing of Sharing Duas',
+        blessingDesc1: 'Sharing a dua can uplift anyone who sees it during their day—reminding them to turn back to Allah, calming their heart, or inspiring them to make their own dua.',
+        blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
+        blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
+        blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.'
 
     },
     ar: {
@@ -120,7 +125,12 @@ const TRANSLATIONS = {
         footerName: 'يوسف عبد القادر',
         footerSadaqah: 'هذَا التطبيق صدقة جاريةٌ له.',
         footerCanvas: 'تطبيق نور الليالي • صدقة جارية عن روح يوسف عبد القادر',
-        zakatReminder: '💰 تذكر دفع زكاة الفطر قبل نهاية رمضان'
+        zakatReminder: '💰 تذكر دفع زكاة الفطر قبل نهاية رمضان',
+        blessingTitle: 'بركة مشاركة الدعاء',
+        blessingDesc1: 'مشاركة الدعاء قد تشرح صدر من يقرأه في يومه، وتذكره بالرجوع إلى الله، وتُسكن قلبه، أو تُلهمه ليدعو بدوره.',
+        blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
+        blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
+        blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.'
 
     }
 };
