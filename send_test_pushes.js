@@ -7,8 +7,21 @@
  *   node send_test_pushes.js
  */
 
+const fs = require('fs');
+const path = require('path');
+
+// Safely load the secret from a local .env file (so it's never committed to GitHub)
+const envPath = path.resolve(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8').split('\n');
+    envConfig.forEach(line => {
+        const parts = line.split('=');
+        if (parts.length >= 2) process.env[parts[0].trim()] = parts.slice(1).join('=').trim();
+    });
+}
+
 const APP_ID = '520970e9-567b-4556-8022-3093a50b765f';
-const REST_API_KEY = 'PASTE_YOUR_REST_API_KEY_HERE'; // ← Replace this!
+const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY || '';
 
 const duas = [
     'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي',
@@ -55,10 +68,11 @@ async function sendPush(index) {
 }
 
 async function runTestPushes() {
-    // You MUST paste your REST_API_KEY at the top of this file!
-    if (REST_API_KEY === 'PASTE_YOUR_REST_API_KEY_HERE') {
-        console.error('❌ Please add your OneSignal REST API Key first!');
-        console.error('   Go to: OneSignal Dashboard → Settings → Keys & IDs → REST API Key');
+    if (!REST_API_KEY) {
+        console.error('❌ Please add your OneSignal REST API Key to a .env file first!');
+        console.error('   1. Create a file named .env in this folder');
+        console.error('   2. Add this line: ONESIGNAL_REST_API_KEY=your_key_here');
+        console.error('   (Go to: OneSignal Dashboard → Settings → Keys & IDs → REST API Key)');
         process.exit(1);
     }
 
