@@ -476,9 +476,9 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
         });
     }
 
-    ctx.font = 'bold 18px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(45,45,45,0.3)';
-    ctx.fillText((t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef'), 540, canvasHeight - 60);
+    ctx.font = 'bold 14px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(45,45,45,0.4)';
+    ctx.fillText((t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef'), 540, canvasHeight - 50);
 
     return canvas.toDataURL('image/jpeg', 0.9);
 }
