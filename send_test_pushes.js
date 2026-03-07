@@ -76,19 +76,19 @@ async function runTestPushes() {
         process.exit(1);
     }
 
-    console.log('🚀 Starting 12 test push notifications (one every 30 minutes)...\n');
+    console.log('🚀 Starting 72 test push notifications (one every 5 minutes)...\n');
     console.log('   This script will run for the next 6 hours.');
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 72; i++) {
         await sendPush(i % 5); // Loops through the 5 messages
-        if (i < 11) {
-            console.log(`[${new Date().toLocaleTimeString()}] ⏳ Waiting 30 minutes before next push...\n`);
-            // 30 minutes = 30 * 60 * 1000 ms
-            await new Promise(resolve => setTimeout(resolve, 30 * 60 * 1000));
+        if (i < 71) {
+            console.log(`[${new Date().toLocaleTimeString()}] ⏳ Waiting 5 minutes before next push...\n`);
+            // 5 minutes = 5 * 60 * 1000 ms
+            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
         }
     }
 
-    console.log('\n✨ All 12 test notifications sent!');
+    console.log('\n✨ All 72 test notifications sent!');
 }
 
 runTestPushes();
