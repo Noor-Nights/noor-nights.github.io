@@ -69,7 +69,7 @@ const TRANSLATIONS = {
         footerMadeWith: 'Made with ♥️ for Ramadan.',
         notifyDisable: '🔕 Disable Reminders',
         alreadySubTitle: '🔔 Already Subscribed!',
-        alreadySubMsg: 'You are already receiving nightly reminders. Tap "Disable Reminders" to turn them off.',
+        alreadySubMsg: 'You are already receiving nightly reminders. Do you want to disable them?',
         unsubTitle: '🔕 Reminders Disabled',
         unsubMsg: 'You will no longer receive push notifications. You can re-enable anytime.',
         permNeeded: '🔔 Permission Required',
@@ -152,7 +152,7 @@ const TRANSLATIONS = {
         footerMadeWith: 'صُنع بـ ❤️ لرمضان.',
         notifyDisable: '🔕 تعطيل التذكيرات',
         alreadySubTitle: '🔔 أنت مشترك بالفعل!',
-        alreadySubMsg: 'أنت تتلقى تذكيرات الليالي بالفعل. اضغط "تعطيل التذكيرات" لإيقافها.',
+        alreadySubMsg: 'أنت تتلقى تذكيرات الليالي بالفعل. هل ترغب في تعطيلها؟',
         unsubTitle: '🔕 تم إيقاف التذكيرات',
         unsubMsg: 'لن تتلقى إشعارات بعد الآن. يمكنك إعادة التفعيل في أي وقت.',
         permNeeded: '🔔 إذن مطلوب',
@@ -723,14 +723,18 @@ function sendTestModeNotification() {
 function _updateNotifyBtnState(btn, subscribed) {
     if (!btn) return;
     if (subscribed) {
-        // Shows a clear call-to-action to DISABLE
-        btn.innerText = t('notifyDisable');
+        // Shows a clear state indicating it's ENABLED
+        btn.innerHTML = `<span style="color:var(--emerald-teal); font-weight:bold;">${t('notifyEnabled')}</span>`;
         btn.dataset.subscribed = 'true';
-        btn.style.opacity = '0.8';
+        btn.style.borderColor = 'var(--emerald-teal)';
+        btn.style.background = 'rgba(52, 211, 153, 0.1)';
+        btn.style.opacity = '1';
     } else {
         btn.innerText = t('notifyBtn');
         btn.dataset.subscribed = 'false';
         btn.style.opacity = '';
+        btn.style.borderColor = '';
+        btn.style.background = '';
     }
     btn.disabled = false;
 }
@@ -751,10 +755,15 @@ function requestNotifications() {
                 const isSubscribed = OneSignal.User.PushSubscription.optedIn;
 
                 if (isSubscribed) {
-                    // DISABLE flow: unsubscribe immediately (button says "Disable Reminders")
-                    await OneSignal.User.PushSubscription.optOut();
-                    _updateNotifyBtnState(btn, false);
-                    showMessage(t('unsubTitle'), t('unsubMsg'));
+                    // DISABLE flow: Ask user if they actually want to disable
+                    if (confirm(t('alreadySubTitle') + '\n\n' + t('alreadySubMsg'))) {
+                        await OneSignal.User.PushSubscription.optOut();
+                        _updateNotifyBtnState(btn, false);
+                        showMessage(t('unsubTitle'), t('unsubMsg'));
+                    } else {
+                        // User canceled: restore enabled state
+                        _updateNotifyBtnState(btn, true);
+                    }
                 } else {
                     // ENABLE flow
                     if (Notification.permission === 'granted') {
