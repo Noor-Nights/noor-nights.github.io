@@ -264,6 +264,11 @@ function applyLanguage(lang) {
     } else if (notifyBtn) {
         notifyBtn.textContent = t('notifyBtn');
     }
+
+    // Re-render Dynamic Dua content so buttons and labels update
+    if (typeof renderAllDuas === 'function') {
+        renderAllDuas();
+    }
 }
 
 function toggleLanguage() {
@@ -313,6 +318,9 @@ function renderDuaCarousel(list, containerId, prefix) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const body = container.querySelector('.card-body');
+    // Clear existing content for re-rendering
+    const existingCarousel = body.querySelector('.dua-carousel');
+    if (existingCarousel) existingCarousel.remove();
 
     let currentSlide = 0;
 
@@ -419,6 +427,10 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const body = container.querySelector('.card-body');
+    // Clear existing cards for re-rendering (keeping the title if it's there)
+    const existingCards = body.querySelectorAll('.dua-card, .dua-toggle-btn');
+    existingCards.forEach(c => c.remove());
+
     const colors = cardColors || ['var(--win-blue)', 'var(--win-pink)', 'var(--win-green)', 'var(--win-orange)'];
 
     list.forEach((dua, idx) => {
@@ -435,7 +447,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
                 <div class="arabic-text">${dua.arabic.replace(/\n/g, '<br>')}</div>
                 ${dua.english ? `<div class="translation">${dua.english}</div>` : ''}
                 <div class="share-buttons">
-                    <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">📤 Share</button>
+                    <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">📤 ${t('actShareCard')}</button>
                     <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">📋 ${t('actCopy')}</button>
                 </div>
             </div>

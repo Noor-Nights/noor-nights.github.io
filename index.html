@@ -233,10 +233,11 @@
     <script src="src/js/duas.js"></script>
     <script src="src/js/app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        function renderAllDuas() {
             renderDuaList(essentialDuas, 'essential-duas-container', 'ess');
             renderDuaCarousel(jawamiDuas, 'jawami-duas-container', 'jaw');
-        });
+        }
+        document.addEventListener('DOMContentLoaded', renderAllDuas);
     </script>
     <!-- GoatCounter: free, no-cookie visitor analytics. Dashboard: noor-nights.goatcounter.com -->
     <script data-goatcounter="https://noor-nights.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
