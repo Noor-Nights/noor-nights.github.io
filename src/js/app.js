@@ -633,8 +633,8 @@ function triggerConfetti() {
 
 let testModeInterval = null;
 let testModeCount = 0;
-const TEST_MODE_MAX = 30;             // 30 × 2 min = exactly 1 hour
-const TEST_MODE_MS = 2 * 60 * 1000;  // every 2 minutes
+const TEST_MODE_MAX = 24;             // 24 x 1 hour
+const TEST_MODE_MS = 60 * 60 * 1000;  // every 1 hour
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
@@ -678,11 +678,11 @@ function requestNotifications() {
             const btn = document.getElementById('notify-btn');
             if (btn) btn.innerText = '✅ Notifications Enabled';
             showMessage('🔔 Reminders Active!',
-                'You will receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).');
+                'You will receive a dua reminder every hour while this app is open in the background. Real scheduled reminders start when the nights begin (Mar 9).');
             testModeCount = 0;
             sendTestModeNotification();          // fire immediately
             if (testModeInterval) clearInterval(testModeInterval);
-            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);  // then every 2 mins
+            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);  // then every 1 hour
         } else {
             showMessage(t('denied'), t('deniedMsg'));
         }

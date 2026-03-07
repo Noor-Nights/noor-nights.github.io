@@ -21,13 +21,13 @@
     <div class="container">
         <header>
             <div class="art-header">❦ ☾ ❦</div>
-            <h1>Noor Nights</h1>
-            <div class="subtitle">Retro Edition • Vintage Worship Companion</div>
+            <h1 data-i18n="appName">Noor Nights</h1>
+            <div class="subtitle" data-i18n="appDesc">Retro Edition • Vintage Worship Companion</div>
             <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div style="margin-top: 1.5rem;">
                 <a href="index.html"
-                    style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-right: 1rem;">📱
-                    Modern Edition</a>
+                    style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-right: 1rem;"><span
+                        data-i18n="retroLink">📱 Modern Edition</span></a>
                 <button id="install-btn" class="btn btn-outline"
                     style="display: none; width: auto; padding: 0.4rem 1rem; font-size: 0.8rem;"
                     onclick="handleInstallClick()">
@@ -43,25 +43,21 @@
                 <div class="dot"></div>
             </div>
             <div class="card-body">
-                <h2 style="justify-content: center; margin-bottom: 0;">Countdown to Last 10 Nights</h2>
+                <h2 style="justify-content: center; margin-bottom: 0;" data-i18n="countdownTitle">Countdown to Last 10
+                    Nights</h2>
                 <div class="status-text" id="countdown-status">Loading...</div>
                 <div class="countdown-display" id="countdown-timer">
-                    <div class="time-box"><span class="time-value" id="days">00</span><span
-                            class="time-label">Days</span></div>
-                    <div class="time-box"><span class="time-value" id="hours">00</span><span
-                            class="time-label">Hours</span></div>
-                    <div class="time-box"><span class="time-value" id="minutes">00</span><span
-                            class="time-label">Mins</span></div>
-                    <div class="time-box"><span class="time-value" id="seconds">00</span><span
-                            class="time-label">Secs</span></div>
+                    <div class="time-box"><span class="time-value" id="days">00</span><span class="time-label"
+                            data-i18n="days">Days</span></div>
+                    <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label"
+                            data-i18n="hours">Hours</span></div>
+                    <div class="time-box"><span class="time-value" id="minutes">00</span><span class="time-label"
+                            data-i18n="mins">Mins</span></div>
+                    <div class="time-box"><span class="time-value" id="seconds">00</span><span class="time-label"
+                            data-i18n="secs">Secs</span></div>
                 </div>
-                <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()">
+                <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()" data-i18n="notifyBtn">
                     🔔 Enable Daily Night Number Reminders
-                </button>
-                <button class="btn btn-outline"
-                    style="margin-top: 10px; border-style: dashed; opacity: 0.7; font-size: 0.8rem;"
-                    onclick="testNotification()">
-                    🧪 Send Test Notification
                 </button>
             </div>
         </div>
@@ -73,7 +69,7 @@
                 <div class="dot"></div>
             </div>
             <div class="card-body">
-                <h2>✅ Daily Checklist</h2>
+                <h2 data-i18n="checklistTitle">✅ Daily Checklist</h2>
                 <div id="checklist-container"></div>
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="checklist-progress"></div>
@@ -93,8 +89,8 @@
                 <div class="dot"></div>
             </div>
             <div class="card-body">
-                <h2>📅 Add to My Calendar</h2>
-                <button class="btn" onclick="downloadICS()">📅 Download Calendar (.ics)</button>
+                <h2 data-i18n="calendarTitle">📅 Add to My Calendar</h2>
+                <button class="btn" onclick="downloadICS()" data-i18n="calendarBtn">📅 Download Calendar (.ics)</button>
                 <div id="calendar-success" class="success-box"
                     style="display:none; margin-top: 15px; padding: 15px; background: rgba(255, 184, 0, 0.1); border-radius: 8px; border: 1px solid var(--amber-glow);">
                     <h4 style="color: var(--amber-glow); margin-bottom: 8px;">🎉 Successfully Downloaded!</h4>
