@@ -433,7 +433,8 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
     let arLineHeight = arabic.length > 250 ? 70 : 90;
 
     tempCtx.font = `bold ${arFontSize}px "Amiri", serif`;
-    const arLines = getWrappedLines(tempCtx, arabic, 900);
+    const cleanArabicCanvas = arabic.replace(/<br>/g, '\n').replace(/\n+/g, ' ');
+    const arLines = getWrappedLines(tempCtx, cleanArabicCanvas, 900);
 
     tempCtx.font = 'bold 32px "Inter", sans-serif';
     const enLines = getWrappedLines(tempCtx, english, 900);
