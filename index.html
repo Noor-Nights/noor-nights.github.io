@@ -34,7 +34,7 @@
     <div class="container">
         <header>
             <button id="about-toggle" class="about-toggle-btn"
-                onclick="document.getElementById('about-modal').style.display='flex'">✨</button>
+                onclick="trackEvent('/about-open', 'About Click'); document.getElementById('about-modal').style.display='flex'">✨</button>
             <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div class="art-header">✨ 🌙 ✨</div>
             <h1 data-i18n="appName">Noor Nights</h1>
@@ -225,7 +225,7 @@
                 Please keep the developer and all those involved in your sincere prayers.
             </p>
             <button class="btn" style="width: 100%;"
-                onclick="document.getElementById('about-modal').style.display='none'"
+                onclick="trackEvent('/about-close', 'About Modal Closed'); document.getElementById('about-modal').style.display='none'"
                 data-i18n="closeBtn">Close</button>
         </div>
     </div>

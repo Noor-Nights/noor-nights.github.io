@@ -280,11 +280,12 @@ function toggleLanguage() {
 // ═══════════════════════════════════════════════════
 // ANALYTICS EVENT TRACKING (GoatCounter)
 // ═══════════════════════════════════════════════════
-function trackEvent(path, title) {
+window.trackEvent = function (path, title) {
     if (window.goatcounter && window.goatcounter.count) {
         window.goatcounter.count({ path, title, event: true });
     }
 }
+function trackEvent(path, title) { window.trackEvent(path, title); }
 
 let currentYoussefIdx = new Date().getDate() % youssefDuas.length;
 
@@ -311,6 +312,7 @@ function shareFullDua(prefix, idx) {
             .then(() => showMessage(t('copiedTitle'), t('copiedMsg')))
             .catch(() => showMessage('Dua', text));
     }
+    trackEvent('/share-image-card', `Share card: ${prefix}_${list[idx].badge}`);
     trackEvent('/share-full-dua', 'Share Full Dua');
 }
 
@@ -707,9 +709,11 @@ function loadChecklist() {
         if (checked) completed++;
         label.innerHTML = `<input type="checkbox" id="${task.id}" ${checked ? 'checked' : ''}> <span class="checklist-label">${task.icon} ${task.text}</span>`;
         cont.appendChild(label);
-        label.querySelector('input').addEventListener('change', () => {
-            data[task.id] = label.querySelector('input').checked;
+        label.querySelector('input').addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            data[task.id] = isChecked;
             localStorage.setItem(key, JSON.stringify(data));
+            trackEvent(`/checklist/${task.id}`, `Task ${isChecked ? 'Checked' : 'Unchecked'}: ${task.text}`);
             updateProgress(document.querySelectorAll('#checklist-container input:checked').length, getChecklistTasks().length);
         });
     });
@@ -726,6 +730,7 @@ function updateProgress(c, tot) {
     // (We check if it was already completed to avoid duplicate magic)
     if (c === tot && c > 0 && !window.hasCelebrated) {
         window.hasCelebrated = true;
+        trackEvent('/checklist-completed', 'Checklist All Tasks Completed');
         triggerConfetti();
         showMessage(t('mashaallah'), t('mashaallahMsg'));
     } else if (c < tot) {
@@ -1137,6 +1142,7 @@ window.addEventListener('appinstalled', (e) => {
 
 function handleInstallClick() {
     if (deferredPrompt) {
+        trackEvent('/a2hs-prompt-clicked', 'PWA Install Clicked');
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
