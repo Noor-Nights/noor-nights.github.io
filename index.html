@@ -59,13 +59,30 @@
                     Retro Edition</a>
             </div>
             <div style="margin-top: 1rem;">
-                <button id="install-btn" class="btn btn-outline"
-                    style="display: none; width: auto; padding: 0.5rem 1.5rem; font-size: 0.9rem;"
-                    onclick="handleInstallClick()">
-                    <span data-i18n="installBtn">📲 Install App</span>
-                </button>
-            </div>
         </header>
+
+        <div class="card install-card" id="app-install-card"
+            style="display: none; border: 1px solid var(--neon-cyan); background: rgba(10, 17, 40, 0.6);">
+            <h2 data-i18n="downloadAppTitle" style="color: var(--neon-cyan);">📲 Get the Noor Nights App</h2>
+            <p data-i18n="downloadAppDesc">Install Noor Nights directly on your device for the best experience and
+                reliable background notifications.</p>
+
+            <div id="android-install-section" style="display:none; margin-top: 1rem;">
+                <button class="btn" id="android-install-action" onclick="handleInstallClick()"
+                    data-i18n="installAndroidBtn">🤖 Install App (1-Click)</button>
+            </div>
+
+            <div id="ios-install-section"
+                style="display:none; margin-top: 1rem; border: 1px dashed var(--neon-cyan); padding: 1rem; border-radius: 8px; background: rgba(0, 0, 0, 0.3);">
+                <p style="margin-bottom: 0.5rem; font-size: 0.95rem;"><span data-i18n="installIOSStep1">1. Tap the Share
+                        icon at the bottom of Safari.</span> <b style="font-size: 1.2rem; vertical-align: middle;">⎙</b>
+                </p>
+                <p style="margin-bottom: 0; font-size: 0.95rem;"><span data-i18n="installIOSStep2">2. Scroll down and
+                        tap</span> <b>Add to Home Screen ➕</b>.</p>
+                <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--amber-glow);" data-i18n="installIOSNote">
+                    ⚠️ Safari is required. Notifications only work after adding to Home Screen.</p>
+            </div>
+        </div>
 
         <div class="card">
             <h2 data-i18n="countdownTitle">⏳ Countdown to the Nights</h2>

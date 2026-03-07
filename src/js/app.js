@@ -77,7 +77,13 @@ const TRANSLATIONS = {
         permNeededIOS: '👉 On iPhone: Add the app to your Home Screen first, then try enabling reminders inside the installed app.',
         permNeededDesktop: '👉 Click the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
         subActivated: '🌙 Reminders Activated!',
-        subActivatedMsg: 'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when the app is closed or your phone is locked.'
+        subActivatedMsg: 'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when the app is closed or your phone is locked.',
+        downloadAppTitle: '📲 Get the Noor Nights App',
+        downloadAppDesc: 'Install Noor Nights directly on your device for the best experience and reliable background notifications.',
+        installAndroidBtn: '🤖 Install App (1-Click)',
+        installIOSStep1: '1. Tap the Share icon at the bottom of Safari.',
+        installIOSStep2: '2. Scroll down and tap',
+        installIOSNote: '⚠️ Safari is required. Notifications only work after adding to Home Screen.'
 
     },
     ar: {
@@ -154,7 +160,13 @@ const TRANSLATIONS = {
         permNeededIOS: '👉 على آيفون: أضف التطبيق إلى شاشة الرئيسية أولاً، ثم فعّل التذكيرات من داخل التطبيق المثبت.',
         permNeededDesktop: '👉 انقر على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
         subActivated: '🌙 تم تفعيل التذكيرات!',
-        subActivatedMsg: 'جزاكم الله خيراً! ستتلقى الآن تذكيرات ليلية خلال العشر الأواخر من رمضان — حتى عندما يكون التطبيق مغلقاً أو هاتفك مقفلاً.'
+        subActivatedMsg: 'جزاكم الله خيراً! ستتلقى الآن تذكيرات ليلية خلال العشر الأواخر من رمضان — حتى عندما يكون التطبيق مغلقاً أو هاتفك مقفلاً.',
+        downloadAppTitle: '📲 احصل على تطبيق نور الليالي',
+        downloadAppDesc: 'قم بتثبيت التطبيق على جهازك للحصول على أفضل تجربة وإشعارات خلفية موثوقة.',
+        installAndroidBtn: '🤖 تثبيت التطبيق بضغطة واحدة',
+        installIOSStep1: '1. اضغط على أيقونة المشاركة أسفل متصفح سفاري.',
+        installIOSStep2: '2. مرر لأسفل واضغط على',
+        installIOSNote: '⚠️ متصفح سفاري مطلوب. الإشعارات تعمل فقط بعد الإضافة للشاشة الرئيسية.'
 
     }
 };
@@ -1062,12 +1074,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Show install button for iOS manually
+    // --- Dynamic Install App Card Logic ---
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-    if (isIOS && !isStandalone) {
-        const installBtn = document.getElementById('install-btn');
-        if (installBtn) installBtn.style.display = 'inline-flex';
+
+    // Only show the install card if it's not already installed
+    if (!isStandalone) {
+        const installCard = document.getElementById('app-install-card');
+        const iosSection = document.getElementById('ios-install-section');
+        const androidSection = document.getElementById('android-install-section');
+
+        if (installCard) installCard.style.display = 'block';
+
+        if (isIOS && iosSection) {
+            // Show iOS manual instructions
+            iosSection.style.display = 'block';
+        }
     }
 });
 
@@ -1075,23 +1097,23 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    const installBtn = document.getElementById('install-btn');
-    if (installBtn) installBtn.style.display = 'inline-flex';
+    // We are on a supported browser (e.g. Chrome/Android), show the 1-click install button
+    const installCard = document.getElementById('app-install-card');
+    const androidSection = document.getElementById('android-install-section');
+    if (installCard) installCard.style.display = 'block';
+    if (androidSection) androidSection.style.display = 'block';
 });
 
 function handleInstallClick() {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) {
-        showMessage('How to Install on iPhone', '1. Tap the Share button (square with arrow) at the bottom.\n2. Scroll down and tap "Add to Home Screen".\n3. Tap "Add" in the top right.');
-    } else if (deferredPrompt) {
+    if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
+                document.getElementById('app-install-card').style.display = 'none';
             }
             deferredPrompt = null;
         });
     } else {
-        showMessage('Install App', 'To install this app, tap your browser\'s menu (three dots) and select "Install App" or "Add to Home Screen".');
+        showMessage(t('installBtn'), 'Please use your browser menu to "Install App" or "Add to Home Screen".');
     }
 }

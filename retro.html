@@ -48,21 +48,42 @@
 <body>
     <div class="container">
         <header>
-            <div class="art-header">❦ ☾ ❦</div>
+            <div style="font-size: 0.8rem; margin-bottom: 5px;">[NOOR_NIGHTS.EXE]</div>
+            <div style="color: var(--amber-glow); font-size: 0.9rem; margin-bottom: 20px;">v1.0.0 - SYSTEM BOOT</div>
+            <div style="margin-bottom: 20px;">
+                <button id="lang-toggle-retro" class="btn btn-outline"
+                    style="font-size: 0.8rem; padding: 5px 10px; width: auto;" onclick="toggleLanguage()">[ ARABIC
+                    ]</button>
+            </div>
             <h1 data-i18n="appName">Noor Nights</h1>
-            <div class="subtitle" data-i18n="appDesc">Retro Edition • Vintage Worship Companion</div>
-            <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
-            <div style="margin-top: 1.5rem;">
-                <a href="index.html"
-                    style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-right: 1rem;"><span
-                        data-i18n="retroLink">📱 Modern Edition</span></a>
-                <button id="install-btn" class="btn btn-outline"
-                    style="display: none; width: auto; padding: 0.4rem 1rem; font-size: 0.8rem;"
-                    onclick="handleInstallClick()">
-                    📲 Install App
-                </button>
+            <div class="subtitle" data-i18n="subtitle">Illuminate your worship in the last ten nights</div>
+            <div style="margin-top: 1rem;">
+                <a href="index.html" style="color: var(--emerald-teal); text-decoration: none; font-size: 0.9rem;">[
+                    RETURN TO MODERN INTERFACE ]</a>
             </div>
         </header>
+
+        <div class="card install-card" id="app-install-card"
+            style="display: none; border: 1px dotted var(--neon-cyan); background: var(--bg-card); margin-bottom: 20px;">
+            <h2 data-i18n="downloadAppTitle" style="color: var(--neon-cyan);">[ GET THE APP ]</h2>
+            <p data-i18n="downloadAppDesc" style="font-size: 0.85rem; margin-bottom: 10px;">Install Noor Nights directly
+                on your device for the best experience.</p>
+
+            <div id="android-install-section" style="display:none; margin-top: 10px;">
+                <button class="btn" id="android-install-action" onclick="handleInstallClick()"
+                    data-i18n="installAndroidBtn">>> INSTALL APP (1-CLICK)</button>
+            </div>
+
+            <div id="ios-install-section"
+                style="display:none; margin-top: 10px; border: 1px dashed var(--neon-cyan); padding: 10px;">
+                <p style="margin-bottom: 5px; font-size: 0.85rem;"><span data-i18n="installIOSStep1">1. Tap the Share
+                        icon at the bottom of Safari.</span></p>
+                <p style="margin-bottom: 0; font-size: 0.85rem;"><span data-i18n="installIOSStep2">2. Scroll down and
+                        tap</span> [ ADD TO HOME SCREEN ]</p>
+                <p style="margin-top: 10px; font-size: 0.75rem; color: var(--amber-glow);" data-i18n="installIOSNote">
+                    WRN: Safari is required. Push limits apply.</p>
+            </div>
+        </div>
 
         <div class="card">
             <div class="card-header">
