@@ -60,7 +60,7 @@ const TRANSLATIONS = {
         footerName: 'YOUSSEF ABDELKADER',
         footerSadaqah: 'This app is Sadaqah Jariyah (ongoing charity) for him.',
         footerCanvas: 'Noor Nights App • Sadaqah Jariyah for Youssef Abdelkader',
-        zakatReminder: '💰 Remember to Pay Zakat al-Fitr before end of ramadan',
+        zakatReminder: '💰 Remember to Pay Zakat al-Fitr before the end of Ramadan',
         blessingTitle: 'The Blessing of Sharing Duas',
         blessingDesc1: 'Sharing a dua can uplift anyone who sees it during their day—reminding them to turn back to Allah, calming their heart, or inspiring them to make their own dua.',
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
