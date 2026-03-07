@@ -66,7 +66,7 @@ const TRANSLATIONS = {
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
         blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
-        footerMadeWith: 'Made with ❤️ for Ramadan.'
+        footerMadeWith: 'Made with ♥️ for Ramadan.'
 
     },
     ar: {
@@ -712,7 +712,18 @@ function requestNotifications() {
                     showMessage('🔔 Reminders Activated! 🌙',
                         'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when this app is closed or your phone is locked.');
                 } else {
-                    showMessage(t('denied'), t('deniedMsg'));
+                    // Help user fix blocked permissions
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    const isAndroid = /Android/.test(navigator.userAgent);
+                    let helpMsg = 'Notifications were blocked.\n\n';
+                    if (isIOS) {
+                        helpMsg += '👉 On iPhone: Go to Settings → Safari → Notifications → find this site and tap Allow. Or try adding the app to Home Screen first.';
+                    } else if (isAndroid) {
+                        helpMsg += '👉 On Android: Tap the lock icon 🔒 in your address bar → Site Settings → Notifications → Allow. Then come back and try again.';
+                    } else {
+                        helpMsg += '👉 On Desktop: Click the lock icon in your address bar → Site Settings → Notifications → Allow. Then try again.';
+                    }
+                    showMessage('🔔 Permission Needed', helpMsg);
                 }
             } catch (err) {
                 console.warn('OneSignal error, using fallback:', err);
