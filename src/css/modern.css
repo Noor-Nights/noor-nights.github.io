@@ -626,6 +626,7 @@ h2 {
     text-align: center;
     direction: rtl;
     line-height: 1.8;
+    margin-top: 1rem;
     margin-bottom: 1.5rem;
     z-index: 1;
     flex-grow: 1;

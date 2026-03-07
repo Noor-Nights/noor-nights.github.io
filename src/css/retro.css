@@ -516,6 +516,7 @@ h2 {
     text-align: center;
     direction: rtl;
     line-height: 1.8;
+    margin-top: 1rem;
     margin-bottom: 1.5rem;
     z-index: 1;
     flex-grow: 1;
@@ -649,8 +650,8 @@ h2 {
 /* ── Language Toggle Button ── */
 .lang-toggle-btn {
     position: absolute;
-    top: 1rem;
-    right: 1.5rem;
+    top: 15px;
+    right: 15px;
     z-index: 999;
     background: var(--win-blue);
     border: var(--border-width) solid var(--border-color);
@@ -677,7 +678,7 @@ h2 {
 /* ── RTL (Arabic) Support ── */
 [dir="rtl"] .lang-toggle-btn {
     right: auto;
-    left: 1.5rem;
+    left: 15px;
 }
 
 [dir="rtl"] .dua-card {
