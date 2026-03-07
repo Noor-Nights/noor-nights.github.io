@@ -798,34 +798,26 @@ function requestNotifications() {
                         // Edge case: OS permission already granted but OneSignal was manually opted out.
                         // promptPush() will silently fail. We MUST explicitly opt-in here.
                         await OneSignal.User.PushSubscription.optIn();
-                    } else {
-                        // Standard flow: prompt for permission
-                        await OneSignal.Slidedown.promptPush();
-                    }
-
-                    // Poll until subscribed (max 15s)
-                    let confirmed = false;
-                    for (let i = 0; i < 30; i++) {
-                        await new Promise((r) => setTimeout(r, 500));
-                        if (OneSignal.User.PushSubscription.optedIn) {
-                            confirmed = true;
-                            break;
-                        }
-                    }
-
-                    if (confirmed) {
                         _updateNotifyBtnState(btn, true);
+                        trackEvent('/push-opt-in', 'push_opt_in_restored');
                         showMessage(t('subActivated'), t('subActivatedMsg'));
                     } else {
-                        _updateNotifyBtnState(btn, false);
-                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                        const isAndroid = /Android/.test(navigator.userAgent);
-                        showMessage(
-                            t('permNeeded'),
-                            isIOS ? t('permNeededIOS')
-                                : isAndroid ? t('permNeededAndroid')
-                                    : t('permNeededDesktop')
-                        );
+                        // Standard flow: prompt for permission
+                        OneSignal.Slidedown.promptPush().then((accepted) => {
+                            if (accepted) {
+                                _updateNotifyBtnState(btn, true);
+                                trackEvent('/push-opt-in', 'push_opt_in_new');
+                                showMessage(t('subActivated'), t('subActivatedMsg'));
+                            } else {
+                                _updateNotifyBtnState(btn, false);
+                                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                                const isAndroid = /Android/.test(navigator.userAgent);
+                                showMessage(
+                                    t('permNeeded'),
+                                    isIOS ? t('permNeededIOS') : isAndroid ? t('permNeededAndroid') : t('permNeededDesktop')
+                                );
+                            }
+                        });
                     }
                 }
             } catch (err) {
@@ -1051,7 +1043,7 @@ function generateICS() {
 }
 
 function downloadICS() {
-    trackEvent('/download-ics', 'Download Calendar');
+    trackEvent('/ics-download', 'ics_download');
     try {
         const content = generateICS();
         const url = URL.createObjectURL(new Blob([content], { type: 'text/calendar;charset=utf-8' }));
@@ -1121,7 +1113,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const iosSection = document.getElementById('ios-install-section');
         const androidSection = document.getElementById('android-install-section');
 
-        if (installCard) installCard.style.display = 'block';
+        if (installCard) {
+            installCard.style.display = 'block';
+            trackEvent('/a2hs-shown', 'a2hs_shown_ios_fallback');
+        }
 
         if (isIOS && iosSection) {
             // Show iOS manual instructions
@@ -1137,8 +1132,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
     // We are on a supported browser (e.g. Chrome/Android), show the 1-click install button
     const installCard = document.getElementById('app-install-card');
     const androidSection = document.getElementById('android-install-section');
-    if (installCard) installCard.style.display = 'block';
+    if (installCard) {
+        installCard.style.display = 'block';
+        trackEvent('/a2hs-shown', 'a2hs_shown_android');
+    }
     if (androidSection) androidSection.style.display = 'block';
+});
+
+window.addEventListener('appinstalled', (e) => {
+    document.getElementById('app-install-card').style.display = 'none';
+    trackEvent('/a2hs-installed', 'a2hs_installed_success');
 });
 
 function handleInstallClick() {
@@ -1147,6 +1150,7 @@ function handleInstallClick() {
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
                 document.getElementById('app-install-card').style.display = 'none';
+                trackEvent('/a2hs-installed', 'a2hs_installed_success');
             }
             deferredPrompt = null;
         });
@@ -1154,3 +1158,25 @@ function handleInstallClick() {
         showMessage(t('installAppTitle'), t('installAppMsg'));
     }
 }
+
+// ═══════════════════════════════════════════════════
+// NOTIFICATION PREFERENCES (User Controls / OneSignal Tags)
+// ═══════════════════════════════════════════════════
+window.savePushPreferences = function (quietHoursEnabled, highFrequency) {
+    if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            await OneSignal.User.addTags({
+                quiet_hours: quietHoursEnabled ? 'true' : 'false',
+                frequency: highFrequency ? 'hourly' : 'daily_maghrib',
+                channel: 'push'
+            });
+            showMessage('Preferences Saved', 'Your notification settings have been updated to OneSignal.');
+            trackEvent('/push-preferences-saved', 'user_controls_updated');
+        });
+    }
+};
+
+window.triggerEmailFallback = function () {
+    trackEvent('/fallback-email-sent', 'fallback_email_sent');
+    window.location.href = "mailto:?subject=Noor Nights - Ramadan Reminders&body=Sign up to receive spiritual reminders via email during the last 10 nights.";
+};

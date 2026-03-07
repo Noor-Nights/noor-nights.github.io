@@ -50,6 +50,9 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
+    // Fire silent background ping to GoatCounter API for analytics
+    fetch('https://noor-nights.goatcounter.com/count?p=/push_open&t=push_open&e=true', { mode: 'no-cors' }).catch(() => { });
+
     event.notification.close();
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
