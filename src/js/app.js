@@ -720,7 +720,7 @@ const TEST_MODE_MS = 2 * 60 * 1000;   // every 2 minutes
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
     const dua = duas[testModeCount % duas.length];
-    const msgs = earlyMessages.concat(lateMessages);
+    const msgs = t('earlyMessages').concat(t('lateMessages'));
     const msg = msgs[testModeCount % msgs.length];
 
     const options = {
@@ -886,7 +886,7 @@ function testNotification() {
 
 function sendActualTest() {
     const dua = essentialDuas[0];
-    const msg = earlyMessages[0];
+    const msg = t('earlyMessages')[0];
 
     // Exact App Branding: Just the App Name
     const title = `Noor Nights`;
@@ -967,8 +967,8 @@ function generateICS() {
 
             const dua = calendarDuas[i % calendarDuas.length];
             const actionMsg = i < 4 ?
-                earlyMessages[i % earlyMessages.length] :
-                lateMessages[(i - 4) % lateMessages.length];
+                t('earlyMessages')[i % t('earlyMessages').length] :
+                t('lateMessages')[(i - 4) % t('lateMessages').length];
             const desc = `Night ${night.n} of 10`;
 
             lines.push("BEGIN:VEVENT");
