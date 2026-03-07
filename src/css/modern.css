@@ -531,10 +531,40 @@ h2 {
     transform: translateY(-1px);
 }
 
+/* ── About Toggle Button ── */
+.about-toggle-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 999;
+    background: rgba(20, 184, 166, 0.12);
+    border: 1.5px solid var(--emerald-teal);
+    color: var(--emerald-teal);
+    padding: 0.4rem 0.6rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-toggle-btn:hover {
+    background: rgba(20, 184, 166, 0.25);
+    transform: translateY(-1px);
+}
+
 /* ── RTL (Arabic) Support ── */
 [dir="rtl"] .lang-toggle-btn {
     right: auto;
     left: 15px;
+}
+
+[dir="rtl"] .about-toggle-btn {
+    left: auto;
+    right: 15px;
 }
 
 [dir="rtl"] .dua-card {

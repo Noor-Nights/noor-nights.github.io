@@ -33,6 +33,8 @@
     <div class="stars-overlay"></div>
     <div class="container">
         <header>
+            <button id="about-toggle" class="about-toggle-btn"
+                onclick="document.getElementById('about-modal').style.display='flex'">ℹ️</button>
             <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div class="art-header">✨ 🌙 ✨</div>
             <h1 data-i18n="appName">Noor Nights</h1>
@@ -82,29 +84,6 @@
             <button class="btn btn-outline" id="notify-btn" onclick="requestNotifications()" data-i18n="notifyBtn">🔔
                 Enable Daily Night Number Reminders</button>
 
-        </div>
-
-        <div class="card"
-            style="border: 1px solid var(--neon-cyan); background: linear-gradient(135deg, rgba(8, 201, 192, 0.05), rgba(10, 17, 40, 0.4));">
-            <div class="card-body">
-                <h2 data-i18n="aboutTitle" style="color: var(--neon-cyan); margin-bottom: 1rem;">ℹ️ About Noor Nights
-                </h2>
-                <p data-i18n="aboutText1"
-                    style="color: var(--text-main); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify;">
-                    The last ten nights of Ramadan are the most blessed nights of the year, containing Laylat al-Qadr
-                    (The Night of Decree), which is better than a thousand months.
-                </p>
-                <p data-i18n="aboutText2"
-                    style="color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; font-size: 0.9rem; text-align: justify;">
-                    This app is designed to help you track your nightly worship goals, discover comprehensive prophetic
-                    supplications (Jawami' ad-Du'a), and receive automated background notifications to keep you
-                    spiritually engaged during these precious nights.
-                </p>
-                <p data-i18n="aboutText3"
-                    style="font-weight: 500; color: var(--emerald-teal); font-size: 0.95rem; text-align: center;">
-                    Please keep the developer and all those involved in your sincere prayers.
-                </p>
-            </div>
         </div>
 
         <div class="card">
@@ -222,6 +201,30 @@
             <h2 id="modal-title">Message</h2>
             <p id="modal-desc"></p>
             <button class="btn" onclick="document.getElementById('msg-modal').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <div id="about-modal" class="modal">
+        <div class="modal-content" style="text-align: left; padding: 2rem;">
+            <h2 data-i18n="aboutTitle" style="color: var(--neon-cyan); margin-bottom: 1rem; margin-top: 0;">ℹ️ About
+                Noor Nights</h2>
+            <p data-i18n="aboutText1"
+                style="color: var(--text-main); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify;">
+                The last ten nights of Ramadan are the most blessed nights of the year, containing Laylat al-Qadr
+                (The Night of Decree), which is better than a thousand months.
+            </p>
+            <p data-i18n="aboutText2"
+                style="color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; font-size: 0.9rem; text-align: justify;">
+                This app is designed to help you track your nightly worship goals, discover comprehensive prophetic
+                supplications (Jawami' ad-Du'a), and receive automated background notifications to keep you
+                spiritually engaged during these precious nights.
+            </p>
+            <p data-i18n="aboutText3"
+                style="font-weight: 500; color: var(--emerald-teal); font-size: 0.95rem; text-align: center; margin-bottom: 1.5rem;">
+                Please keep the developer and all those involved in your sincere prayers.
+            </p>
+            <button class="btn" style="width: 100%;"
+                onclick="document.getElementById('about-modal').style.display='none'">Close</button>
         </div>
     </div>
 
