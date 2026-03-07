@@ -711,87 +711,86 @@ function sendTestModeNotification() {
 function _updateNotifyBtnState(btn, subscribed) {
     if (!btn) return;
     if (subscribed) {
-        btn.innerText = t('notifyEnabled');
+        // Shows a clear call-to-action to DISABLE
+        btn.innerText = t('notifyDisable');
         btn.dataset.subscribed = 'true';
+        btn.style.opacity = '0.8';
     } else {
         btn.innerText = t('notifyBtn');
         btn.dataset.subscribed = 'false';
+        btn.style.opacity = '';
     }
+    btn.disabled = false;
 }
 
 function requestNotifications() {
     trackEvent('/enable-reminders', 'Enable Reminders Click');
     const btn = document.getElementById('notify-btn');
+    if (!btn || btn.disabled) return;
 
-    // OneSignal path - real background push, works even when phone is locked
+    // Immediately disable to prevent double-clicks
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+
+    // ── OneSignal path — true background push ──
     if (window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async function (OneSignal) {
             try {
                 const isSubscribed = OneSignal.User.PushSubscription.optedIn;
 
-                // Already subscribed - offer to unsubscribe
                 if (isSubscribed) {
-                    _updateNotifyBtnState(btn, true);
-                    if (confirm(
-                        t('alreadySubTitle') + '\n\n' +
-                        t('alreadySubMsg') + '\n\n' +
-                        t('notifyDisable') + '?'
-                    )) {
-                        await OneSignal.User.PushSubscription.optOut();
-                        _updateNotifyBtnState(btn, false);
-                        showMessage(t('unsubTitle'), t('unsubMsg'));
-                    }
-                    return;
-                }
-
-                // Not subscribed - set listener BEFORE showing the prompt
-                const subscriptionConfirmed = new Promise((resolve) => {
-                    const handler = (event) => {
-                        OneSignal.User.PushSubscription.removeEventListener('change', handler);
-                        resolve(event.current.optedIn === true);
-                    };
-                    OneSignal.User.PushSubscription.addEventListener('change', handler);
-                    // Timeout after 90s if user dismisses prompt
-                    setTimeout(() => {
-                        OneSignal.User.PushSubscription.removeEventListener('change', handler);
-                        resolve(false);
-                    }, 90000);
-                });
-
-                await OneSignal.Slidedown.promptPush();
-                const nowSubscribed = await subscriptionConfirmed;
-
-                if (nowSubscribed) {
-                    _updateNotifyBtnState(btn, true);
-                    showMessage(t('subActivated'), t('subActivatedMsg'));
+                    // DISABLE flow: unsubscribe immediately (button says "Disable Reminders")
+                    await OneSignal.User.PushSubscription.optOut();
+                    _updateNotifyBtnState(btn, false);
+                    showMessage(t('unsubTitle'), t('unsubMsg'));
                 } else {
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    const isAndroid = /Android/.test(navigator.userAgent);
-                    const helpMsg = isIOS
-                        ? t('permNeededIOS')
-                        : isAndroid
-                            ? t('permNeededAndroid')
-                            : t('permNeededDesktop');
-                    showMessage(t('permNeeded'), helpMsg);
+                    // ENABLE flow: show OneSignal prompt, then poll for confirmation
+                    await OneSignal.Slidedown.promptPush();
+
+                    // Poll until subscribed (max 15s) — handles pre-granted permission too
+                    let confirmed = false;
+                    for (let i = 0; i < 30; i++) {
+                        await new Promise((r) => setTimeout(r, 500));
+                        if (OneSignal.User.PushSubscription.optedIn) {
+                            confirmed = true;
+                            break;
+                        }
+                    }
+
+                    if (confirmed) {
+                        _updateNotifyBtnState(btn, true);
+                        showMessage(t('subActivated'), t('subActivatedMsg'));
+                    } else {
+                        _updateNotifyBtnState(btn, false);
+                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                        const isAndroid = /Android/.test(navigator.userAgent);
+                        showMessage(
+                            t('permNeeded'),
+                            isIOS ? t('permNeededIOS')
+                                : isAndroid ? t('permNeededAndroid')
+                                    : t('permNeededDesktop')
+                        );
+                    }
                 }
             } catch (err) {
-                console.warn('OneSignal error, using native fallback:', err);
+                console.warn('[OneSignal] Error — falling back to native:', err);
                 _fallbackNativeNotification(btn);
             }
         });
         return;
     }
 
-    // Native browser fallback (tab must stay open)
+    // ── Native browser fallback (requires tab open) ──
     _fallbackNativeNotification(btn);
 }
 
 function _fallbackNativeNotification(btn) {
     if (!('Notification' in window)) {
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; }
         showMessage(t('error'), t('errorMsg'));
         return;
     }
-    Notification.requestPermission().then(p => {
+    Notification.requestPermission().then((p) => {
         if (p === 'granted') {
             _updateNotifyBtnState(btn, true);
             showMessage(t('subActivated'), t('subActivatedMsg'));
@@ -800,6 +799,7 @@ function _fallbackNativeNotification(btn) {
             if (testModeInterval) clearInterval(testModeInterval);
             testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);
         } else {
+            if (btn) { btn.disabled = false; btn.style.opacity = ''; }
             showMessage(t('permNeeded'), t('permNeededAndroid'));
         }
     });
@@ -1032,10 +1032,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply saved language on load
     applyLanguage(currentLang);
 
-    // Register Service Worker for PWA
+    // Service Worker: register unified OneSignal+PWA worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log('Service Worker Registered'));
+        // First unregister the old sw.js (migrates existing users)
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+            for (const reg of registrations) {
+                const url = reg.active ? reg.active.scriptURL : '';
+                if (url.includes('sw.js') && !url.includes('OneSignal')) {
+                    reg.unregister();
+                }
+            }
+        });
+        // Register the unified worker
+        navigator.serviceWorker.register('/OneSignalSDKWorker.js')
+            .then(() => console.log('[Noor Nights] Service Worker registered'));
+    }
+
+    // Set notify button state once OneSignal is ready
+    if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            const btn = document.getElementById('notify-btn');
+            if (btn) _updateNotifyBtnState(btn, OneSignal.User.PushSubscription.optedIn);
+        });
     }
 
     // Show install button for iOS manually
