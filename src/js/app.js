@@ -97,7 +97,11 @@ const TRANSLATIONS = {
         notifSentTitle: 'Notification Sent',
         notifSentMsg: 'Masha\'Allah! Check your device. This is the official, clean notification design with our new icon.',
         installAppTitle: 'Install App',
-        installAppMsg: 'Please use your browser menu to "Install App" or "Add to Home Screen".'
+        installAppMsg: 'Please use your browser menu to "Install App" or "Add to Home Screen".',
+        calName: 'Noor Nights',
+        calDesc: 'Hourly Reminders for the last 10 nights of Ramadan',
+        calEventTitle: (n, msg) => `Night ${n} - ${msg}`,
+        calEventDesc: (n) => `Night ${n} of 10`
 
     },
     ar: {
@@ -194,7 +198,11 @@ const TRANSLATIONS = {
         notifSentTitle: 'تم إرسال الإشعار',
         notifSentMsg: 'ما شاء الله! تحقق من جهازك. هذا هو تصميم الإشعار الرسمي النظيف مع أيقونتنا الجديدة.',
         installAppTitle: 'تثبيت التطبيق',
-        installAppMsg: 'الرجاء استخدام قائمة المتصفح لـ "تثبيت التطبيق" أو "الإضافة للشاشة الرئيسية".'
+        installAppMsg: 'الرجاء استخدام قائمة المتصفح لـ "تثبيت التطبيق" أو "الإضافة للشاشة الرئيسية".',
+        calName: 'ليالي النور',
+        calDesc: 'تذكيرات كل ساعة للعشر الأواخر من رمضان',
+        calEventTitle: (n, msg) => `الليلة ${n} - ${msg}`,
+        calEventDesc: (n) => `الليلة ${n} من 10`
 
     }
 };
@@ -923,8 +931,8 @@ function generateICS() {
         "VERSION:2.0",
         "PRODID:-//Noor Nights//EN",
         "CALSCALE:GREGORIAN",
-        "X-WR-CALNAME:Noor Nights",
-        "X-WR-CALDESC:Hourly Reminders for the last 10 nights of Ramadan"
+        `X-WR-CALNAME:${t('calName')}`,
+        `X-WR-CALDESC:${t('calDesc')}`
     ];
 
     // Curate exactly 12 short, powerful Duas for the calendar events
@@ -969,14 +977,15 @@ function generateICS() {
             const actionMsg = i < 4 ?
                 t('earlyMessages')[i % t('earlyMessages').length] :
                 t('lateMessages')[(i - 4) % t('lateMessages').length];
-            const desc = `Night ${night.n} of 10`;
+            const desc = t('calEventDesc', night.n);
 
             lines.push("BEGIN:VEVENT");
             lines.push(`UID:noornights-2026-${night.n}-${i}@eman`);
             lines.push(`DTSTART:${sStart}`);
             lines.push(`DTEND:${sEnd}`);
             // Summary: Night X - Action | Dua Arabic (Forced LTR)
-            lines.push(`SUMMARY:\u200eNight ${night.n} - ${actionMsg} | ${dua.arabic.replace(/\n/g, '<br>')}`);
+            const summaryTitle = t('calEventTitle', night.n, actionMsg);
+            lines.push(`SUMMARY:\u200e${summaryTitle} | ${dua.arabic.replace(/\n/g, '<br>')}`);
             lines.push(`DESCRIPTION:${desc}`);
             lines.push("END:VEVENT");
         }
