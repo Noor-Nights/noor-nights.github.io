@@ -46,7 +46,8 @@ const TRANSLATIONS = {
         earlyMessages: [
             "🤲 Pour your heart out in Dua right now.",
             "🎁 Don't forget your Sadaqah for tonight.",
-            "✨ Focus on your Dua and Sadaqah tonight."
+            "✨ Focus on your Dua and Sadaqah tonight.",
+            "💰 Remember to Pay Zakat al-Fitr before the end of Ramadan."
         ],
         lateMessages: [
             "🌙 Time for Qiyam & standing in prayer.",
@@ -155,7 +156,8 @@ const TRANSLATIONS = {
         earlyMessages: [
             "🤲 أفرغ قلبك في الدعاء الآن.",
             "🎁 لا تنسَ صدقتك لهذه الليلة.",
-            "✨ ركّز على الدعاء والصدقة الليلة."
+            "✨ ركّز على الدعاء والصدقة الليلة.",
+            "💰 تذكر دفع زكاة الفطر قبل نهاية رمضان."
         ],
         lateMessages: [
             "🌙 وقت القيام والصلاة.",
