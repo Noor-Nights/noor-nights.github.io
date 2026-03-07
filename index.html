@@ -34,7 +34,7 @@
     <div class="container">
         <header>
             <button id="about-toggle" class="about-toggle-btn"
-                onclick="document.getElementById('about-modal').style.display='flex'">ℹ️</button>
+                onclick="document.getElementById('about-modal').style.display='flex'">✨</button>
             <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div class="art-header">✨ 🌙 ✨</div>
             <h1 data-i18n="appName">Noor Nights</h1>
@@ -198,15 +198,16 @@
 
     <div id="msg-modal" class="modal">
         <div class="modal-content">
-            <h2 id="modal-title">Message</h2>
+            <h2 id="modal-title" data-i18n="modalTitle">Message</h2>
             <p id="modal-desc"></p>
-            <button class="btn" onclick="document.getElementById('msg-modal').style.display='none'">OK</button>
+            <button class="btn" onclick="document.getElementById('msg-modal').style.display='none'"
+                data-i18n="okBtn">OK</button>
         </div>
     </div>
 
     <div id="about-modal" class="modal">
         <div class="modal-content" style="text-align: left; padding: 2rem;">
-            <h2 data-i18n="aboutTitle" style="color: var(--neon-cyan); margin-bottom: 1rem; margin-top: 0;">ℹ️ About
+            <h2 data-i18n="aboutTitle" style="color: var(--neon-cyan); margin-bottom: 1rem; margin-top: 0;">🌟 About
                 Noor Nights</h2>
             <p data-i18n="aboutText1"
                 style="color: var(--text-main); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify;">
@@ -224,7 +225,8 @@
                 Please keep the developer and all those involved in your sincere prayers.
             </p>
             <button class="btn" style="width: 100%;"
-                onclick="document.getElementById('about-modal').style.display='none'">Close</button>
+                onclick="document.getElementById('about-modal').style.display='none'"
+                data-i18n="closeBtn">Close</button>
         </div>
     </div>
 
