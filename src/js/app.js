@@ -65,7 +65,8 @@ const TRANSLATIONS = {
         blessingDesc1: 'Sharing a dua can uplift anyone who sees it during their day—reminding them to turn back to Allah, calming their heart, or inspiring them to make their own dua.',
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
-        blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.'
+        blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
+        footerMadeWith: 'Made with ❤️ for Ramadan.'
 
     },
     ar: {
@@ -130,7 +131,8 @@ const TRANSLATIONS = {
         blessingDesc1: 'مشاركة الدعاء قد تشرح صدر من يقرأه في يومه، وتذكره بالرجوع إلى الله، وتُسكن قلبه، أو تُلهمه ليدعو بدوره.',
         blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
         blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
-        blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.'
+        blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.',
+        footerMadeWith: 'صُنع بـ ❤️ لرمضان.'
 
     }
 };
@@ -487,9 +489,11 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
         });
     }
 
-    ctx.font = 'bold 14px "Inter", sans-serif';
+    ctx.font = 'bold 15px "Inter", sans-serif';
     ctx.fillStyle = 'rgba(45,45,45,0.4)';
-    ctx.fillText((t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef'), 540, canvasHeight - 50);
+    const madeWithText = t('footerMadeWith') || 'Made with ❤️ for Ramadan.';
+    const canvasRefText = t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef';
+    ctx.fillText(`${madeWithText} • ${canvasRefText}`, 540, canvasHeight - 50);
 
     return canvas.toDataURL('image/jpeg', 0.9);
 }
