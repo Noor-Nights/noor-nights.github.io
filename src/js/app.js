@@ -223,7 +223,6 @@ function renderDuaCarousel(list, containerId, prefix) {
 
         slide.innerHTML = `
             <div class="dua-slide-inner">
-                <div class="slide-counter">${idx + 1} / ${list.length}</div>
                 <div class="dua-arabic-main">${dua.arabic.replace(/\n/g, '<br>')}</div>
                 ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
                 <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
@@ -270,11 +269,6 @@ function renderDuaCarousel(list, containerId, prefix) {
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
 
-        // Dynamically adjust track height to fit exactly the active card
-        if (track.children[currentSlide] && track.children[currentSlide].children[0]) {
-            const extra = 24; // buffer for retro box-shadows / margins
-            track.style.height = (track.children[currentSlide].children[0].offsetHeight + extra) + 'px';
-        }
 
         trackEvent('/carousel-swipe', 'Carousel: dua ' + (currentSlide + 1));
     }

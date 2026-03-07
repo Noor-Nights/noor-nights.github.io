@@ -534,8 +534,8 @@ h2 {
 
 .dua-carousel-track {
     display: flex;
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), height 0.4s ease-out;
-    align-items: flex-start;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    align-items: stretch;
 }
 
 .dua-slide {
