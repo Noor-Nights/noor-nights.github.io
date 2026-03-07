@@ -66,7 +66,18 @@ const TRANSLATIONS = {
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
         blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
-        footerMadeWith: 'Made with ♥️ for Ramadan.'
+        footerMadeWith: 'Made with ♥️ for Ramadan.',
+        notifyDisable: '🔕 Disable Reminders',
+        alreadySubTitle: '🔔 Already Subscribed!',
+        alreadySubMsg: 'You are already receiving nightly reminders. Tap "Disable Reminders" to turn them off.',
+        unsubTitle: '🔕 Reminders Disabled',
+        unsubMsg: 'You will no longer receive push notifications. You can re-enable anytime.',
+        permNeeded: '🔔 Permission Required',
+        permNeededAndroid: '👉 On Android: Tap the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
+        permNeededIOS: '👉 On iPhone: Add the app to your Home Screen first, then try enabling reminders inside the installed app.',
+        permNeededDesktop: '👉 Click the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
+        subActivated: '🌙 Reminders Activated!',
+        subActivatedMsg: 'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when the app is closed or your phone is locked.'
 
     },
     ar: {
@@ -132,7 +143,18 @@ const TRANSLATIONS = {
         blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
         blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
         blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.',
-        footerMadeWith: 'صُنع بـ ❤️ لرمضان.'
+        footerMadeWith: 'صُنع بـ ❤️ لرمضان.',
+        notifyDisable: '🔕 تعطيل التذكيرات',
+        alreadySubTitle: '🔔 أنت مشترك بالفعل!',
+        alreadySubMsg: 'أنت تتلقى تذكيرات الليالي بالفعل. اضغط "تعطيل التذكيرات" لإيقافها.',
+        unsubTitle: '🔕 تم إيقاف التذكيرات',
+        unsubMsg: 'لن تتلقى إشعارات بعد الآن. يمكنك إعادة التفعيل في أي وقت.',
+        permNeeded: '🔔 إذن مطلوب',
+        permNeededAndroid: '👉 على أندرويد: اضغط على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
+        permNeededIOS: '👉 على آيفون: أضف التطبيق إلى شاشة الرئيسية أولاً، ثم فعّل التذكيرات من داخل التطبيق المثبت.',
+        permNeededDesktop: '👉 انقر على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
+        subActivated: '🌙 تم تفعيل التذكيرات!',
+        subActivatedMsg: 'جزاكم الله خيراً! ستتلقى الآن تذكيرات ليلية خلال العشر الأواخر من رمضان — حتى عندما يكون التطبيق مغلقاً أو هاتفك مقفلاً.'
 
     }
 };
@@ -686,70 +708,81 @@ function sendTestModeNotification() {
     }
 }
 
+function _updateNotifyBtnState(btn, subscribed) {
+    if (!btn) return;
+    if (subscribed) {
+        btn.innerText = t('notifyEnabled');
+        btn.dataset.subscribed = 'true';
+    } else {
+        btn.innerText = t('notifyBtn');
+        btn.dataset.subscribed = 'false';
+    }
+}
+
 function requestNotifications() {
     trackEvent('/enable-reminders', 'Enable Reminders Click');
-
     const btn = document.getElementById('notify-btn');
 
-    // ── OneSignal path — works even when phone is locked/app is closed ──
+    // OneSignal path - real background push, works even when phone is locked
     if (window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async function (OneSignal) {
             try {
-                // Already subscribed?
                 const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+
+                // Already subscribed - offer to unsubscribe
                 if (isSubscribed) {
-                    if (btn) btn.innerText = t('notifyEnabled');
-                    showMessage('🔔 Already Subscribed!',
-                        'You will receive nightly reminders during the Last 10 Nights — even when your phone is locked! 🌙');
+                    _updateNotifyBtnState(btn, true);
+                    if (confirm(
+                        t('alreadySubTitle') + '\n\n' +
+                        t('alreadySubMsg') + '\n\n' +
+                        t('notifyDisable') + '?'
+                    )) {
+                        await OneSignal.User.PushSubscription.optOut();
+                        _updateNotifyBtnState(btn, false);
+                        showMessage(t('unsubTitle'), t('unsubMsg'));
+                    }
                     return;
                 }
 
-                // Listen for subscription change BEFORE showing the prompt
+                // Not subscribed - set listener BEFORE showing the prompt
                 const subscriptionConfirmed = new Promise((resolve) => {
                     const handler = (event) => {
                         OneSignal.User.PushSubscription.removeEventListener('change', handler);
                         resolve(event.current.optedIn === true);
                     };
                     OneSignal.User.PushSubscription.addEventListener('change', handler);
-                    // Timeout after 60s if user ignores the prompt
+                    // Timeout after 90s if user dismisses prompt
                     setTimeout(() => {
                         OneSignal.User.PushSubscription.removeEventListener('change', handler);
                         resolve(false);
-                    }, 60000);
+                    }, 90000);
                 });
 
-                // Show the slide-down prompt
                 await OneSignal.Slidedown.promptPush();
-
-                // Wait for the subscription event to confirm
                 const nowSubscribed = await subscriptionConfirmed;
 
                 if (nowSubscribed) {
-                    if (btn) btn.innerText = t('notifyEnabled');
-                    showMessage('🔔 Reminders Activated! 🌙',
-                        'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when this app is closed or your phone is locked.');
+                    _updateNotifyBtnState(btn, true);
+                    showMessage(t('subActivated'), t('subActivatedMsg'));
                 } else {
                     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                     const isAndroid = /Android/.test(navigator.userAgent);
-                    let helpMsg = 'Notifications were not enabled.\n\n';
-                    if (isIOS) {
-                        helpMsg += '👉 On iPhone: Go to Settings → Safari → Notifications → find this site and tap Allow. Or add the app to Home Screen first.';
-                    } else if (isAndroid) {
-                        helpMsg += '👉 On Android: Tap the 🔒 in your address bar → Site Settings → Notifications → Allow. Then try again.';
-                    } else {
-                        helpMsg += '👉 Click the lock icon in your address bar → Site Settings → Notifications → Allow. Then try again.';
-                    }
-                    showMessage('🔔 Permission Needed', helpMsg);
+                    const helpMsg = isIOS
+                        ? t('permNeededIOS')
+                        : isAndroid
+                            ? t('permNeededAndroid')
+                            : t('permNeededDesktop');
+                    showMessage(t('permNeeded'), helpMsg);
                 }
             } catch (err) {
-                console.warn('OneSignal error, using fallback:', err);
+                console.warn('OneSignal error, using native fallback:', err);
                 _fallbackNativeNotification(btn);
             }
         });
         return;
     }
 
-    // ── Native browser fallback (tab must stay open) ──
+    // Native browser fallback (tab must stay open)
     _fallbackNativeNotification(btn);
 }
 
@@ -760,15 +793,14 @@ function _fallbackNativeNotification(btn) {
     }
     Notification.requestPermission().then(p => {
         if (p === 'granted') {
-            if (btn) btn.innerText = t('notifyEnabled');
-            showMessage('🔔 Reminders Active!',
-                'You will receive a dua reminder every hour while this tab is open.');
+            _updateNotifyBtnState(btn, true);
+            showMessage(t('subActivated'), t('subActivatedMsg'));
             testModeCount = 0;
             sendTestModeNotification();
             if (testModeInterval) clearInterval(testModeInterval);
             testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);
         } else {
-            showMessage(t('denied'), t('deniedMsg'));
+            showMessage(t('permNeeded'), t('permNeededAndroid'));
         }
     });
 }

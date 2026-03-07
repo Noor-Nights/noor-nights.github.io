@@ -353,33 +353,7 @@ h2 {
     backdrop-filter: blur(20px);
 }
 
-/* Radiant Shimmer Border Effect */
-.dedication-footer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg,
-            transparent,
-            var(--emerald-teal),
-            #ffd700,
-            var(--emerald-teal),
-            transparent);
-    background-size: 200% auto;
-    animation: shimmer-gold 4s linear infinite;
-}
 
-@keyframes shimmer-gold {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-}
 
 .dedication {
     margin-bottom: 2rem;

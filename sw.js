@@ -1,8 +1,7 @@
-// ── Import OneSignal SDK worker FIRST (handles push subscription & background delivery)
-importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+// ── Noor Nights PWA Service Worker ────────────────────────────────────────
+// Handles offline caching for the Progressive Web App
 
-// ── Noor Nights PWA Cache ──────────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v9';
+const CACHE_NAME = 'noor-nights-v10';
 const ASSETS = [
     '/',
     '/index.html',
@@ -22,47 +21,37 @@ const ASSETS = [
 self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS);
-        })
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
     );
 });
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-            );
-        }).then(() => self.clients.claim())
+        caches.keys()
+            .then((keys) => Promise.all(
+                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            ))
+            .then(() => self.clients.claim())
     );
 });
 
 self.addEventListener('fetch', (event) => {
-    // Don't intercept OneSignal API calls
-    if (event.request.url.includes('onesignal.com')) return;
+    // Don't intercept OneSignal or external requests
+    if (!event.request.url.startsWith(self.location.origin)) return;
 
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
-        })
+        caches.match(event.request).then((cached) => cached || fetch(event.request))
     );
 });
 
-// Handle clicking on a notification
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (const client of clientList) {
-                if (client.url.includes('/') && 'focus' in client) {
-                    return client.focus();
-                }
+                if (client.url.includes('/') && 'focus' in client) return client.focus();
             }
-            if (clients.openWindow) {
-                return clients.openWindow('/');
-            }
+            if (clients.openWindow) return clients.openWindow('/');
         })
     );
 });
