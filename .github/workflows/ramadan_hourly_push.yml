@@ -1,0 +1,27 @@
+name: Automated Ramadan Hourly Reminders
+
+on:
+  schedule:
+    # Runs at minute 0 past every hour (e.g. 19:00, 20:00, etc.)
+    - cron: '0 * * * *'
+  
+  # Allows you to manually trigger the workflow from the GitHub UI for testing
+  workflow_dispatch:
+
+jobs:
+  send-push-reminders:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🚀 Fire Hourly Push Script
+        env:
+          ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+        run: node automated_hourly_push.js
