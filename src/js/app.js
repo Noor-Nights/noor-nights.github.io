@@ -1032,20 +1032,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply saved language on load
     applyLanguage(currentLang);
 
-    // Service Worker: register unified OneSignal+PWA worker
+    // Unregister legacy sw.js so OneSignal can cleanly own its worker
     if ('serviceWorker' in navigator) {
-        // First unregister the old sw.js (migrates existing users)
         navigator.serviceWorker.getRegistrations().then((registrations) => {
             for (const reg of registrations) {
-                const url = reg.active ? reg.active.scriptURL : '';
+                const url = (reg.active || reg.installing || reg.waiting || {}).scriptURL || '';
                 if (url.includes('sw.js') && !url.includes('OneSignal')) {
                     reg.unregister();
+                    console.log('[Noor Nights] Unregistered legacy sw.js');
                 }
             }
         });
-        // Register the unified worker
-        navigator.serviceWorker.register('/OneSignalSDKWorker.js')
-            .then(() => console.log('[Noor Nights] Service Worker registered'));
+        // NOTE: OneSignalSDKWorker.js is registered automatically by the OneSignal SDK.
+        // Do NOT register it manually here - doing so causes a race condition.
     }
 
     // Set notify button state once OneSignal is ready
