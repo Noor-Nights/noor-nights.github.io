@@ -489,11 +489,15 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
         });
     }
 
-    ctx.font = 'bold 15px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(45,45,45,0.4)';
+    ctx.font = 'bold 16px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(45,45,45,0.6)';
     const madeWithText = t('footerMadeWith') || 'Made with ❤️ for Ramadan.';
+    ctx.fillText(madeWithText, 540, canvasHeight - 70);
+
+    ctx.font = 'bold 14px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(45,45,45,0.4)';
     const canvasRefText = t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef';
-    ctx.fillText(`${madeWithText} • ${canvasRefText}`, 540, canvasHeight - 50);
+    ctx.fillText(canvasRefText, 540, canvasHeight - 40);
 
     return canvas.toDataURL('image/jpeg', 0.9);
 }
