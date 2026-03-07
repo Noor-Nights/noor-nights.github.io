@@ -744,10 +744,17 @@ function requestNotifications() {
                     _updateNotifyBtnState(btn, false);
                     showMessage(t('unsubTitle'), t('unsubMsg'));
                 } else {
-                    // ENABLE flow: show OneSignal prompt, then poll for confirmation
-                    await OneSignal.Slidedown.promptPush();
+                    // ENABLE flow
+                    if (Notification.permission === 'granted') {
+                        // Edge case: OS permission already granted but OneSignal was manually opted out.
+                        // promptPush() will silently fail. We MUST explicitly opt-in here.
+                        await OneSignal.User.PushSubscription.optIn();
+                    } else {
+                        // Standard flow: prompt for permission
+                        await OneSignal.Slidedown.promptPush();
+                    }
 
-                    // Poll until subscribed (max 15s) — handles pre-granted permission too
+                    // Poll until subscribed (max 15s)
                     let confirmed = false;
                     for (let i = 0; i < 30; i++) {
                         await new Promise((r) => setTimeout(r, 500));
