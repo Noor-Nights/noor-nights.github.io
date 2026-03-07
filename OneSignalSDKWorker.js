@@ -11,10 +11,8 @@ const CACHE_NAME = 'noor-nights-v11';
 const ASSETS = [
     '/',
     '/index.html',
-    '/retro.html',
     '/manifest.json',
     '/src/css/modern.css',
-    '/src/css/retro.css',
     '/src/js/app.js',
     '/src/js/duas.js',
     '/assets/icons/icon-192.png',

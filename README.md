@@ -16,9 +16,7 @@ Dedicated as **Sadaqah Jariyah** (ongoing charity) in loving memory of **Youssef
 - **📅 Smart Calendar Export:** Generate and download an `.ics` file with daily Maghrib reminders for all 10 nights.
 - **🤲 Essential & Jawami' Duas:** A curated collection of powerful supplications from the Sunnah.
 - **📤 Image Sharing & Copying:** Generate beautiful, shareable JPG images of Duas using the Canvas API, or natively copy formatted text to your clipboard.
-- **🎨 Multiple Themes:**
-    - **Modern (`index.html`):** A sleek, dark interface with dynamic gradients, glassmorphism, and animated stars.
-    - **Retro (`retro.html`):** A 90s OS-inspired minimal terminal UI for a nostalgic and distraction-free experience.
+- **🎨 Modern UI Theme:** A sleek, dark interface with dynamic gradients, glassmorphism, and animated stars.
 
 ---
 
@@ -60,15 +58,13 @@ The repository includes a ready-to-use Node.js script (`send_test_pushes.js`) to
 ├── OneSignalSDKWorker.js# OneSignal Service Worker mapping
 ├── sw.js                # Core PWA Service Worker (caches assets, merges OneSignal)
 ├── send_test_pushes.js  # Node script for testing true background push
-├── index.html           # Modern theme entry point
-├── retro.html           # Retro theme entry point
+├── index.html           # App entry point
 ├── manifest.json        # PWA Manifest (Icons, Colors, Display Mode)
 ├── assets/
 │   └── icons/           # App icons (Favicons, PWA badges, Apple Touch limits)
 ├── src/
 │   ├── css/
-│   │   ├── modern.css   # Modern Theme UI styles
-│   │   └── retro.css    # Retro Theme UI styles
+│   │   └── modern.css   # Theme UI styles
 │   └── js/
 │       ├── app.js       # Core logic (Timer, Checklist, Push, PWA Install, i18n frontend)
 │       └── duas.js      # Supplication data arrays (English/Arabic)
