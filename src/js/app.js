@@ -83,7 +83,21 @@ const TRANSLATIONS = {
         installAndroidBtn: '🤖 Install App (1-Click)',
         installIOSStep1: '1. Tap the Share icon at the bottom of Safari.',
         installIOSStep2: '2. Scroll down and tap',
-        installIOSNote: '⚠️ Safari is required. Notifications only work after adding to Home Screen.'
+        installIOSNote: '⚠️ Safari is required. Notifications only work after adding to Home Screen.',
+        copiedTitle: '✅ Copied!',
+        copiedMsg: 'Dua copied to clipboard.',
+        actionReqTitle: 'Action Required',
+        actionReqMsg: 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please tap "Install App" to see how!',
+        notSuppTitle: 'Not Supported',
+        notSuppMsg: 'This browser does not support desktop notifications.',
+        deniedTitle: 'Denied',
+        deniedBodyMsg: 'We need permission to send you a test notification. Please check your browser settings.',
+        blockedTitle: 'Blocked',
+        blockedMsg: 'Notifications are blocked. Please reset your browser permissions for this site to test.',
+        notifSentTitle: 'Notification Sent',
+        notifSentMsg: 'Masha\'Allah! Check your device. This is the official, clean notification design with our new icon.',
+        installAppTitle: 'Install App',
+        installAppMsg: 'Please use your browser menu to "Install App" or "Add to Home Screen".'
 
     },
     ar: {
@@ -166,7 +180,21 @@ const TRANSLATIONS = {
         installAndroidBtn: '🤖 تثبيت التطبيق بضغطة واحدة',
         installIOSStep1: '1. اضغط على أيقونة المشاركة أسفل متصفح سفاري.',
         installIOSStep2: '2. مرر لأسفل واضغط على',
-        installIOSNote: '⚠️ متصفح سفاري مطلوب. الإشعارات تعمل فقط بعد الإضافة للشاشة الرئيسية.'
+        installIOSNote: '⚠️ متصفح سفاري مطلوب. الإشعارات تعمل فقط بعد الإضافة للشاشة الرئيسية.',
+        copiedTitle: '✅ تم النسخ!',
+        copiedMsg: 'تم نسخ الدعاء إلى الحافظة.',
+        actionReqTitle: 'إجراء مطلوب',
+        actionReqMsg: 'على آيفون، الإشعارات تعمل فقط بعد الإضافة للشاشة الرئيسية. الرجاء النقر على "تثبيت التطبيق" لتعرف كيف!',
+        notSuppTitle: 'غير مدعوم',
+        notSuppMsg: 'هذا المتصفح لا يدعم الإشعارات المكتبية.',
+        deniedTitle: 'مرفوض',
+        deniedBodyMsg: 'نحتاج لإذن لإرسال إشعار تجريبي. الرجاء التحقق من إعدادات المتصفح الخاصة بك.',
+        blockedTitle: 'محظور',
+        blockedMsg: 'الإشعارات محظورة. يرجى إعادة تعيين أذونات المتصفح لهذا الموقع للتجربة.',
+        notifSentTitle: 'تم إرسال الإشعار',
+        notifSentMsg: 'ما شاء الله! تحقق من جهازك. هذا هو تصميم الإشعار الرسمي النظيف مع أيقونتنا الجديدة.',
+        installAppTitle: 'تثبيت التطبيق',
+        installAppMsg: 'الرجاء استخدام قائمة المتصفح لـ "تثبيت التطبيق" أو "الإضافة للشاشة الرئيسية".'
 
     }
 };
@@ -234,10 +262,10 @@ function shareFullDua(prefix, idx) {
     const dua = list[idx];
     const text = dua.arabic.replace(/\n/g, '<br>') + (dua.english ? '\n\n' + dua.english : '');
     if (navigator.share) {
-        navigator.share({ title: 'Noor Nights \uD83C\uDF19', text, url: window.location.href }).catch(() => { });
+        navigator.share({ title: 'Noor Nights 🌙', text, url: window.location.href }).catch(() => { });
     } else {
         navigator.clipboard.writeText(text)
-            .then(() => showMessage('\u2705 Copied!', 'Dua copied to clipboard.'))
+            .then(() => showMessage(t('copiedTitle'), t('copiedMsg')))
             .catch(() => showMessage('Dua', text));
     }
     trackEvent('/share-full-dua', 'Share Full Dua');
@@ -438,7 +466,7 @@ function copyText(type, idx) {
     let list = type === 'ess' ? essentialDuas : jawamiDuas;
     let text = `${list[idx].badge}\n\n${list[idx].arabic}\n\n"${list[idx].english}"\n\n- From the Noor Nights App`;
     navigator.clipboard.writeText(text);
-    showMessage("Copied", "Dua text copied to clipboard!");
+    showMessage(t('copiedTitle'), t('copiedMsg'));
 }
 
 /* Canvas Generation Logic for Sharing */
@@ -815,7 +843,7 @@ function requestNotifications() {
 function _fallbackNativeNotification(btn) {
     if (!('Notification' in window)) {
         if (btn) { btn.disabled = false; btn.style.opacity = ''; }
-        showMessage(t('error'), t('errorMsg'));
+        showMessage(t('notSuppTitle'), t('notSuppMsg'));
         return;
     }
     Notification.requestPermission().then((p) => {
@@ -840,12 +868,12 @@ function testNotification() {
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
     if (isIOS && !isStandalone) {
-        showMessage('Action Required', 'On iPhone, notifications ONLY work after you "Add to Home Screen". Please tap "Install App" to see how!');
+        showMessage(t('actionReqTitle'), t('actionReqMsg'));
         return;
     }
 
     if (!("Notification" in window)) {
-        showMessage('Not Supported', 'This browser does not support desktop notifications.');
+        showMessage(t('notSuppTitle'), t('notSuppMsg'));
         return;
     }
 
@@ -856,11 +884,11 @@ function testNotification() {
             if (p === 'granted') {
                 sendActualTest();
             } else {
-                showMessage('Denied', 'We need permission to send you a test notification. Please check your browser settings.');
+                showMessage(t('deniedTitle'), t('deniedBodyMsg'));
             }
         });
     } else {
-        showMessage('Blocked', 'Notifications are blocked. Please reset your browser permissions for this site to test.');
+        showMessage(t('blockedTitle'), t('blockedMsg'));
     }
 }
 
@@ -893,7 +921,7 @@ function sendActualTest() {
         new Notification(title, options);
     }
 
-    showMessage('Notification Sent', 'Masha\'Allah! Check your device. This is the official, clean notification design with our new icon.');
+    showMessage(t('notifSentTitle'), t('notifSentMsg'));
 }
 
 // earlyMessages & lateMessages are now in TRANSLATIONS — use t('earlyMessages') / t('lateMessages')
@@ -1123,6 +1151,6 @@ function handleInstallClick() {
             deferredPrompt = null;
         });
     } else {
-        showMessage(t('installBtn'), 'Please use your browser menu to "Install App" or "Add to Home Screen".');
+        showMessage(t('installAppTitle'), t('installAppMsg'));
     }
 }
