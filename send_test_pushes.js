@@ -55,23 +55,26 @@ async function sendPush(index) {
 }
 
 async function runTestPushes() {
+    // You MUST paste your REST_API_KEY at the top of this file!
     if (REST_API_KEY === 'PASTE_YOUR_REST_API_KEY_HERE') {
         console.error('❌ Please add your OneSignal REST API Key first!');
         console.error('   Go to: OneSignal Dashboard → Settings → Keys & IDs → REST API Key');
         process.exit(1);
     }
 
-    console.log('🚀 Starting 5 test push notifications (one every 2 minutes)...\n');
+    console.log('🚀 Starting 12 test push notifications (one every 30 minutes)...\n');
+    console.log('   This script will run for the next 6 hours.');
 
-    for (let i = 0; i < 5; i++) {
-        await sendPush(i);
-        if (i < 4) {
-            console.log(`⏳ Waiting 2 minutes before next push...\n`);
-            await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
+    for (let i = 0; i < 12; i++) {
+        await sendPush(i % 5); // Loops through the 5 messages
+        if (i < 11) {
+            console.log(`[${new Date().toLocaleTimeString()}] ⏳ Waiting 30 minutes before next push...\n`);
+            // 30 minutes = 30 * 60 * 1000 ms
+            await new Promise(resolve => setTimeout(resolve, 30 * 60 * 1000));
         }
     }
 
-    console.log('\n✨ All 5 test notifications sent!');
+    console.log('\n✨ All 12 test notifications sent!');
 }
 
 runTestPushes();
