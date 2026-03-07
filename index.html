@@ -24,23 +24,6 @@
         OneSignalDeferred.push(async function (OneSignal) {
             await OneSignal.init({
                 appId: "520970e9-567b-4556-8022-3093a50b765f",
-                notifyButton: { enable: false },
-                allowLocalhostAsSecureOrigin: true,
-                promptOptions: {
-                    slidedown: {
-                        prompts: [{
-                            type: "push",
-                            autoPrompt: true,
-                            timeDelay: 5,
-                            pageViews: 1,
-                            text: {
-                                actionMessage: "🌙 Receive blessed reminders during the Last 10 Nights of Ramadan — straight to your phone, even when locked.",
-                                acceptButton: "🤲 Subscribe",
-                                cancelButton: "Later"
-                            }
-                        }]
-                    }
-                }
             });
         });
     </script>
