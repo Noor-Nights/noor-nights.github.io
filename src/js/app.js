@@ -916,62 +916,6 @@ function sendActualTest() {
     showMessage(t('notifSentTitle'), t('notifSentMsg'));
 }
 
-// earlyMessages & lateMessages are now in TRANSLATIONS — use t('earlyMessages') / t('lateMessages')
-const earlyMessages = TRANSLATIONS.en.earlyMessages;
-const lateMessages = TRANSLATIONS.en.lateMessages;
-
-
-
-let lastNotificationHour = -1;
-function checkAndSendNotification() {
-    if (Notification.permission !== "granted") return;
-
-    const now = new Date(getCurrentTime());
-    const hours = now.getHours();
-    const time = now.getTime();
-
-    const startLimit = new Date("2026-03-09T17:54:00+02:00").getTime();
-    const endLimit = new Date("2026-03-20T05:00:00+02:00").getTime();
-
-    if (time < startLimit || time > endLimit) return;
-
-    if ((hours >= 19 || hours <= 5) && hours !== lastNotificationHour) {
-        // Calculate hour index: 19:00 is 0, 20:00 is 1, ..., 00:00 is 5...
-        let hrIdx = hours >= 19 ? hours - 19 : hours + 5;
-
-        const distance = time - startLimit;
-        const nightNum = Math.floor(distance / 86400000) + 1;
-
-        if (nightNum >= 1 && nightNum <= 10) {
-            const duaList = essentialDuas.concat(jawamiDuas);
-            const idx = Math.abs(hrIdx) % duaList.length;
-            const dua = duaList[idx];
-
-            const earlyMsgs = t('earlyMessages');
-            const lateMsgs = t('lateMessages');
-            const actionMsg = hrIdx < 4 ?
-                earlyMsgs[hrIdx % earlyMsgs.length] :
-                lateMsgs[(hrIdx - 4) % lateMsgs.length];
-
-            const notifOptions = {
-                body: `Night ${nightNum} of 10 reminder`,
-                icon: 'assets/icons/icon-512.png',
-                badge: 'assets/icons/badge-96.png',
-                tag: 'noor-nights-remind',
-                renotify: true,
-                vibrate: [200, 100, 200],
-                silent: false,
-                data: { url: window.location.href }
-            };
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(reg => reg.showNotification(`\u200eNight ${nightNum}: ${actionMsg}`, notifOptions));
-            } else {
-                new Notification(`\u200eNight ${nightNum}: ${actionMsg}`, notifOptions);
-            }
-            lastNotificationHour = hours;
-        }
-    }
-}
 
 function generateICS() {
     let lines = [
@@ -1072,12 +1016,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checkDayChange();
     setInterval(checkDayChange, 60000); // Check for day change every minute
     rotateYoussefDua();
-    setInterval(checkAndSendNotification, 60000);
 
     // Apply saved language preference
-    applyLanguage(currentLang);
-
-    // Apply saved language on load
     applyLanguage(currentLang);
 
     // Unregister legacy sw.js so OneSignal can cleanly own its worker
