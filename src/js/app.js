@@ -101,7 +101,14 @@ const TRANSLATIONS = {
         calName: 'Noor Nights',
         calDesc: 'Hourly Reminders for the last 10 nights of Ramadan',
         calEventTitle: (n, msg) => `Night ${n} - ${msg}`,
-        calEventDesc: (n) => `Night ${n} of 10`
+        calEventDesc: (n) => `Night ${n} of 10`,
+        calSuccessTitle: '🎉 Successfully Downloaded!',
+        calGoogleTitle: 'Google Calendar:',
+        calGoogleStep1: 'Go to <b>Settings</b> > <b>Import & Export</b>.',
+        calGoogleStep2: 'Upload <code>noor-nights.ics</code>.',
+        calAppleTitle: 'Apple Calendar (Mac):',
+        calAppleStep1: 'Double-click the file or drag into Calendar.',
+        calAppleStep2: 'Select a destination calendar and click <b>OK</b>.'
 
     },
     ar: {
@@ -202,7 +209,14 @@ const TRANSLATIONS = {
         calName: 'ليالي النور',
         calDesc: 'تذكيرات كل ساعة للعشر الأواخر من رمضان',
         calEventTitle: (n, msg) => `الليلة ${n} - ${msg}`,
-        calEventDesc: (n) => `الليلة ${n} من 10`
+        calEventDesc: (n) => `الليلة ${n} من 10`,
+        calSuccessTitle: '🎉 تم التحميل بنجاح!',
+        calGoogleTitle: 'تقويم جوجل:',
+        calGoogleStep1: 'اذهب إلى <b>الإعدادات</b> > <b>استيراد وتصدير</b>.',
+        calGoogleStep2: 'قم برفع ملف <code>noor-nights.ics</code>.',
+        calAppleTitle: 'تقويم آبل (ماك):',
+        calAppleStep1: 'انقر مرتين على الملف أو اسحبه إلى التقويم.',
+        calAppleStep2: 'اختر تقويم الوجهة وانقر على <b>موافق (OK)</b>.'
 
     }
 };
@@ -222,7 +236,7 @@ function applyLanguage(lang) {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.textContent = t(el.getAttribute('data-i18n'));
+        el.innerHTML = t(el.getAttribute('data-i18n'));
     });
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';

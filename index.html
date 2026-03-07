@@ -103,21 +103,24 @@
             <button class="btn" onclick="downloadICS()" data-i18n="calendarBtn">📅 Download Calendar (.ics)</button>
             <div id="calendar-success" class="success-box"
                 style="display:none; margin-top: 15px; padding: 15px; background: rgba(52, 211, 153, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
-                <h4 style="color: var(--neon-cyan); margin-bottom: 8px;">🎉 Successfully Downloaded!</h4>
+                <h4 style="color: var(--neon-cyan); margin-bottom: 8px;" data-i18n="calSuccessTitle">🎉 Successfully
+                    Downloaded!</h4>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
                     <div>
-                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">Google Calendar:</p>
+                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calGoogleTitle">
+                            Google Calendar:</p>
                         <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
-                            <li>Go to <b>Settings</b> > <b>Import & Export</b>.</li>
-                            <li>Upload <code>noor-nights.ics</code>.</li>
+                            <li data-i18n="calGoogleStep1">Go to <b>Settings</b> > <b>Import & Export</b>.</li>
+                            <li data-i18n="calGoogleStep2">Upload <code>noor-nights.ics</code>.</li>
                         </ul>
                     </div>
                     <div>
-                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">Apple Calendar (Mac):</p>
+                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calAppleTitle">
+                            Apple Calendar (Mac):</p>
                         <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
-                            <li>Double-click the file or drag into Calendar.</li>
-                            <li>Select a destination calendar and click <b>OK</b>.</li>
+                            <li data-i18n="calAppleStep1">Double-click the file or drag into Calendar.</li>
+                            <li data-i18n="calAppleStep2">Select a destination calendar and click <b>OK</b>.</li>
                         </ul>
                     </div>
                 </div>
