@@ -695,8 +695,8 @@ function requestNotifications() {
     if (window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async function (OneSignal) {
             try {
+                // Already subscribed?
                 const isSubscribed = OneSignal.User.PushSubscription.optedIn;
-
                 if (isSubscribed) {
                     if (btn) btn.innerText = t('notifyEnabled');
                     showMessage('🔔 Already Subscribed!',
@@ -704,24 +704,40 @@ function requestNotifications() {
                     return;
                 }
 
+                // Listen for subscription change BEFORE showing the prompt
+                const subscriptionConfirmed = new Promise((resolve) => {
+                    const handler = (event) => {
+                        OneSignal.User.PushSubscription.removeEventListener('change', handler);
+                        resolve(event.current.optedIn === true);
+                    };
+                    OneSignal.User.PushSubscription.addEventListener('change', handler);
+                    // Timeout after 60s if user ignores the prompt
+                    setTimeout(() => {
+                        OneSignal.User.PushSubscription.removeEventListener('change', handler);
+                        resolve(false);
+                    }, 60000);
+                });
+
+                // Show the slide-down prompt
                 await OneSignal.Slidedown.promptPush();
 
-                const nowSubscribed = OneSignal.User.PushSubscription.optedIn;
+                // Wait for the subscription event to confirm
+                const nowSubscribed = await subscriptionConfirmed;
+
                 if (nowSubscribed) {
                     if (btn) btn.innerText = t('notifyEnabled');
                     showMessage('🔔 Reminders Activated! 🌙',
                         'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when this app is closed or your phone is locked.');
                 } else {
-                    // Help user fix blocked permissions
                     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                     const isAndroid = /Android/.test(navigator.userAgent);
-                    let helpMsg = 'Notifications were blocked.\n\n';
+                    let helpMsg = 'Notifications were not enabled.\n\n';
                     if (isIOS) {
-                        helpMsg += '👉 On iPhone: Go to Settings → Safari → Notifications → find this site and tap Allow. Or try adding the app to Home Screen first.';
+                        helpMsg += '👉 On iPhone: Go to Settings → Safari → Notifications → find this site and tap Allow. Or add the app to Home Screen first.';
                     } else if (isAndroid) {
-                        helpMsg += '👉 On Android: Tap the lock icon 🔒 in your address bar → Site Settings → Notifications → Allow. Then come back and try again.';
+                        helpMsg += '👉 On Android: Tap the 🔒 in your address bar → Site Settings → Notifications → Allow. Then try again.';
                     } else {
-                        helpMsg += '👉 On Desktop: Click the lock icon in your address bar → Site Settings → Notifications → Allow. Then try again.';
+                        helpMsg += '👉 Click the lock icon in your address bar → Site Settings → Notifications → Allow. Then try again.';
                     }
                     showMessage('🔔 Permission Needed', helpMsg);
                 }
