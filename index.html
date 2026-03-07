@@ -16,6 +16,19 @@
     <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a1a">
+
+    <!-- OneSignal Web Push SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function (OneSignal) {
+            await OneSignal.init({
+                appId: "520970e9-567b-4556-8022-3093a50b765f",
+                notifyButton: { enable: false }, // We use our own button
+                allowLocalhostAsSecureOrigin: true
+            });
+        });
+    </script>
 </head>
 
 <body>

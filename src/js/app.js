@@ -688,20 +688,58 @@ function sendTestModeNotification() {
 
 function requestNotifications() {
     trackEvent('/enable-reminders', 'Enable Reminders Click');
-    if (!("Notification" in window)) {
+
+    const btn = document.getElementById('notify-btn');
+
+    // ── OneSignal path — works even when phone is locked/app is closed ──
+    if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            try {
+                const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+
+                if (isSubscribed) {
+                    if (btn) btn.innerText = t('notifyEnabled');
+                    showMessage('🔔 Already Subscribed!',
+                        'You will receive nightly reminders during the Last 10 Nights — even when your phone is locked! 🌙');
+                    return;
+                }
+
+                await OneSignal.Slidedown.promptPush();
+
+                const nowSubscribed = OneSignal.User.PushSubscription.optedIn;
+                if (nowSubscribed) {
+                    if (btn) btn.innerText = t('notifyEnabled');
+                    showMessage('🔔 Reminders Activated! 🌙',
+                        'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when this app is closed or your phone is locked.');
+                } else {
+                    showMessage(t('denied'), t('deniedMsg'));
+                }
+            } catch (err) {
+                console.warn('OneSignal error, using fallback:', err);
+                _fallbackNativeNotification(btn);
+            }
+        });
+        return;
+    }
+
+    // ── Native browser fallback (tab must stay open) ──
+    _fallbackNativeNotification(btn);
+}
+
+function _fallbackNativeNotification(btn) {
+    if (!('Notification' in window)) {
         showMessage(t('error'), t('errorMsg'));
         return;
     }
     Notification.requestPermission().then(p => {
         if (p === 'granted') {
-            const btn = document.getElementById('notify-btn');
-            if (btn) btn.innerText = '✅ Notifications Enabled';
+            if (btn) btn.innerText = t('notifyEnabled');
             showMessage('🔔 Reminders Active!',
-                'You will receive a dua reminder every hour while this app is open in the background. Real scheduled reminders start when the nights begin (Mar 9).');
+                'You will receive a dua reminder every hour while this tab is open.');
             testModeCount = 0;
-            sendTestModeNotification();          // fire immediately
+            sendTestModeNotification();
             if (testModeInterval) clearInterval(testModeInterval);
-            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);  // then every 1 hour
+            testModeInterval = setInterval(sendTestModeNotification, TEST_MODE_MS);
         } else {
             showMessage(t('denied'), t('deniedMsg'));
         }
