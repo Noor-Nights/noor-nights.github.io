@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+/**
+ * Noor Nights — OneSignal Test Push Sender
+ * Sends 5 test push notifications, one every 2 minutes.
+ * 
+ * Usage:
+ *   node send_test_pushes.js
+ */
+
+const APP_ID = '520970e9-567b-4556-8022-3093a50b765f';
+const REST_API_KEY = 'PASTE_YOUR_REST_API_KEY_HERE'; // ← Replace this!
+
+const duas = [
+    'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي',
+    'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    'اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَعَافِنّي وَارْزُقْنِي',
+    'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ',
+    'رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّكَ أَنتَ التَّوَّابُ الرَّحِيمُ'
+];
+
+const messages = [
+    '🤲 Pour your heart out in Dua right now.',
+    '🌙 Standing in Noor Nights — a moment to connect with Allah.',
+    '✨ These are the blessed nights. Make your dua count.',
+    '🎁 Every dua you make may uplift someone who reads it.',
+    '🌟 Laylat al-Qadr may be tonight. Stand and make dua.'
+];
+
+async function sendPush(index) {
+    const body = {
+        app_id: APP_ID,
+        included_segments: ['All'],
+        headings: { en: `🌙 Noor Nights — Test #${index + 1}` },
+        contents: { en: `${messages[index]}\n\n"${duas[index]}"` },
+        url: 'https://noor-nights.github.io',
+        chrome_web_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
+        firefox_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
+    };
+
+    const res = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Key ${REST_API_KEY}`
+        },
+        body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+    if (data.id) {
+        console.log(`✅ Push #${index + 1} sent! Notification ID: ${data.id}`);
+    } else {
+        console.error(`❌ Push #${index + 1} failed:`, JSON.stringify(data));
+    }
+}
+
+async function runTestPushes() {
+    if (REST_API_KEY === 'PASTE_YOUR_REST_API_KEY_HERE') {
+        console.error('❌ Please add your OneSignal REST API Key first!');
+        console.error('   Go to: OneSignal Dashboard → Settings → Keys & IDs → REST API Key');
+        process.exit(1);
+    }
+
+    console.log('🚀 Starting 5 test push notifications (one every 2 minutes)...\n');
+
+    for (let i = 0; i < 5; i++) {
+        await sendPush(i);
+        if (i < 4) {
+            console.log(`⏳ Waiting 2 minutes before next push...\n`);
+            await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
+        }
+    }
+
+    console.log('\n✨ All 5 test notifications sent!');
+}
+
+runTestPushes();

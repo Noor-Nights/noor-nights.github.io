@@ -652,8 +652,8 @@ function triggerConfetti() {
 
 let testModeInterval = null;
 let testModeCount = 0;
-const TEST_MODE_MAX = 24;             // 24 x 1 hour
-const TEST_MODE_MS = 60 * 60 * 1000;  // every 1 hour
+const TEST_MODE_MAX = 5;               // 5 test notifications
+const TEST_MODE_MS = 2 * 60 * 1000;   // every 2 minutes
 
 function sendTestModeNotification() {
     const duas = essentialDuas.concat(jawamiDuas);
