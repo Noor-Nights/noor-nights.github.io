@@ -1,4 +1,8 @@
-const CACHE_NAME = 'noor-nights-v8';
+// ── Import OneSignal SDK worker FIRST (handles push subscription & background delivery)
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+
+// ── Noor Nights PWA Cache ──────────────────────────────────────────────────
+const CACHE_NAME = 'noor-nights-v9';
 const ASSETS = [
     '/',
     '/index.html',
@@ -16,6 +20,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS);
@@ -29,11 +34,14 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
 self.addEventListener('fetch', (event) => {
+    // Don't intercept OneSignal API calls
+    if (event.request.url.includes('onesignal.com')) return;
+
     event.respondWith(
         caches.match(event.request).then((response) => {
             return response || fetch(event.request);
@@ -43,17 +51,15 @@ self.addEventListener('fetch', (event) => {
 
 // Handle clicking on a notification
 self.addEventListener('notificationclick', (event) => {
-    event.notification.close(); // Close the notification
+    event.notification.close();
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            // If the app is already open, focus it
             for (const client of clientList) {
                 if (client.url.includes('/') && 'focus' in client) {
                     return client.focus();
                 }
             }
-            // Otherwise open it
             if (clients.openWindow) {
                 return clients.openWindow('/');
             }
