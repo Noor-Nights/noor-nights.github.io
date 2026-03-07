@@ -709,9 +709,6 @@ function updateProgress(c, tot) {
     if (c === tot && c > 0 && !window.hasCelebrated) {
         window.hasCelebrated = true;
         triggerConfetti();
-        const successSound = new Audio('assets/sounds/success.mp3');
-        successSound.volume = 0.5;
-        successSound.play().catch(e => console.warn('Audio playback blocked by browser:', e));
         showMessage(t('mashaallah'), t('mashaallahMsg'));
     } else if (c < tot) {
         window.hasCelebrated = false;
