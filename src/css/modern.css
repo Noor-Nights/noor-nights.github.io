@@ -403,17 +403,42 @@ h2 {
 }
 
 @media (max-width: 600px) {
-    h1 {
-        font-size: 2rem;
+    .container {
+        padding: 1rem 0.5rem;
     }
 
-    .time-value {
-        font-size: 2rem;
+    .card {
+        padding: 1.5rem 1rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .countdown-display {
+        gap: 0.25rem;
     }
 
     .time-box {
-        min-width: 60px;
-        padding: 1rem 0.5rem;
+        flex: 1;
+        min-width: 0;
+        padding: 0.6rem 0.2rem;
+    }
+
+    .time-value {
+        font-size: 1.4rem;
+    }
+
+    .time-label {
+        font-size: 0.6rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        white-space: normal;
+        min-height: auto;
+        word-wrap: break-word;
     }
 }
 
