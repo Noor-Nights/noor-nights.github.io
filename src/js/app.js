@@ -233,8 +233,10 @@ function renderDuaCarousel(list, containerId, prefix) {
 
         slide.innerHTML = `
             <div class="dua-slide-inner">
-                <div class="dua-arabic-main">${dua.arabic.replace(/\n/g, '<br>')}</div>
-                ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
+                <div class="dua-content-scroll">
+                    <div class="dua-arabic-main">${dua.arabic.replace(/\n/g, '<br>')}</div>
+                    ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
+                </div>
                 <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
                 <div class="slide-actions">
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
