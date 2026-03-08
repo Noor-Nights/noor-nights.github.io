@@ -94,8 +94,8 @@ const TRANSLATIONS = {
         permNeededAndroid: '👉 On Android: Tap the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
         permNeededIOS: '👉 On iPhone: Add the app to your Home Screen first, then try enabling reminders inside the installed app.',
         permNeededDesktop: '👉 Click the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
-        subActivated: '🌙 Reminders Activated!',
-        subActivatedMsg: 'Jazakallah Khayran! You will now receive nightly reminders during the Last 10 Nights of Ramadan — even when the app is closed or your phone is locked.',
+        subActivated: '🌙 جزاك الله خيرًا على الاشتراك!',
+        subActivatedMsg: 'سنذكّرك في العشر الأواخر المباركة من رمضان. 🤲 Jazakallah Khayran! We’ll remind you in the Last 10 Nights. 🤲',
         downloadAppTitle: '📲 Get the Noor Nights App',
         downloadAppDesc: 'Install Noor Nights directly on your device for the best experience and reliable background notifications.',
         installAndroidBtn: '🤖 Install App (1-Click)',
@@ -206,8 +206,8 @@ const TRANSLATIONS = {
         permNeededAndroid: '👉 على أندرويد: اضغط على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
         permNeededIOS: '👉 على آيفون: أضف التطبيق إلى شاشة الرئيسية أولاً، ثم فعّل التذكيرات من داخل التطبيق المثبت.',
         permNeededDesktop: '👉 انقر على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
-        subActivated: '🌙 تم تفعيل التذكيرات!',
-        subActivatedMsg: 'جزاكم الله خيراً! ستتلقى الآن تذكيرات ليلية خلال العشر الأواخر من رمضان — حتى عندما يكون التطبيق مغلقاً أو هاتفك مقفلاً.',
+        subActivated: '🌙 جزاك الله خيرًا على الاشتراك!',
+        subActivatedMsg: 'سنذكّرك في العشر الأواخر المباركة من رمضان. 🤲 Jazakallah Khayran! We’ll remind you in the Last 10 Nights. 🤲',
         downloadAppTitle: '📲 احصل على تطبيق نور الليالي',
         downloadAppDesc: 'قم بتثبيت التطبيق على جهازك للحصول على أفضل تجربة وإشعارات خلفية موثوقة.',
         installAndroidBtn: '🤖 تثبيت التطبيق بضغطة واحدة',
@@ -938,42 +938,14 @@ function requestNotifications() {
     if (window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async function (OneSignal) {
             try {
-                const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+                // Focus on enabling: Refresh opt-in status every time.
+                await OneSignal.User.PushSubscription.optIn();
+                _updateNotifyBtnState(btn, true);
+                trackEvent('/push-opt-in', 'push_opt_in_triggered');
 
-                if (isSubscribed) {
-                    // Always allow: if already subscribed, just refresh and show success
-                    await OneSignal.User.PushSubscription.optIn();
-                    _updateNotifyBtnState(btn, true);
-                    trackEvent('/push-opt-in', 'push_opt_in_refreshed');
-                    showMessage(t('subActivated'), t('subActivatedMsg'));
-                } else {
-                    // ENABLE flow
-                    if (Notification.permission === 'granted') {
-                        // Edge case: OS permission already granted but OneSignal was manually opted out.
-                        // promptPush() will silently fail. We MUST explicitly opt-in here.
-                        await OneSignal.User.PushSubscription.optIn();
-                        _updateNotifyBtnState(btn, true);
-                        trackEvent('/push-opt-in', 'push_opt_in_restored');
-                        showMessage(t('subActivated'), t('subActivatedMsg'));
-                    } else {
-                        // Standard flow: prompt for permission
-                        OneSignal.Slidedown.promptPush().then((accepted) => {
-                            if (accepted) {
-                                _updateNotifyBtnState(btn, true);
-                                trackEvent('/push-opt-in', 'push_opt_in_new');
-                                showMessage(t('subActivated'), t('subActivatedMsg'));
-                            } else {
-                                _updateNotifyBtnState(btn, false);
-                                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                                const isAndroid = /Android/.test(navigator.userAgent);
-                                showMessage(
-                                    t('permNeeded'),
-                                    isIOS ? t('permNeededIOS') : isAndroid ? t('permNeededAndroid') : t('permNeededDesktop')
-                                );
-                            }
-                        });
-                    }
-                }
+                // Show modal AND trigger a native system notification for immediate feedback
+                showMessage(t('subActivated'), t('subActivatedMsg'));
+                _sendSuccessNotification();
             } catch (err) {
                 console.warn('[OneSignal] Error — falling back to native:', err);
                 _fallbackNativeNotification(btn);
@@ -986,6 +958,28 @@ function requestNotifications() {
     _fallbackNativeNotification(btn);
 }
 
+function _sendSuccessNotification() {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+    const title = t('subActivated');
+    const body = t('subActivatedMsg');
+    const options = {
+        body: body,
+        icon: 'assets/icons/icon-512.png',
+        badge: 'assets/icons/badge-96.png',
+        tag: 'noor-nights-success',
+        renotify: true,
+        vibrate: [100, 50, 100],
+        data: { url: window.location.href }
+    };
+
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+    } else {
+        new Notification(title, options);
+    }
+}
+
 function _fallbackNativeNotification(btn) {
     if (!('Notification' in window)) {
         if (btn) { btn.disabled = false; btn.style.opacity = ''; }
@@ -996,6 +990,7 @@ function _fallbackNativeNotification(btn) {
         if (p === 'granted') {
             _updateNotifyBtnState(btn, true);
             showMessage(t('subActivated'), t('subActivatedMsg'));
+            _sendSuccessNotification();
             testModeCount = 0;
             sendTestModeNotification();
             if (testModeInterval) clearInterval(testModeInterval);
