@@ -560,7 +560,7 @@ async function ensureBackgroundLoaded(img) {
     });
 }
 
-function generateCanvasURL(arabic, english, badge, isYoussef) {
+async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
 
@@ -648,8 +648,9 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
     const canvasRefText = t('footerCanvas') || 'Noor Nights App • Sadaqah Jariyah for Youssef';
     ctx.fillText(canvasRefText, 540, canvasHeight - 40);
 
-    return canvas.toDataURL('image/jpeg', 0.9);
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 }
+
 
 function triggerDownload(url, filename) {
     const a = document.createElement('a');
@@ -665,59 +666,91 @@ async function shareImage(type, idx) {
     const activeBg = shareBg1;
     await ensureBackgroundLoaded(activeBg);
 
-    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
-    const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
+    const blob = await generateCanvasBlob(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
+    if (!blob) return;
 
-    try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const file = new File([blob], filename, { type: 'image/jpeg' });
+    // Use ASCII only filename for better cross-browser compatibility
+    const filename = `dua-${dua.badge.replace(/[^\x00-\x7F]/g, "").replace(/\s/g, '-')}.jpg`;
+    const file = new File([blob], filename, { type: 'image/jpeg' });
 
-        // Prioritize showing the "App List" / System Share Menu
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                title: dua.badge,
-                text: `${dua.badge}\n\nShared from the Noor Nights App 🌙`,
-                url: window.location.href
-            });
-            trackEvent('/share-image-success', `Success: ${dua.badge}`);
-        } else {
-            // Fallback to direct download if app sharing is not supported (mostly desktop)
-            triggerDownload(url, filename);
-        }
-    } catch (err) {
-        console.error('Share menu failed:', err);
-        triggerDownload(url, filename);
-    }
     trackEvent('/share-image-card', `Share card: ${type}_${dua.badge}`);
+
+    if (navigator.share) {
+        try {
+            // Check if file sharing is supported
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: dua.badge,
+                    text: `${dua.badge}\n\nShared from the Noor Nights App 🌙`,
+                });
+                trackEvent('/share-image-success', `Success: ${dua.badge}`);
+                return;
+            } else {
+                // If file sharing is not supported, try sharing text as fallback to at least show the app list
+                await navigator.share({
+                    title: dua.badge,
+                    text: `${dua.badge}\n\n${dua.arabic}\n\nShared from the Noor Nights App 🌙`,
+                    url: window.location.href
+                });
+                // After text share, we still trigger download because the user wants the CARD image
+                const url = URL.createObjectURL(blob);
+                triggerDownload(url, filename);
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                return;
+            }
+        } catch (err) {
+            console.warn('Share menu closed or failed:', err);
+            if (err.name === 'AbortError') return; // User cancelled
+        }
+    }
+
+    // Direct download as ultimate fallback for Desktop or if sharing failed
+    const url = URL.createObjectURL(blob);
+    triggerDownload(url, filename);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
+
 
 async function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
     await ensureBackgroundLoaded(shareBg1);
-    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true, false);
+    const blob = await generateCanvasBlob(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
+    if (!blob) return;
+
     const filename = 'dua-youssef.jpg';
+    const file = new File([blob], filename, { type: 'image/jpeg' });
 
-    try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const file = new File([blob], filename, { type: 'image/jpeg' });
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                title: 'Noor Nights',
-                text: 'Please make dua for Youssef Abdelkader 🤲',
-                url: window.location.href
-            });
-        } else {
-            triggerDownload(url, filename);
+    if (navigator.share) {
+        try {
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Noor Nights',
+                    text: 'Please make dua for Youssef Abdelkader 🤲',
+                });
+                return;
+            } else {
+                await navigator.share({
+                    title: 'Noor Nights',
+                    text: `🤲 ${dua.arabic}\n\nPlease make dua for Youssef Abdelkader`,
+                    url: window.location.href
+                });
+                const url = URL.createObjectURL(blob);
+                triggerDownload(url, filename);
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                return;
+            }
+        } catch (err) {
+            if (err.name === 'AbortError') return;
         }
-    } catch (err) {
-        triggerDownload(url, filename);
     }
+
+    const url = URL.createObjectURL(blob);
+    triggerDownload(url, filename);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
+
 
 function getChecklistTasks() { return t('tasks'); }
 
