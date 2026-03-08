@@ -7,7 +7,7 @@
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
 // ── PWA Cache ────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v13';
+const CACHE_NAME = 'noor-nights-v14';
 const ASSETS = [
     '/',
     '/index.html',
@@ -19,7 +19,8 @@ const ASSETS = [
     '/assets/icons/icon-512.png',
     '/assets/icons/favicon.png',
     '/assets/icons/favicon-32.png',
-    '/assets/icons/badge-96.png'
+    '/assets/icons/badge-96.png',
+    '/assets/backgrounds/Background.png'
 ];
 
 self.addEventListener('install', (event) => {
