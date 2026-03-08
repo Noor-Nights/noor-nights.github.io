@@ -27,3 +27,12 @@ Temporary Items
 
 # Environment Variables (Secrets)
 .env
+
+# Environments
+.myenv/
+venv/
+env/
+.venv/
+
+# Dependencies
+node_modules/
