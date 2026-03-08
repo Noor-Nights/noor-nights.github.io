@@ -675,14 +675,32 @@ async function shareImage(type, idx) {
     const useSecondBg = idx % 2 === 1; // Alternating backgrounds
     const activeBg = useSecondBg ? shareBg2 : shareBg1;
     await ensureBackgroundLoaded(activeBg);
+
     let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false, useSecondBg);
     const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
-    fetch(url).then(r => r.blob()).then(blob => {
+
+    try {
+        const res = await fetch(url);
+        const blob = await res.blob();
         const file = new File([blob], filename, { type: 'image/jpeg' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            return navigator.share({ files: [file], title: dua.badge, text: 'Shared from the Noor Nights App' });
-        } else { triggerDownload(url, filename); }
-    }).catch(() => triggerDownload(url, filename));
+
+        // Prioritize showing the "App List" / System Share Menu
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: dua.badge,
+                text: `${dua.badge}\n\nShared from the Noor Nights App 🌙`,
+                url: window.location.href
+            });
+            trackEvent('/share-image-success', `Success: ${dua.badge}`);
+        } else {
+            // Fallback to direct download if app sharing is not supported (mostly desktop)
+            triggerDownload(url, filename);
+        }
+    } catch (err) {
+        console.error('Share menu failed:', err);
+        triggerDownload(url, filename);
+    }
     trackEvent('/share-image-card', `Share card: ${type}_${dua.badge}`);
 }
 
@@ -691,12 +709,25 @@ async function shareYoussef() {
     await ensureBackgroundLoaded(shareBg1);
     let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true, false);
     const filename = 'dua-youssef.jpg';
-    fetch(url).then(r => r.blob()).then(blob => {
+
+    try {
+        const res = await fetch(url);
+        const blob = await res.blob();
         const file = new File([blob], filename, { type: 'image/jpeg' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            return navigator.share({ files: [file], text: 'Please make dua for Youssef Abdelkader' });
-        } else { triggerDownload(url, filename); }
-    }).catch(() => triggerDownload(url, filename));
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: 'Noor Nights',
+                text: 'Please make dua for Youssef Abdelkader 🤲',
+                url: window.location.href
+            });
+        } else {
+            triggerDownload(url, filename);
+        }
+    } catch (err) {
+        triggerDownload(url, filename);
+    }
 }
 
 function getChecklistTasks() { return t('tasks'); }
