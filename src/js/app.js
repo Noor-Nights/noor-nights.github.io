@@ -1009,7 +1009,7 @@ function generateICS() {
             const sEnd = `${eventDate}T${String(hour).padStart(2, '0')}0500`; // Back to 5 mins
 
             let dua;
-            if (i === 3) { // Lock Laylatul Qadr Dua to 22:00
+            if (i === 3 || i === 9) { // Lock Laylatul Qadr Dua to 22:00 and 04:00
                 dua = lqDua;
             } else {
                 // Different rotation per night: (i + night.n)

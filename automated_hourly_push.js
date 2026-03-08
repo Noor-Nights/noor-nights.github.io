@@ -102,10 +102,10 @@ const lateMessages = [
 ];
 
 // Logic: 
-// 1. Peak Night Push (22:00) always uses Laylatul Qadr Dua.
+// 1. Peak Night & Pre-Dawn Pushes (22:00 and 04:00) always use Laylatul Qadr Dua.
 // 2. Other pushes use a different rotation based on the specific Night and Hour.
 let dua;
-if (hrIdx === 3) { // 22:00 is hour index 3 (19 + 3)
+if (hrIdx === 3 || hrIdx === 9) { // 22:00 (index 3) and 04:00 (index 9)
     dua = essentialDuas[0];
 } else {
     // Combine all available short duas for the rotating reminders
