@@ -654,8 +654,20 @@ function triggerDownload(url, filename) {
     document.body.removeChild(a);
 }
 
-function shareImage(type, idx) {
+function ensureBackgroundLoaded() {
+    return new Promise((resolve) => {
+        if (shareBackgroundImg.complete && shareBackgroundImg.naturalWidth > 0) {
+            resolve();
+        } else {
+            shareBackgroundImg.onload = () => resolve();
+            shareBackgroundImg.onerror = () => resolve(); // continue anyway with gradient
+        }
+    });
+}
+
+async function shareImage(type, idx) {
     let dua = type === 'ess' ? essentialDuas[idx] : jawamiDuas[idx];
+    await ensureBackgroundLoaded();
     let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
     const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
     fetch(url).then(r => r.blob()).then(blob => {
@@ -664,10 +676,12 @@ function shareImage(type, idx) {
             return navigator.share({ files: [file], title: dua.badge, text: 'Shared from the Noor Nights App' });
         } else { triggerDownload(url, filename); }
     }).catch(() => triggerDownload(url, filename));
+    trackEvent('/share-image-card', `Share card: ${type}_${dua.badge}`);
 }
 
-function shareYoussef() {
+async function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
+    await ensureBackgroundLoaded();
     let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
     const filename = 'dua-youssef.jpg';
     fetch(url).then(r => r.blob()).then(blob => {
