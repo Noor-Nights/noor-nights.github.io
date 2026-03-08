@@ -7,8 +7,10 @@ const CONFIG = {
 };
 
 // ── Theme Background Preload ──
-const shareBackgroundImg = new Image();
-shareBackgroundImg.src = 'assets/backgrounds/Background.png';
+const shareBg1 = new Image();
+shareBg1.src = 'assets/backgrounds/Background.png';
+const shareBg2 = new Image();
+shareBg2.src = 'assets/backgrounds/Background-3.png';
 
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
@@ -560,7 +562,18 @@ function getWrappedLines(ctx, text, maxWidth) {
     return lines;
 }
 
-function generateCanvasURL(arabic, english, badge, isYoussef) {
+async function ensureBackgroundLoaded(img) {
+    return new Promise((resolve) => {
+        if (img.complete && img.naturalWidth > 0) {
+            resolve();
+        } else {
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // continue anyway with gradient
+        }
+    });
+}
+
+function generateCanvasURL(arabic, english, badge, isYoussef, useSecondBg = false) {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
 
@@ -588,13 +601,15 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
     canvas.height = canvasHeight;
     const ctx = canvas.getContext('2d');
 
-    if (shareBackgroundImg.complete && shareBackgroundImg.naturalWidth > 0) {
-        const scale = Math.max(1080 / shareBackgroundImg.width, canvasHeight / shareBackgroundImg.height);
-        const nw = shareBackgroundImg.width * scale;
-        const nh = shareBackgroundImg.height * scale;
+    const activeBg = useSecondBg ? shareBg2 : shareBg1;
+
+    if (activeBg.complete && activeBg.naturalWidth > 0) {
+        const scale = Math.max(1080 / activeBg.width, canvasHeight / activeBg.height);
+        const nw = activeBg.width * scale;
+        const nh = activeBg.height * scale;
         const nx = (1080 - nw) / 2;
         const ny = canvasHeight - nh; // Align to bottom so mosque rests at the bottom edge
-        ctx.drawImage(shareBackgroundImg, nx, ny, nw, nh);
+        ctx.drawImage(activeBg, nx, ny, nw, nh);
         // Removed the white overlay completely to show the background beautifully
     } else {
         const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
@@ -654,21 +669,12 @@ function triggerDownload(url, filename) {
     document.body.removeChild(a);
 }
 
-function ensureBackgroundLoaded() {
-    return new Promise((resolve) => {
-        if (shareBackgroundImg.complete && shareBackgroundImg.naturalWidth > 0) {
-            resolve();
-        } else {
-            shareBackgroundImg.onload = () => resolve();
-            shareBackgroundImg.onerror = () => resolve(); // continue anyway with gradient
-        }
-    });
-}
-
 async function shareImage(type, idx) {
     let dua = type === 'ess' ? essentialDuas[idx] : jawamiDuas[idx];
-    await ensureBackgroundLoaded();
-    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
+    const useSecondBg = idx % 2 === 1; // Alternating backgrounds
+    const activeBg = useSecondBg ? shareBg2 : shareBg1;
+    await ensureBackgroundLoaded(activeBg);
+    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false, useSecondBg);
     const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
     fetch(url).then(r => r.blob()).then(blob => {
         const file = new File([blob], filename, { type: 'image/jpeg' });
@@ -681,8 +687,8 @@ async function shareImage(type, idx) {
 
 async function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
-    await ensureBackgroundLoaded();
-    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
+    await ensureBackgroundLoaded(shareBg1);
+    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true, false);
     const filename = 'dua-youssef.jpg';
     fetch(url).then(r => r.blob()).then(blob => {
         const file = new File([blob], filename, { type: 'image/jpeg' });
