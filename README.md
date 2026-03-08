@@ -84,14 +84,6 @@ The repository includes a ready-to-use Node.js script (`send_test_pushes.js`) to
 
 ---
 
-## 🤲 Tribute
-
-This project is created to honor the memory of **Youssef Abdelkader**. We ask Allah to grant him mercy, widen his grave, and admit him to the highest levels of Paradise. Ameen.
-
----
-
----
-
 ## 📸 Visual Overview
 
 ### Background Notifications & App UI
@@ -102,6 +94,11 @@ This project is created to honor the memory of **Youssef Abdelkader**. We ask Al
 
 ### Shareable Dua Cards
 ![Dua Card](assets/dua-Jawami'-Dua-6.jpg)
+
+---
+## 🤲 Tribute
+
+This project is created to honor the memory of **Youssef Abdelkader**. We ask Allah to grant him mercy, widen his grave, and admit him to the highest levels of Paradise. Ameen.
 
 ---
 
