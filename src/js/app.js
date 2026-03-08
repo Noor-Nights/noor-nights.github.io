@@ -9,8 +9,6 @@ const CONFIG = {
 // ── Theme Background Preload ──
 const shareBg1 = new Image();
 shareBg1.src = 'assets/backgrounds/Background.png';
-const shareBg2 = new Image();
-shareBg2.src = 'assets/backgrounds/Background-3.png';
 
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
@@ -562,7 +560,7 @@ async function ensureBackgroundLoaded(img) {
     });
 }
 
-function generateCanvasURL(arabic, english, badge, isYoussef, useSecondBg = false) {
+function generateCanvasURL(arabic, english, badge, isYoussef) {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
 
@@ -590,7 +588,7 @@ function generateCanvasURL(arabic, english, badge, isYoussef, useSecondBg = fals
     canvas.height = canvasHeight;
     const ctx = canvas.getContext('2d');
 
-    const activeBg = useSecondBg ? shareBg2 : shareBg1;
+    const activeBg = shareBg1;
 
     if (activeBg.complete && activeBg.naturalWidth > 0) {
         const scale = Math.max(1080 / activeBg.width, canvasHeight / activeBg.height);
@@ -664,11 +662,10 @@ function triggerDownload(url, filename) {
 
 async function shareImage(type, idx) {
     let dua = type === 'ess' ? essentialDuas[idx] : jawamiDuas[idx];
-    const useSecondBg = idx % 2 === 1; // Alternating backgrounds
-    const activeBg = useSecondBg ? shareBg2 : shareBg1;
+    const activeBg = shareBg1;
     await ensureBackgroundLoaded(activeBg);
 
-    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false, useSecondBg);
+    let url = generateCanvasURL(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
     const filename = `dua-${dua.badge.replace(/\s/g, '-')}.jpg`;
 
     try {
