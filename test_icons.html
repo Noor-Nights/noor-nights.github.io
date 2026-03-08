@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        div {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        let html = '';
+        for (let i = 0; i <= 14; i++) {
+            html += `<div><img src="assets/icons/exported/icon_${i}.png"><br>icon_${i}</div>`;
+        }
+        document.getElementById('container').innerHTML = html;
+    </script>
+</body>
+
+</html>
