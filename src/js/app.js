@@ -1,4 +1,12 @@
 // ═══════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════
+const CONFIG = {
+    TARGET_DATE: "2026-03-09T17:54:00+02:00",
+    ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f"
+};
+
+// ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
 // ═══════════════════════════════════════════════════
 const TRANSLATIONS = {
@@ -252,7 +260,7 @@ function applyLanguage(lang) {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach(el => {
-        el.innerHTML = t(el.getAttribute('data-i18n'));
+        el.textContent = t(el.getAttribute('data-i18n'));
     });
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
@@ -343,11 +351,12 @@ function renderDuaCarousel(list, containerId, prefix) {
         slide.style.setProperty('--card-border', pal.border);
         slide.setAttribute('aria-label', 'Dua ' + (idx + 1));
 
+        const englishDiv = dua.english ? `<div class="dua-english-main"></div>` : '';
         slide.innerHTML = `
             <div class="dua-slide-inner">
-                <div class="dua-arabic-main">${dua.arabic.replace(/\n/g, '<br>')}</div>
-                ${dua.english ? `<div class="dua-english-main">${dua.english}</div>` : ''}
-                <div class="dua-badge-row"><span class="slide-badge">${dua.badge}</span></div>
+                <div class="dua-arabic-main"></div>
+                ${englishDiv}
+                <div class="dua-badge-row"><span class="slide-badge"></span></div>
                 <div class="slide-actions">
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
                         <span class="slide-btn-icon">📄</span>
@@ -359,6 +368,9 @@ function renderDuaCarousel(list, containerId, prefix) {
                     </button>
                 </div>
             </div>`;
+        slide.querySelector('.dua-arabic-main').textContent = dua.arabic;
+        if (dua.english) slide.querySelector('.dua-english-main').textContent = dua.english;
+        slide.querySelector('.slide-badge').textContent = dua.badge;
 
         track.appendChild(slide);
     });
@@ -445,15 +457,18 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
         card.innerHTML = `
             <div class="card-header" style="background: ${colors[idx % colors.length]}"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="card-body">
-                <span class="badge" style="background: ${colors[(idx + 1) % colors.length]}">${dua.badge}</span>
-                <div class="arabic-text">${dua.arabic.replace(/\n/g, '<br>')}</div>
-                ${dua.english ? `<div class="translation">${dua.english}</div>` : ''}
+                <span class="badge" style="background: ${colors[(idx + 1) % colors.length]}"></span>
+                <div class="arabic-text"></div>
+                ${dua.english ? `<div class="translation"></div>` : ''}
                 <div class="share-buttons">
                     <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">📤 ${t('actShareCard')}</button>
                     <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">📋 ${t('actCopy')}</button>
                 </div>
             </div>
         `;
+        card.querySelector('.badge').textContent = dua.badge;
+        card.querySelector('.arabic-text').textContent = dua.arabic;
+        if (dua.english) card.querySelector('.translation').textContent = dua.english;
         body.appendChild(card);
     });
 
@@ -465,7 +480,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
         const toggleBtn = document.createElement('button');
         toggleBtn.className = 'btn btn-outline dua-toggle-btn';
         toggleBtn.id = `toggle-${containerId}`;
-        toggleBtn.innerHTML = t('showMore', remaining);
+        toggleBtn.textContent = t('showMore', remaining);
 
         toggleBtn.addEventListener('click', () => {
             expanded = !expanded;
@@ -475,13 +490,13 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
                     c.classList.remove('dua-card--hidden');
                     c.classList.add('dua-card--visible-extra');
                 });
-                toggleBtn.innerHTML = t('showLess');
+                toggleBtn.textContent = t('showLess');
             } else {
                 body.querySelectorAll('.dua-card--visible-extra').forEach((c, i) => {
                     c.classList.remove('dua-card--visible-extra');
                     c.classList.add('dua-card--hidden');
                 });
-                toggleBtn.innerHTML = t('showMore', remaining);
+                toggleBtn.textContent = t('showMore', remaining);
                 // Scroll back to section header smoothly
                 container.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -660,7 +675,7 @@ function getCurrentTime() {
     return now.getTime();
 }
 
-const targetDate = new Date("2026-03-09T17:54:00+02:00").getTime();
+const targetDate = new Date(CONFIG.TARGET_DATE).getTime();
 
 function updateCountdown() {
     const timerStatus = document.getElementById('countdown-status');
@@ -671,9 +686,26 @@ function updateCountdown() {
     if (distance < 0) {
         const n = Math.floor(Math.abs(distance) / 86400000) + 1;
         timerDisplay.style.display = 'none';
-        timerStatus.innerHTML = n <= 10 ?
-            `<span style="font-size:1.8rem;">${t('nightStatus', n)}</span><br><span style="font-size:1rem; color:var(--text-muted)">${t('nightSubStatus')}</span>` :
-            t('concluded');
+
+        timerStatus.textContent = '';
+        if (n <= 10) {
+            const spanMain = document.createElement('span');
+            spanMain.style.fontSize = '1.8rem';
+            spanMain.textContent = t('nightStatus', n);
+
+            const breakEl = document.createElement('br');
+
+            const spanSub = document.createElement('span');
+            spanSub.style.fontSize = '1rem';
+            spanSub.style.color = 'var(--text-muted)';
+            spanSub.textContent = t('nightSubStatus');
+
+            timerStatus.appendChild(spanMain);
+            timerStatus.appendChild(breakEl);
+            timerStatus.appendChild(spanSub);
+        } else {
+            timerStatus.textContent = t('concluded');
+        }
         return;
     }
 
@@ -707,9 +739,22 @@ function loadChecklist() {
         label.className = 'checklist-item';
         const checked = !!data[task.id];
         if (checked) completed++;
-        label.innerHTML = `<input type="checkbox" id="${task.id}" ${checked ? 'checked' : ''}> <span class="checklist-label">${task.icon} ${task.text}</span>`;
+
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = task.id;
+        input.checked = checked;
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'checklist-label';
+        labelSpan.textContent = `${task.icon} ${task.text}`;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(' '));
+        label.appendChild(labelSpan);
+
         cont.appendChild(label);
-        label.querySelector('input').addEventListener('change', (e) => {
+        input.addEventListener('change', (e) => {
             const isChecked = e.target.checked;
             data[task.id] = isChecked;
             localStorage.setItem(key, JSON.stringify(data));
