@@ -89,11 +89,7 @@ const TRANSLATIONS = {
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
         blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
         footerMadeWith: 'Made with ♥️ for Ramadan.',
-        notifyDisable: '🔕 Disable Reminders',
-        alreadySubTitle: '🔔 Already Subscribed!',
-        alreadySubMsg: 'You are already receiving nightly reminders. Do you want to disable them?',
-        unsubTitle: '🔕 Reminders Disabled',
-        unsubMsg: 'You will no longer receive push notifications. You can re-enable anytime.',
+
         permNeeded: '🔔 Permission Required',
         permNeededAndroid: '👉 On Android: Tap the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
         permNeededIOS: '👉 On iPhone: Add the app to your Home Screen first, then try enabling reminders inside the installed app.',
@@ -205,11 +201,7 @@ const TRANSLATIONS = {
         blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
         blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.',
         footerMadeWith: 'صُنع بـ ❤️ لرمضان.',
-        notifyDisable: '🔕 تعطيل التذكيرات',
-        alreadySubTitle: '🔔 أنت مشترك بالفعل!',
-        alreadySubMsg: 'أنت تتلقى تذكيرات الليالي بالفعل. هل ترغب في تعطيلها؟',
-        unsubTitle: '🔕 تم إيقاف التذكيرات',
-        unsubMsg: 'لن تتلقى إشعارات بعد الآن. يمكنك إعادة التفعيل في أي وقت.',
+
         permNeeded: '🔔 إذن مطلوب',
         permNeededAndroid: '👉 على أندرويد: اضغط على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
         permNeededIOS: '👉 على آيفون: أضف التطبيق إلى شاشة الرئيسية أولاً، ثم فعّل التذكيرات من داخل التطبيق المثبت.',
@@ -949,15 +941,11 @@ function requestNotifications() {
                 const isSubscribed = OneSignal.User.PushSubscription.optedIn;
 
                 if (isSubscribed) {
-                    // DISABLE flow: Ask user if they actually want to disable
-                    if (confirm(t('alreadySubTitle') + '\n\n' + t('alreadySubMsg'))) {
-                        await OneSignal.User.PushSubscription.optOut();
-                        _updateNotifyBtnState(btn, false);
-                        showMessage(t('unsubTitle'), t('unsubMsg'));
-                    } else {
-                        // User canceled: restore enabled state
-                        _updateNotifyBtnState(btn, true);
-                    }
+                    // Always allow: if already subscribed, just refresh and show success
+                    await OneSignal.User.PushSubscription.optIn();
+                    _updateNotifyBtnState(btn, true);
+                    trackEvent('/push-opt-in', 'push_opt_in_refreshed');
+                    showMessage(t('subActivated'), t('subActivatedMsg'));
                 } else {
                     // ENABLE flow
                     if (Notification.permission === 'granted') {
