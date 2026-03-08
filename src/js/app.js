@@ -563,13 +563,10 @@ function getWrappedLines(ctx, text, maxWidth) {
 }
 
 async function ensureBackgroundLoaded(img) {
+    if (img.complete) return;
     return new Promise((resolve) => {
-        if (img.complete && img.naturalWidth > 0) {
-            resolve();
-        } else {
-            img.onload = () => resolve();
-            img.onerror = () => resolve(); // continue anyway with gradient
-        }
+        img.addEventListener('load', () => resolve(), { once: true });
+        img.addEventListener('error', () => resolve(), { once: true });
     });
 }
 
