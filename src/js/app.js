@@ -606,7 +606,14 @@ function generateCanvasURL(arabic, english, badge, isYoussef, useSecondBg = fals
         const nh = activeBg.height * scale;
         const nx = (1080 - nw) / 2;
         const ny = canvasHeight - nh; // Align to bottom so mosque rests at the bottom edge
+
+        // Apply transparency specifically for the second background if desired
+        if (useSecondBg) {
+            ctx.globalAlpha = 0.85; // Slight transparency
+        }
+
         ctx.drawImage(activeBg, nx, ny, nw, nh);
+        ctx.globalAlpha = 1.0; // Reset alpha
         // Removed the white overlay completely to show the background beautifully
     } else {
         const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
