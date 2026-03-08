@@ -55,24 +55,37 @@ const nightNum = Math.floor(distance / (1000 * 60 * 60 * 24)) + 1;
 // 4. Calculate Hour Index (19:00 is hour 0, 00:00 is hour 5)
 let hrIdx = hours >= 19 ? hours - 19 : hours + 5;
 
-// Data: Essential Duas
+// Data: Essential Duas (Complete List)
 const essentialDuas = [
-    { arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي" },
+    { arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ كريمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي" },
     { arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ" },
     { arabic: "اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَعَافِنّي وَارْزُقْنِي" },
     { arabic: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ" },
     { arabic: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّكَ أَنتَ التَّوَّابُ الرَّحِيمُ" }
 ];
 
-// Data: Jawami Duas
+// Data: Jawami Duas (Short & Powerful)
 const jawamiDuas = [
+    { arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ" },
     { arabic: "اللَّهُمَّ اغْفِرْ لِي ، وَارْحَمْنِي وَاهْدِنِي ، وَعَافِنِي وَارْزُقْنِي" },
     { arabic: "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا ، وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا" },
     { arabic: "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي" },
     { arabic: "اللَّهُمَّ رَبِّ هَبْ لِيْ مِنَ الصَّالِحِينَ" },
     { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ العَفْوَ وَالعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ" },
     { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى ، وَالتُّقَى ، وَالعَفَافَ وَالغِنَى" },
-    { arabic: "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنَ عِبَادَتِكَ" }
+    { arabic: "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنَ عِبَادَتِكَ" },
+    { arabic: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّك أَنْتَ التَّوَّابُ الرَّحِيمُ" },
+    { arabic: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ" },
+    { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا" },
+    { arabic: "اللَّهُمَّ لَكَ الحَمْدُ كُلُّهُ ، وَلَكَ المُلْكُ كُلُّهُ" },
+    { arabic: "اللَّهُمَّ مُصَرِّفَ القُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ" },
+    { arabic: "اللَّهُمَّ ثَبِّتْ قَلْبِي عَلَى دِينِكَ" },
+    { arabic: "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ" },
+    { arabic: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ وَالعَجْزِ وَالكَسَلِ" },
+    { arabic: "أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ" },
+    { arabic: "لا إِلَهَ إِلا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ" },
+    { arabic: "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي" },
+    { arabic: "اللَّهُمَّ اهْدِنَا فِيمَنْ هَدَيْتَ ، وَعَافِنَا فِيمَنْ عَافَيْتَ" }
 ];
 
 // Data: Messages
@@ -88,8 +101,18 @@ const lateMessages = [
     "✨ وازن ليلتك بين القيام والدعاء."
 ];
 
-const duaList = essentialDuas.concat(jawamiDuas);
-const dua = duaList[hrIdx % duaList.length];
+// Logic: 
+// 1. Peak Night Push (22:00) always uses Laylatul Qadr Dua.
+// 2. Other pushes use a different rotation based on the specific Night and Hour.
+let dua;
+if (hrIdx === 3) { // 22:00 is hour index 3 (19 + 3)
+    dua = essentialDuas[0];
+} else {
+    // Combine all available short duas for the rotating reminders
+    const allShortDuas = essentialDuas.concat(jawamiDuas);
+    // Unique rotation per night: (hrIdx + nightNum) ensures a different start point each night.
+    dua = allShortDuas[(hrIdx + nightNum) % allShortDuas.length];
+}
 
 const actionMsg = hrIdx < 4 ?
     earlyMessages[hrIdx % earlyMessages.length] :

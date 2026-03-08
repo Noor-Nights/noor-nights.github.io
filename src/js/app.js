@@ -982,21 +982,9 @@ function generateICS() {
         `X-WR-CALDESC:${t('calDesc')}`
     ];
 
-    // Curate exactly 12 short, powerful Duas for the calendar events
-    const calendarDuas = [
-        { arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي" },
-        { arabic: "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ" },
-        { arabic: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ" },
-        { arabic: "رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ" },
-        { arabic: "اللَّهُمَّ اغْفِرْ لِي ، وَارْحَمْنِي وَاهْدِنِي ، وَعَافِنِي وَارْزُقْنِي" },
-        { arabic: "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا ، وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا" },
-        { arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ" },
-        { arabic: "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي" },
-        { arabic: "اللَّهُمَّ رَبِّ هَبْ لِيْ مِنَ الصَّالِحِينَ" },
-        { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ العَفْوَ وَالعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ" },
-        { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى ، وَالتُّقَى ، وَالعَفَافَ وَالغِنَى" },
-        { arabic: "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنَ عِبَادَتِكَ" }
-    ];
+    // Use the global essential and cleaned jawami lists
+    const lqDua = essentialDuas[0];
+    const rotationDuas = essentialDuas.concat(jawamiDuas);
 
     const nights = [
         { n: 1, date: "20260309" }, { n: 2, date: "20260310" },
@@ -1020,7 +1008,14 @@ function generateICS() {
             const sStart = `${eventDate}T${String(hour).padStart(2, '0')}0000`;
             const sEnd = `${eventDate}T${String(hour).padStart(2, '0')}0500`; // Back to 5 mins
 
-            const dua = calendarDuas[i % calendarDuas.length];
+            let dua;
+            if (i === 3) { // Lock Laylatul Qadr Dua to 22:00
+                dua = lqDua;
+            } else {
+                // Different rotation per night: (i + night.n)
+                dua = rotationDuas[(i + night.n) % rotationDuas.length];
+            }
+
             const actionMsg = i < 4 ?
                 t('earlyMessages')[i % t('earlyMessages').length] :
                 t('lateMessages')[(i - 4) % t('lateMessages').length];
