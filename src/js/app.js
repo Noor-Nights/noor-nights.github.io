@@ -10,14 +10,6 @@ const CONFIG = {
 const shareBackgroundImg = new Image();
 shareBackgroundImg.src = 'assets/backgrounds/Background.png';
 
-window.addEventListener('load', () => {
-    const loader = document.getElementById('loading-screen');
-    if (loader) {
-        loader.classList.add('hidden');
-        setTimeout(() => loader.remove(), 500);
-    }
-});
-
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
 // ═══════════════════════════════════════════════════
@@ -43,11 +35,11 @@ const TRANSLATIONS = {
         testBtn: '🧪 Send Test Notification',
         checklistTitle: '✅ Worship Checklist',
         tasks: [
-            { id: 'cb-taraweeh', icon: 'mosque.png', text: 'Pray Taraweeh' },
-            { id: 'cb-qiyam', icon: 'lantern.png', text: 'Pray Qiyam' },
-            { id: 'cb-dua', icon: 'dua_hands.png', text: 'Make Dua' },
-            { id: 'cb-sadaqah', icon: 'charity.png', text: 'Give Sadaqah' },
-            { id: 'cb-quran', icon: 'tasbih.png', text: 'Recite Quran' }
+            { id: 'cb-taraweeh', icon: '🕌', text: 'Pray Taraweeh' },
+            { id: 'cb-qiyam', icon: '🌌', text: 'Pray Qiyam' },
+            { id: 'cb-dua', icon: '🤲', text: 'Make Dua' },
+            { id: 'cb-sadaqah', icon: '🎁', text: 'Give Sadaqah' },
+            { id: 'cb-quran', icon: '📖', text: 'Recite Quran' }
         ],
         progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
         calendarTitle: '📅 Add to My Calendar',
@@ -160,11 +152,11 @@ const TRANSLATIONS = {
         testBtn: '🧪 إرسال إشعار تجريبي',
         checklistTitle: '✅ قائمة العبادات',
         tasks: [
-            { id: 'cb-taraweeh', icon: 'mosque.png', text: 'صلاة التراويح' },
-            { id: 'cb-qiyam', icon: 'lantern.png', text: 'صلاة القيام' },
-            { id: 'cb-dua', icon: 'dua_hands.png', text: 'الدعاء' },
-            { id: 'cb-sadaqah', icon: 'charity.png', text: 'إخراج الصدقة' },
-            { id: 'cb-quran', icon: 'tasbih.png', text: 'تلاوة القرآن' }
+            { id: 'cb-taraweeh', icon: '🕌', text: 'صلاة التراويح' },
+            { id: 'cb-qiyam', icon: '🌌', text: 'صلاة القيام' },
+            { id: 'cb-dua', icon: '🤲', text: 'الدعاء' },
+            { id: 'cb-sadaqah', icon: '🎁', text: 'إخراج الصدقة' },
+            { id: 'cb-quran', icon: '📖', text: 'تلاوة القرآن' }
         ],
         progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
         calendarTitle: '📅 أضف إلى التقويم',
@@ -601,11 +593,9 @@ function generateCanvasURL(arabic, english, badge, isYoussef) {
         const nw = shareBackgroundImg.width * scale;
         const nh = shareBackgroundImg.height * scale;
         const nx = (1080 - nw) / 2;
-        const ny = (canvasHeight - nh) / 2;
+        const ny = canvasHeight - nh; // Align to bottom so mosque rests at the bottom edge
         ctx.drawImage(shareBackgroundImg, nx, ny, nw, nh);
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.fillRect(50, 50, 980, canvasHeight - 100);
+        // Removed the white overlay completely to show the background beautifully
     } else {
         const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
         grad.addColorStop(0, '#f1e5d1');
@@ -771,7 +761,7 @@ function loadChecklist() {
 
         const labelSpan = document.createElement('span');
         labelSpan.className = 'checklist-label';
-        labelSpan.innerHTML = `<img src="assets/icons/theme/${task.icon}" class="task-icon" alt=""> ${task.text}`;
+        labelSpan.textContent = `${task.icon} ${task.text}`;
 
         label.appendChild(input);
         label.appendChild(document.createTextNode(' '));
