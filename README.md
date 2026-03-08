@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/icons/icon-192.png" width="128" alt="Noor Nights Logo">
+</p>
+
 # 🌙 Noor Nights
 
 **Noor Nights** is a minimalist, bilingual PWA (Progressive Web App) designed to help Muslims make the most of the last ten nights of Ramadan. It provides tools for spiritual tracking, real-time background push reminders, and effortlessly sharing Prophetic supplications (Duas).
