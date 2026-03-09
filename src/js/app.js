@@ -124,7 +124,24 @@ const TRANSLATIONS = {
         calGoogleStep2: 'Upload <code>noor-nights.ics</code>.',
         calAppleTitle: 'Apple Calendar (Mac):',
         calAppleStep1: 'Double-click the file or drag into Calendar.',
-        calAppleStep2: 'Select a destination calendar and click <b>OK</b>.'
+        calAppleStep2: 'Select a destination calendar and click <b>OK</b>.',
+
+        tasbeehTitle: '📿 Tasbeeh Counter',
+        tasbeehGoal: 'Set Goal',
+        tasbeehReset: 'Reset',
+        tasbeehPhrase: 'Select Dhikr',
+        tasbeehIncrement: 'Press space or tap to count',
+        tasbeehCompleted: 'Masha\'Allah! Goal Reached ✨',
+        tasbeehReminder: 'Have you completed your Tasbeeh goal tonight 🌙?',
+        phrases: {
+            subhanallah: 'SubhanAllah',
+            alhamdulillah: 'Alhamdulillah',
+            allahuakbar: 'Allahu Akbar',
+            laillahaillallah: 'La ilaha illa Allah',
+            astaghfirullah: 'Astaghfirullah'
+        },
+        tasbeehShare: 'Share Milestone',
+        tasbeehResetSuccess: 'All counters have been reset to zero.'
 
     },
     ar: {
@@ -236,7 +253,24 @@ const TRANSLATIONS = {
         calGoogleStep2: 'قم برفع ملف <code>noor-nights.ics</code>.',
         calAppleTitle: 'تقويم آبل (ماك):',
         calAppleStep1: 'انقر مرتين على الملف أو اسحبه إلى التقويم.',
-        calAppleStep2: 'اختر تقويم الوجهة وانقر على <b>موافق (OK)</b>.'
+        calAppleStep2: 'اختر تقويم الوجهة وانقر على <b>موافق (OK)</b>.',
+
+        tasbeehTitle: '📿 مسبحة الأذكار',
+        tasbeehGoal: 'تحديد الهدف',
+        tasbeehReset: 'إعادة ضبط',
+        tasbeehPhrase: 'اختر الذكر',
+        tasbeehIncrement: 'اضغط للمتابعة',
+        tasbeehCompleted: 'ما شاء الله! تم الوصول للهدف ✨',
+        tasbeehReminder: 'هل أتممت أذكارك الليلة؟ 🌙',
+        phrases: {
+            subhanallah: 'سبحان الله',
+            alhamdulillah: 'الحمد لله',
+            allahuakbar: 'الله أكبر',
+            laillahaillallah: 'لا إله إلا الله',
+            astaghfirullah: 'أستغفر الله'
+        },
+        tasbeehShare: 'مشاركة الإنجاز',
+        tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.'
 
     }
 };
@@ -273,6 +307,7 @@ function applyLanguage(lang) {
     if (typeof renderAllDuas === 'function') {
         renderAllDuas();
     }
+    updateTasbeehUI();
 }
 
 function toggleLanguage() {
@@ -1184,8 +1219,138 @@ function checkDayChange() {
     }
 }
 
+// ═══════════════════════════════════════════════════
+// TASBEEH COUNTER LOGIC
+// ═══════════════════════════════════════════════════
+let tasbeehData = {
+    goal: 100,
+    counts: {
+        subhanallah: 0,
+        alhamdulillah: 0,
+        allahuakbar: 0,
+        laillahaillallah: 0,
+        astaghfirullah: 0
+    }
+};
+
+function saveTasbeeh() {
+    localStorage.setItem('noor_tasbeeh', JSON.stringify(tasbeehData));
+}
+
+function loadTasbeeh() {
+    const saved = localStorage.getItem('noor_tasbeeh');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        // Migrate old data if necessary
+        if (typeof parsed.count === 'number') {
+            tasbeehData.counts.subhanallah = parsed.count;
+            tasbeehData.goal = parsed.goal;
+        } else {
+            tasbeehData = parsed;
+        }
+    }
+    const goalSelect = document.getElementById('tasbeeh-goal-select');
+    if (goalSelect) goalSelect.value = tasbeehData.goal;
+    updateTasbeehUI();
+}
+
+const TASBEEH_COLORS = [
+    'var(--amber-glow)',   // 0-99
+    'var(--emerald-teal)',  // 100-199
+    'var(--royal-purple)',  // 200-299
+    '#38bdf8',              // 300-399 (Sky Blue)
+    '#f472b6',              // 400-499 (Pink)
+    '#a855f7'               // 500+
+];
+
+function updateTasbeehUI() {
+    const grid = document.getElementById('tasbeeh-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    const phrases = t('phrases');
+    Object.keys(tasbeehData.counts).forEach(key => {
+        const count = tasbeehData.counts[key];
+        const phraseLabel = phrases[key];
+
+        const display = document.createElement('div');
+        display.className = 'tasbeeh-display';
+        display.onclick = () => incrementTasbeeh(key);
+
+        const radius = 60;
+        const circumference = radius * 2 * Math.PI;
+
+        // Progress within the current 100
+        const currentLapProgress = count % 100;
+        const isExactHundred = count > 0 && currentLapProgress === 0;
+        const progressFactor = isExactHundred ? 1 : currentLapProgress / 100;
+
+        const offset = circumference - (progressFactor * circumference);
+
+        // Color changes every 100
+        const colorIdx = Math.floor(count / 100) % TASBEEH_COLORS.length;
+        const strokeColor = TASBEEH_COLORS[colorIdx];
+
+        display.innerHTML = `
+            <svg class="progress-ring" width="140" height="140">
+                <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6" fill="transparent"
+                    r="${radius}" cx="70" cy="70" />
+                <circle class="progress-ring__circle" stroke="${strokeColor}" stroke-width="6"
+                    stroke-linecap="round" fill="transparent" r="${radius}" cx="70" cy="70" 
+                    style="stroke-dasharray: ${circumference} ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.2s, stroke 0.5s;"/>
+            </svg>
+            <div class="tasbeeh-content">
+                <div class="tasbeeh-count" style="color: ${strokeColor}">${count}</div>
+                <div class="tasbeeh-active-phrase" title="${phraseLabel}">${phraseLabel}</div>
+            </div>
+        `;
+        grid.appendChild(display);
+    });
+}
+
+function incrementTasbeeh(key) {
+    if (!tasbeehData.counts[key] && tasbeehData.counts[key] !== 0) return;
+
+    tasbeehData.counts[key]++;
+
+    if (tasbeehData.counts[key] === tasbeehData.goal) {
+        trackEvent('/tasbeeh-completed', `Goal ${tasbeehData.goal} reached for ${key}`);
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    }
+
+    saveTasbeeh();
+    updateTasbeehUI();
+    trackEvent('/tasbeeh-increment', `Counted ${key}`);
+}
+
+function resetTasbeeh() {
+    Object.keys(tasbeehData.counts).forEach(key => {
+        tasbeehData.counts[key] = 0;
+    });
+    saveTasbeeh();
+    updateTasbeehUI();
+    trackEvent('/tasbeeh-reset', 'Tasbeeh reset all');
+    showMessage(t('tasbeehTitle'), t('tasbeehResetSuccess'));
+}
+
+// Remove shareTasbeehMilestone for now or update it later if needed
+// Keyboard support for spacebar - might be tricky with multiple circles, 
+// so let's disable spacebar increment for multi-mode or pick the first one.
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && document.activeElement.tagName !== 'SELECT' && document.activeElement.tagName !== 'BUTTON') {
+        const container = document.getElementById('tasbeeh-container');
+        if (container && container.getBoundingClientRect().top < window.innerHeight && container.getBoundingClientRect().bottom > 0) {
+            e.preventDefault();
+            // Default to incrementing the first one if space is pressed
+            incrementTasbeeh(Object.keys(tasbeehData.counts)[0]);
+        }
+    }
+});
+
 // Global Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    loadTasbeeh();
     updateCountdown();
     setInterval(updateCountdown, 1000);
     checkDayChange();
