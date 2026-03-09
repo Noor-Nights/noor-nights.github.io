@@ -595,9 +595,21 @@ async function ensureBackgroundLoaded(img) {
     });
 }
 
+function getCurrentNight() {
+    const targetDate = new Date(CONFIG.TARGET_DATE).getTime();
+    const distance = targetDate - getCurrentTime();
+    if (distance < 0) {
+        const n = Math.floor(Math.abs(distance) / 86400000) + 1;
+        if (n <= 10) return n;
+    }
+    return null;
+}
+
 async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
+
+    const night = getCurrentNight();
 
     let arFontSize = arabic.length > 250 ? 44 : 56;
     let arLineHeight = arabic.length > 250 ? 70 : 90;
@@ -654,6 +666,12 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     ctx.font = 'bold 42px "Inter", sans-serif';
     ctx.fillStyle = '#2d2d2d';
     ctx.fillText(isYoussef ? "🤲 Special Dua for Youssef Abdelkader" : badge, 540, 150);
+
+    if (night && !isYoussef) {
+        ctx.font = '500 28px "Inter", sans-serif';
+        ctx.fillStyle = 'rgba(45,45,45,0.7)';
+        ctx.fillText(t('nightStatus', night), 540, 205);
+    }
 
     let currentY = 280;
     ctx.font = `bold ${arFontSize}px "Amiri", serif`;
