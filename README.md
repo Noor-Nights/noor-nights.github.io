@@ -91,19 +91,24 @@ The repository includes a ready-to-use Node.js script (`send_test_pushes.js`) to
 
 ## 📸 Visual Overview
 
-### 📱 Mobile Interface
+### 📱 Mobile UI Gallery
 | ⏳ Home & Countdown | ✅ Worship Checklist |
 |:---:|:---:|
-| <img src="assets/screenshots/hero.png" width="400"> | <img src="assets/screenshots/checklist.png" width="400"> |
+| <img src="assets/screenshots/hero_mobile.png" width="300"> | <img src="assets/screenshots/checklist_mobile.png" width="300"> |
 
 | 📿 Multi-Circle Tasbeeh | 🤲 Essential Duas |
 |:---:|:---:|
-| <img src="assets/screenshots/tasbeeh.png" width="400"> | <img src="assets/screenshots/duas.png" width="400"> |
+| <img src="assets/screenshots/tasbeeh_mobile.png" width="300"> | <img src="assets/screenshots/duas_mobile.png" width="300"> |
 
-### 🔔 System Integration & Shareables
-| Background Reminders | Shareable Image Cards |
+### 🔔 Real-World Notifications
+| 🔒 Lock Screen Reminder | 🔓 System Notification |
 |:---:|:---:|
-| <img src="assets/reminder.png" width="400"> | <img src="assets/dua-Jawami'-Dua-6.jpg" width="400"> |
+| <img src="assets/phone-reminder-2.jpeg" width="300"> | <img src="assets/phone-reminder-1.jpeg" width="300"> |
+
+### 📅 Integration & 🤲 Shareables
+| 🗓️ Calendar Reminders | 📤 Shareable Image Cards |
+|:---:|:---:|
+| <img src="assets/calender.jpeg" width="380"> | <img src="assets/dua-Jawami'-Dua-6.jpg" width="380"> |
 
 ---
 ## 🤲 Tribute
