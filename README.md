@@ -7,9 +7,6 @@
 **Noor Nights** is a minimalist, bilingual PWA (Progressive Web App) designed to help Muslims make the most of the last ten nights of Ramadan. It provides tools for spiritual tracking, real-time background push reminders, and effortlessly sharing Prophetic supplications (Duas).
 
 
-Dedicated as **Sadaqah Jariyah** (ongoing charity) in loving memory of **Youssef Abdelkader**.
-
-
 ---
 
 ## ✨ Features
