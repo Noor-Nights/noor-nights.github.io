@@ -375,6 +375,9 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     list.forEach((dua, idx) => {
         const pal = WATERCOLOR_PALETTES[idx % WATERCOLOR_PALETTES.length];
+        const night = getCurrentNight();
+        const nightHTML = night ? `<div class="night-badge-ui">${t('nightStatus', night)}</div>` : '';
+
         const slide = document.createElement('div');
         slide.className = 'dua-slide';
         slide.style.setProperty('--blob1', pal.blob1);
@@ -385,6 +388,7 @@ function renderDuaCarousel(list, containerId, prefix) {
         const englishDiv = dua.english ? `<div class="dua-english-main"></div>` : '';
         slide.innerHTML = `
             <div class="dua-slide-inner">
+                ${nightHTML}
                 <div class="dua-arabic-main"></div>
                 ${englishDiv}
                 <div class="dua-badge-row"><span class="slide-badge"></span></div>
@@ -485,9 +489,14 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
         if (collapsible && idx >= JAWAMI_PREVIEW) {
             card.classList.add('dua-card--hidden');
         }
+
+        const night = getCurrentNight();
+        const nightHTML = night ? `<div class="night-badge-ui" style="margin-bottom: 10px; opacity: 0.8;">${t('nightStatus', night)}</div>` : '';
+
         card.innerHTML = `
             <div class="card-header" style="background: ${colors[idx % colors.length]}"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
             <div class="card-body">
+                ${nightHTML}
                 <span class="badge" style="background: ${colors[(idx + 1) % colors.length]}"></span>
                 <div class="arabic-text"></div>
                 ${dua.english ? `<div class="translation"></div>` : ''}
@@ -667,9 +676,9 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     ctx.fillStyle = '#2d2d2d';
     ctx.fillText(isYoussef ? "🤲 Special Dua for Youssef Abdelkader" : badge, 540, 150);
 
-    if (night && !isYoussef) {
-        ctx.font = '500 28px "Inter", sans-serif';
-        ctx.fillStyle = 'rgba(45,45,45,0.7)';
+    if (night) {
+        ctx.font = 'bold 30px "Inter", sans-serif';
+        ctx.fillStyle = '#6d6d6d';
         ctx.fillText(t('nightStatus', night), 540, 205);
     }
 

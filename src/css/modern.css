@@ -1063,3 +1063,22 @@ h2 {
         display: inline;
     }
 }
+
+/* ── Night Badge UI ── */
+.night-badge-ui {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--amber-glow);
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+[dir="rtl"] .night-badge-ui {
+    text-align: right;
+}
