@@ -672,15 +672,18 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    ctx.font = 'bold 42px "Inter", sans-serif';
+    ctx.font = 'bold 44px "Inter", sans-serif';
     ctx.fillStyle = '#2d2d2d';
-    ctx.fillText(isYoussef ? "🤲 Special Dua for Youssef Abdelkader" : badge, 540, 150);
 
+    // Main heading: Prioritize the Night Number if active
+    let topTitle = badge;
     if (night) {
-        ctx.font = 'bold 30px "Inter", sans-serif';
-        ctx.fillStyle = '#6d6d6d';
-        ctx.fillText(t('nightStatus', night), 540, 205);
+        topTitle = t('nightStatus', night);
+    } else if (isYoussef) {
+        topTitle = currentLang === 'ar' ? "🤲 دعاء خاص لروح يوسف عبد القادر" : "🤲 Special Dua for Youssef Abdelkader";
     }
+
+    ctx.fillText(topTitle, 540, 160);
 
     let currentY = 280;
     ctx.font = `bold ${arFontSize}px "Amiri", serif`;
