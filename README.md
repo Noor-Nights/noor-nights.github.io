@@ -21,8 +21,9 @@ Dedicated as **Sadaqah Jariyah** (ongoing charity) in loving memory of **Youssef
 - **✅ Worship Checklist:** Track your daily goals (Taraweeh, Dua, Sadaqah, Zakat, Quran). Progress is saved locally on your device.
 - **📅 Smart Calendar Export:** Generate and download an `.ics` file with daily Maghrib reminders for all 10 nights.
 - **🤲 Essential & Jawami' Duas:** A curated collection of powerful supplications from the Sunnah.
+- **📿 Multi-Circle Tasbeeh Counter:** Track multiple dhikr goals simultaneously with smart progress rings that cycle colors every 100 counts.
 - **📤 Image Sharing & Copying:** Generate beautiful, shareable JPG images of Duas using the Canvas API, or natively copy formatted text to your clipboard.
-- **🎨 Modern UI Theme:** A sleek, dark interface with dynamic gradients, glassmorphism, and animated stars.
+- **🎨 Modern UI Theme:** A sleek, dark interface with dynamic gradients, glassmorphism, and sparkling animated stars.
 
 ---
 
@@ -90,14 +91,19 @@ The repository includes a ready-to-use Node.js script (`send_test_pushes.js`) to
 
 ## 📸 Visual Overview
 
-### Background Notifications & App UI
-![Notification Preview](assets/reminder.png)
+### 📱 Mobile Interface
+| ⏳ Home & Countdown | ✅ Worship Checklist |
+|:---:|:---:|
+| <img src="assets/screenshots/hero.png" width="400"> | <img src="assets/screenshots/checklist.png" width="400"> |
 
-### Worship Tracking & Calendar Integration
-![Calendar Toggle](assets/calender.png)
+| 📿 Multi-Circle Tasbeeh | 🤲 Essential Duas |
+|:---:|:---:|
+| <img src="assets/screenshots/tasbeeh.png" width="400"> | <img src="assets/screenshots/duas.png" width="400"> |
 
-### Shareable Dua Cards
-![Dua Card](assets/dua-Jawami'-Dua-6.jpg)
+### 🔔 System Integration & Shareables
+| Background Reminders | Shareable Image Cards |
+|:---:|:---:|
+| <img src="assets/reminder.png" width="400"> | <img src="assets/dua-Jawami'-Dua-6.jpg" width="400"> |
 
 ---
 ## 🤲 Tribute
