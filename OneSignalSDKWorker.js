@@ -7,7 +7,7 @@
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
 // ── PWA Cache ────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v18';
+const CACHE_NAME = 'noor-nights-v19';
 const ASSETS = [
     '/',
     '/index.html',
