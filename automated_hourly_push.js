@@ -32,8 +32,8 @@ const time = now.getTime();
 
 // Start of the Last 10 Nights (Maghrib on March 9th in Egypt)
 const startNight = new Date("2026-03-09T17:54:00+02:00").getTime();
-// End of Ramadan
-const endNight = new Date("2026-03-20T05:00:00+02:00").getTime();
+// End of the Last 10 Nights (Fajr on March 19th in Egypt — Night 10 ends)
+const endNight = new Date("2026-03-19T05:00:00+02:00").getTime();
 
 // 1. Are we within the 10 Days?
 if (time < startNight || time > endNight) {
