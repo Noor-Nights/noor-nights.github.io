@@ -326,7 +326,14 @@ window.trackEvent = function (path, title) {
 }
 function trackEvent(path, title) { window.trackEvent(path, title); }
 
-let currentYoussefIdx = new Date().getDate() % youssefDuas.length;
+let currentYoussefIdx = (() => {
+    let d = new Date();
+    if (d.getHours() >= 18) d.setDate(d.getDate() + 1); // Islamic day begins at Maghrib (approx 18:00)
+    
+    // Calculate days since epoch accurately using local time offset to avoid UTC Midnight skips
+    const localEpochMs = d.getTime() - (d.getTimezoneOffset() * 60000);
+    return Math.floor(localEpochMs / 86400000) % youssefDuas.length;
+})();
 
 
 // ═══════════════════════════════════════════════════

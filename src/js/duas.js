@@ -481,6 +481,24 @@ const jawamiDuas = [
         "badge": "Jawami' Dua 91",
         "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ العَجْزِ وَالكَسَلِ ، وَالجُبْنِ وَالبُخْلِ ، وَالهَرَمِ وَالقَسْوَةِ ، وَالغَفْلَةِ وَالعَيْلَةِ وَالذِّلَّةِ ، وَالمَسْكَنَةِ ، وَأَعُوذُ بِكَ مِنَ الفَقْرِ وَالكُفْرِ ، وَالفُسُوقِ وَالشِّقَاقِ وَالنِّفَاقِ، وَالسُّمْعَةِ وَالرِّيَاءِ ، وَأَعُوذُ بِكَ مِنَ الصَّمَمِ وَالبَكَمِ ، وَالجُنُونِ ، وَالجِذَامِ ، وَالبَرَصِ ، وَسَيِّئِ الأَسْقَامِ.",
         "english": ""
+    },
+    {
+        "id": "j_friday_1",
+        "badge": "Friday Blessings",
+        "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
+        "english": ""
+    },
+    {
+        "id": "j_friday_2",
+        "badge": "Friday Guidance",
+        "arabic": "اللَّهُمَّ اجْعَلْ لَنَا فِي هَذَا الْيَوْمِ دَعْوَةً لَا تُرَدُّ، وَرِزْقًا لَا يُعَدُّ، وَبَابًا فِي الْجَنَّةِ لَا يُسَدُّ",
+        "english": ""
+    },
+    {
+        "id": "j_friday_3",
+        "badge": "Friday Forgiveness",
+        "arabic": "اللَّهُمَّ اغْفِرْ لِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْمُسْلِمِينَ وَالْمُسْلِمَاتِ، الْأَحْيَاءِ مِنْهُمْ وَالْأَمْوَاتِ",
+        "english": ""
     }
 ];
 
@@ -512,5 +530,97 @@ const youssefDuas = [
     {
         "arabic": "اللَّهُمَّ اجْعَلْ قَبْرَهُ روْضَةً مِنْ رِيَاضِ الْجَنَّةِ وَلَا تَجْعَلْهُ حُفْرَةً مِنْ حُفَرِ النَّارِ",
         "english": "O Allah, make his grave a garden from the gardens of Paradise, and do not make it a pit from the pits of Hell"
+    },
+    {
+        "arabic": "اللَّهُمَّ ارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّينَ وَاخْلُفْهُ فِي عَقِبِهِ فِي الْغَابِرِينَ",
+        "english": "O Allah, raise his rank among the rightly guided and be his successor among those he left behind"
+    },
+    {
+        "arabic": "اللَّهُمَّ تَغَمَّدْهُ بِرَحْمَتِكَ وَتَجَاوَزْ عَنْ سَيِّئَاتِهِ وَأَسْكِنْهُ فَسِيحَ جَنَّاتِكَ",
+        "english": "O Allah, envelop him with Your mercy, overlook his sins, and settle him in the vast expanse of Your gardens"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَلْحِقْهُ بِالصَّالِحِينَ وَاجْمَعْنَا بِهِ فِي دَارِ كَرَامَتِكَ مَعَ النَّبِيِّينَ وَالصِّدِّيقِينَ وَالشُّهَدَاءِ",
+        "english": "O Allah, join him with the righteous and reunite us with him in Your abode of honor, alongside the Prophets, the truthful, and the martyrs"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَسْكِنْهُ الْفِرْدَوْسَ الْأَعْلَى وَلَا تَحْرِمْنَا أَجْرَهُ وَلَا تَفْتِنَّا بَعْدَهُ",
+        "english": "O Allah, settle him in the highest Paradise (Firdaws), do not deprive us of his reward, and do not let us fall into trial after him"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْ أَفْضَلَ عُمُرِهِ آخِرَهُ وَأَفْضَلَ عَمَلِهِ خَوَاتِمَهُ وَأَفْضَلَ أَيَّامِهِ يَوْمَ يَلْقَاكَ",
+        "english": "O Allah, make the best of his life its ending, the best of his deeds its final ones, and the best of his days the day he meets You"
+    },
+    {
+        "arabic": "اللَّهُمَّ آنِسْ وَحْشَتَهُ فِي قَبْرِهِ وَاجْعَلْ رُوحَهُ مَعَ أَرْوَاحِ الشُّهَدَاءِ وَالصَّالِحِينَ",
+        "english": "O Allah, ease the loneliness of his grave and place his soul among the souls of the martyrs and the righteous"
+    },
+    {
+        "arabic": "اللَّهُمَّ اغْفِرْ لَهُ وَلِوَالِدَيْهِ وَلِذُرِّيَّتِهِ وَلِكُلِّ مَنْ أَحَبَّهُ",
+        "english": "O Allah, forgive him, his parents, his descendants, and all those who loved him"
+    },
+    {
+        "arabic": "اللَّهُمَّ ثَبِّتْهُ عِنْدَ الْمَسْأَلَةِ وَلَقِّهِ حُجَّتَهُ وَلَا تُضِلَّ فُؤَادَهُ",
+        "english": "O Allah, keep him firm at the time of questioning, grant him his proof, and do not let his heart go astray"
+    },
+    {
+        "arabic": "اللَّهُمَّ يَمِّنْ كِتَابَهُ وَيَسِّرْ حِسَابَهُ وَثَقِّلْ مِيزَانَهُ بِالْحَسَنَاتِ",
+        "english": "O Allah, give him his book of deeds in his right hand, make his reckoning easy, and weigh down his scale with good deeds"
+    },
+    {
+        "arabic": "اللَّهُمَّ بَرِّدْ عَلَى قَبْرِهِ وَاجْعَلْهُ بَرْدًا وَسَلَامًا كَمَا جَعَلْتَ النَّارَ بَرْدًا وَسَلَامًا عَلَى إِبْرَاهِيمَ",
+        "english": "O Allah, bring coolness to his grave and make it cool and peaceful for him, just as You made the fire cool and peaceful for Ibrahim"
+    },
+    {
+        "arabic": "اللَّهُمَّ ارْزُقْهُ شَفَاعَةَ نَبِيِّكَ مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ وَأَوْرِدْهُ حَوْضَهُ",
+        "english": "O Allah, grant him the intercession of Your Prophet, peace be upon him, and let him drink from his basin"
+    },
+    {
+        "arabic": "اللَّهُمَّ إِنَّهُ فِي ذِمَّتِكَ وَحَبْلِ جِوَارِكَ فَقِهِ فِتْنَةَ الْقَبْرِ وَعَذَابَ النَّارِ",
+        "english": "O Allah, he is under Your protection and trusting in Your refuge, so protect him from the trial of the grave and the punishment of the Fire"
+    },
+    {
+        "arabic": "اللَّهُمَّ إِنْ كَانَ مُحْسِنًا فَزِدْ فِي حَسَنَاتِهِ، وَإِنْ كَانَ مُسِيئًا فَتَجَاوَزْ عَنْ سَيِّئَاتِهِ",
+        "english": "O Allah, if he was a doer of good, increase his good deeds, and if he was a wrongdoer, overlook his bad deeds"
+    },
+    {
+        "arabic": "اللَّهُمَّ شَفِّعْ فِيهِ نَبِيَّنَا وَمُصْطَفَاكَ، وَاحْشُرْهُ تَحْتَ لِوَائِهِ",
+        "english": "O Allah, grant him the intercession of our Prophet and Your chosen one, and gather him under his banner"
+    },
+    {
+        "arabic": "اللَّهُمَّ ارْزُقْهُ بِكُلِّ حَرْفٍ مِنَ الْقُرْآنِ حَلَاوَةً، وَبِكُلِّ كَلِمَةٍ كَرَامَةً، وَبِكُلِّ آيَةٍ سَعَادَةً، وَبِكُلِّ سُورَةٍ سَلَامَةً، وَبِكُلِّ جُزْءٍ جَزَاءً",
+        "english": "O Allah, grant him sweetness for every letter of the Quran, dignity for every word, happiness for every verse, safety for every chapter, and reward for every part"
+    },
+    {
+        "arabic": "اللَّهُمَّ احْشُرْهُ مَعَ الْمُتَّقِينَ إِلَى الرَّحْمَنِ وَفْدًا",
+        "english": "O Allah, gather him with the righteous as a highly honored delegation to the Most Merciful"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْ عَنْ يَمِينِهِ نُورًا حَتَّى تَبْعَثَهُ آمِنًا مُطْمَئِنًّا فِي نُورٍ مِنْ نُورِكَ",
+        "english": "O Allah, place light to his right, until You resurrect him safe and reassured in a light from Your Light"
+    },
+    {
+        "arabic": "اللَّهُمَّ انْظُرْ إِلَيْهِ نَظْرَةَ رِضَا، فَإِنَّ مَنْ تَنْظُرْ إِلَيْهِ نَظْرَةَ رِضَا لَا تُعَذِّبْهُ أَبَدًا",
+        "english": "O Allah, look upon him with a glance of pleasure, for whoever You look upon with a glance of pleasure, You will never punish"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَطْعِمْهُ مِنْ الْجَنَّةِ، وَاسْقِهِ مِنْ الْجَنَّةِ، وَأَرِهِ مَكَانَهُ مِنَ الْجَنَّةِ، وَقُلْ لَهُ: ادْخُلْ مِنْ أَيِّ بَابٍ تَشَاءُ",
+        "english": "O Allah, feed him from Paradise, give him drink from Paradise, show him his place in Paradise, and say to him: enter from whichever gate you please"
+    },
+    {
+        "arabic": "اللَّهُمَّ احْمِهِ تَحْتَ الْأَرْضِ، وَاسْتُرْهُ يَوْمَ الْعَرْضِ، وَلَا تُخْزِهِ يَوْمَ يُبْعَثُونَ",
+        "english": "O Allah, protect him beneath the earth, veil his faults on the Day of Presentation, and do not disgrace him on the Day they are resurrected"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَمِّنْهُ مِنْ فَزَعِ يَوْمِ الْقِيَامَةِ، وَمِنْ هَوْلِ يَوْمِ الْقِيَامَةِ، وَاجْعَلْ نَفْسَهُ آمِنَةً مُطْمَئِنَّةً، وَلَقِّنْهُ حُجَّتَهُ",
+        "english": "O Allah, secure him from the terror of the Day of Judgment, and from the dread of the Day of Judgment, make his soul safe and reassured, and instill in him his proof"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْهُ مِمَّنْ سَعِدُوا فِي الْجَنَّةِ، خَالِدِينَ فِيهَا مَا دَامَتِ السَّمَاوَاتُ وَالْأَرْضُ",
+        "english": "O Allah, make him among those who are blessed in Paradise, abiding eternally therein as long as the heavens and the earth endure"
+    },
+    {
+        "arabic": "اللَّهُمَّ اكْفِهِ كُلَّ هَوْلٍ دُونَ الْجَنَّةِ حَتَّى تُبَلِّغَهُ إِيَّاهَا بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
+        "english": "O Allah, spare him from every terror before Paradise until You deliver him to it by Your Mercy, O Most Merciful of those who show mercy"
     }
 ];
