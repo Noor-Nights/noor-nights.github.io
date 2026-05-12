@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════
 const CONFIG = {
     TARGET_DATE: "2026-03-09T17:54:00+02:00",
-    DHUL_HIJJAH_START: "2026-05-27T00:00:00+02:00", // 1 Dhul Hijjah 1447 AH (Umm al-Qura)
+    DHUL_HIJJAH_START: "2026-05-18T00:00:00+02:00", // 1 Dhul Hijjah 1447 AH (Umm al-Qura)
     ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f"
 };
 
@@ -22,7 +22,6 @@ const TRANSLATIONS = {
         countdownTitle: '⏳ Countdown to the Nights',
         calculating: 'Calculating...',
         untilBegin: 'Until Last Ten Nights of Ramadan begin (Egypt Time)',
-        concluded: '✨ The Last 10 Nights have concluded. May Allah accept from us all. Stay tuned — the 10 Days of Hajj (Dhul Hijja) are coming! 🕋',
         days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
         aboutTitle: '🌟 About Noor Nights',
         aboutText1: 'The last ten nights of Ramadan are the most blessed nights of the year, containing Laylat al-Qadr (The Night of Decree), which is better than a thousand months.',
@@ -81,7 +80,6 @@ const TRANSLATIONS = {
         footerName: 'YOUSSEF ABDELKADER',
         footerSadaqah: 'This app is Sadaqah Jariyah (ongoing charity) for him.',
         footerCanvas: 'Noor Nights App • Sadaqah Jariyah for Youssef Abdelkader',
-        zakatReminder: '🕋 Ramadan has ended. Stay tuned — the blessed 10 Days of Dhul Hijja are coming soon!',
         blessingTitle: 'The Blessing of Sharing Duas',
         blessingDesc1: 'Sharing a dua can uplift anyone who sees it during their day—reminding them to turn back to Allah, calming their heart, or inspiring them to make their own dua.',
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
@@ -144,7 +142,7 @@ const TRANSLATIONS = {
         tasbeehShare: 'Share Milestone',
         tasbeehResetSuccess: 'All counters have been reset to zero.',
 
-        dhulHijjahTitle: '☪️ Countdown to Dhul Hijjah',
+        dhulHijjahTitle: '🕋 Countdown to Dhul Hijjah',
         dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH',
         dhulHijjahMotivation: '✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.',
         dhulHijjahChallenge: (n) => `🌟 Only ${n} day${n !== 1 ? 's' : ''} left! Begin your daily spiritual challenge.`,
@@ -159,7 +157,6 @@ const TRANSLATIONS = {
         countdownTitle: '⏳ العد التنازلي للليالي',
         calculating: 'جارٍ الحساب...',
         untilBegin: 'حتى بدء العشر الأواخر من رمضان (توقيت مصر)',
-        concluded: '✨ انتهت العشر الأواخر من رمضان، تقبّل الله منا ومنكم. ترقّبوا — عشر ذي الحجة المباركة قادمة! 🕋',
         days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
         aboutTitle: '🌟 عن تطبيق نور الليالي',
         aboutText1: 'العشر الأواخر من رمضان هي أعظم ليالي العام، وفيها ليلة القدر التي هي خير من ألف شهر.',
@@ -217,7 +214,6 @@ const TRANSLATIONS = {
         footerName: 'يوسف عبد القادر',
         footerSadaqah: 'هذَا التطبيق صدقة جاريةٌ له.',
         footerCanvas: 'تطبيق نور الليالي • صدقة جارية عن روح يوسف عبد القادر',
-        zakatReminder: '🕋 انتهى رمضان المبارك. تقبّل الله منا ومنكم. ترقّبوا عشر ذي الحجة المباركة!',
         blessingTitle: 'بركة مشاركة الدعاء',
         blessingDesc1: 'مشاركة الدعاء قد تشرح صدر من يقرأه في يومه، وتذكره بالرجوع إلى الله، وتُسكن قلبه، أو تُلهمه ليدعو بدوره.',
         blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
@@ -280,7 +276,7 @@ const TRANSLATIONS = {
         tasbeehShare: 'مشاركة الإنجاز',
         tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.',
 
-        dhulHijjahTitle: '☪️ العد التنازلي لذي الحجة',
+        dhulHijjahTitle: '🕋 العد التنازلي لذي الحجة',
         dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ',
         dhulHijjahMotivation: '✨ هيّئ قلبك لذي الحجة — أفضل أيام العام.',
         dhulHijjahChallenge: (n) => `🌟 تبقّى ${n} يوم فقط! ابدأ تحديّك الروحاني اليومي.`,
