@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════
 const CONFIG = {
     TARGET_DATE: "2026-03-09T17:54:00+02:00",
+    DHUL_HIJJAH_START: "2026-05-27T00:00:00+02:00", // 1 Dhul Hijjah 1447 AH (Umm al-Qura)
     ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f"
 };
 
@@ -141,7 +142,14 @@ const TRANSLATIONS = {
             astaghfirullah: 'Astaghfirullah'
         },
         tasbeehShare: 'Share Milestone',
-        tasbeehResetSuccess: 'All counters have been reset to zero.'
+        tasbeehResetSuccess: 'All counters have been reset to zero.',
+
+        dhulHijjahTitle: '☪️ Countdown to Dhul Hijjah',
+        dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH',
+        dhulHijjahMotivation: '✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.',
+        dhulHijjahChallenge: (n) => `🌟 Only ${n} day${n !== 1 ? 's' : ''} left! Begin your daily spiritual challenge.`,
+        dhulHijjahBegun: '🕋 Dhul-Hijjah has begun! Seize these blessed 10 days. Allahu Akbar!',
+        dhulHijjahProgress: (pct) => `${pct}% of the way there`
 
     },
     ar: {
@@ -270,7 +278,14 @@ const TRANSLATIONS = {
             astaghfirullah: 'أستغفر الله'
         },
         tasbeehShare: 'مشاركة الإنجاز',
-        tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.'
+        tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.',
+
+        dhulHijjahTitle: '☪️ العد التنازلي لذي الحجة',
+        dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ',
+        dhulHijjahMotivation: '✨ هيّئ قلبك لذي الحجة — أفضل أيام العام.',
+        dhulHijjahChallenge: (n) => `🌟 تبقّى ${n} يوم فقط! ابدأ تحديّك الروحاني اليومي.`,
+        dhulHijjahBegun: '🕋 بدأت أيام ذي الحجة المباركة! اغتنم هذه العشر. الله أكبر!',
+        dhulHijjahProgress: (pct) => `${pct}٪ من الطريق`
 
     }
 };
@@ -308,6 +323,7 @@ function applyLanguage(lang) {
         renderAllDuas();
     }
     updateTasbeehUI();
+    updateDhulHijjahCountdown();
 }
 
 function toggleLanguage() {
@@ -882,6 +898,63 @@ function updateCountdown() {
     timerStatus.innerText = t('untilBegin');
 }
 
+const dhulHijjahDate = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
+// Progress bar fills over the 30 days leading up to Dhul Hijjah
+const dhulHijjahRefStart = dhulHijjahDate - (30 * 86400000);
+
+function updateDhulHijjahCountdown() {
+    const card = document.getElementById('dhul-hijjah-card');
+    const statusEl = document.getElementById('dhul-hijjah-status');
+    const timerEl = document.getElementById('dhul-hijjah-timer');
+    const messageEl = document.getElementById('dhul-hijjah-message');
+    const progressBar = document.getElementById('dh-progress-bar');
+    const progressText = document.getElementById('dh-progress-text');
+    const titleEl = document.getElementById('dhul-hijjah-title');
+    if (!card || !statusEl) return;
+
+    if (titleEl) titleEl.textContent = t('dhulHijjahTitle');
+
+    const now = getCurrentTime();
+    const distance = dhulHijjahDate - now;
+
+    // Progress bar: 0% → 100% over the 30 days before Dhul Hijjah
+    if (progressBar && progressText) {
+        const elapsed = now - dhulHijjahRefStart;
+        const total = dhulHijjahDate - dhulHijjahRefStart;
+        const pct = Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
+        progressBar.style.width = pct + '%';
+        progressText.textContent = t('dhulHijjahProgress', pct);
+    }
+
+    if (distance <= 0) {
+        // Dhul Hijjah has begun
+        timerEl.style.display = 'none';
+        statusEl.textContent = t('dhulHijjahBegun');
+        if (messageEl) messageEl.textContent = '';
+        return;
+    }
+
+    const daysLeft = Math.floor(distance / 86400000);
+    const hoursLeft = Math.floor((distance % 86400000) / 3600000);
+    const minsLeft = Math.floor((distance % 3600000) / 60000);
+
+    timerEl.style.display = '';
+    const dhDays = document.getElementById('dh-days');
+    const dhHours = document.getElementById('dh-hours');
+    const dhMinutes = document.getElementById('dh-minutes');
+    if (dhDays) dhDays.textContent = String(daysLeft).padStart(2, '0');
+    if (dhHours) dhHours.textContent = String(hoursLeft).padStart(2, '0');
+    if (dhMinutes) dhMinutes.textContent = String(minsLeft).padStart(2, '0');
+
+    statusEl.textContent = t('dhulHijjahSubStatus');
+
+    if (messageEl) {
+        messageEl.textContent = daysLeft > 10
+            ? t('dhulHijjahMotivation')
+            : t('dhulHijjahChallenge', daysLeft);
+    }
+}
+
 function loadChecklist() {
     let d = new Date(getCurrentTime());
     if (d.getHours() >= 18) d.setDate(d.getDate() + 1);
@@ -1390,6 +1463,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTasbeeh();
     updateCountdown();
     setInterval(updateCountdown, 1000);
+    updateDhulHijjahCountdown();
+    setInterval(updateDhulHijjahCountdown, 60000); // refresh every minute
     checkDayChange();
     setInterval(checkDayChange, 60000); // Check for day change every minute
     rotateYoussefDua();
