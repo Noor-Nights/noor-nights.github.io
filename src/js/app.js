@@ -32,6 +32,7 @@ const TRANSLATIONS = {
         aboutText3: 'Please keep the developer and all those involved in your sincere prayers.',
         closeBtn: 'Close',
         okBtn: 'OK',
+        aboutToggleLabel: 'About',
         modalTitle: 'Message',
         notifyBtn: '🔔 Enable Daily Night Number Reminders',
         notifyEnabled: '✅ Notifications Enabled',
@@ -207,6 +208,7 @@ const TRANSLATIONS = {
         aboutText3: 'نسألكم الدعاء بظهر الغيب لمن صمم ونشر هذا العمل.',
         closeBtn: 'إغلاق',
         okBtn: 'موافق',
+        aboutToggleLabel: 'عن التطبيق',
         modalTitle: 'رسالة',
         notifyBtn: '🔔 تفعيل تذكيرات الليالي',
         notifyEnabled: '✅ تم تفعيل الإشعارات',
@@ -645,7 +647,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
 
         toggleBtn.addEventListener('click', () => {
             expanded = !expanded;
-            const hidden = body.querySelectorAll('.dua-card--hidden, .dua-card--visible-extra');
+            body.querySelectorAll('.dua-card--hidden, .dua-card--visible-extra');
             if (expanded) {
                 body.querySelectorAll('.dua-card--hidden').forEach(c => {
                     c.classList.remove('dua-card--hidden');
@@ -653,7 +655,7 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
                 });
                 toggleBtn.textContent = t('showLess');
             } else {
-                body.querySelectorAll('.dua-card--visible-extra').forEach((c, i) => {
+                body.querySelectorAll('.dua-card--visible-extra').forEach((c) => {
                     c.classList.remove('dua-card--visible-extra');
                     c.classList.add('dua-card--hidden');
                 });
@@ -4004,8 +4006,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isStandalone) {
         const installCard = document.getElementById('app-install-card');
         const iosSection = document.getElementById('ios-install-section');
-        const androidSection = document.getElementById('android-install-section');
-
         if (installCard) {
             installCard.style.display = 'block';
             trackEvent('/a2hs-shown', 'a2hs_shown_ios_fallback');
@@ -4032,7 +4032,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
     if (androidSection) androidSection.style.display = 'block';
 });
 
-window.addEventListener('appinstalled', (e) => {
+window.addEventListener('appinstalled', () => {
     document.getElementById('app-install-card').style.display = 'none';
     trackEvent('/a2hs-installed', 'a2hs_installed_success');
 });

@@ -158,6 +158,7 @@ header {
     animation: fadeIn 1s ease-out;
     border-bottom: 1px solid rgba(251, 191, 36, 0.2);
     padding-bottom: 1.5rem;
+    padding-top: 3.5rem;
 }
 
 @keyframes fadeIn {
@@ -173,10 +174,11 @@ header {
 }
 
 .art-header {
-    font-size: 3rem;
-    margin-bottom: -1rem;
+    font-size: 3.5rem;
+    margin-bottom: -0.5rem;
     text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
     animation: pulse-glow 3s infinite alternate;
+    letter-spacing: 0.5rem;
 }
 
 @keyframes pulse-glow {
@@ -212,8 +214,9 @@ h2 {
 .subtitle {
     color: var(--cream-beige);
     font-size: 1.15rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    opacity: 0.85;
 }
 
 .card {
@@ -631,14 +634,16 @@ h2 {
     background: rgba(20, 184, 166, 0.12);
     border: 1.5px solid var(--emerald-teal);
     color: var(--emerald-teal);
-    padding: 0.4rem 0.6rem;
+    padding: 0.4rem 1rem;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.3rem;
+    font-family: 'Inter', 'Amiri', sans-serif;
 }
 
 .about-toggle-btn:hover {
