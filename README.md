@@ -2,117 +2,138 @@
   <img src="assets/icons/icon-192.png" width="128" alt="Noor Nights Logo">
 </p>
 
-# 🌙 Noor Nights
+# 🕋 ليالي النور — Noor Nights
 
-**Noor Nights** is a minimalist, bilingual PWA (Progressive Web App) designed to help Muslims make the most of the last ten nights of Ramadan. It provides tools for spiritual tracking, real-time background push reminders, and effortlessly sharing Prophetic supplications (Duas).
-
+**Noor Nights (ليالي النور)** is a minimalist, bilingual PWA (Progressive Web App) designed to help Muslims make the most of the first ten blessed days of Dhul Hijjah. It provides tools for spiritual tracking, community duas, real-time push reminders, and effortlessly sharing Prophetic supplications.
 
 ---
 
 ## ✨ Features
 
 - **📱 Progressive Web App (PWA):** Installs natively on Android (1-Click) and iOS (Add to Home Screen), featuring offline caching and a clean, app-like experience.
-- **🌍 Bilingual Support:** Instantly toggle between English and Arabic (`العربية`) UIs with fully translated content and system modals.
-- **🔔 Background Push Notifications:** Powered by **OneSignal**, delivering reliable background reminders during the active hours of the last ten nights, even when the app is closed.
-- **⏳ Live Countdown:** Precise dual-language timer until the last 10 nights begin (Egypt Time).
-- **✅ Worship Checklist:** Track your daily goals (Taraweeh, Dua, Sadaqah, Zakat, Quran). Progress is saved locally on your device.
-- **📅 Smart Calendar Export:** Generate and download an `.ics` file with daily Maghrib reminders for all 10 nights.
-- **🤲 Essential & Jawami' Duas:** A curated collection of powerful supplications from the Sunnah.
-- **📿 Multi-Circle Tasbeeh Counter:** Track multiple dhikr goals simultaneously with smart progress rings that cycle colors every 100 counts.
-- **📤 Image Sharing & Copying:** Generate beautiful, shareable JPG images of Duas using the Canvas API, or natively copy formatted text to your clipboard.
-- **🎨 Modern UI Theme:** A sleek, dark interface with dynamic gradients, glassmorphism, and sparkling animated stars.
+- **🌍 Bilingual Support:** Instantly toggle between English and Arabic (`العربية`) with fully translated content and system modals.
+- **🔔 Hourly Push Notifications:** Powered by **OneSignal** and **GitHub Actions**, delivering automated spiritual reminders throughout the 10 days of Dhul Hijjah — including special Arafah duas on Day 9 and Eid greetings on Day 10.
+- **⏳ Live Countdown:** Precise bilingual timer counting down to the start of Dhul Hijjah (Egypt Time).
+- **✅ Worship Tracker:** Track daily goals (Fajr, Quran, Fasting, Dhikr, Sadaqah). Progress saved locally per day.
+- **📿 Tasbeeh Counter:** Multi-dhikr counter with SVG progress rings, lap tracking, Arabic text display, and milestone toasts. Supports Subhanallah, Alhamdulillah, Allahu Akbar, La ilaha illallah, and Astaghfirullah — each with its recommended count.
+- **🌍 Community Dua Wall:** Share a dua and every visitor says Ameen for you — powered by **Supabase**. Based on the hadith: *"When you make dua for your brother, an angel says: And for you the same."*
+- **🤲 Essential & Jawami' Duas:** A curated collection of powerful supplications from the Sunnah, with image sharing and clipboard copy.
+- **📅 Smart Calendar Export:** Download an `.ics` file with daily reminders for all 10 days including a special golden-hour block for Arafah Day.
+- **🕌 Live Prayer Times:** Fetched daily from the Aladhan API for Cairo (Egypt), with accurate EEST (GMT+3) fallback times.
+- **🎨 Modern UI Theme:** Dark interface with dynamic gradients, glassmorphism, and animated stars.
 
 ---
 
 ## 🚀 Installation & Usage
 
-Because Noor Nights is a PWA, users do not need an App Store to install it. 
-
 ### For Users
-Simply visit the site on your mobile device. The app offers a dynamic **"Get the App"** card showing the correct instructions:
-- **Android:** Tap the "🤖 Install App (1-Click)" button that natively triggers the Chrome installation prompt.
-- **iOS (iPhone/iPad):** Open the site in **Safari**, tap the `Share` icon, and select `Add to Home Screen`. *(Note: Apple requires Safari for Web Push Notifications).*
+Visit the site on your mobile device:
+- **Android:** Tap "📲 Install App" to trigger the native Chrome install prompt.
+- **iOS:** Open in **Safari** → tap `Share` → `Add to Home Screen`.
 
-### For Developers 
-To run the app locally, you only need to serve the root directory statically (e.g., using VS Code Live Server, Python's `http.server`, or Node's `serve`).
+### For Developers
+Serve the root directory statically (e.g. VS Code Live Server, Python's `http.server`). No build step required.
 
 ---
 
-## 🧪 Testing Push Notifications
+## 🔐 Secrets & Deployment
 
-The repository includes a ready-to-use Node.js script (`send_test_pushes.js`) to test the OneSignal Push Notification flow across your installed devices.
+The app uses GitHub Actions to inject secrets at deploy time — no credentials are ever committed to the repository.
 
-1. **Setup Environment Variables:**
-   Create a `.env` file in the root directory (this file is gitignored to protect your secrets).
-   ```text
-   ONESIGNAL_REST_API_KEY=your_onesignal_rest_api_key_here
-   ```
-2. **Run the Test Script:**
-   ```bash
-   node send_test_pushes.js
-   ```
-   *The script is currently configured to send 1 notification every 30 minutes for a total of 6 hours, rotating through 5 different spiritual messages/duas.*
+### Required GitHub Repository Secrets
+Go to **Settings → Secrets and variables → Actions** and add:
+
+| Secret | Description |
+|--------|-------------|
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_ANON_KEY` | Your Supabase anon (public) key |
+| `ONESIGNAL_REST_API_KEY` | OneSignal REST API key for push notifications |
+
+### Supabase Table Setup
+Run this SQL once in your Supabase SQL Editor to create the community duas table:
+
+```sql
+create table community_duas (
+  id uuid default gen_random_uuid() primary key,
+  text text not null check (char_length(text) <= 500),
+  created_at timestamptz default now()
+);
+
+alter table community_duas enable row level security;
+
+create policy "Anyone can read duas"
+  on community_duas for select using (true);
+
+create policy "Anyone can insert duas"
+  on community_duas for insert with check (char_length(text) >= 3);
+```
+
+### `.env` file (for local Node.js scripts)
+```text
+ONESIGNAL_REST_API_KEY=your_onesignal_rest_api_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_key_here
+```
+
+---
+
+## 🔔 Automated Hourly Push Notifications
+
+The repository includes `automated_hourly_push.js` — a Node.js script run by GitHub Actions on a cron schedule.
+
+**Schedule:** Every hour from 05:00–22:00 Cairo time (02:00–19:00 UTC) during the 10 days of Dhul Hijjah.
+
+**Message pools:** Morning, midday, afternoon, and evening — each with contextually appropriate dhikr and dua reminders.
+
+**Special handling:**
+- **Day 9 (Arafah):** Rotates through 8 Arafah-specific duas; time-sensitive messages for fasting, golden hour, and Maghrib.
+- **Day 10 (Eid al-Adha):** Single Eid greeting notification.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-├── .env                 # (Ignored) OneSignal REST API Key
-├── OneSignalSDKWorker.js# OneSignal Service Worker mapping
-├── sw.js                # Core PWA Service Worker (caches assets, merges OneSignal)
-├── send_test_pushes.js  # Node script for testing true background push
-├── index.html           # App entry point
-├── manifest.json        # PWA Manifest (Icons, Colors, Display Mode)
+├── .env                        # (Ignored) Local secrets for Node.js scripts
+├── .github/
+│   └── workflows/
+│       ├── deploy.yml          # GitHub Pages deployment with secret injection
+│       └── ramadan_hourly_push.yml  # Dhul Hijjah hourly notification cron
+├── OneSignalSDKWorker.js       # OneSignal Service Worker mapping
+├── sw.js                       # Core PWA Service Worker
+├── automated_hourly_push.js    # Hourly push notification script
+├── send_test_pushes.js         # Manual push notification tester
+├── index.html                  # App entry point
+├── manifest.json               # PWA Manifest
 ├── assets/
-│   └── icons/           # App icons (Favicons, PWA badges, Apple Touch limits)
+│   ├── icons/                  # App icons
+│   └── backgrounds/            # Share card backgrounds
 ├── src/
 │   ├── css/
-│   │   └── modern.css   # Theme UI styles
+│   │   └── modern.css          # All UI styles
 │   └── js/
-│       ├── app.js       # Core logic (Timer, Checklist, Push, PWA Install, i18n frontend)
-│       └── duas.js      # Supplication data arrays (English/Arabic)
-└── README.md            
+│       ├── app.js              # Core app logic (i18n, tracker, tasbeeh, prayer times, duas)
+│       └── duas.js             # Supplication data (English/Arabic)
+└── README.md
 ```
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Frontend:** Vanilla HTML5, CSS3, JavaScript (ES6+). Zero heavy frameworks (React/Vue/Angular) to guarantee instantaneous load times.
-- **PWA & Offline:** Native Service Workers (`sw.js`) and Web Manifest.
-- **Push Notifications:** OneSignal Web Push SDK.
-- **Analytics:** [GoatCounter](https://www.goatcounter.com/) (Privacy-friendly, script-based, cookie-free analytics).
+- **Frontend:** Vanilla HTML5, CSS3, JavaScript (ES6+). Zero frameworks for instant load times.
+- **PWA & Offline:** Native Service Workers and Web Manifest.
+- **Push Notifications:** OneSignal Web Push SDK + GitHub Actions cron.
+- **Community Duas:** Supabase (PostgreSQL REST API with Row Level Security).
+- **Prayer Times:** Aladhan API.
+- **Analytics:** [GoatCounter](https://www.goatcounter.com/) — privacy-friendly, cookie-free.
 
 ---
 
-## 📸 Visual Overview
-
-### 📱 Mobile UI Gallery
-| ⏳ Home & Countdown | ✅ Worship Checklist |
-|:---:|:---:|
-| <img src="assets/screenshots/hero_mobile.png" width="300"> | <img src="assets/screenshots/checklist_mobile.png" width="300"> |
-
-| 📿 Multi-Circle Tasbeeh | 🤲 Essential Duas |
-|:---:|:---:|
-| <img src="assets/screenshots/tasbeeh_mobile.png" width="300"> | <img src="assets/screenshots/duas_mobile.png" width="300"> |
-
-### 🔔 Real-World Notifications
-| 🔒 Lock Screen Reminder | 🔓 System Notification |
-|:---:|:---:|
-| <img src="assets/phone-reminder-2.jpeg" width="300"> | <img src="assets/phone-reminder-1.jpeg" width="300"> |
-
-### 📅 Integration & 🤲 Shareables
-| 🗓️ Calendar Reminders | 📤 Shareable Image Cards |
-|:---:|:---:|
-| <img src="assets/calender.jpeg" width="380"> | <img src="assets/dua-Jawami'-Dua-6.jpg" width="380"> |
-
----
 ## 🤲 Tribute
 
 This project is created to honor the memory of **Youssef Abdelkader**. We ask Allah to grant him mercy, widen his grave, and admit him to the highest levels of Paradise. Ameen.
 
 ---
 
-*Made with ❤️ for Ramadan.*
-
+*Made with ❤️ for Dhul Hijjah.*
