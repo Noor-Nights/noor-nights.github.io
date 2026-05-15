@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.onesignal.com https://onesignal.com https://*.onesignal.com https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://noor-nights.goatcounter.com; connect-src 'self' https://*.onesignal.com https://noor-nights.goatcounter.com; worker-src 'self' blob: https://cdn.onesignal.com https://*.onesignal.com;">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.onesignal.com https://onesignal.com https://*.onesignal.com https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://noor-nights.goatcounter.com; connect-src 'self' https://*.supabase.co https://*.onesignal.com https://noor-nights.goatcounter.com; worker-src 'self' blob: https://cdn.onesignal.com https://*.onesignal.com;">
     <title>🌙 Noor Nights | Illuminate Your Worship</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,11 @@
 </head>
 
 <body>
-    <div class="stars-overlay"></div>
+    <div id="stars-bg" aria-hidden="true">
+        <div class="sl sl1"></div>
+        <div class="sl sl2"></div>
+        <div class="sl sl3"></div>
+    </div>
     <div class="container">
         <header>
             <button id="about-toggle" class="about-toggle-btn"
@@ -41,10 +45,13 @@
             <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
             <div class="art-header">✨ 🌙 ✨</div>
             <h1 data-i18n="appName">Noor Nights</h1>
-            <div class="subtitle" data-i18n="subtitle">Illuminate your worship in the last ten nights</div>
+            <div class="subtitle" data-i18n="subtitle">Illuminate your worship in the ten blessed days</div>
 
-            <div style="margin-top: 1rem;">
         </header>
+
+        <div class="memorial-banner" id="memorial-banner">
+            <span class="memorial-text" data-i18n-en="This app is Sadaqah Jariyah for Youssef Abdelkader — may Allah have mercy on him 🤲" data-i18n-ar="هذا التطبيق صدقة جارية عن روح يوسف عبد القادر — رحمه الله 🤲">This app is Sadaqah Jariyah for Youssef Abdelkader — may Allah have mercy on him 🤲</span>
+        </div>
 
         <div class="card install-card" id="app-install-card"
             style="display: none; border: 1px solid var(--neon-cyan); background: rgba(10, 17, 40, 0.6);">
@@ -70,30 +77,62 @@
         </div>
 
 
+        <!-- Arafa Day Banner (Day 9 — shown only when arafah-mode active) -->
+        <div class="arafah-banner" id="arafah-banner">
+            <div class="arafah-banner-icon">⭐</div>
+            <div class="arafah-banner-title" data-i18n="arafahBannerTitle">Yawm Arafah — The Greatest Day</div>
+            <div class="arafah-banner-sub" data-i18n="arafahBannerSub">Fast today, make dua, and seek forgiveness. Allah frees more servants from the Fire on this day than any other.</div>
+            <div class="arafah-banner-dua">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
+        </div>
+
+        <div class="section-label">⏳ Today</div>
+
         <!-- Dhul Hijjah Countdown Card -->
         <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
             <h2 id="dhul-hijjah-title">🕋 Countdown to Dhul Hijjah</h2>
-            <div class="status-text" id="dhul-hijjah-status">Calculating...</div>
-            <div class="countdown-display" id="dhul-hijjah-timer">
-                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-days">00</span><span class="time-label" data-i18n="days">Days</span></div>
-                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-hours">00</span><span class="time-label" data-i18n="hours">Hours</span></div>
-                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-minutes">00</span><span class="time-label" data-i18n="mins">Mins</span></div>
+            <div id="dh-stage-body"></div>
+            <div class="dh-quickjump" id="dh-quickjump">
+                <a class="dh-qj-btn" href="#worship-anchor" data-i18n="qjTrackWorship">✓ Track Worship</a>
+                <a class="dh-qj-btn" href="#duas-anchor" data-i18n="qjOpenDuas">🤲 Open Duas</a>
             </div>
-            <div class="dh-message" id="dhul-hijjah-message"></div>
-            <div class="dh-progress-container">
-                <div class="dh-progress-bar" id="dh-progress-bar"></div>
-            </div>
-            <div class="progress-text" id="dh-progress-text"></div>
         </div>
 
-        <div class="card">
-            <h2 data-i18n="checklistTitle">✅ Worship Checklist</h2>
-            <div id="checklist-container"></div>
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="checklist-progress"></div>
-            </div>
-            <div class="progress-text" id="checklist-text">0 of 5 tasks completed today</div>
+        <!-- Prayer Times Widget (position 2 — right after countdown) -->
+        <div class="card pt-card" id="pt-card">
+            <h2 class="pt-heading">🕌 Prayer Times</h2>
+            <div id="pt-container"><p class="pt-loading">Loading…</p></div>
+        </div>
 
+        <!-- Arafah Prayer Timeline (Day 9 only — shown via JS) -->
+        <div class="card arafah-triple-card" id="arafah-triple-card" style="display:none">
+            <h2 class="at-title">⏱ Arafah Day Timeline</h2>
+            <div class="at-grid"></div>
+        </div>
+
+        <!-- Arafah Fasting Tracker (Day 9 only — shown via JS) -->
+        <div class="card ft-card" id="ft-card" style="display:none">
+            <h2 class="ft-heading">🌙 Arafah Fast</h2>
+            <div id="ft-container"></div>
+        </div>
+
+        <div class="section-label">🌟 Worship</div>
+
+        <div id="worship-anchor"></div>
+
+        <!-- Worship Tracker Card -->
+        <div class="card wt-card">
+            <div class="wt-card-header">
+                <h2 class="wt-card-title" data-i18n="wtCardTitle">🔥 Worship Tracker</h2>
+                <span class="wt-streak-badge" id="wt-streak-badge"></span>
+            </div>
+            <div id="worship-tracker-container"></div>
+        </div>
+
+        <!-- Badge System Card -->
+        <div class="card badge-section-card">
+            <h2 class="badge-section-title" data-i18n="badgeSectionTitle">🏅 Dhul Hijjah Badges</h2>
+            <p class="badge-section-subtitle" data-i18n="badgeSectionSubtitle">Earn badges by completing worship goals during the 10 blessed days</p>
+            <div id="badge-grid" class="badge-grid"></div>
         </div>
 
         <div class="card">
@@ -126,8 +165,27 @@
             </div>
         </div>
 
+        <!-- Virtue of the Day Cards -->
+        <div class="card vc-section-card">
+            <h2 data-i18n="vcTitle">🌟 Virtue of the Day</h2>
+            <div id="virtue-cards-container"></div>
+        </div>
+
+        <div class="section-label">🤲 Duas</div>
+
+        <div id="duas-anchor"></div>
+
+        <!-- Dua Companion Card -->
+        <div class="card dc-card" id="dc-card">
+            <h2 class="dc-heading" data-i18n="dcTitle">🤲 Dua Companion</h2>
+            <div id="dc-container"></div>
+        </div>
+
+        <div class="section-label">📿 Tools</div>
+
         <div class="card" id="tasbeeh-container">
             <h2 data-i18n="tasbeehTitle">📿 Tasbeeh Counter</h2>
+            <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
 
             <div id="tasbeeh-grid" class="tasbeeh-grid">
                 <!-- Circles will be rendered here by JS -->
@@ -136,52 +194,17 @@
             <div class="tasbeeh-actions">
                 <button class="btn btn-outline" onclick="resetTasbeeh()" data-i18n="tasbeehReset">Reset All</button>
             </div>
-            <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap any circle to count</p>
-        </div>
-
-        <div class="card" id="essential-duas-container">
-            <div class="card-body">
-                <h2 data-i18n="essentialTitle">🤲 Essential Duas</h2>
-            </div>
+            <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap a circle to count • Space = active circle</p>
         </div>
 
         <div id="jawami-duas-container" class="card">
             <div class="card-body">
-                <h2 data-i18n="jamawiTitle">📖 Jawami' ad-Du'a</h2>
+                <h2 data-i18n="jamawiTitle">📖 Prophetic Duas</h2>
                 <p class="subtitle" style="margin-bottom:1.5rem" data-i18n="jamawiSubtitle">Comprehensive prayers from
                     the Prophet (ﷺ)</p>
             </div>
         </div>
 
-
-        <div class="card"
-            style="position: relative; overflow: hidden; border: 1px solid var(--amber-glow); background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(10, 17, 40, 0.4));">
-            <div class="card-body" style="text-align: center;">
-                <h2 data-i18n="blessingTitle" style="color: var(--amber-glow); margin-bottom: 1rem;">✨ The Blessing
-                    of Sharing Duas</h2>
-                <p data-i18n="blessingDesc1"
-                    style="color: var(--text-main); line-height: 1.6; margin-bottom: 1.5rem; font-size: 0.95rem;">
-                    Sharing a dua can uplift anyone who sees it during their day—reminding them to turn back to
-                    Allah, calming their heart, or inspiring them to make their own dua.
-                </p>
-                <div
-                    style="background: rgba(251, 191, 36, 0.1); border-left: 3px solid var(--amber-glow); padding: 1rem; margin-bottom: 1rem; font-style: italic; color: var(--text-main); font-size: 0.9rem; text-align: left;">
-                    <p data-i18n="blessingHadith1"
-                        style="margin: 0; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
-                        "Whoever guides someone to goodness will have a reward like the one who did it." (Sahih
-                        Muslim)
-                    </p>
-                    <p data-i18n="blessingHadith2" style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">
-                        "When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial
-                        knowledge, or a righteous child who prays for him." (Sahih Muslim)
-                    </p>
-                </div>
-                <p data-i18n="blessingFooter"
-                    style="font-weight: 600; color: var(--amber-glow); font-size: 0.9rem; margin-top: 1rem;">
-                    Every dua you share may inspire someone else—and you share in their reward.
-                </p>
-            </div>
-        </div>
 
         <footer class="dedication-footer">
             <div class="footer-arabic-text">إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>
@@ -202,7 +225,7 @@
         </footer>
 
         <div class="app-bottom-info">
-            <span data-i18n="footerMadeWith">Made with ❤️ for Ramadan.</span>
+            <span data-i18n="footerMadeWith">Made with ❤️ for Dhul Hijjah.</span>
         </div>
     </div>
 
@@ -221,14 +244,11 @@
                 Noor Nights</h2>
             <p data-i18n="aboutText1"
                 style="color: var(--text-main); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify;">
-                The last ten nights of Ramadan are the most blessed nights of the year, containing Laylat al-Qadr
-                (The Night of Decree), which is better than a thousand months.
+                The first ten days of Dhul Hijjah are among the most blessed days of the year. Allah swore by them in the Quran, and the Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." (Bukhari)
             </p>
             <p data-i18n="aboutText2"
                 style="color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; font-size: 0.9rem; text-align: justify;">
-                This app is designed to help you track your nightly worship goals, discover comprehensive prophetic
-                supplications (Jawami' ad-Du'a), and receive automated background notifications to keep you
-                spiritually engaged during these precious nights.
+                This app helps you track your daily worship goals, fast and make du'a on Arafah Day, access comprehensive prophetic supplications (Jawami' ad-Du'a), and stay spiritually engaged throughout these ten precious days.
             </p>
             <p data-i18n="aboutText3"
                 style="font-weight: 500; color: var(--emerald-teal); font-size: 0.95rem; text-align: center; margin-bottom: 1.5rem;">
@@ -240,11 +260,12 @@
         </div>
     </div>
 
+    <!-- Local config overrides (gitignored — injects Supabase credentials without touching app.js) -->
+    <script src="config.local.js" onerror="void 0"></script>
     <script src="src/js/duas.js"></script>
     <script src="src/js/app.js"></script>
     <script>
         function renderAllDuas() {
-            renderDuaList(essentialDuas, 'essential-duas-container', 'ess');
             renderDuaCarousel(jawamiDuas, 'jawami-duas-container', 'jaw');
         }
         document.addEventListener('DOMContentLoaded', renderAllDuas);

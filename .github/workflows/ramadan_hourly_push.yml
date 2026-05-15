@@ -1,8 +1,13 @@
-name: Automated Ramadan Hourly Reminders
+name: Dhul Hijjah Hourly Reminders
 
 on:
-  # Ramadan is over — schedule removed. Trigger manually only if needed.
-  workflow_dispatch:
+  # Runs every hour between 05:00 and 22:00 UTC+3 (Cairo).
+  # UTC schedule: 02:00–19:00 UTC covers 05:00–22:00 Cairo (UTC+3).
+  # Active only during the 10 days of Dhul Hijjah 1447 (May 18–27, 2026).
+  # The script itself guards against running outside that window.
+  schedule:
+    - cron: '0 2-19 * * *'   # Every hour, 02:00–19:00 UTC = 05:00–22:00 Cairo
+  workflow_dispatch:          # Allow manual trigger for testing
 
 jobs:
   send-push-reminders:
@@ -17,7 +22,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 🚀 Fire Hourly Push Script
+      - name: 🕋 Fire Dhul Hijjah Hourly Push
         env:
           ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
         run: node automated_hourly_push.js

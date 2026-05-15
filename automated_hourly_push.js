@@ -1,7 +1,9 @@
 // automated_hourly_push.js
-// This script is designed to be run by a GitHub Actions CRON job every hour.
-// It checks if it's currently the last 10 nights of Ramadan, inside the 19:00 - 05:00 window.
-// If so, it automatically dispatches the correct Dua and Reminder via OneSignal to all registered users.
+// GitHub Actions CRON job — runs every hour during the 10 blessed days of Dhul Hijjah 1447.
+// Sends contextual Arabic duas and reminders to all subscribed users via OneSignal.
+//
+// Schedule: runs Days 1–10 of Dhul Hijjah, between 05:00–22:00 Cairo time.
+// Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
 
 const fs = require('fs');
 const path = require('path');
@@ -19,132 +21,164 @@ if (fs.existsSync(envPath)) {
 }
 
 const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
-
 if (!REST_API_KEY) {
-    console.error('❌ ONESIGNAL_REST_API_KEY is not set globally. Skipping.');
-    process.exit(1); // Exit with error
+    console.error('❌ ONESIGNAL_REST_API_KEY is not set. Skipping.');
+    process.exit(1);
 }
 
-// Ensure timezone is Egypt for calculation (UTC+2)
-const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Cairo" }));
+// ── Time Setup (Cairo = Africa/Cairo, GMT+3 in summer) ──────────────────────
+const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Cairo' }));
 const hours = now.getHours();
-const time = now.getTime();
+const time  = now.getTime();
 
-// Start of the Last 10 Nights (Maghrib on March 9th in Egypt)
-const startNight = new Date("2026-03-09T17:54:00+02:00").getTime();
-// End of the Last 10 Nights (Fajr on March 19th in Egypt — Night 10 ends)
-const endNight = new Date("2026-03-19T05:00:00+02:00").getTime();
+// Dhul Hijjah 1447: 1st = May 18, 2026 (Umm al-Qura) — 10th = May 27 (Eid)
+const DH_START = new Date('2026-05-18T00:00:00+03:00').getTime();
+const DH_END   = new Date('2026-05-27T23:59:00+03:00').getTime();
 
-// 1. Are we within the 10 Days?
-if (time < startNight || time > endNight) {
-    console.log('🌙 Automatically skipping: It is not currently the last 10 nights of Ramadan.');
+// ── Guard: Only fire during the 10 days ─────────────────────────────────────
+if (time < DH_START || time > DH_END) {
+    console.log('🕋 Skipping: Not currently within the 10 days of Dhul Hijjah.');
     process.exit(0);
 }
 
-// 2. Are we inside the Active Hours? (19:00 to 05:00)
-// If hours > 5 and hours < 19, we are in the daytime.
-if (hours > 5 && hours < 19) {
-    console.log(`☀️ Automatically skipping: It is currently ${hours}:00 daytime in Egypt. No reminders are sent during the day.`);
+// ── Guard: Active hours 05:00–22:00 only ────────────────────────────────────
+if (hours < 5 || hours > 22) {
+    console.log(`🌙 Skipping: Outside active hours (currently ${hours}:00 Cairo time).`);
     process.exit(0);
 }
 
-// 3. Calculate Night Number
-const distance = time - startNight;
-const nightNum = Math.floor(distance / (1000 * 60 * 60 * 24)) + 1;
+// ── Calculate Day Number (1–10) ──────────────────────────────────────────────
+const dayNum = Math.min(Math.floor((time - DH_START) / 86400000) + 1, 10);
 
-// 4. Calculate Hour Index (19:00 is hour 0, 00:00 is hour 5)
-let hrIdx = hours >= 19 ? hours - 19 : hours + 5;
+// ── DUAS ─────────────────────────────────────────────────────────────────────
 
-// Data: Essential Duas (Complete List)
-const essentialDuas = [
-    { arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ كريمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي" },
-    { arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ" },
-    { arabic: "اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَعَافِنّي وَارْزُقْنِي" },
-    { arabic: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ" },
-    { arabic: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّكَ أَنتَ التَّوَّابُ الرَّحِيمُ" }
+// General Dhul Hijjah duas (rotating daily)
+const dhDuas = [
+    "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+    "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    "اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَعَافِنِي وَارْزُقْنِي",
+    "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا",
+    "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+    "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ",
+    "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا طَيِّبًا وَعَمَلًا مُتَقَبَّلًا",
+    "اللَّهُمَّ ثَبِّتْ قَلْبِي عَلَى دِينِكَ",
+    "اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى وَالتُّقَى وَالعَفَافَ وَالغِنَى",
+    "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ",
+    "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي",
+    "اللَّهُمَّ مُصَرِّفَ القُلُوبِ صَرِّفْ قَلْبِي عَلَى طَاعَتِكَ",
+    "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ وَالعَجْزِ وَالكَسَلِ",
+    "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
+    "اللَّهُمَّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الحِسَابُ",
+    "رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ",
 ];
 
-// Data: Jawami Duas (Short & Powerful)
-const jawamiDuas = [
-    { arabic: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ" },
-    { arabic: "اللَّهُمَّ اغْفِرْ لِي ، وَارْحَمْنِي وَاهْدِنِي ، وَعَافِنِي وَارْزُقْنِي" },
-    { arabic: "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا ، وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا" },
-    { arabic: "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي" },
-    { arabic: "اللَّهُمَّ رَبِّ هَبْ لِيْ مِنَ الصَّالِحِينَ" },
-    { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ العَفْوَ وَالعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ" },
-    { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى ، وَالتُّقَى ، وَالعَفَافَ وَالغِنَى" },
-    { arabic: "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنَ عِبَادَتِكَ" },
-    { arabic: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ، إِنَّك أَنْتَ التَّوَّابُ الرَّحِيمُ" },
-    { arabic: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ" },
-    { arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا" },
-    { arabic: "اللَّهُمَّ لَكَ الحَمْدُ كُلُّهُ ، وَلَكَ المُلْكُ كُلُّهُ" },
-    { arabic: "اللَّهُمَّ مُصَرِّفَ القُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ" },
-    { arabic: "اللَّهُمَّ ثَبِّتْ قَلْبِي عَلَى دِينِكَ" },
-    { arabic: "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ" },
-    { arabic: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ وَالعَجْزِ وَالكَسَلِ" },
-    { arabic: "أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ" },
-    { arabic: "لا إِلَهَ إِلا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ" },
-    { arabic: "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي" },
-    { arabic: "اللَّهُمَّ اهْدِنَا فِيمَنْ هَدَيْتَ ، وَعَافِنَا فِيمَنْ عَافَيْتَ" }
+// Arafah Day duas — the greatest day of the year
+const arafahDuas = [
+    "لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+    "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+    "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ",
+    "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    "اللَّهُمَّ اجْعَلْنِي مِمَّنْ أَعْتَقْتَهُمْ مِنَ النَّارِ فِي هَذَا اليَوْم",
+    "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ",
+    "لَا إِلَهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
+    "اللَّهُمَّ اغْفِرْ لَنَا وَلِوَالِدَيْنَا وَلِلْمُسْلِمِينَ أَجْمَعِينَ",
 ];
 
-// Data: Messages
-const earlyMessages = [
-    "🤲 أفرغ قلبك في الدعاء الآن.",
-    "🎁 لا تنسَ صدقتك لهذه الليلة.",
-    "✨ ركّز على الدعاء والصدقة الليلة.",
-    "📿 هل أتممت أذكارك الليلة؟ 🌙",
-    "💰 تذكر دفع زكاة الفطر قبل نهاية رمضان.",
-    "📖 هل خصصت وقتاً للقرآن الكريم الليلة؟",
-    "🕌 استعد لليلة مباركة، تقبل الله منك.",
-    "🌟 نور ليلتك بالذكر والاستغفار.",
-    "🤝 تفقد أهلك وجيرانك بدعوة صالحة.",
-    "🌱 جدد نيتك وأخلص عملك لله تعالى."
-];
-const lateMessages = [
-    "🌙 وقت القيام والصلاة.",
-    "إنا أنزلناه في ليلة القدر ✨ ليلةٌ تتنزل فيها الملائكة بالرحمات، وسلامٌ يغشى القلوب حتى مطلع الفجر.",
-    "🌟 ادعُ وأنت في صلاة القيام.",
-    "ليلةٌ خيرٌ من ألف شهر.. الملائكة من حولك، وربك يسمع دعاءك. ألحّ في المسألة الآن واغتنم ساعات السحر 📿🌙",
-    "✨ وازن ليلتك بين القيام والدعاء.",
-    "{ تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِم مِّن كُلِّ أَمْرٍ } ✨ ليلة الأقدار والعطايا.. أنِر ليلتك بالذكر والدعاء.",
-    "🕯️ في هدوء الليل، ترتفع أصدق الدعوات.",
-    "🙌 اسجد واقترب.. فإن الله قريب مجيب.",
-    "💧 هل ذرفت عينك دمعة شوقاً لله الليلة؟",
-    "🌄 اقترب الفجر.. لا يفتر لسانك عن الاستغفار.",
-    "⭐ كن ممن يُقال لهم: قد غفرت لك.",
-    "🤲 ليلة مباركة، لعلها ليلة القدر، تمسك بالدعاء."
+// ── MESSAGES ──────────────────────────────────────────────────────────────────
+
+// Morning messages (05:00–11:00)
+const morningMessages = [
+    `📿 الله أكبر الله أكبر، لا إله إلا الله، الله أكبر الله أكبر ولله الحمد — اليوم ${dayNum} من أفضل أيام العام`,
+    `🌅 استقبل يومك بالتكبير والتحميد — ما من أيام أحب إلى الله من هذه الأيام العشرة`,
+    `☪️ لا تفوّت سنة الفجر اليوم — من حافظ عليها كأنما قام الليل كله`,
+    `📖 خصص ولو صفحات من القرآن الكريم اليوم — الحسنات مضاعفة في هذه الأيام`,
+    `🌟 صيام يوم من ذي الحجة يعدل صيام سنة كاملة — هل نويت الصيام اليوم؟`,
+    `💚 الصدقة في هذه الأيام أعظم أجراً — تصدق ولو بالقليل، فكل حسنة مضاعفة`,
 ];
 
-// Logic: 
-// 1. Peak Night & Pre-Dawn Pushes (22:00 and 04:00) always use Laylatul Qadr Dua.
-// 2. Other pushes use a different rotation based on the specific Night and Hour.
-let dua;
-if (hrIdx === 3 || hrIdx === 9) { // 22:00 (index 3) and 04:00 (index 9)
-    dua = essentialDuas[0];
+// Midday messages (11:00–15:00)
+const middayMessages = [
+    `🕋 أكثر من التكبير والتسبيح والاستغفار — فما من عمل أزكى عند الله في هذه الأيام`,
+    `🤲 توقف لحظة وادعُ الله من قلبك — الله يسمعك وهو أقرب إليك من حبل الوريد`,
+    `📿 سبّح الله 33 مرة، احمده 33 مرة، كبّره 34 مرة — لا يعجز عنها أحد`,
+    `💡 اليوم ${dayNum} من ذي الحجة — استثمر ما تبقى منه قبل أن يذهب`,
+    `🌿 "مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ" — النبي ﷺ`,
+];
+
+// Afternoon messages (15:00–18:00)
+const afternoonMessages = [
+    `🌤️ اقترب وقت العصر — صلِّ في أوله واجلس للذكر والدعاء بعدها`,
+    `🤲 ادعُ قبل المغرب — ساعة الإجابة قريبة، اللهم تقبّل منا`,
+    `🌅 قبيل الغروب من أوقات إجابة الدعاء — لا تدع هذا الوقت يمر دون دعاء`,
+    `💫 أكثر من الاستغفار — "مَنْ أَكْثَرَ مِنَ الِاسْتِغْفَارِ جَعَلَ اللَّهُ لَهُ مِنْ كُلِّ هَمٍّ فَرَجًا"`,
+];
+
+// Evening messages (18:00–22:00)
+const eveningMessages = [
+    `🌙 أمسيت في اليوم ${dayNum} من ذي الحجة — احمد الله على نعمة إدراك هذه الأيام`,
+    `🤲 ادعُ الله بعد المغرب — من أكثر من الصلاة على النبي ﷺ كفاه الله همومه`,
+    `📿 أكثر من التكبير في المساء: الله أكبر كبيراً والحمد لله كثيراً`,
+    `🌟 تأمل ما أنجزت اليوم وجدّد نيتك لغد أفضل — هذه الأيام لا تعود`,
+    `🙌 اختم يومك بالاستغفار — "مَنْ قَالَ: أَسْتَغْفِرُ اللَّهَ العَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الحَيَّ القَيُّومَ وَأَتُوبُ إِلَيْهِ — غُفِرَ لَهُ"`,
+];
+
+// ── Build notification content ────────────────────────────────────────────────
+let heading, body_text;
+
+if (dayNum === 10) {
+    // ── EID AL-ADHA ──────────────────────────────────────────────────────────
+    heading   = '🎉 عيد الأضحى المبارك! تقبّل الله منا ومنكم';
+    body_text = 'عيد مبارك! 🕋 صلِّ صلاة العيد، وقدّم الأضحية إن استطعت، وأسعد من حولك. تقبّل الله منا ومنكم صالح الأعمال. كل عام وأنتم بخير 🤍';
+
+} else if (dayNum === 9) {
+    // ── ARAFAH DAY ───────────────────────────────────────────────────────────
+    const dua = arafahDuas[hours % arafahDuas.length];
+    let arafahMsg;
+    if (hours < 10) {
+        arafahMsg = '🌅 يوم عرفة بدأ — صم اليوم وأكثر من الدعاء. اللهم أعتق رقابنا من النار.';
+    } else if (hours < 15) {
+        arafahMsg = '🕋 أفضل الدعاء دعاء يوم عرفة — لا تفتر لسانك عن ذكر الله واللهج بالدعاء.';
+    } else if (hours < 18) {
+        arafahMsg = '⏳ الساعة الذهبية تقترب — الساعة الأخيرة قبل الغروب أعظم أوقات الدعاء. هيّئ قلبك وارفع يديك.';
+    } else {
+        arafahMsg = '🌙 انتهى يوم عرفة المبارك — الله أعتق فيه عباداً من النار أكثر من أي يوم. تقبّل الله منا.';
+    }
+    heading   = `⭐ يوم عرفة — أعظم يوم في السنة`;
+    body_text = `${arafahMsg}\n\n"${dua}"`;
+
 } else {
-    // Combine all available short duas for the rotating reminders
-    const allShortDuas = essentialDuas.concat(jawamiDuas);
-    // Unique rotation per night: (hrIdx + nightNum) ensures a different start point each night.
-    dua = allShortDuas[(hrIdx + nightNum) % allShortDuas.length];
+    // ── REGULAR DAYS 1–8 ─────────────────────────────────────────────────────
+    let msgPool;
+    if      (hours < 11) msgPool = morningMessages;
+    else if (hours < 15) msgPool = middayMessages;
+    else if (hours < 18) msgPool = afternoonMessages;
+    else                 msgPool = eveningMessages;
+
+    const msg = msgPool[(dayNum + hours) % msgPool.length];
+    const dua = dhDuas[(dayNum + hours) % dhDuas.length];
+
+    heading   = `🕋 اليوم ${dayNum} من ذي الحجة`;
+    body_text = `${msg}\n\n"${dua}"`;
 }
 
-const actionMsg = hrIdx < 4 ?
-    earlyMessages[hrIdx % earlyMessages.length] :
-    lateMessages[(hrIdx - 4) % lateMessages.length];
-
-const body = {
+// ── OneSignal Payload ─────────────────────────────────────────────────────────
+const payload = {
     app_id: APP_ID,
     included_segments: ['All'],
-    headings: { en: `🌙 تذكير الليلة ${nightNum > 0 ? nightNum : 1} من 10` },
-    contents: { en: `${actionMsg}\n\n"${dua.arabic}"` },
+    headings:  { en: heading,    ar: heading },
+    contents:  { en: body_text,  ar: body_text },
     url: 'https://noor-nights.github.io',
     chrome_web_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
-    firefox_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
+    firefox_icon:    'https://noor-nights.github.io/assets/icons/icon-192.png',
+    // Collapse identical notifications within the same hour
+    collapse_id: `dh-day${dayNum}-hour${hours}`,
 };
 
+// ── Send ──────────────────────────────────────────────────────────────────────
 async function sendHourlyPush() {
-    console.log(`\n🚀 Firing automated hourly push for Night ${nightNum}, Hour ${hours}:00...`);
+    console.log(`\n🚀 Sending push — Day ${dayNum} of Dhul Hijjah, ${hours}:00 Cairo...`);
+    if (dayNum === 9) console.log('⭐ ARAFAH DAY — using special duas');
+    if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
     try {
         const res = await fetch('https://onesignal.com/api/v1/notifications', {
@@ -153,17 +187,16 @@ async function sendHourlyPush() {
                 'Content-Type': 'application/json',
                 'Authorization': `Key ${REST_API_KEY}`
             },
-            body: JSON.stringify(body)
+            body: JSON.stringify(payload)
         });
-
         const data = await res.json();
         if (data.id) {
-            console.log(`✅ Push successfully delivered to all users! Notification ID: ${data.id}`);
+            console.log(`✅ Delivered! Notification ID: ${data.id}`);
         } else {
-            console.error(`❌ Push delivery failed:`, JSON.stringify(data));
+            console.error('❌ Delivery failed:', JSON.stringify(data));
         }
     } catch (err) {
-        console.error('❌ Network error while sending push:', err.message);
+        console.error('❌ Network error:', err.message);
     }
 }
 

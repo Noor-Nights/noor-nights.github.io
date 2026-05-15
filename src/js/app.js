@@ -4,7 +4,10 @@
 const CONFIG = {
     TARGET_DATE: "2026-03-09T17:54:00+02:00",
     DHUL_HIJJAH_START: "2026-05-18T00:00:00+02:00", // 1 Dhul Hijjah 1447 AH (Umm al-Qura)
-    ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f"
+    //WT_TEST_DAY: 10, // TESTING ONLY — remove before launch (forces tracker to show this day)
+    ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f",
+    SUPABASE_URL: '__SUPABASE_URL__',
+    SUPABASE_ANON_KEY: '__SUPABASE_ANON_KEY__',
 };
 
 // ── Theme Background Preload ──
@@ -17,15 +20,15 @@ shareBg1.src = 'assets/backgrounds/Background.png';
 const TRANSLATIONS = {
     en: {
         appName: 'Noor Nights',
-        subtitle: 'Illuminate your worship in the last ten nights',
+        subtitle: 'Illuminate your worship in the ten blessed days',
         installBtn: '📲 Install App',
         countdownTitle: '⏳ Countdown to the Nights',
         calculating: 'Calculating...',
         untilBegin: 'Until Last Ten Nights of Ramadan begin (Egypt Time)',
         days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
         aboutTitle: '🌟 About Noor Nights',
-        aboutText1: 'The last ten nights of Ramadan are the most blessed nights of the year, containing Laylat al-Qadr (The Night of Decree), which is better than a thousand months.',
-        aboutText2: 'This app is designed to help you track your nightly worship goals, discover comprehensive prophetic supplications (Jawami\' ad-Du\'a), and receive automated background notifications to keep you spiritually engaged during these precious nights.',
+        aboutText1: 'The first ten days of Dhul Hijjah are among the most blessed days of the year. Allah swore by them in the Quran, and the Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." (Bukhari)',
+        aboutText2: 'This app helps you track your daily worship goals, fast and make du\'a on Arafah Day, access comprehensive prophetic supplications (Jawami\' ad-Du\'a), and stay spiritually engaged throughout these ten precious days.',
         aboutText3: 'Please keep the developer and all those involved in your sincere prayers.',
         closeBtn: 'Close',
         okBtn: 'OK',
@@ -43,15 +46,15 @@ const TRANSLATIONS = {
         ],
         progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
         calendarTitle: '📅 Add to My Calendar',
-        calendarDesc: 'Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).',
+        calendarDesc: 'Get prayer-time reminders for all 10 Days of Dhul Hijjah — including special duas and a full golden-hour block for Arafa Day (Egypt timezone).',
         calendarBtn: '📅 Download Calendar (.ics)',
         essentialTitle: '🤲 Essential Duas',
-        jamawiTitle: "📖 Jawami' ad-Du'a",
+        jamawiTitle: "📖 Prophetic Duas",
         jamawiSubtitle: "Comprehensive prayers from the Prophet (ﷺ)",
         nightStatus: (n) => `Tonight is Night ${n} of 10`,
         nightSubStatus: 'Make the most of it 🌙',
         reminderActive: '🔔 Reminders Active!',
-        reminderMsg: "You'll receive a dua reminder every 2 minutes while this tab is open. Real hourly reminders start when the nights begin (Mar 9).",
+        reminderMsg: "You'll receive a dua reminder while this tab is open during the 10 blessed days of Dhul Hijjah.",
         notifTitle: 'Noor Nights 🌙',
         reminderNum: (n, msg) => `🌙 Reminder #${n} — ${msg}`,
         denied: 'Denied',
@@ -64,14 +67,14 @@ const TRANSLATIONS = {
         showLess: '🔼 Show less',
         earlyMessages: [
             "🤲 Pour your heart out in Dua right now.",
-            "🎁 Don't forget your Sadaqah for tonight.",
-            "✨ Focus on your Dua and Sadaqah tonight.",
-            "💰 Remember to Pay Zakat al-Fitr before the end of Ramadan."
+            "🎁 Don't forget your Sadaqah for today.",
+            "✨ Focus on your Dua and Sadaqah today.",
+            "📿 Say Allahu Akbar, Alhamdulillah, La ilaha illallah."
         ],
         lateMessages: [
-            "🌙 Time for Qiyam & standing in prayer.",
-            "🌟 Standing in Qiyam - pouring Dua.",
-            "✨ Balance your night with Qiyam and Dua."
+            "🌙 Make the most of this blessed day with dhikr.",
+            "🌟 Keep your tongue moist with the remembrance of Allah.",
+            "✨ These are the greatest days — make every moment count."
         ],
         actShareFull: 'Share Dua',
         actShareCard: 'Share',
@@ -85,7 +88,7 @@ const TRANSLATIONS = {
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
         blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
-        footerMadeWith: 'Made with ♥️ for Ramadan.',
+        footerMadeWith: 'Made with ♥️ for Dhul Hijjah.',
 
         permNeeded: '🔔 Permission Required',
         permNeededAndroid: '👉 On Android: Tap the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
@@ -114,7 +117,22 @@ const TRANSLATIONS = {
         installAppTitle: 'Install App',
         installAppMsg: 'Please use your browser menu to "Install App" or "Add to Home Screen".',
         calName: 'Noor Nights',
-        calDesc: 'Hourly Reminders for the last 10 nights of Ramadan',
+        calDesc: 'Noor Nights — 10 Days of Dhul Hijjah 1447',
+        dhPrayers: { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' },
+        dhCalPrayerSummary: (n, p) => `☪️ Day ${n} of Dhul Hijjah — ${p} | Dhikr & Dua`,
+        dhCalPrayerDesc: 'Glorify Allah after prayer: Takbeer (الله أكبر), Tahmeed (الحمد لله), Tahleel (لا إله إلا الله), Tasbeeh (سبحان الله).',
+        dhCalArafaAfterFajrSummary: '🌅 Day of Arafa — After Fajr | Begin with Dhikr',
+        dhCalArafaAfterFajrDesc: 'The best day of the year has begun. Repeat 100×: «لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير». Fast if not on Hajj.',
+        dhCalArafaDhuhrSummary: '🕋 Day of Arafa — Dhuhr | Keep Supplicating',
+        dhCalArafaDhuhrDesc: '"The best dua is the dua of the Day of Arafa." (Tirmidhi). Do not let your tongue stop remembering Allah.',
+        dhCalArafaAsrSummary: '⏳ Day of Arafa — Asr | Golden Hour is Near',
+        dhCalArafaAsrDesc: 'Intensify your Dua now. The most powerful window of Arafa — the final hour before Maghrib — is drawing near. Prepare your heart.',
+        dhCalArafaGoldenSummary: '🌟 Day of Arafa — Final Hour | Pour Your Heart in Dua',
+        dhCalArafaGoldenDesc: 'The most powerful moment of the year. Raise your hands and call upon Allah. Ask for forgiveness, your parents, family, and the Ummah. «اللهم إنك عفو تحب العفو فاعف عني».',
+        dhCalArafaMaghribSummary: '🌙 Day of Arafa — Maghrib | Break Your Fast',
+        dhCalArafaMaghribDesc: 'The blessed day of Arafa has ended. Break your fast and say: «اللهم لك صمت وعلى رزقك أفطرت». May Allah accept your fasting and duas.',
+        dhCalArafaIshaSummary: '✨ Arafa Night — Isha | Continue in Dua',
+        dhCalArafaIshaDesc: 'The blessings of Arafa extend into the night. Continue your supplication and end the day with gratitude and istighfar.',
         calEventTitle: (n, msg) => `Night ${n} - ${msg}`,
         calEventDesc: (n) => `Night ${n} of 10`,
         calSuccessTitle: '🎉 Successfully Downloaded!',
@@ -144,23 +162,48 @@ const TRANSLATIONS = {
 
         dhulHijjahTitle: '🕋 Countdown to Dhul Hijjah',
         dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH',
+        qjTrackWorship: '✓ Track Worship',
+        qjOpenDuas: '🤲 Open Duas',
         dhulHijjahMotivation: '✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.',
         dhulHijjahChallenge: (n) => `🌟 Only ${n} day${n !== 1 ? 's' : ''} left! Begin your daily spiritual challenge.`,
         dhulHijjahBegun: '🕋 Dhul-Hijjah has begun! Seize these blessed 10 days. Allahu Akbar!',
-        dhulHijjahProgress: (pct) => `${pct}% of the way there`
+        dhulHijjahProgress: (pct) => `${pct}% of the way there`,
+
+        arafahBannerTitle: 'Yawm Arafah — The Greatest Day',
+        arafahBannerSub: 'Fast today, make dua, and seek forgiveness. Allah frees more servants from the Fire on this day than any other.',
+
+        wtCardTitle: '🔥 Worship Tracker',
+        badgeSectionTitle: '🏅 Dhul Hijjah Badges',
+        badgeSectionSubtitle: 'Earn badges by completing worship goals during the 10 blessed days',
+
+        vcTitle: '🌟 Virtue of the Day',
+        vcShare: '📤 Share',
+
+        dcTitle: '🤲 Dua Companion',
+        dcProgress: (n, t) => `${n} of ${t} duas made`,
+        dcAddBtn: '+ Add Custom Dua',
+        dcAddPlaceholder: 'Write your personal dua...',
+        dcAddSave: 'Save',
+        dcAddCancel: 'Cancel',
+        dcAddModalTitle: 'Add Personal Dua',
+        dcSharedTitle: '🌍 Community Dua Wall',
+        dcSharePlaceholder: 'Write a dua — the community will say Ameen for you 🤲',
+        dcShareBtn: 'Share',
+        dcSharedEmpty: 'No duas shared yet. Be the first to make dua for the community.',
+        dcSharedCount: (n) => `${n} duas shared`,
 
     },
     ar: {
         appName: 'ليالي النور',
-        subtitle: 'أنِر عبادتك في العشر الأواخر',
+        subtitle: 'أنِر عبادتك في الأيام العشرة المباركة',
         installBtn: '📲 تثبيت التطبيق',
         countdownTitle: '⏳ العد التنازلي للليالي',
         calculating: 'جارٍ الحساب...',
         untilBegin: 'حتى بدء العشر الأواخر من رمضان (توقيت مصر)',
         days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
         aboutTitle: '🌟 عن تطبيق نور الليالي',
-        aboutText1: 'العشر الأواخر من رمضان هي أعظم ليالي العام، وفيها ليلة القدر التي هي خير من ألف شهر.',
-        aboutText2: 'تم تصميم هذا التطبيق لمساعدتك على تتبع أهدافك التعبدية كل ليلة، واستكشاف الأدعية النبوية الشاملة (جوامع الدعاء)، وتلقي إشعارات تنبيهية تلقائية عبر الخلفية لإبقائك متصلًا بالعبادة خلال هذه الليالي الثمينة.',
+        aboutText1: 'أيام العشر من ذي الحجة من أفضل أيام العام. أقسم الله بها في القرآن الكريم، وقال النبي ﷺ: "ما من أيام العمل الصالح فيها أحبّ إلى الله من هذه الأيام" (البخاري).',
+        aboutText2: 'يساعدك هذا التطبيق على تتبع عباداتك اليومية، والصيام والدعاء في يوم عرفة، والاستفادة من جوامع الأدعية النبوية الشاملة، والبقاء متصلًا بالعبادة طوال هذه الأيام العشرة الثمينة.',
         aboutText3: 'نسألكم الدعاء بظهر الغيب لمن صمم ونشر هذا العمل.',
         closeBtn: 'إغلاق',
         okBtn: 'موافق',
@@ -178,7 +221,7 @@ const TRANSLATIONS = {
         ],
         progressText: (c, tot) => `أُنجز ${c} من ${tot} مهام اليوم`,
         calendarTitle: '📅 أضف إلى التقويم',
-        calendarDesc: 'احصل على تذكيرات يومية عند أذان المغرب لجميع العشر ليالٍ (توقيت مصر).',
+        calendarDesc: 'احصل على تذكيرات وقت الصلاة لأيام ذي الحجة العشرة — مع أدعية خاصة وتذكير الساعة الذهبية ليوم عرفة (توقيت مصر).',
         calendarBtn: '📅 تحميل التقويم (.ics)',
         essentialTitle: '🤲 أدعية أساسية',
         jamawiTitle: '📖 جوامع الدعاء',
@@ -186,7 +229,7 @@ const TRANSLATIONS = {
         nightStatus: (n) => `الليلة هي الليلة ${n} من العشر`,
         nightSubStatus: 'استثمرها 🌙',
         reminderActive: '🔔 التذكيرات مفعّلة!',
-        reminderMsg: 'ستتلقى تذكيراً بالدعاء كل دقيقتين طالما هذا التبويب مفتوح. تبدأ التذكيرات الفعلية مع بدء الليالي (9 مارس).',
+        reminderMsg: 'ستتلقى تذكيراً بالدعاء طالما هذا التبويب مفتوح خلال الأيام العشرة المباركة من ذي الحجة.',
         notifTitle: 'نور الليالي 🌙',
         reminderNum: (n, msg) => `🌙 تذكير #${n} — ${msg}`,
         denied: 'مرفوض',
@@ -199,15 +242,16 @@ const TRANSLATIONS = {
         showLess: '🔼 عرض أقل',
         earlyMessages: [
             "🤲 أفرغ قلبك في الدعاء الآن.",
-            "🎁 لا تنسَ صدقتك لهذه الليلة.",
-            "✨ ركّز على الدعاء والصدقة الليلة.",
-            "💰 تذكر دفع زكاة الفطر قبل نهاية رمضان."
+            "🎁 لا تنسَ صدقتك لهذا اليوم.",
+            "✨ ركّز على الدعاء والصدقة اليوم.",
+            "📿 قل: الله أكبر، الحمد لله، لا إله إلا الله."
         ],
         lateMessages: [
-            "🌙 وقت القيام والصلاة.",
-            "🌟 ادعُ وأنت في صلاة القيام.",
-            "✨ وازن ليلتك بين القيام والدعاء."
+            "🌙 استثمر هذا اليوم المبارك بالذكر والدعاء.",
+            "🌟 أكثر من ذكر الله في هذه الأيام الفاضلة.",
+            "✨ هذه أفضل الأيام — لا تدع لحظة تمر دون عبادة."
         ],
+        actShareFull: 'مشاركة الدعاء',
         actShareCard: 'مشاركة',
         actCopy: 'نسخ',
         footerMemory: 'صدقة جارية عن روح',
@@ -219,7 +263,7 @@ const TRANSLATIONS = {
         blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
         blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
         blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.',
-        footerMadeWith: 'صُنع بـ ❤️ لرمضان.',
+        footerMadeWith: 'صُنع بـ ❤️ لذي الحجة.',
 
         permNeeded: '🔔 إذن مطلوب',
         permNeededAndroid: '👉 على أندرويد: اضغط على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
@@ -248,7 +292,22 @@ const TRANSLATIONS = {
         installAppTitle: 'تثبيت التطبيق',
         installAppMsg: 'الرجاء استخدام قائمة المتصفح لـ "تثبيت التطبيق" أو "الإضافة للشاشة الرئيسية".',
         calName: 'ليالي النور',
-        calDesc: 'تذكيرات كل ساعة للعشر الأواخر من رمضان',
+        calDesc: 'ليالي النور — عشر ذي الحجة 1447',
+        dhPrayers: { fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' },
+        dhCalPrayerSummary: (n, p) => `☪️ اليوم ${n} من ذي الحجة — ${p} | ذكر ودعاء`,
+        dhCalPrayerDesc: 'سبّح الله بعد الصلاة: التكبير (الله أكبر)، التحميد (الحمد لله)، التهليل (لا إله إلا الله)، التسبيح (سبحان الله).',
+        dhCalArafaAfterFajrSummary: '🌅 يوم عرفة — بعد الفجر | ابدأ بالذكر',
+        dhCalArafaAfterFajrDesc: 'بدأ أفضل أيام السنة. قل ١٠٠ مرة: «لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير». صم إن لم تكن حاجاً.',
+        dhCalArafaDhuhrSummary: '🕋 يوم عرفة — الظهر | واصل الدعاء والذكر',
+        dhCalArafaDhuhrDesc: '"أفضل الدعاء دعاء يوم عرفة." (الترمذي). لا تُفتر لسانك عن ذكر الله.',
+        dhCalArafaAsrSummary: '⏳ يوم عرفة — العصر | اقترب وقت الذروة',
+        dhCalArafaAsrDesc: 'شدّد دعاءك الآن. اقترب أعظم وقت في يوم عرفة — الساعة الأخيرة قبل المغرب. أعدّ قلبك.',
+        dhCalArafaGoldenSummary: '🌟 يوم عرفة — الساعة الأخيرة | أفرغ قلبك في الدعاء',
+        dhCalArafaGoldenDesc: 'أقوى لحظة في العام. ارفع يديك وادعُ الله. اسأله المغفرة لك ولوالديك وللأمة. «اللهم إنك عفو تحب العفو فاعف عني».',
+        dhCalArafaMaghribSummary: '🌙 يوم عرفة — المغرب | أفطر وأنهِ يومك',
+        dhCalArafaMaghribDesc: 'انتهى يوم عرفة المبارك. أفطر وقل: «اللهم لك صمت وعلى رزقك أفطرت». تقبّل الله صيامك ودعاءك.',
+        dhCalArafaIshaSummary: '✨ ليلة عرفة — العشاء | واصل الدعاء والاستغفار',
+        dhCalArafaIshaDesc: 'بركات يوم عرفة تمتد إلى الليل. واصل دعاءك وأكثر من الاستغفار واختم يومك بالشكر والذكر.',
         calEventTitle: (n, msg) => `الليلة ${n} - ${msg}`,
         calEventDesc: (n) => `الليلة ${n} من 10`,
         calSuccessTitle: '🎉 تم التحميل بنجاح!',
@@ -278,15 +337,47 @@ const TRANSLATIONS = {
 
         dhulHijjahTitle: '🕋 العد التنازلي لذي الحجة',
         dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ',
+        qjTrackWorship: '✓ تتبع العبادة',
+        qjOpenDuas: '🤲 فتح الأدعية',
         dhulHijjahMotivation: '✨ هيّئ قلبك لذي الحجة — أفضل أيام العام.',
         dhulHijjahChallenge: (n) => `🌟 تبقّى ${n} يوم فقط! ابدأ تحديّك الروحاني اليومي.`,
         dhulHijjahBegun: '🕋 بدأت أيام ذي الحجة المباركة! اغتنم هذه العشر. الله أكبر!',
-        dhulHijjahProgress: (pct) => `${pct}٪ من الطريق`
+        dhulHijjahProgress: (pct) => `${pct}٪ من الطريق`,
+
+        arafahBannerTitle: 'يوم عرفة — أعظم يوم',
+        arafahBannerSub: 'صم اليوم، وأكثر من الدعاء، واطلب المغفرة. لا يوم يُعتق الله فيه من النار أكثر من يوم عرفة.',
+
+        wtCardTitle: '🔥 متتبع العبادة',
+        badgeSectionTitle: '🏅 شارات ذي الحجة',
+        badgeSectionSubtitle: 'احصل على الشارات بإتمام أهداف العبادة في الأيام العشرة المباركة',
+
+        vcTitle: '🌟 فضيلة اليوم',
+        vcShare: '📤 مشاركة',
+
+        dcTitle: '🤲 رفيق الدعاء',
+        dcProgress: (n, t) => `${n} من ${t} أدعية`,
+        dcAddBtn: '+ إضافة دعاء شخصي',
+        dcAddPlaceholder: 'اكتب دعاءك الشخصي...',
+        dcAddSave: 'حفظ',
+        dcAddCancel: 'إلغاء',
+        dcAddModalTitle: 'إضافة دعاء شخصي',
+        dcSharedTitle: '🌍 جدار الدعاء المجتمعي',
+        dcSharePlaceholder: 'اكتب دعاءً — سيقول له المجتمع آمين 🤲',
+        dcShareBtn: 'مشاركة',
+        dcSharedEmpty: 'لا توجد أدعية مشاركة بعد. كن أول من يدعو للمجتمع.',
+        dcSharedCount: (n) => `${n} دعاء مشارَك`,
 
     }
 };
 
 let currentLang = localStorage.getItem('noor-lang') || 'en';
+
+// Arabic-Indic numeral formatter — converts digits when lang is Arabic
+const _AR_DIGITS = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function numFmt(n) {
+    if (currentLang !== 'ar') return String(n);
+    return String(n).replace(/\d/g, d => _AR_DIGITS[d]);
+}
 
 function t(key, ...args) {
     const lang = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
@@ -314,12 +405,23 @@ function applyLanguage(lang) {
         notifyBtn.textContent = t('notifyBtn');
     }
 
+    const memBanner = document.querySelector('.memorial-text');
+    if (memBanner) memBanner.textContent = lang === 'ar'
+        ? 'هذا التطبيق صدقة جارية عن روح يوسف عبد القادر — رحمه الله 🤲'
+        : 'This app is Sadaqah Jariyah for Youssef Abdelkader — may Allah have mercy on him 🤲';
+
     // Re-render Dynamic Dua content so buttons and labels update
     if (typeof renderAllDuas === 'function') {
         renderAllDuas();
     }
     updateTasbeehUI();
     updateDhulHijjahCountdown();
+    if (worshipTracker) worshipTracker.renderSection();
+    if (badgeSystem) badgeSystem.renderSection();
+    if (virtueCards) virtueCards.renderSection();
+    if (duaCompanion) duaCompanion.renderSection();
+    if (prayerWidget) prayerWidget.render();
+    if (fastingTracker) fastingTracker.init();
 }
 
 function toggleLanguage() {
@@ -736,6 +838,189 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
 }
 
 
+// ─────────────────────────────────────────────────────────────────────────────
+// VIRTUE CARD SHARE IMAGE — bespoke dark canvas, no external image dependency
+// ─────────────────────────────────────────────────────────────────────────────
+function _hexRgba(hex, a) {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function _vcSep(ctx, cx, y, hw, color) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx - hw, y); ctx.lineTo(cx - 14, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 14, y); ctx.lineTo(cx + hw, y); ctx.stroke();
+    ctx.translate(cx, y);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = _hexRgba(color, 0.6);
+    ctx.fillRect(-4.5, -4.5, 9, 9);
+    ctx.restore();
+}
+
+async function generateVCBlob(card, lang) {
+    await document.fonts.ready;
+
+    const W = 1080, H = 1350;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    const c = card.color;
+
+    // ── Background gradient ───────────────────────────────
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0,   '#060919');
+    bg.addColorStop(0.5, '#0b1230');
+    bg.addColorStop(1,   '#060818');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Accent radial glow at top — each card's own color
+    const glow = ctx.createRadialGradient(W / 2, 210, 0, W / 2, 210, 540);
+    glow.addColorStop(0, _hexRgba(c, 0.32));
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H * 0.65);
+
+    // Warm subtle vignette at bottom
+    const vign = ctx.createRadialGradient(W / 2, H, 0, W / 2, H, 440);
+    vign.addColorStop(0, 'rgba(5,3,1,0.5)');
+    vign.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = vign;
+    ctx.fillRect(0, H * 0.6, W, H * 0.4);
+
+    // ── Stars — deterministic per card.day ───────────────
+    let rng = card.day * 17239 + 42;
+    const rn = () => { rng = (Math.imul(rng, 1664525) + 1013904223) >>> 0; return rng / 0xffffffff; };
+    for (let i = 0; i < 80; i++) {
+        const sx = rn() * W, sy = rn() * H;
+        const sr = rn() > 0.85 ? 1.4 : rn() > 0.55 ? 0.85 : 0.5;
+        ctx.beginPath();
+        ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${(0.12 + rn() * 0.55).toFixed(2)})`;
+        ctx.fill();
+    }
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // ── Icon circle ───────────────────────────────────────
+    const iy = 180;
+    ctx.beginPath(); ctx.arc(W / 2, iy, 70, 0, Math.PI * 2);
+    ctx.fillStyle = _hexRgba(c, 0.18); ctx.fill();
+    ctx.strokeStyle = _hexRgba(c, 0.5); ctx.lineWidth = 2; ctx.stroke();
+    ctx.font = '68px serif';
+    ctx.fillText(card.icon, W / 2, iy + 2);
+
+    // ── Day badge ─────────────────────────────────────────
+    const dayLbl = lang === 'ar'
+        ? `اليوم ${card.day} من ذي الحجة`
+        : `Day ${card.day} of Dhul Hijjah`;
+    ctx.font = 'bold 36px "Inter", sans-serif';
+    ctx.fillStyle = '#e8d195';
+    ctx.fillText(dayLbl, W / 2, 276);
+
+    ctx.font = '24px "Amiri", serif';
+    ctx.fillStyle = 'rgba(220,195,140,0.58)';
+    ctx.fillText(card.hijriDate, W / 2, 318);
+
+    // ── Separator ─────────────────────────────────────────
+    _vcSep(ctx, W / 2, 358, 340, c);
+
+    // ── Arabic verse ──────────────────────────────────────
+    const arabicRaw = card.source.arabic.replace(/<br>/g, ' ');
+    const tmpC = document.createElement('canvas').getContext('2d');
+    let arFs = arabicRaw.length > 120 ? 46 : arabicRaw.length > 60 ? 52 : 60;
+    tmpC.font = `bold ${arFs}px "Amiri", serif`;
+    let arLines = getWrappedLines(tmpC, arabicRaw, 920);
+    if (arLines.length > 4) {
+        arFs = 42;
+        tmpC.font = `bold ${arFs}px "Amiri", serif`;
+        arLines = getWrappedLines(tmpC, arabicRaw, 920);
+    }
+    const arLH = Math.round(arFs * 1.78);
+
+    ctx.direction = 'rtl';
+    ctx.font = `bold ${arFs}px "Amiri", serif`;
+    ctx.fillStyle = '#f2ece0';
+    const arStartY = 410;
+    arLines.forEach((line, i) => ctx.fillText(line, W / 2, arStartY + i * arLH + arLH / 2));
+    ctx.direction = 'ltr';
+
+    let curY = arStartY + arLines.length * arLH + 30;
+
+    // Reference
+    ctx.font = 'italic 24px "Inter", sans-serif';
+    ctx.fillStyle = _hexRgba(c, 0.72);
+    ctx.fillText(`— ${card.source.reference}`, W / 2, curY + 12);
+    curY += 52;
+
+    // ── Separator ─────────────────────────────────────────
+    _vcSep(ctx, W / 2, curY + 14, 230, c);
+    curY += 50;
+
+    // ── English translation ───────────────────────────────
+    const enText = `"${card.source.translation.en}"`;
+    tmpC.font = 'bold 32px "Inter", sans-serif';
+    const enLines = getWrappedLines(tmpC, enText, 900);
+    ctx.font = 'bold 32px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(240,225,190,0.88)';
+    enLines.forEach((line, i) => ctx.fillText(line, W / 2, curY + 24 + i * 48));
+    curY += enLines.length * 48 + 44;
+
+    // ── Virtue snippet (2 lines max) ──────────────────────
+    const virtueRaw = lang === 'ar' ? card.virtue.ar : card.virtue.en;
+    tmpC.font = 'italic 26px "Inter", sans-serif';
+    const allVLines = getWrappedLines(tmpC, virtueRaw, lang === 'ar' ? 820 : 860);
+    const vLines = allVLines.slice(0, 2);
+    if (allVLines.length > 2) vLines[1] = vLines[1].replace(/\s\S+$/, '') + '…';
+
+    const vbH = vLines.length * 38 + 10;
+    ctx.fillStyle = _hexRgba(c, 0.45);
+
+    if (lang === 'ar') {
+        ctx.direction = 'rtl';
+        ctx.fillRect(W - 103, curY - 4, 3, vbH);
+        ctx.font = 'italic 26px "Inter", sans-serif';
+        ctx.fillStyle = 'rgba(210,188,148,0.66)';
+        ctx.textAlign = 'right';
+        vLines.forEach((line, i) => ctx.fillText(line, W - 122, curY + 15 + i * 38));
+        ctx.direction = 'ltr';
+        ctx.textAlign = 'center';
+    } else {
+        ctx.fillRect(100, curY - 4, 3, vbH);
+        ctx.font = 'italic 26px "Inter", sans-serif';
+        ctx.fillStyle = 'rgba(210,188,148,0.66)';
+        ctx.textAlign = 'left';
+        vLines.forEach((line, i) => ctx.fillText(line, 120, curY + 15 + i * 38));
+        ctx.textAlign = 'center';
+    }
+
+    // ── Footer ────────────────────────────────────────────
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(60, H - 165); ctx.lineTo(W - 60, H - 165); ctx.stroke();
+
+    ctx.font = 'bold 36px "Inter", sans-serif';
+    ctx.fillStyle = _hexRgba(c, 0.95);
+    ctx.fillText('🌙 Noor Nights', W / 2, H - 122);
+
+    ctx.font = '23px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(220,200,155,0.78)';
+    ctx.fillText('10 Blessed Days of Dhul Hijjah 1447', W / 2, H - 80);
+
+    ctx.font = 'italic 20px "Inter", sans-serif';
+    ctx.fillStyle = 'rgba(210,188,140,0.58)';
+    ctx.fillText('Sadaqah Jariyah for Youssef Abdelkader', W / 2, H - 46);
+
+    return new Promise(resolve => {
+        try { cv.toBlob(resolve, 'image/jpeg', 0.92); }
+        catch (e) { resolve(null); }
+    });
+}
+
+
 function triggerDownload(url, filename) {
     const a = document.createElement('a');
     a.href = url;
@@ -886,69 +1171,2165 @@ function updateCountdown() {
     const m = document.getElementById('minutes');
     const s = document.getElementById('seconds');
 
-    if (d) d.innerText = String(Math.floor(distance / 86400000)).padStart(2, '0');
-    if (h) h.innerText = String(Math.floor((distance % 86400000) / 3600000)).padStart(2, '0');
-    if (m) m.innerText = String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0');
-    if (s) s.innerText = String(Math.floor((distance % 60000) / 1000)).padStart(2, '0');
+    if (d) d.innerText = numFmt(String(Math.floor(distance / 86400000)).padStart(2, '0'));
+    if (h) h.innerText = numFmt(String(Math.floor((distance % 86400000) / 3600000)).padStart(2, '0'));
+    if (m) m.innerText = numFmt(String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0'));
+    if (s) s.innerText = numFmt(String(Math.floor((distance % 60000) / 1000)).padStart(2, '0'));
 
     timerStatus.innerText = t('untilBegin');
+}
+
+// ═══════════════════════════════════════════════════
+// WORSHIP TRACKER
+// ═══════════════════════════════════════════════════
+class WorshipTracker {
+    constructor() {
+        this.STORAGE_KEY = 'noor_tracker_dhulhijjah_1447';
+        this.DH_START = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
+        this.data = { days: {}, streaks: { current: 0, longest: 0 } };
+        this._load();
+    }
+
+    _load() {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        if (saved) this.data = JSON.parse(saved);
+        this._calcStreaks();
+    }
+
+    _save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
+    }
+
+    getCurrentDay() {
+        if (CONFIG.WT_TEST_DAY) return CONFIG.WT_TEST_DAY;
+        const diff = getCurrentTime() - this.DH_START;
+        if (diff < 0) return 0;
+        return Math.min(Math.floor(diff / 86400000) + 1, 10);
+    }
+
+    _initDay(n) {
+        if (!this.data.days[n]) {
+            this.data.days[n] = { sunnahPrayers: false, quranJuz: 0, charity: false, fasting: false, completed: false };
+        }
+    }
+
+    updateActivity(n, field, value) {
+        this._initDay(n);
+        const wasComplete = !!this.data.days[n].completed;
+        this.data.days[n][field] = value;
+        this._checkCompletion(n);
+        const nowComplete = !!this.data.days[n].completed;
+        this._calcStreaks();
+        this._save();
+        if (!wasComplete && nowComplete) this._showDayCompletePopup(n);
+        if (badgeSystem) badgeSystem.update();
+    }
+
+    _showDayCompletePopup(n) {
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const isAr = lang === 'ar';
+        const title = isAr ? '✅ يوم مكتمل!' : '✅ Day Complete!';
+        const sub   = isAr
+            ? `أتممت اليوم ${this._toAr(n)} من ذي الحجة — جزاك الله خيراً!`
+            : `You completed Day ${n} of Dhul Hijjah — JazakAllah Khayran!`;
+        const dua   = isAr
+            ? '«اللهم تقبّل منا إنك أنت السميع العليم»'
+            : '"O Allah, accept from us. You are the All-Hearing, the All-Knowing."';
+
+        document.getElementById('celebration-popup')?.remove();
+        const popup = document.createElement('div');
+        popup.id = 'celebration-popup';
+        popup.className = 'celeb-popup';
+        popup.innerHTML = `
+            <div class="celeb-backdrop"></div>
+            <div class="celeb-box celeb-day" dir="${isAr ? 'rtl' : 'ltr'}">
+                <button class="celeb-close" onclick="this.closest('#celebration-popup').remove()">&times;</button>
+                <div class="celeb-glow celeb-glow-green"></div>
+                <div class="celeb-emoji-big">🌟</div>
+                <h2 class="celeb-title">${title}</h2>
+                <p class="celeb-sub">${sub}</p>
+                <p class="celeb-dua">${dua}</p>
+            </div>`;
+        document.body.appendChild(popup);
+
+        setTimeout(() => {
+            popup.classList.add('celeb-out');
+            setTimeout(() => popup.remove(), 400);
+        }, 6000);
+
+        popup.querySelector('.celeb-backdrop').addEventListener('click', () => {
+            popup.classList.add('celeb-out');
+            setTimeout(() => popup.remove(), 400);
+        });
+    }
+
+    _checkCompletion(n) {
+        const d = this.data.days[n];
+        d.completed = d.sunnahPrayers && d.quranJuz > 0 && d.charity && d.fasting;
+    }
+
+    _calcStreaks() {
+        const nums = Object.keys(this.data.days).map(Number).sort((a, b) => a - b);
+        let cur = 0, longest = this.data.streaks.longest || 0, temp = 0;
+        for (let i = nums.length - 1; i >= 0; i--) {
+            if (this.data.days[nums[i]].completed) cur++;
+            else break;
+        }
+        nums.forEach(n => {
+            if (this.data.days[n].completed) { temp++; longest = Math.max(longest, temp); }
+            else temp = 0;
+        });
+        this.data.streaks = { current: cur, longest };
+    }
+
+    _streakEmoji(n) {
+        if (n >= 10) return '🔥✨🏆';
+        if (n >= 7)  return '🔥✨';
+        if (n >= 5)  return '🔥🔥🔥';
+        if (n >= 3)  return '🔥🔥';
+        if (n >= 1)  return '🔥';
+        return '';
+    }
+
+    _streakMsg(n, lang) {
+        const msgs = {
+            en: { 10: 'Perfect streak! 🎉🏆', 7: "You're unstoppable! 🔥✨", 5: 'Amazing consistency! 🔥🔥', 3: 'Keep it up! 🔥', 1: 'Good start! Keep going!' },
+            ar: { 10: 'استمرارية مثالية! 🎉🏆', 7: 'لا يمكن إيقافك! 🔥✨', 5: 'استمرارية رائعة! 🔥🔥', 3: 'استمر! 🔥', 1: 'بداية جيدة! استمر!' }
+        };
+        const m = msgs[lang] || msgs.en;
+        if (n >= 10) return m[10];
+        if (n >= 7)  return m[7];
+        if (n >= 5)  return m[5];
+        if (n >= 3)  return m[3];
+        if (n >= 1)  return m[1];
+        return '';
+    }
+
+    _toAr(n) {
+        return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+
+    _gregorianDate(n) {
+        return new Date(this.DH_START + (n - 1) * 86400000)
+            .toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    _overallPct() {
+        let done = 0;
+        Object.values(this.data.days).forEach(d => {
+            if (d.sunnahPrayers) done++;
+            if (d.quranJuz > 0) done++;
+            if (d.charity) done++;
+            if (d.fasting) done++;
+        });
+        return Math.round((done / 40) * 100);
+    }
+
+    _breakdown() {
+        const b = { sunnah: 0, quranDays: 0, quranJuz: 0, charity: 0, fasting: 0 };
+        Object.values(this.data.days).forEach(d => {
+            if (d.sunnahPrayers) b.sunnah++;
+            if (d.quranJuz > 0) { b.quranDays++; b.quranJuz += d.quranJuz; }
+            if (d.charity) b.charity++;
+            if (d.fasting) b.fasting++;
+        });
+        return b;
+    }
+
+    renderSection() {
+        const container = document.getElementById('worship-tracker-container');
+        if (!container) return;
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const today = this.getCurrentDay();
+        const { current: cur, longest } = this.data.streaks;
+
+        container.innerHTML =
+            this._renderStreak(cur, longest, lang) +
+            (today >= 1 && today <= 10 ? this._renderEntry(today, lang) : this._renderOffState(today, lang)) +
+            this._renderCalendar(today, lang) +
+            this._renderSummary(lang);
+
+        this._attachListeners(lang);
+
+        // Update the streak badge in the card header
+        const streakBadge = document.getElementById('wt-streak-badge');
+        if (streakBadge) {
+            const isAr = lang === 'ar';
+            streakBadge.textContent = cur > 0
+                ? (isAr ? `${numFmt(cur)} يوم متواصل 🔥` : `${cur} day streak 🔥`)
+                : '';
+        }
+    }
+
+    _renderStreak(cur, longest, lang) {
+        const isAr = lang === 'ar';
+        const emoji = this._streakEmoji(cur) || '🕌';
+        const msg = this._streakMsg(cur, lang);
+        return `
+        <div class="wt-streak">
+            <div class="wt-streak-main">
+                <span class="wt-streak-emoji">${emoji}</span>
+                <div class="wt-streak-nums">
+                    <span class="wt-streak-count">${isAr ? this._toAr(cur) : cur}</span>
+                    <span class="wt-streak-label">${isAr ? 'يوم متواصل' : 'day streak'}</span>
+                </div>
+            </div>
+            ${cur > 0 ? `<div class="wt-streak-msg">${msg}</div>` : `<div class="wt-streak-msg" style="color:var(--text-muted);font-weight:400">${isAr ? 'أكمل جميع المهام للبدء' : 'Complete all tasks to start your streak'}</div>`}
+            ${longest > 0 ? `<div class="wt-streak-best">🏆 ${isAr ? 'الأفضل:' : 'Best:'} ${isAr ? this._toAr(longest) : longest}</div>` : ''}
+        </div>`;
+    }
+
+    _renderOffState(today, lang) {
+        const isAr = lang === 'ar';
+        const msg = today === 0
+            ? (isAr ? 'سيبدأ المتتبع عند بداية ذي الحجة ☪️' : 'Tracker begins on the first day of Dhul Hijjah ☪️')
+            : (isAr ? '✅ انتهت أيام ذي الحجة العشرة. جزاك الله خيراً!' : '✅ The 10 days of Dhul Hijjah are complete. JazakAllah Khayran!');
+        return `<div class="wt-off-state">${msg}</div>`;
+    }
+
+    _renderEntry(today, lang) {
+        const d = this.data.days[today] || {};
+        const isAr = lang === 'ar';
+        const dateLabel = isAr
+            ? `اليوم ${this._toAr(today)} من ذي الحجة`
+            : `Day ${today} — ${this._gregorianDate(today)}`;
+        const quz = d.quranJuz || 0;
+        return `
+        <div class="wt-entry-card">
+            <h3 class="wt-entry-title">${dateLabel}</h3>
+            <div class="wt-activity-list">
+                <label class="wt-activity">
+                    <input type="checkbox" data-wt-field="sunnahPrayers" data-wt-day="${today}" ${d.sunnahPrayers ? 'checked' : ''}>
+                    <span class="wt-act-icon">☪️</span>
+                    <span class="wt-act-label">${isAr ? 'صليت السنن اليوم (خاصة الفجر)' : 'Completed Sunnah prayers (especially Fajr)'}</span>
+                </label>
+                <div class="wt-activity wt-quran-row">
+                    <span class="wt-act-icon">📖</span>
+                    <div class="wt-quran-inner">
+                        <span class="wt-act-label">${isAr ? 'قراءة القرآن اليوم' : 'Quran read today'}</span>
+                        <div class="wt-quran-ctrl">
+                            <input type="range" min="0" max="30" step="1" value="${quz}"
+                                data-wt-field="quranJuz" data-wt-day="${today}" class="wt-slider">
+                            <span class="wt-quran-val" id="wt-quran-val">${isAr ? this._toAr(quz) : quz} ${isAr ? 'جزء' : 'Juz'}</span>
+                        </div>
+                    </div>
+                </div>
+                <label class="wt-activity">
+                    <input type="checkbox" data-wt-field="charity" data-wt-day="${today}" ${d.charity ? 'checked' : ''}>
+                    <span class="wt-act-icon">💚</span>
+                    <span class="wt-act-label">${isAr ? 'تصدّقت اليوم (أي مبلغ)' : 'Gave charity today (any amount)'}</span>
+                </label>
+                <label class="wt-activity">
+                    <input type="checkbox" data-wt-field="fasting" data-wt-day="${today}" ${d.fasting ? 'checked' : ''}>
+                    <span class="wt-act-icon">🌙</span>
+                    <span class="wt-act-label">${isAr ? 'صمت اليوم' : 'Fasted today'}</span>
+                </label>
+            </div>
+            ${d.completed ? `<div class="wt-completed">✅ ${isAr ? 'يوم مكتمل! جزاك الله خيراً' : 'Day Complete! JazakAllah Khayran'}</div>` : ''}
+        </div>`;
+    }
+
+    _renderCalendar(today, lang) {
+        const isAr = lang === 'ar';
+        const cells = Array.from({ length: 10 }, (_, i) => {
+            const n = i + 1;
+            const d = this.data.days[n];
+            const isToday = n === today;
+            const isFuture = n > today;
+            let cls = 'wt-day';
+            let icon = '⭕';
+            if (isFuture)       { cls += ' wt-day-future';  icon = '🔒'; }
+            else if (d?.completed) { cls += ' wt-day-done';  icon = '✅'; }
+            else if (d)         { cls += ' wt-day-partial'; icon = '⏳'; }
+            if (isToday) cls += ' wt-day-today';
+            const mini = d ? `
+                <div class="wt-day-mini">
+                    <span class="${d.sunnahPrayers ? 'on' : ''}">☪️</span>
+                    <span class="${d.quranJuz > 0 ? 'on' : ''}">📖</span>
+                    <span class="${d.charity ? 'on' : ''}">💚</span>
+                    <span class="${d.fasting ? 'on' : ''}">🌙</span>
+                </div>` : '';
+            return `
+            <div class="${cls}" data-wt-cal="${n}">
+                <span class="wt-day-n">${isAr ? this._toAr(n) : n}</span>
+                <span class="wt-day-icon">${icon}</span>
+                ${mini}
+            </div>`;
+        });
+        return `
+        <div class="wt-calendar">
+            <h3 class="wt-cal-title">${isAr ? 'أيام ذي الحجة العشرة' : '10 Days of Dhul Hijjah'}</h3>
+            <div class="wt-cal-grid">${cells.join('')}</div>
+        </div>`;
+    }
+
+    _renderSummary(lang) {
+        const isAr = lang === 'ar';
+        const pct = this._overallPct();
+        const b = this._breakdown();
+        return `
+        <div class="wt-summary">
+            <h3 class="wt-summary-title">${isAr ? 'ملخص التقدم' : 'Progress Summary'}</h3>
+            <div class="wt-overall">
+                <div class="wt-overall-bar"><div class="wt-overall-fill" style="width:${pct}%"></div></div>
+                <span class="wt-overall-pct">${isAr ? this._toAr(pct) : pct}%</span>
+            </div>
+            <div class="wt-breakdown">
+                <div class="wt-bd-item"><span>☪️</span><span>${isAr ? 'السنن' : 'Sunnah'}</span><strong>${isAr ? this._toAr(b.sunnah) : b.sunnah}/10</strong></div>
+                <div class="wt-bd-item"><span>📖</span><span>${isAr ? 'القرآن' : 'Quran'}</span><strong>${isAr ? this._toAr(b.quranDays) : b.quranDays} ${isAr ? 'أيام' : 'days'}</strong></div>
+                <div class="wt-bd-item"><span>💚</span><span>${isAr ? 'الصدقة' : 'Charity'}</span><strong>${isAr ? this._toAr(b.charity) : b.charity}/10</strong></div>
+                <div class="wt-bd-item"><span>🌙</span><span>${isAr ? 'الصيام' : 'Fasting'}</span><strong>${isAr ? this._toAr(b.fasting) : b.fasting}/10</strong></div>
+            </div>
+        </div>`;
+    }
+
+    _attachListeners(lang) {
+        const isAr = lang === 'ar';
+        document.querySelectorAll('[data-wt-field][type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                this.updateActivity(+e.target.dataset.wtDay, e.target.dataset.wtField, e.target.checked);
+                this.renderSection();
+            });
+        });
+        document.querySelectorAll('.wt-slider').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const v = +e.target.value;
+                const el = document.getElementById('wt-quran-val');
+                if (el) el.textContent = `${isAr ? this._toAr(v) : v} ${isAr ? 'جزء' : 'Juz'}`;
+            });
+            slider.addEventListener('change', (e) => {
+                this.updateActivity(+e.target.dataset.wtDay, 'quranJuz', +e.target.value);
+                this.renderSection();
+            });
+        });
+    }
+}
+
+let worshipTracker;
+
+// ═══════════════════════════════════════════════════
+// BADGE SYSTEM
+// ═══════════════════════════════════════════════════
+class BadgeSystem {
+    constructor() {
+        this.STORAGE_KEY = 'noor_badges_dhulhijjah_1447';
+        // 10 days of Dhul Hijjah 1447: May 18–27, 2026
+        this.DH_DAYS = Array.from({ length: 10 }, (_, i) => {
+            const d = new Date('2026-05-18T00:00:00+02:00');
+            d.setUTCDate(d.getUTCDate() + i);
+            return d.toISOString().split('T')[0];
+        });
+        this.DEFS = {
+            earlyBird: {
+                id: 'earlyBird',
+                name: { en: 'Early Bird', ar: 'الطائر المبكر' },
+                emoji: '🌅',
+                description: { en: 'Complete Sunnah prayers 3 consecutive days', ar: 'صلّ السنن ٣ أيام متتالية' },
+                criteria: 'consecutive', field: 'sunnahPrayers', target: 3
+            },
+            generousHeart: {
+                id: 'generousHeart',
+                name: { en: 'Generous Heart', ar: 'القلب الكريم' },
+                emoji: '💚',
+                description: { en: 'Give charity 5 times', ar: 'تصدّق ٥ مرات' },
+                criteria: 'total', field: 'charity', target: 5
+            },
+            scholar: {
+                id: 'scholar',
+                name: { en: 'Scholar', ar: 'العالم' },
+                emoji: '📖',
+                description: { en: 'Read Quran for 7 days', ar: 'اقرأ القرآن ٧ أيام' },
+                criteria: 'total', field: 'quranJuz', target: 7
+            }
+        };
+        this.state = this._load();
+    }
+
+    _load() {
+        const saved = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        const state = {};
+        Object.keys(this.DEFS).forEach(id => {
+            state[id] = { unlocked: false, unlockedDate: null, ...saved[id] };
+        });
+        return state;
+    }
+
+    _save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+    }
+
+    _readDays() {
+        // Prefer WorshipTracker (primary source), indexed 1–10
+        if (typeof worshipTracker !== 'undefined' && worshipTracker) {
+            return worshipTracker.data.days;
+        }
+        // Fallback: read from existing Ramadan checklist localStorage, map fields
+        const days = {};
+        this.DH_DAYS.forEach((dateStr, i) => {
+            const raw = localStorage.getItem(`ramadan_checklist_${dateStr}`);
+            const cl = raw ? JSON.parse(raw) : {};
+            days[i + 1] = {
+                sunnahPrayers: !!cl['cb-qiyam'],
+                charity: !!cl['cb-sadaqah'],
+                quranJuz: cl['cb-quran'] ? 1 : 0
+            };
+        });
+        return days;
+    }
+
+    _computeProgress(def, days) {
+        const indices = Object.keys(days).map(Number).sort((a, b) => a - b);
+        const check = (d) => {
+            if (!d) return false;
+            const v = d[def.field];
+            return def.field === 'quranJuz' ? v > 0 : !!v;
+        };
+        if (def.criteria === 'total') {
+            return indices.filter(i => check(days[i])).length;
+        }
+        // consecutive
+        let max = 0, cur = 0;
+        indices.forEach(i => {
+            if (check(days[i])) { cur++; max = Math.max(max, cur); }
+            else { cur = 0; }
+        });
+        return max;
+    }
+
+    update() {
+        const days = this._readDays();
+        Object.values(this.DEFS).forEach(def => {
+            if (this.state[def.id].unlocked) return;
+            if (this._computeProgress(def, days) >= def.target) {
+                this.state[def.id].unlocked = true;
+                this.state[def.id].unlockedDate = new Date().toISOString();
+                this._showToast(def);
+                // Show floating toast notification
+                const badgeName = currentLang === 'ar' ? def.name.ar : def.name.en;
+                const toastEl = document.createElement('div');
+                toastEl.className = 'badge-toast';
+                toastEl.textContent = currentLang === 'ar'
+                    ? `🏅 شارة جديدة: ${badgeName}!`
+                    : `🏅 New badge: ${badgeName}!`;
+                document.body.appendChild(toastEl);
+                requestAnimationFrame(() => toastEl.classList.add('badge-toast-show'));
+                setTimeout(() => { toastEl.classList.remove('badge-toast-show'); setTimeout(() => toastEl.remove(), 300); }, 4000);
+            }
+        });
+        this._save();
+        this.renderSection();
+    }
+
+    _showToast(def) {
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const isAr = lang === 'ar';
+        const title  = isAr ? '🎉 شارة جديدة!' : '🎉 Badge Unlocked!';
+        const name   = isAr ? def.name.ar : def.name.en;
+        const desc   = isAr ? def.description.ar : def.description.en;
+        const sub    = isAr ? `مبروك! حصلت على شارة "${name}"` : `Congratulations! You earned "${name}"`;
+
+        document.getElementById('celebration-popup')?.remove();
+        const popup = document.createElement('div');
+        popup.id = 'celebration-popup';
+        popup.className = 'celeb-popup';
+        popup.innerHTML = `
+            <div class="celeb-backdrop"></div>
+            <div class="celeb-box celeb-badge" dir="${isAr ? 'rtl' : 'ltr'}">
+                <button class="celeb-close" onclick="this.closest('#celebration-popup').remove()">&times;</button>
+                <div class="celeb-glow"></div>
+                <div class="celeb-emoji-big">${def.emoji}</div>
+                <h2 class="celeb-title">${title}</h2>
+                <p class="celeb-sub">${sub}</p>
+                <p class="celeb-desc">${desc}</p>
+                <div class="celeb-progress-hint">${isAr ? 'استمر وافتح المزيد من الشارات!' : 'Keep going to unlock more badges!'}</div>
+            </div>`;
+        document.body.appendChild(popup);
+
+        // Animate badge card and sparkles
+        setTimeout(() => {
+            const el = document.getElementById(`badge-${def.id}`);
+            if (el) { el.classList.add('badge-unlock-anim'); this._sparkles(el); }
+        }, 150);
+
+        // Auto-dismiss after 6 s
+        setTimeout(() => {
+            popup.classList.add('celeb-out');
+            setTimeout(() => popup.remove(), 400);
+        }, 6000);
+
+        popup.querySelector('.celeb-backdrop').addEventListener('click', () => {
+            popup.classList.add('celeb-out');
+            setTimeout(() => popup.remove(), 400);
+        });
+    }
+
+    _sparkles(el) {
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        for (let i = 0; i < 12; i++) {
+            const s = document.createElement('div');
+            s.className = 'badge-sparkle';
+            const rad = ((360 / 12) * i) * Math.PI / 180;
+            s.style.left = cx + 'px';
+            s.style.top = cy + 'px';
+            s.style.setProperty('--dx', Math.round(Math.cos(rad) * 64) + 'px');
+            s.style.setProperty('--dy', Math.round(Math.sin(rad) * 64) + 'px');
+            document.body.appendChild(s);
+            setTimeout(() => s.remove(), 900);
+        }
+    }
+
+    renderSection() {
+        const container = document.getElementById('badge-grid');
+        if (!container) return;
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const days = this._readDays();
+        container.innerHTML = Object.values(this.DEFS).map(def => {
+            const s = this.state[def.id];
+            const progress = this._computeProgress(def, days);
+            const capped = Math.min(progress, def.target);
+            const pct = Math.round((capped / def.target) * 100);
+            const locked = !s.unlocked;
+            const dateStr = s.unlockedDate
+                ? new Date(s.unlockedDate).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US')
+                : '';
+            return `
+                <div id="badge-${def.id}" class="badge-card ${locked ? 'badge-locked' : 'badge-unlocked'}" data-badge="${def.id}">
+                    <div class="badge-icon-wrap">
+                        <span class="badge-emoji">${def.emoji}</span>
+                        ${locked ? '<span class="badge-lock">🔒</span>' : '<span class="badge-check">✅</span>'}
+                    </div>
+                    <h3 class="badge-name">${def.name[lang]}</h3>
+                    <p class="badge-desc">${def.description[lang]}</p>
+                    <div class="badge-prog-wrap">
+                        <div class="badge-prog-bar"><div class="badge-prog-fill" style="width:${pct}%"></div></div>
+                        <span class="badge-prog-txt">${capped}/${def.target}</span>
+                    </div>
+                    ${!locked ? `<div class="badge-date">${lang === 'ar' ? 'حصلت عليها في' : 'Unlocked'} ${dateStr}</div>` : ''}
+                </div>`;
+        }).join('');
+        container.querySelectorAll('.badge-card').forEach(card => {
+            card.addEventListener('click', () => this._showModal(card.dataset.badge));
+        });
+    }
+
+    _showModal(badgeId) {
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const def = this.DEFS[badgeId];
+        const s = this.state[badgeId];
+        const days = this._readDays();
+        const capped = Math.min(this._computeProgress(def, days), def.target);
+        const remaining = def.target - capped;
+        const pct = Math.round((capped / def.target) * 100);
+        document.getElementById('badge-modal')?.remove();
+        const modal = document.createElement('div');
+        modal.id = 'badge-modal';
+        modal.className = 'badge-modal';
+        modal.innerHTML = `
+            <div class="badge-modal-overlay"></div>
+            <div class="badge-modal-box" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">
+                <button class="badge-modal-close">&times;</button>
+                <div class="badge-modal-emoji">${def.emoji}</div>
+                <h2>${def.name[lang]}</h2>
+                <p class="badge-modal-desc">${def.description[lang]}</p>
+                <div class="badge-modal-prog">
+                    <div class="badge-prog-bar"><div class="badge-prog-fill" style="width:${pct}%"></div></div>
+                    <span class="badge-prog-txt">${capped} / ${def.target}</span>
+                </div>
+                ${s.unlocked
+                    ? `<p class="badge-modal-status badge-status-unlocked">✅ ${lang === 'ar' ? 'مفتوحة' : 'Unlocked'} · ${new Date(s.unlockedDate).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US')}</p>`
+                    : `<p class="badge-modal-status badge-status-locked">🔒 ${remaining} ${lang === 'ar' ? (remaining === 1 ? 'يوم متبقٍ' : 'أيام متبقية') : (remaining === 1 ? 'day remaining' : 'days remaining')}</p>`
+                }
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('.badge-modal-overlay').addEventListener('click', () => modal.remove());
+        modal.querySelector('.badge-modal-close').addEventListener('click', () => modal.remove());
+    }
+}
+
+let badgeSystem;
+
+// ═══════════════════════════════════════════════════
+// VIRTUE CARDS
+// ═══════════════════════════════════════════════════
+const VC_DATA = [
+    {
+        day: 1, gregorianDate: 'May 18, 2026', hijriDate: '1 Dhul Hijjah 1447', icon: '🌙', color: '#4f46e5',
+        source: {
+            type: 'verse',
+            arabic: 'وَأَذِّن فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ',
+            transliteration: "Wa adhdhin fin-nāsi bil-ḥajji ya'tūka rijālan wa 'alā kulli ḍāmirin ya'tīna min kulli fajjin 'amīq",
+            translation: {
+                en: 'And proclaim to the people the Hajj; they will come to you on foot and on every lean camel; they will come from every distant pass.',
+                ar: 'وَأَذِّن فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ'
+            },
+            reference: 'Quran 22:27'
+        },
+        virtue: {
+            en: "The first of the 10 blessed days of Dhul Hijjah — the days Allah swore by in Surah Al-Fajr: 'By the dawn, and by the ten nights' (89:1–2).",
+            ar: "اليوم الأول من العشر المباركة من ذي الحجة — الأيام التي أقسم بها الله في سورة الفجر: 'وَالْفَجْرِ وَلَيَالٍ عَشْرٍ' (89:1–2)."
+        },
+        lesson: {
+            en: { title: 'The Significance of Dhul Hijjah', content: 'These ten days are the most sacred in the Islamic year. The Prophet ﷺ said: "There are no days in which righteous deeds are more beloved to Allah than these ten days." The Companions asked: "Not even jihad for the sake of Allah?" He said: "Not even jihad — except a man who goes out putting himself and his wealth at risk and returns with nothing." (Bukhari)\n\nHow to maximise these days:\n• Increase dhikr — Takbeer, Tahleel, Tahmeed\n• Fast as many days as you can (especially Day 9)\n• Give generously in charity\n• Pray every prayer on time\n• Begin with sincere repentance (Tawbah)\n\nMake today the start of your best ten days ever.' },
+            ar: { title: 'أهمية أيام ذي الحجة', content: 'هذه الأيام العشرة هي أقدس أيام السنة الإسلامية. قال النبي ﷺ: "ما من أيام العمل الصالح فيهن أحب إلى الله من هذه الأيام العشر." فقالوا: ولا الجهاد في سبيل الله؟ قال: "ولا الجهاد، إلا رجل خرج بنفسه وماله فلم يرجع من ذلك بشيء." (البخاري)\n\nكيف تستثمر هذه الأيام:\n• أكثر من الذكر — التكبير والتهليل والتحميد\n• صم ما استطعت (خاصة اليوم التاسع)\n• أنفق بسخاء في الصدقات\n• صلِّ كل صلاة في وقتها\n• ابدأ بالتوبة الصادقة\n\nاجعل اليوم بداية أفضل عشرة أيام في حياتك.' }
+        }
+    },
+    {
+        day: 2, gregorianDate: 'May 19, 2026', hijriDate: '2 Dhul Hijjah 1447', icon: '✨', color: '#0ea5e9',
+        source: {
+            type: 'hadith',
+            arabic: 'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهِنَّ أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ',
+            transliteration: "Mā min ayyāmin al-'amalu aṣ-ṣāliḥu fīhinna aḥabbu ilā Allāhi min hādhihi al-ayyāmi al-'ashr",
+            translation: {
+                en: 'There are no days on which righteous deeds are more beloved to Allah than these ten days.',
+                ar: 'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهِنَّ أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ'
+            },
+            reference: 'Sahih Bukhari 969'
+        },
+        virtue: {
+            en: 'Every good deed — no matter how small — carries extraordinary weight during these days. A smile, a kind word, a prayer on time: all are multiplied in ways we cannot imagine.',
+            ar: 'كل عمل صالح — مهما كان صغيراً — يحمل ثقلاً استثنائياً في هذه الأيام. الابتسامة، والكلمة الطيبة، والصلاة في وقتها: كلها تتضاعف بصورة لا يمكننا تخيّلها.'
+        },
+        lesson: {
+            en: { title: 'Every Deed Counts', content: 'The scholars explain that deeds are "more beloved" here because Allah looks upon them with special pleasure during these days. When Allah loves an act, He gives it His fullest barakah.\n\nFocus on consistency over volume:\n• Pray every Sunnah prayer, not just Fardh\n• Read even one page of Quran with full attention\n• Make dhikr during idle moments (commute, waiting, walking)\n• Call a relative you have neglected\n• Give a small amount in charity every day\n\nThe Prophet ﷺ said: "The most beloved deeds to Allah are the most consistent, even if they are small." (Bukhari & Muslim)' },
+            ar: { title: 'كل عمل له قيمة', content: 'يوضح العلماء أن الأعمال هنا "أحب" لأن الله ينظر إليها بمسرة خاصة في هذه الأيام. وحين يحب الله عملاً، يمنحه أتم بركاته.\n\nركّز على الاستمرارية لا على الكم:\n• صلِّ كل سنة، وليس الفرض فحسب\n• اقرأ ولو صفحة واحدة من القرآن بتأمل كامل\n• أكثر من الذكر في أوقات الفراغ\n• تواصل مع قريب أهملته\n• تصدّق بمبلغ صغير كل يوم\n\nقال النبي ﷺ: "أحب الأعمال إلى الله أدومها وإن قل." (البخاري ومسلم)' }
+        }
+    },
+    {
+        day: 3, gregorianDate: 'May 20, 2026', hijriDate: '3 Dhul Hijjah 1447', icon: '🌿', color: '#059669',
+        source: {
+            type: 'hadith',
+            arabic: 'مَنْ صَامَ يَوْمًا فِي سَبِيلِ اللَّهِ بَعَّدَ اللَّهُ وَجْهَهُ عَنِ النَّارِ سَبْعِينَ خَرِيفًا',
+            transliteration: "Man ṣāma yawman fī sabīli Allāhi ba''ada Allāhu wajhahu 'an al-nāri sab'īna kharīfā",
+            translation: {
+                en: 'Whoever fasts one day for the sake of Allah, Allah will keep his face away from the Fire by a distance of seventy years.',
+                ar: 'مَنْ صَامَ يَوْمًا فِي سَبِيلِ اللَّهِ بَعَّدَ اللَّهُ وَجْهَهُ عَنِ النَّارِ سَبْعِينَ خَرِيفًا'
+            },
+            reference: 'Sahih Muslim 1153'
+        },
+        virtue: {
+            en: 'Fasting during Dhul Hijjah is one of the greatest acts of worship. The Prophet ﷺ used to fast the first nine days of Dhul Hijjah.',
+            ar: 'الصيام في ذي الحجة من أعظم العبادات. وكان النبي ﷺ يصوم التسعة الأيام الأولى من ذي الحجة.'
+        },
+        lesson: {
+            en: { title: 'The Power of Fasting', content: 'Fasting is described in a divine hadith (Hadith Qudsi): "Every deed of the son of Adam is for himself, except fasting — it is for Me and I will reward it." (Bukhari & Muslim) Fasting uniquely belongs to Allah because it is a hidden act that only He can verify.\n\nTips for fasting these days:\n• Make niyyah (intention) before Fajr each day\n• Eat a light, nutritious suhoor\n• Use hunger as a reminder to make dhikr\n• Break fast with dua — this is a moment of acceptance\n• Avoid wasting the fast with idle speech\n\nAim to fast at least Day 9 (Arafah) if you cannot fast all nine days.' },
+            ar: { title: 'قوة الصيام', content: 'وصف الله الصيام في حديث قدسي: "كل عمل ابن آدم له إلا الصيام، فإنه لي وأنا أجزي به." (البخاري ومسلم) الصيام ينتسب لله وحده لأنه عبادة خفية لا يعلمها إلا هو.\n\nنصائح للصيام في هذه الأيام:\n• انوِ نية الصيام قبل الفجر كل يوم\n• تناول سحوراً خفيفاً ومغذياً\n• استخدم الجوع تذكيراً بالذكر\n• أفطر بدعاء — هذه لحظة قبول\n• تجنب إضاعة الصيام بالكلام الفارغ\n\nاحرص على صيام يوم عرفة (اليوم التاسع) على الأقل.' }
+        }
+    },
+    {
+        day: 4, gregorianDate: 'May 21, 2026', hijriDate: '4 Dhul Hijjah 1447', icon: '📿', color: '#7c3aed',
+        source: {
+            type: 'hadith',
+            arabic: 'مَا مِنْ يَوْمٍ أَعْظَمُ عِنْدَ اللَّهِ وَلَا أَحَبُّ إِلَيْهِ الْعَمَلُ فِيهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ، فَأَكْثِرُوا فِيهَا مِنَ التَّهْلِيلِ وَالتَّكْبِيرِ وَالتَّحْمِيدِ',
+            transliteration: "Mā min yawmin a'ẓamu 'inda Allāhi wa lā aḥabbu ilayhi al-'amalu fīhi min hādhihi al-ayyāmi al-'ashr, fa-akthirū fīhā min at-tahlīli wa at-takbīri wa at-taḥmīd",
+            translation: {
+                en: 'There are no days more magnificent in the sight of Allah, nor in which good deeds are more beloved to Him, than these ten days. So increase in Tahleel, Takbeer, and Tahmeed.',
+                ar: 'مَا مِنْ يَوْمٍ أَعْظَمُ عِنْدَ اللَّهِ وَلَا أَحَبُّ إِلَيْهِ الْعَمَلُ فِيهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ، فَأَكْثِرُوا فِيهَا مِنَ التَّهْلِيلِ وَالتَّكْبِيرِ وَالتَّحْمِيدِ'
+            },
+            reference: 'Ahmad, authenticated by Ibn Hajar'
+        },
+        virtue: {
+            en: 'The tongue remembering Allah is among the lightest acts of worship yet the most rewarded. Dhikr costs nothing and can be done anywhere — walking, driving, working.',
+            ar: 'ذكر اللسان لله من أخف العبادات وأعظمها أجراً. الذكر لا يكلف شيئاً ويمكن ممارسته في أي مكان — سيراً أو قيادةً أو عملاً.'
+        },
+        lesson: {
+            en: { title: 'The Language of Dhikr', content: 'The four phrases especially recommended during Dhul Hijjah:\n\n• لَا إِلَهَ إِلَّا اللَّه — Lā ilāha illallāh\n• اللَّهُ أَكْبَر — Allāhu Akbar\n• الْحَمْدُ لِلَّهِ — Alḥamdulillāh\n• سُبْحَانَ اللَّه — Subḥānallāh\n\nThe Takbeer formula for these days: "Allāhu Akbar, Allāhu Akbar, lā ilāha illallāh, Allāhu Akbar, Allāhu Akbar, wa lillāhil ḥamd."\n\nMake dhikr your background music. Say it during every pause in your day. These phrases are treasures heavier than mountains on your scale of good deeds.' },
+            ar: { title: 'لغة الذكر', content: 'العبارات الأربع الموصى بها بشكل خاص في ذي الحجة:\n\n• لَا إِلَهَ إِلَّا اللَّه\n• اللَّهُ أَكْبَر\n• الْحَمْدُ لِلَّهِ\n• سُبْحَانَ اللَّه\n\nصيغة التكبير في هذه الأيام: "الله أكبر، الله أكبر، لا إله إلا الله، الله أكبر، الله أكبر، ولله الحمد."\n\nاجعل الذكر موسيقى خلفيتك. قله في كل توقف في يومك. هذه العبارات كنوز أثقل من الجبال في ميزان حسناتك.' }
+        }
+    },
+    {
+        day: 5, gregorianDate: 'May 22, 2026', hijriDate: '5 Dhul Hijjah 1447', icon: '💛', color: '#d97706',
+        source: {
+            type: 'verse',
+            arabic: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ',
+            transliteration: "Mathalu alladhīna yunfiqūna amwālahum fī sabīli Allāhi kamathali ḥabbatin anbatat sab'a sanābila fī kulli sunbulatin mi'atu ḥabbah, wallāhu yuḍā'ifu liman yashā'",
+            translation: {
+                en: 'The example of those who spend their wealth in the way of Allah is like a seed of grain which grows seven spikes; in each spike is a hundred grains. And Allah multiplies for whom He wills.',
+                ar: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ'
+            },
+            reference: 'Quran 2:261'
+        },
+        virtue: {
+            en: 'Charity during these blessed days is multiplied beyond measure. Even the smallest act of giving — a meal, a smile, a kind word — carries immense weight.',
+            ar: 'الصدقة في هذه الأيام المباركة تتضاعف بصورة لا تُحصى. حتى أصغر أعمال العطاء — وجبة طعام، أو ابتسامة، أو كلمة طيبة — تحمل ثقلاً عظيماً.'
+        },
+        lesson: {
+            en: { title: 'Unlocking Generosity', content: '"Charity does not decrease wealth." (Muslim) This is a divine promise. When you give sincerely, Allah opens doors of provision you cannot foresee.\n\nWays to give during Dhul Hijjah:\n• Donate to a cause you believe in today\n• Feed someone who cannot afford a meal\n• Sponsor a share of Udhiyyah (Qurbani)\n• Share knowledge — even one useful tip counts\n• Make dua for others — this is free sadaqah\n\nThe best charity combines the material (money, food) with the immaterial (time, attention, kindness). Give from what you love most, and trust Allah to replace it with something better.' },
+            ar: { title: 'فتح باب الكرم', content: '"الصدقة لا تنقص من مال." (مسلم) هذا وعد إلهي. حين تعطي بإخلاص، يفتح الله أبواب رزق لا تراها.\n\nطرق العطاء في ذي الحجة:\n• تبرّع لقضية تؤمن بها اليوم\n• أطعم شخصاً لا يستطيع تحمّل تكاليف وجبة\n• اشترك في حصة أضحية\n• شارك علماً — حتى نصيحة مفيدة واحدة تحتسب\n• ادعُ للآخرين — هذه صدقة مجانية\n\nأعطِ مما تحب، وثق بأن الله سيعوضك بما هو أفضل.' }
+        }
+    },
+    {
+        day: 6, gregorianDate: 'May 23, 2026', hijriDate: '6 Dhul Hijjah 1447', icon: '📖', color: '#0891b2',
+        source: {
+            type: 'hadith',
+            arabic: 'اقْرَؤُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لِأَصْحَابِهِ',
+            transliteration: "Iqra'ū al-Qur'āna fa-innahu ya'tī yawma al-qiyāmati shafī'an li-aṣḥābih",
+            translation: {
+                en: 'Recite the Quran, for it will come on the Day of Resurrection as an intercessor for its companions.',
+                ar: 'اقْرَؤُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لِأَصْحَابِهِ'
+            },
+            reference: 'Sahih Muslim 804'
+        },
+        virtue: {
+            en: 'The Quran is a living guide, a healing, and a light. Every letter recited earns ten good deeds. During these blessed days, recitation carries even greater blessing.',
+            ar: 'القرآن دليل حيّ وشفاء ونور. كل حرف يُتلى يكسب عشر حسنات. وفي هذه الأيام المباركة، تحمل التلاوة بركة أعظم.'
+        },
+        lesson: {
+            en: { title: 'Living with the Quran', content: 'The Prophet ﷺ said: "The best of you are those who learn the Quran and teach it." (Bukhari) Engaging with the Quran transforms the heart.\n\nPractical steps for today:\n• Set a daily Quran goal — even 5 minutes of focused reading\n• Choose one verse to reflect on deeply\n• Listen to a Quran recitation during your commute\n• Memorise one short surah or ayah\n• Read the tafseer of a verse you find difficult\n\nThe Quran was revealed as a mercy and guidance. Come to it with an open heart, and it will show you what you need to hear today.' },
+            ar: { title: 'العيش مع القرآن', content: 'قال النبي ﷺ: "خيركم من تعلم القرآن وعلّمه." (البخاري) التفاعل مع القرآن يُحوّل القلب.\n\nخطوات عملية لليوم:\n• ضع هدفاً يومياً للقرآن — حتى 5 دقائق من القراءة المركّزة\n• اختر آية واحدة لتتأملها في العمق\n• استمع لتلاوة قرآنية أثناء تنقلك\n• احفظ سورة قصيرة أو آية\n• اقرأ تفسير آية تجدها صعبة\n\nأقبل على القرآن بقلب منفتح، وسيريك ما تحتاج أن تسمعه اليوم.' }
+        }
+    },
+    {
+        day: 7, gregorianDate: 'May 24, 2026', hijriDate: '7 Dhul Hijjah 1447', icon: '🔆', color: '#be185d',
+        source: {
+            type: 'verse',
+            arabic: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ',
+            transliteration: "Qul yā 'ibādiya alladhīna asrafū 'alā anfusihim lā taqnaṭū min raḥmati Allāh, inna Allāha yaghfiru adh-dhunūba jamī'ā, innahu huwa al-Ghafūru ar-Raḥīm",
+            translation: {
+                en: 'Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.',
+                ar: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ'
+            },
+            reference: 'Quran 39:53'
+        },
+        virtue: {
+            en: 'Sincere repentance (Tawbah) wipes the slate clean. No matter how far you have drifted, Allah is always closer to you than you think — and these days are the perfect time to return.',
+            ar: 'التوبة الصادقة تمحو كل شيء. بغض النظر عن مدى ابتعادك، الله أقرب إليك مما تظن — وهذه الأيام هي الوقت المثالي للعودة.'
+        },
+        lesson: {
+            en: { title: 'The Door of Tawbah', content: 'The Prophet ﷺ said: "Allah stretches out His hand during the night so that those who sinned by day may repent, and He stretches out His hand during the day so that those who sinned by night may repent — until the sun rises from the west." (Muslim)\n\nSteps for a sincere Tawbah:\n• Acknowledge the sin honestly — no minimising or excusing\n• Feel genuine remorse in your heart\n• Firmly resolve not to return to it\n• Make amends where possible (return what was taken, apologise)\n• Replace bad habits with good ones immediately\n\nAllah loves those who return to Him repeatedly. Tawbah is not a one-time act — it is a daily practice of turning back to your Lord.' },
+            ar: { title: 'باب التوبة', content: 'قال النبي ﷺ: "إن الله يبسط يده بالليل ليتوب مسيء النهار، ويبسط يده بالنهار ليتوب مسيء الليل، حتى تطلع الشمس من مغربها." (مسلم)\n\nخطوات التوبة الصادقة:\n• اعترف بالذنب بصدق — دون تهوين أو تبرير\n• اشعر بالندم الحقيقي في قلبك\n• اعقد عزماً راسخاً على عدم العودة\n• أصلح ما أمكن (أعد ما أُخذ، واعتذر)\n• استبدل العادات السيئة بأخرى حسنة فوراً\n\nالتوبة ليست فعلاً واحداً — هي ممارسة يومية للعودة إلى ربك.' }
+        }
+    },
+    {
+        day: 8, gregorianDate: 'May 25, 2026', hijriDate: '8 Dhul Hijjah 1447 — Yawm al-Tarwiyah', icon: '🕋', color: '#ea580c',
+        source: {
+            type: 'hadith',
+            arabic: 'إِذَا كَانَ يَوْمُ التَّرْوِيَةِ أَهَلُّوا بِالْحَجِّ',
+            transliteration: "Idhā kāna Yawmu al-Tarwiyati ahallū bil-ḥajj",
+            translation: {
+                en: 'On the Day of Tarwiyah (8th Dhul Hijjah), the pilgrims enter the state of ihram for Hajj.',
+                ar: 'إِذَا كَانَ يَوْمُ التَّرْوِيَةِ أَهَلُّوا بِالْحَجِّ'
+            },
+            reference: 'Sahih Bukhari 1666'
+        },
+        virtue: {
+            en: 'The Day of Tarwiyah is when pilgrims begin their Hajj journey. For non-pilgrims, it is a day to prepare the soul — purify intentions, settle disputes, and enter the final stretch with full commitment.',
+            ar: 'يوم التروية هو اليوم الذي يبدأ فيه الحجاج رحلة الحج. لغير الحجاج، هو يوم لإعداد الروح — تنقية النوايا، وتسوية الخلافات، والدخول في المرحلة الأخيرة بالتزام كامل.'
+        },
+        lesson: {
+            en: { title: 'Yawm al-Tarwiyah — Day of Preparation', content: 'As pilgrims depart for Mina today, the rest of the Ummah should also enter a state of heightened worship. Great stations require preparation.\n\nUse today to:\n• Resolve any outstanding debts or wrongs with others\n• Make a sincere intention to maximise tomorrow (Arafah)\n• Increase in Istighfar (seeking forgiveness)\n• Cut off distractions — social media, entertainment, idle talk\n• Plan and write your dua list for Arafah Day\n\nThe pilgrim who reaches Arafah is changed forever. Even from afar, we can share in that spiritual transformation by preparing our hearts today.' },
+            ar: { title: 'يوم التروية — يوم الاستعداد', content: 'بينما يتوجه الحجاج إلى منى اليوم، يجب على بقية الأمة أيضاً الدخول في حالة من العبادة المتصاعدة.\n\nاستخدم اليوم لـ:\n• تسوية أي ديون أو مظالم مع الآخرين\n• النية الصادقة لتعظيم الغد (يوم عرفة)\n• الإكثار من الاستغفار\n• قطع المشتتات — وسائل التواصل والترفيه والحديث الفارغ\n• تخطيط وكتابة قائمة أدعيتك ليوم عرفة\n\nحتى من بعيد، يمكننا المشاركة في التحول الروحي بإعداد قلوبنا اليوم.' }
+        }
+    },
+    {
+        day: 9, gregorianDate: 'May 26, 2026', hijriDate: '9 Dhul Hijjah 1447 — Yawm Arafah', icon: '⭐', color: '#b45309',
+        source: {
+            type: 'hadith',
+            arabic: 'مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ وَإِنَّهُ لَيَدْنُو ثُمَّ يُبَاهِي بِهِمُ الْمَلَائِكَةَ',
+            transliteration: "Mā min yawmin akthara min an yu'tiqa Allāhu fīhi 'abdan min al-nāri min Yawmi 'Arafah, wa-innahu la-yadnū thumma yubāhī bihimu al-malā'ikah",
+            translation: {
+                en: 'There is no day on which Allah frees more people from the Fire than the Day of Arafah. He draws close, then boasts about them to the angels.',
+                ar: 'مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ وَإِنَّهُ لَيَدْنُو ثُمَّ يُبَاهِي بِهِمُ الْمَلَائِكَةَ'
+            },
+            reference: 'Sahih Muslim 1348'
+        },
+        virtue: {
+            en: 'Arafah is the heart of Hajj and the greatest day of the year. Fasting on this day expiates the sins of the previous and coming year. Allah boasts to His angels about those who stand in worship.',
+            ar: 'عرفة هي قلب الحج وأعظم يوم في السنة. صيام هذا اليوم يكفّر ذنوب السنة الماضية والقادمة. يباهي الله ملائكته بالذين يقفون في العبادة.'
+        },
+        lesson: {
+            en: { title: '⭐ Arafah — The Greatest Day', content: 'The Prophet ﷺ said about fasting Arafah: "It expiates the sins of the previous year and the year to come." (Muslim) This is a divine gift — a chance to wipe the slate clean.\n\nMake the most of Arafah:\n• Fast the entire day (from Fajr to Maghrib)\n• Spend time in dua — especially the last hour before Maghrib\n• Best dua of Arafah: "Lā ilāha illallāhu waḥdahu lā sharīka lah, lahu al-mulku wa lahu al-ḥamdu wa huwa \'alā kulli shay\'in qadīr"\n• Make dua for your parents, family, and the entire Ummah\n• Cry if you can — tears on Arafah are among the most precious\n\nAllah is closer to you today than on any other day. Pour your heart out — He is listening.' },
+            ar: { title: '⭐ عرفة — أعظم يوم', content: 'قال النبي ﷺ عن صيام عرفة: "يكفر السنة الماضية والسنة القادمة." (مسلم) هذه هبة إلهية — فرصة لمحو كل شيء.\n\nاستثمر يوم عرفة:\n• صم اليوم كله (من الفجر إلى المغرب)\n• أمضِ وقتاً في الدعاء — خاصة الساعة الأخيرة قبل المغرب\n• أفضل دعاء في عرفة: "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير"\n• ادعُ لوالديك وأسرتك والأمة وجميع المسلمين\n• ابكِ إن استطعت — الدموع في عرفة من أثمن ما يكون\n\nالله أقرب إليك اليوم من أي يوم آخر. أفضِ بما في قلبك — هو يسمع.' }
+        }
+    },
+    {
+        day: 10, gregorianDate: 'May 27, 2026', hijriDate: '10 Dhul Hijjah 1447 — Eid al-Adha', icon: '🎉', color: '#15803d',
+        source: {
+            type: 'verse',
+            arabic: 'فَصَلِّ لِرَبِّكَ وَانْحَرْ',
+            transliteration: "Faṣalli li-rabbika wa-anḥar",
+            translation: {
+                en: 'So pray to your Lord and sacrifice.',
+                ar: 'فَصَلِّ لِرَبِّكَ وَانْحَرْ'
+            },
+            reference: 'Quran 108:2'
+        },
+        virtue: {
+            en: "Eid al-Adha commemorates Ibrahim's ﷺ willingness to sacrifice everything for Allah's sake. The Udhiyyah is a symbol of complete submission — giving your most beloved for Allah's pleasure.",
+            ar: 'يُحيي عيد الأضحى استعداد إبراهيم ﷺ للتضحية بكل شيء في سبيل الله. الأضحية رمز للاستسلام الكامل — تقديم ما تحب أكثر لرضا الله.'
+        },
+        lesson: {
+            en: { title: '🎉 Eid al-Adha Mubarak!', content: 'Eid al-Adha is the greatest celebration in Islam — a day of gratitude, sacrifice, and community. The Prophet ﷺ said: "The first thing we do on this day of ours is to pray, then return and slaughter. Whoever does that has followed our Sunnah." (Bukhari)\n\nHow to celebrate Eid the Prophetic way:\n• Wake early and make ghusl (full ritual bath)\n• Wear your best clothes\n• Eat nothing before the Eid prayer\n• Walk to the Eid prayer if possible\n• Exchange greetings: "Taqabbal Allāhu minnā wa minkum"\n• Give Udhiyyah — share the meat with family, neighbours, and the poor\n• Spend time with loved ones — Eid is for connection\n\nMay Allah accept your worship over these ten blessed days. Eid Mubarak! 🌙' },
+            ar: { title: '🎉 عيد الأضحى مبارك!', content: 'عيد الأضحى هو أعظم احتفال في الإسلام — يوم شكر وتضحية وتجمع. قال النبي ﷺ: "إن أول ما نبدأ به في يومنا هذا أن نصلي، ثم نرجع فننحر. من فعل ذلك فقد أصاب سنتنا." (البخاري)\n\nكيف تحتفل بالعيد على الطريقة النبوية:\n• استيقظ مبكراً واغتسل\n• البس أجمل ثيابك\n• لا تأكل قبل صلاة العيد\n• امشِ إلى صلاة العيد إن أمكن\n• تبادل التهاني: "تقبل الله منا ومنكم"\n• قدّم الأضحية وشارك اللحم مع الأسرة والجيران والفقراء\n• أمضِ وقتاً مع أحبائك\n\nتقبل الله منكم ومنا هذه الأيام المباركة العشر. عيد مبارك! 🌙' }
+        }
+    }
+];
+
+class VirtueCards {
+    constructor() {
+        this.idx = 0;
+        this._touchStartX = 0;
+        this._initialised = false;
+    }
+
+    _toArabicNum(n) {
+        return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+
+    _hijriAr(hijriDate) {
+        return this._toArabicNum(hijriDate)
+            .replace('Dhul Hijjah', 'ذو الحجة')
+            .replace('Yawm al-Tarwiyah', 'يوم التروية')
+            .replace('Yawm Arafah', 'يوم عرفة')
+            .replace('Eid al-Adha', 'عيد الأضحى');
+    }
+
+    _currentDay() {
+        if (CONFIG.WT_TEST_DAY) return CONFIG.WT_TEST_DAY;
+        const now = getCurrentTime();
+        const start = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
+        const diff = Math.floor((now - start) / 86400000);
+        if (diff < 0) return 0;
+        if (diff >= 10) return 10;
+        return diff + 1;
+    }
+
+    renderSection() {
+        const container = document.getElementById('virtue-cards-container');
+        if (!container) return;
+        const lang = localStorage.getItem('noor-lang') || 'en';
+        const today = this._currentDay();
+
+        // On first render, jump to today's card
+        if (!this._initialised) {
+            this._initialised = true;
+            if (today > 0) this.idx = Math.min(today - 1, 9);
+        }
+
+        container.innerHTML = this._renderCard(this.idx, lang, today);
+        this._attachListeners(lang, today);
+    }
+
+    _renderCard(idx, lang, today) {
+        const card = VC_DATA[idx];
+        const isLocked = card.day > today;
+        const isRtl = lang === 'ar';
+        const prevLabel = '‹';
+        const nextLabel = '›';
+
+        const dotsHtml = VC_DATA.map((c, i) => {
+            let cls = 'vc-dot';
+            if (i === idx) cls += ' vc-dot-active';
+            if (c.day > today) cls += ' vc-dot-locked';
+            return `<span class="${cls}" data-vc-dot="${i}" title="Day ${c.day}"></span>`;
+        }).join('');
+
+        let cardBody;
+        if (isLocked) {
+            cardBody = `
+                <div class="vc-card vc-card-locked">
+                    <div class="vc-lock-content">
+                        <div class="vc-lock-icon">🔒</div>
+                        <div class="vc-lock-title">${isRtl ? `اليوم ${this._toArabicNum(card.day)}` : `Day ${card.day}`}</div>
+                        <div class="vc-lock-sub">${isRtl ? this._hijriAr(card.hijriDate) : card.hijriDate}</div>
+                        <div class="vc-lock-msg">${isRtl ? `يُفتح في ${card.gregorianDate}` : `Unlocks on ${card.gregorianDate}`}</div>
+                    </div>
+                </div>`;
+        } else {
+            const src = card.source;
+            const typeLabel = src.type === 'verse'
+                ? (isRtl ? '📖 آية كريمة' : '📖 Quranic Verse')
+                : (isRtl ? '📜 حديث شريف' : '📜 Hadith');
+            const virtueLabel = isRtl ? '💎 الفضيلة' : '💎 Virtue';
+            const lessonObj = card.lesson[lang] || card.lesson.en;
+            const lessonContent = lessonObj.content.split('\n').map(line => {
+                line = line.trim();
+                if (!line) return '';
+                if (line.startsWith('•')) return `<li>${line.slice(1).trim()}</li>`;
+                return `<p>${line}</p>`;
+            }).join('');
+
+            cardBody = `
+                <div class="vc-card" style="--vc-color:${card.color}">
+                    <div class="vc-card-head">
+                        <span class="vc-card-icon">${card.icon}</span>
+                        <div class="vc-card-meta">
+                            <div class="vc-day-label">${isRtl ? `اليوم ${this._toArabicNum(card.day)}` : `Day ${card.day}`}</div>
+                            <div class="vc-hijri">${isRtl ? this._hijriAr(card.hijriDate) : card.hijriDate}</div>
+                        </div>
+                    </div>
+                    <div class="vc-scripture">
+                        <div class="vc-type-label">${typeLabel}</div>
+                        <div class="vc-arabic" dir="rtl">${src.arabic}</div>
+                        ${src.transliteration ? `<div class="vc-translit">${src.transliteration}</div>` : ''}
+                        <div class="vc-translation">${src.translation[lang] || src.translation.en}</div>
+                        <div class="vc-ref">${src.reference}</div>
+                    </div>
+                    <div class="vc-virtue">
+                        <div class="vc-virtue-label">${virtueLabel}</div>
+                        <p class="vc-virtue-text">${card.virtue[lang] || card.virtue.en}</p>
+                    </div>
+                    <div class="vc-lesson">
+                        <div class="vc-lesson-title">${lessonObj.title}</div>
+                        <div class="vc-lesson-body">${lessonContent}</div>
+                    </div>
+                    <div class="vc-share-row">
+                        <button class="btn vc-share-btn" data-vc-share="${idx}">${t('vcShare')}</button>
+                    </div>
+                </div>`;
+        }
+
+        return `
+            <div class="vc-wrap" dir="${isRtl ? 'rtl' : 'ltr'}">
+                <div class="vc-nav-row">
+                    <button class="vc-nav-btn" id="vc-prev" ${idx === 0 ? 'disabled' : ''}>${prevLabel}</button>
+                    <div class="vc-dots">${dotsHtml}</div>
+                    <button class="vc-nav-btn" id="vc-next" ${idx === 9 ? 'disabled' : ''}>${nextLabel}</button>
+                </div>
+                <div class="vc-viewport" id="vc-viewport">
+                    ${cardBody}
+                </div>
+            </div>`;
+    }
+
+    _goTo(idx, lang, today) {
+        if (VC_DATA[idx].day > today) {
+            this._toast(lang === 'ar'
+                ? `🔒 اليوم ${VC_DATA[idx].day} يُفتح في ${VC_DATA[idx].gregorianDate}`
+                : `🔒 Day ${VC_DATA[idx].day} unlocks on ${VC_DATA[idx].gregorianDate}`);
+            return;
+        }
+        this.idx = idx;
+        this.renderSection();
+    }
+
+    _toast(msg) {
+        document.querySelectorAll('.vc-toast').forEach(t => t.remove());
+        const toast = document.createElement('div');
+        toast.className = 'vc-toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('vc-toast-show'));
+        setTimeout(() => {
+            toast.classList.remove('vc-toast-show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    _attachListeners(lang, today) {
+        document.getElementById('vc-prev')?.addEventListener('click', () => {
+            if (this.idx > 0) this._goTo(this.idx - 1, lang, today);
+        });
+        document.getElementById('vc-next')?.addEventListener('click', () => {
+            if (this.idx < 9) this._goTo(this.idx + 1, lang, today);
+        });
+        document.querySelectorAll('[data-vc-dot]').forEach(dot => {
+            dot.addEventListener('click', () => this._goTo(parseInt(dot.dataset.vcDot), lang, today));
+        });
+        document.querySelector('[data-vc-share]')?.addEventListener('click', () => {
+            this._shareCard(this.idx, lang);
+        });
+        const viewport = document.getElementById('vc-viewport');
+        if (viewport) {
+            viewport.addEventListener('touchstart', e => {
+                this._touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            viewport.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].screenX - this._touchStartX;
+                if (Math.abs(dx) > 50) {
+                    const goNext = lang === 'ar' ? dx > 0 : dx < 0;
+                    if (goNext && this.idx < 9) this._goTo(this.idx + 1, lang, today);
+                    else if (!goNext && this.idx > 0) this._goTo(this.idx - 1, lang, today);
+                }
+            }, { passive: true });
+        }
+    }
+
+    async _shareCard(idx, lang) {
+        const card = VC_DATA[idx];
+        const src = card.source;
+        const badge = lang === 'ar'
+            ? `${card.icon} اليوم ${this._toArabicNum(card.day)} — ${this._hijriAr(card.hijriDate)}`
+            : `${card.icon} Day ${card.day} of Dhul Hijjah — ${card.hijriDate}`;
+
+        const btn = document.querySelector('[data-vc-share]');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+
+        // Generate the share image (bespoke dark card, no external image needed)
+        let blob = null;
+        try {
+            blob = await generateVCBlob(card, lang);
+        } catch (err) {
+            console.error('VC share — canvas error:', err);
+        }
+
+        if (btn) { btn.disabled = false; btn.textContent = t('vcShare'); }
+
+        const shareText = `${badge}\n\n${src.arabic}\n\n${src.translation.en}\n\n🌙 Noor Nights`;
+        trackEvent('/share-virtue-card', `Day ${card.day}`);
+
+        // 1) Native file share — Android Chrome, iOS 15+
+        if (blob && navigator.share) {
+            try {
+                const file = new File([blob], `noor-nights-day${card.day}.jpg`, { type: 'image/jpeg' });
+                if (navigator.canShare?.({ files: [file] })) {
+                    await navigator.share({ files: [file], title: badge });
+                    return;
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                console.warn('VC share — file share failed:', err.name);
+            }
+        }
+
+        // 2) Text + URL share — iOS Safari, any browser with Web Share API
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: badge, text: shareText, url: window.location.href });
+                return;
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                console.warn('VC share — text share failed:', err.name);
+            }
+        }
+
+        // 3) Download fallback — desktop, unsupported browsers
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            triggerDownload(url, `noor-nights-day${card.day}.jpg`);
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+            this._toast(lang === 'ar' ? '📥 تم حفظ الصورة' : '📥 Image saved!');
+        } else {
+            this._toast(lang === 'ar' ? 'تعذّر إنشاء الصورة' : 'Could not generate image');
+        }
+    }
+}
+
+let virtueCards;
+
+// ═══════════════════════════════════════════════════
+// DUA COMPANION
+// ═══════════════════════════════════════════════════
+
+const DC_CATEGORIES = [
+    { id: 'forgiveness', icon: '🤲', en: 'Forgiveness', ar: 'المغفرة' },
+    { id: 'family',      icon: '👨‍👩‍👧', en: 'Family',      ar: 'العائلة' },
+    { id: 'health',      icon: '💚',  en: 'Health',      ar: 'الصحة'  },
+    { id: 'guidance',    icon: '📖',  en: 'Guidance',    ar: 'الهداية' },
+    { id: 'ummah',       icon: '🌍',  en: 'Ummah',       ar: 'الأمة'  },
+    { id: 'personal',    icon: '⭐',  en: 'Personal',    ar: 'شخصي'   },
+];
+
+const DC_DUAS = {
+    forgiveness: [
+        { id:'f1', ar:'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ', tr:'My Lord, forgive me, my parents, and the believers on the Day of Reckoning.', ref:'Quran 14:41' },
+        { id:'f2', ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي', tr:'O Allah, You are Forgiving and love forgiveness, so forgive me.', ref:'Ibn Majah' },
+        { id:'f3', ar:'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ', tr:'Our Lord, we have wronged ourselves. If You do not forgive us and have mercy on us, we shall be among the losers.', ref:'Quran 7:23' },
+        { id:'f4', ar:'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ دِقَّهُ وَجِلَّهُ وَأَوَّلَهُ وَآخِرَهُ وَعَلَانِيَتَهُ وَسِرَّهُ', tr:'O Allah, forgive me all my sins — the small and the great, the first and the last, the open and the secret.', ref:'Muslim' },
+        { id:'f5', ar:'سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ', tr:'Glory be to You! Indeed, I have been of the wrongdoers.', ref:'Quran 21:87' },
+    ],
+    family: [
+        { id:'fam1', ar:'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا', tr:'My Lord, forgive me and my parents, and have mercy on them as they raised me when I was small.', ref:'Quran 17:24' },
+        { id:'fam2', ar:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا', tr:'Our Lord, grant us from our spouses and offspring comfort to our eyes and make us a leader for the righteous.', ref:'Quran 25:74' },
+        { id:'fam3', ar:'اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي', tr:'O Allah, set right my religion which is the safeguard of my affairs, and set right my world where my livelihood is.', ref:'Muslim' },
+        { id:'fam4', ar:'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَىٰ وَالِدَيَّ', tr:'My Lord, enable me to be grateful for Your favor which You have bestowed upon me and upon my parents.', ref:'Quran 27:19' },
+        { id:'fam5', ar:'اللَّهُمَّ بَارِكْ لَنَا فِي أَهْلِنَا وَأَوْلَادِنَا', tr:'O Allah, bless us in our family and our children.', ref:'Du\'a' },
+    ],
+    health: [
+        { id:'h1', ar:'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي', tr:'O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight.', ref:'Abu Dawud' },
+        { id:'h2', ar:'أَسْأَلُ اللَّهَ الْعَظِيمَ رَبَّ الْعَرْشِ الْعَظِيمِ أَنْ يَشْفِيَكَ', tr:'I ask Allah the Mighty, Lord of the Magnificent Throne, to cure you.', ref:'Abu Dawud (7x)' },
+        { id:'h3', ar:'رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ', tr:'My Lord, adversity has touched me, and You are the Most Merciful of the merciful.', ref:'Quran 21:83' },
+        { id:'h4', ar:'اللَّهُمَّ اشْفِ مَرْضَانَا وَمَرْضَى الْمُسْلِمِينَ', tr:'O Allah, cure our sick and the sick among the Muslims.', ref:'Du\'a' },
+        { id:'h5', ar:'بِسْمِ اللَّهِ أَرْقِيكَ مِنْ كُلِّ شَيْءٍ يُؤْذِيكَ', tr:'In the name of Allah I perform ruqyah for you from everything that harms you.', ref:'Muslim' },
+    ],
+    guidance: [
+        { id:'g1', ar:'رَبِّ زِدْنِي عِلْمًا', tr:'My Lord, increase me in knowledge.', ref:'Quran 20:114' },
+        { id:'g2', ar:'اللَّهُمَّ اهْدِنَا فِيمَنْ هَدَيْتَ وَعَافِنَا فِيمَنْ عَافَيْتَ', tr:'O Allah, guide us among those You have guided, and grant us wellbeing among those You have granted wellbeing.', ref:'Abu Dawud' },
+        { id:'g3', ar:'رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا', tr:'Our Lord, grant us mercy from Yourself and prepare for us from our affair right guidance.', ref:'Quran 18:10' },
+        { id:'g4', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
+        { id:'g5', ar:'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ', tr:'O Turner of hearts, keep my heart firm on Your religion.', ref:'Tirmidhi' },
+    ],
+    ummah: [
+        { id:'u1', ar:'اللَّهُمَّ انْصُرِ الْمُسْلِمِينَ وَأَعِزَّ الإِسْلَامَ', tr:'O Allah, grant victory to the Muslims and give honour to Islam.', ref:'Du\'a' },
+        { id:'u2', ar:'اللَّهُمَّ ارْحَمْ أُمَّةَ مُحَمَّدٍ', tr:'O Allah, have mercy upon the Ummah of Muhammad.', ref:'Du\'a' },
+        { id:'u3', ar:'اللَّهُمَّ اكْشِفْ عَنَّا الْبَلَاءَ', tr:'O Allah, remove afflictions from us.', ref:'Du\'a' },
+        { id:'u4', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Our Lord, give us good in this world and good in the next world, and protect us from the punishment of the Fire.', ref:'Quran 2:201' },
+        { id:'u5', ar:'اللَّهُمَّ أَصْلِحْ أَحْوَالَ الْمُسْلِمِينَ فِي كُلِّ مَكَانٍ', tr:'O Allah, reform the affairs of the Muslims in every place.', ref:'Du\'a' },
+    ],
+    personal: [
+        { id:'p1', ar:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ', tr:'Our Lord, grant us from our spouses and offspring comfort to our eyes.', ref:'Quran 25:74' },
+        { id:'p2', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ', tr:'O Allah, I ask You for Paradise and seek refuge in You from the Fire.', ref:'Abu Dawud' },
+        { id:'p3', ar:'اللَّهُمَّ يَسِّرْ وَلَا تُعَسِّرْ', tr:'O Allah, make things easy and do not make them difficult.', ref:'Du\'a' },
+        { id:'p4', ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', tr:'Allah is sufficient for us, and He is the best Disposer of affairs.', ref:'Quran 3:173' },
+        { id:'p5', ar:'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي', tr:'My Lord, expand my breast and ease my task for me.', ref:'Quran 20:25-26' },
+    ],
+};
+
+class DuaCompanion {
+    constructor() {
+        const saved = JSON.parse(localStorage.getItem('noor_duas_1447') || '{}');
+        this.checked = new Set(saved.checked || []);
+        this.shared = saved.shared || [];
+        this.community = [];        // from Supabase (or null = not configured)
+        this.cat = 'forgiveness';
+        this._pollInterval = null;
+        this._fetchCommunity();     // async — fires and updates feed when ready
+    }
+
+    _isSupabaseConfigured() {
+        return CONFIG.SUPABASE_URL && CONFIG.SUPABASE_URL.length > 10
+            && CONFIG.SUPABASE_ANON_KEY && CONFIG.SUPABASE_ANON_KEY.length > 10;
+    }
+
+    async _fetchCommunity() {
+        if (!this._isSupabaseConfigured()) { this.community = null; return; }
+        try {
+            const res = await fetch(
+                `${CONFIG.SUPABASE_URL}/rest/v1/community_duas?select=text,created_at&order=created_at.desc&limit=40`,
+                { headers: { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}` } }
+            );
+            if (res.ok) {
+                this.community = await res.json();
+                this._updateFeedEl();
+            }
+        } catch { /* leave community as-is */ }
+    }
+
+    async _submitCommunity(text) {
+        if (!this._isSupabaseConfigured()) {
+            this.shared.push({ text, ts: Date.now() });
+            this._save();
+            return true;
+        }
+        try {
+            const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/community_duas`, {
+                method: 'POST',
+                headers: {
+                    'apikey': CONFIG.SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ text })
+            });
+            if (res.ok) { await this._fetchCommunity(); return true; }
+            return false;
+        } catch { return false; }
+    }
+
+    _startPoll() {
+        if (this._pollInterval) return;
+        this._pollInterval = setInterval(() => this._fetchCommunity(), 60000);
+    }
+
+    _save() {
+        localStorage.setItem('noor_duas_1447', JSON.stringify({
+            checked: [...this.checked],
+            shared: this.shared,
+        }));
+    }
+
+    _allDuas(cat) { return DC_DUAS[cat] || []; }
+
+    _totalCount() {
+        return Object.keys(DC_DUAS).reduce((s, k) => s + DC_DUAS[k].length, 0);
+    }
+
+    renderSection() {
+        const el = document.getElementById('dc-container');
+        if (!el) return;
+        const lang = currentLang;
+        const isAr = lang === 'ar';
+        const dir = isAr ? 'rtl' : 'ltr';
+
+        const total = this._totalCount();
+        const done = this.checked.size;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+
+        const tabs = DC_CATEGORIES.map(c => `
+            <button class="dc-tab${c.id === this.cat ? ' dc-tab-active' : ''}" data-dc-cat="${c.id}">
+                <span>${c.icon}</span> <span>${isAr ? c.ar : c.en}</span>
+            </button>`).join('');
+
+        const duas = this._allDuas(this.cat);
+        const items = duas.length ? duas.map(d => {
+            const chk = this.checked.has(d.id);
+            return `
+            <label class="dc-item${chk ? ' dc-item-done' : ''}" data-dc-id="${d.id}">
+                <input type="checkbox" class="dc-chk" data-dc-id="${d.id}"${chk ? ' checked' : ''}>
+                <div class="dc-item-body">
+                    <div class="dc-item-ar" dir="rtl">${d.ar}</div>
+                    <div class="dc-item-tr">${isAr ? d.ar : d.tr}</div>
+                    ${d.ref ? `<div class="dc-item-ref">${d.ref}</div>` : ''}
+                </div>
+            </label>`;
+        }).join('') : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
+
+        const configured = this._isSupabaseConfigured();
+        const feedHtml = this._buildFeedHtml(isAr, configured);
+        const countLabel = configured
+            ? (this.community?.length > 0 ? (isAr ? `${numFmt(this.community.length)} دعاء` : `${this.community.length} duas`) : '')
+            : (this.shared.length > 0 ? t('dcSharedCount', this.shared.length) : '');
+
+        el.innerHTML = `
+        <div class="dc-wrap" dir="${dir}">
+            <div class="dc-progress-row">
+                <div class="dc-progress-bar"><div class="dc-progress-fill" style="width:${pct}%"></div></div>
+                <span class="dc-progress-label">${t('dcProgress', done, total)}</span>
+            </div>
+            <div class="dc-tabs">${tabs}</div>
+            <div class="dc-list">${items}</div>
+            <div class="dc-shared-section">
+                <div class="dc-shared-header">
+                    <span class="dc-shared-title">${t('dcSharedTitle')}</span>
+                    <span class="dc-shared-count">${countLabel}</span>
+                </div>
+                <div class="dc-wall-intro">
+                    ${isAr
+                        ? `<span class="dc-wall-intro-icon">🤲</span><span>اكتب دعاءً وشاركه مع إخوانك — كل من يقرأه سيقول <b>آمين</b>، وما دعوت به لغيرك دعا لك به ملَك بمثله.</span>`
+                        : `<span class="dc-wall-intro-icon">🤲</span><span>Share a dua — every brother & sister who reads it will say <b>Ameen</b>. The Prophet ﷺ said: "When you make dua for your brother, an angel says: And for you the same."</span>`
+                    }
+                </div>
+                ${!configured ? `<div class="dc-community-notice">${isAr ? '💡 الجدار محلي حالياً. لمشاركة الأدعية مع جميع المستخدمين، قم بإعداد Supabase في CONFIG.' : '💡 Wall is local for now. To share with all users, configure Supabase in CONFIG.'}</div>` : ''}
+                <div class="dc-shared-feed" id="dc-shared-feed">${feedHtml}</div>
+                <div class="dc-share-form">
+                    <input class="dc-share-input" id="dc-share-input" maxlength="200"
+                        placeholder="${t('dcSharePlaceholder')}"
+                        dir="${isAr ? 'rtl' : 'ltr'}">
+                    <button class="btn dc-share-submit" id="dc-share-submit">${t('dcShareBtn')}</button>
+                </div>
+            </div>
+        </div>`;
+
+        this._listen(lang);
+        this._startPoll();
+    }
+
+    _buildFeedHtml(isAr, configured) {
+        if (configured) {
+            if (!this.community || this.community.length === 0) {
+                return `<p class="dc-empty dc-loading-msg">${isAr ? 'جارٍ التحميل…' : 'Loading community duas…'}</p>`;
+            }
+            return this.community.map(s => `
+                <div class="dc-shared-item">
+                    <span class="dc-shared-text">${this._escape(s.text)}</span>
+                    <span class="dc-shared-meta">
+                        <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
+                        <span class="dc-shared-time">${this._timeAgo(new Date(s.created_at).getTime(), isAr)}</span>
+                    </span>
+                </div>`).join('');
+        }
+        // localStorage fallback
+        if (!this.shared.length) return `<p class="dc-empty">${t('dcSharedEmpty')}</p>`;
+        return [...this.shared].reverse().slice(0, 20).map(s => `
+            <div class="dc-shared-item">
+                <span class="dc-shared-text">${this._escape(s.text)}</span>
+                <span class="dc-shared-meta">
+                    <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
+                    <span class="dc-shared-time">${this._timeAgo(s.ts, isAr)}</span>
+                </span>
+            </div>`).join('');
+    }
+
+    _updateFeedEl() {
+        const feed = document.getElementById('dc-shared-feed');
+        if (!feed) return;
+        const isAr = currentLang === 'ar';
+        feed.innerHTML = this._buildFeedHtml(isAr, this._isSupabaseConfigured());
+        const countEl = document.querySelector('.dc-shared-count');
+        if (countEl && this.community?.length > 0) {
+            countEl.textContent = isAr ? `${numFmt(this.community.length)} دعاء` : `${this.community.length} duas`;
+        }
+    }
+
+    _listen(lang) {
+        const isAr = lang === 'ar';
+
+        document.querySelectorAll('[data-dc-cat]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.cat = btn.dataset.dcCat;
+                this.renderSection();
+            });
+        });
+
+        document.querySelectorAll('.dc-chk').forEach(chk => {
+            chk.addEventListener('change', () => {
+                const id = chk.dataset.dcId;
+                if (chk.checked) this.checked.add(id); else this.checked.delete(id);
+                this._save();
+                const item = chk.closest('.dc-item');
+                if (item) item.classList.toggle('dc-item-done', chk.checked);
+                const total = this._totalCount();
+                const done = this.checked.size;
+                const pct = total > 0 ? Math.round(done / total * 100) : 0;
+                const fill = document.querySelector('.dc-progress-fill');
+                if (fill) fill.style.width = pct + '%';
+                const lbl = document.querySelector('.dc-progress-label');
+                if (lbl) lbl.textContent = t('dcProgress', done, total);
+            });
+        });
+
+        document.getElementById('dc-share-submit')?.addEventListener('click', async () => {
+            const inp = document.getElementById('dc-share-input');
+            const raw = (inp?.value || '').trim();
+            if (!raw) return;
+            if (raw.length > 200 || /https?:\/\//i.test(raw)) {
+                this._toast(isAr ? 'المحتوى غير مقبول' : 'Content not allowed');
+                return;
+            }
+            const btn = document.getElementById('dc-share-submit');
+            if (btn) { btn.disabled = true; btn.textContent = isAr ? '…' : '…'; }
+            const ok = await this._submitCommunity(raw);
+            if (ok) {
+                if (inp) inp.value = '';
+                this._toast(isAr ? '🤲 تمت المشاركة بنجاح' : '🤲 Shared with the community!');
+            } else {
+                this._toast(isAr ? '❌ فشلت المشاركة، حاول مجدداً' : '❌ Failed to share, try again');
+            }
+            if (btn) { btn.disabled = false; btn.textContent = t('dcShareBtn'); }
+            if (!this._isSupabaseConfigured()) this.renderSection();
+        });
+    }
+
+    _escape(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    _timeAgo(ts, isAr) {
+        const s = Math.floor((Date.now() - ts) / 1000);
+        if (s < 60) return isAr ? 'الآن' : 'just now';
+        const m = Math.floor(s / 60);
+        if (m < 60) return isAr ? `منذ ${numFmt(m)} د` : `${m}m ago`;
+        const h = Math.floor(m / 60);
+        if (h < 24) return isAr ? `منذ ${numFmt(h)} س` : `${h}h ago`;
+        const d = Math.floor(h / 24);
+        return isAr ? `منذ ${numFmt(d)} يوم` : `${d}d ago`;
+    }
+
+    _toast(msg) {
+        document.querySelectorAll('.dc-toast').forEach(t => t.remove());
+        const el = document.createElement('div');
+        el.className = 'dc-toast';
+        el.textContent = msg;
+        document.body.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('dc-toast-show'));
+        setTimeout(() => { el.classList.remove('dc-toast-show'); setTimeout(() => el.remove(), 300); }, 3000);
+    }
+}
+
+let duaCompanion;
+
+// ═══════════════════════════════════════════════════
+// PRAYER TIMES (TASK 09)
+// ═══════════════════════════════════════════════════
+const _PT_CACHE_KEY = 'noor_pt_cache_v2';
+const _PT_PRAYERS_LIST = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const _PT_FALLBACK = { fajr: '04:23', dhuhr: '12:51', asr: '16:28', maghrib: '19:41', isha: '21:09' };
+const _PT_EID_TIME = '06:30'; // Eid al-Adha prayer, Cairo, May 27 2026
+
+class PrayerTimesAPI {
+    constructor() {
+        this._cache = this._loadCache();
+    }
+
+    _loadCache() {
+        try { return JSON.parse(localStorage.getItem(_PT_CACHE_KEY) || '{}'); } catch { return {}; }
+    }
+
+    _saveCache() {
+        try { localStorage.setItem(_PT_CACHE_KEY, JSON.stringify(this._cache)); } catch {}
+    }
+
+    _todayStr() {
+        const d = new Date(getCurrentTime());
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    async _fetchMonth(year, month) {
+        const key = `${year}-${String(month).padStart(2,'0')}`;
+        const cached = this._cache[key];
+        if (cached && Date.now() - cached.ts < 86400000) return cached.times;
+        try {
+            const url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=30.0444&longitude=31.2357&method=5`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('api_err');
+            const json = await res.json();
+            if (json.code !== 200) throw new Error('api_err');
+            const times = {};
+            json.data.forEach(day => {
+                const [d, m, y] = day.date.gregorian.date.split('-');
+                const dk = `${y}-${m}-${d}`;
+                times[dk] = {
+                    fajr:    day.timings.Fajr.split(' ')[0],
+                    dhuhr:   day.timings.Dhuhr.split(' ')[0],
+                    asr:     day.timings.Asr.split(' ')[0],
+                    maghrib: day.timings.Maghrib.split(' ')[0],
+                    isha:    day.timings.Isha.split(' ')[0],
+                };
+            });
+            this._cache[key] = { ts: Date.now(), times };
+            this._saveCache();
+            return times;
+        } catch { return null; }
+    }
+
+    async getTimesForDate(dateStr) {
+        const [y, m] = dateStr.split('-').map(Number);
+        const times = await this._fetchMonth(y, m);
+        return (times && times[dateStr]) || _PT_FALLBACK;
+    }
+
+    getCurrentPrayer(times) {
+        const now = new Date(getCurrentTime());
+        const cur = now.getHours() * 60 + now.getMinutes();
+        let current = 'fajr';
+        for (const p of _PT_PRAYERS_LIST) {
+            const [h, m] = times[p].split(':').map(Number);
+            if (cur >= h * 60 + m) current = p;
+        }
+        return current;
+    }
+
+    getNextPrayer(times) {
+        const now = new Date(getCurrentTime());
+        const cur = now.getHours() * 60 + now.getMinutes();
+        for (const p of _PT_PRAYERS_LIST) {
+            const [h, m] = times[p].split(':').map(Number);
+            const pm = h * 60 + m;
+            if (cur < pm) return { name: p, mins: pm - cur };
+        }
+        const [fh, fm] = times.fajr.split(':').map(Number);
+        return { name: 'fajr', mins: (1440 - cur) + fh * 60 + fm };
+    }
+}
+
+class PrayerTimesWidget {
+    constructor(api) {
+        this._api = api;
+        this._times = null;
+        this._interval = null;
+    }
+
+    async init() {
+        this._times = await this._api.getTimesForDate(this._api._todayStr());
+        this.render();
+        if (!this._interval) {
+            this._interval = setInterval(() => this._tick(), 60000);
+        }
+    }
+
+    render() {
+        const el = document.getElementById('pt-container');
+        if (!el) return;
+        if (!this._times) { el.innerHTML = `<p class="pt-loading">${currentLang === 'ar' ? 'جارٍ التحميل…' : 'Loading…'}</p>`; return; }
+
+        const isAr = currentLang === 'ar';
+        const dir = isAr ? 'rtl' : 'ltr';
+        const names = t('dhPrayers');
+        const current = this._api.getCurrentPrayer(this._times);
+        const next = this._api.getNextPrayer(this._times);
+        const nextH = Math.floor(next.mins / 60);
+        const nextM = next.mins % 60;
+        const nextText = isAr
+            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
+            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
+
+        const _dhRealDay = Math.floor((getCurrentTime() - new Date(CONFIG.DHUL_HIJJAH_START).getTime()) / 86400000) + 1;
+        const isEid = _dhRealDay >= 10;
+        const eidRow = isEid ? `
+            <div class="pt-row pt-row-eid">
+                <span class="pt-name">🎉 ${isAr ? 'صلاة العيد' : 'Eid Prayer'}</span>
+                <span class="pt-time">${numFmt(_PT_EID_TIME)}</span>
+            </div>` : '';
+
+        const rows = _PT_PRAYERS_LIST.map(p => `
+            <div class="pt-row${p === current ? ' pt-row-current' : ''}">
+                <span class="pt-name">${names[p]}</span>
+                <span class="pt-time">${numFmt(this._times[p])}</span>
+            </div>`).join('');
+
+        el.innerHTML = `
+        <div class="pt-wrap" dir="${dir}">
+            <div class="pt-location">📍 ${isAr ? 'القاهرة، مصر' : 'Cairo, Egypt'}</div>
+            <div class="pt-list">${eidRow}${rows}</div>
+            <div class="pt-next" id="pt-next">${nextText}</div>
+        </div>`;
+    }
+
+    _tick() {
+        if (!this._times) return;
+        const isAr = currentLang === 'ar';
+        const names = t('dhPrayers');
+        const current = this._api.getCurrentPrayer(this._times);
+        const next = this._api.getNextPrayer(this._times);
+        const nextH = Math.floor(next.mins / 60);
+        const nextM = next.mins % 60;
+
+        document.querySelectorAll('.pt-row:not(.pt-row-eid)').forEach((row, i) => {
+            row.classList.toggle('pt-row-current', _PT_PRAYERS_LIST[i] === current);
+        });
+        const nextEl = document.getElementById('pt-next');
+        if (nextEl) nextEl.textContent = isAr
+            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
+            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
+    }
+}
+
+let prayerAPI;
+let prayerWidget;
+
+// ═══════════════════════════════════════════════════
+// ARAFA DAY GOLDEN MODE
+// ═══════════════════════════════════════════════════
+function getDhulHijjahDay() {
+    if (CONFIG.WT_TEST_DAY) return CONFIG.WT_TEST_DAY;
+    const now = getCurrentTime();
+    const start = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
+    const diff = Math.floor((now - start) / 86400000);
+    if (diff < 0) return 0;
+    if (diff >= 10) return 10;
+    return diff + 1;
+}
+
+function initArafahMode() {
+    // Activate on arafah-eve (Day 8 after Maghrib) AND arafah (Day 9)
+    const stage = getDhStage();
+    const isArafa = stage === 'arafah' || stage === 'arafah-eve';
+    document.documentElement.classList.toggle('arafah-mode', isArafa);
+
+    // Particles — sparse, slow embers; only on actual Day 9
+    let particles = document.getElementById('arafah-particles');
+    const needParticles = stage === 'arafah';
+    if (needParticles && !particles) {
+        particles = document.createElement('div');
+        particles.id = 'arafah-particles';
+        particles.className = 'arafah-particles';
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement('div');
+            p.className = 'arafah-particle';
+            const size = 1.5 + Math.random() * 2;
+            p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${12+Math.random()*14}s;animation-delay:${Math.random()*16}s`;
+            particles.appendChild(p);
+        }
+        document.body.prepend(particles);
+    } else if (!needParticles && particles) {
+        particles.remove();
+    }
+
+    // Triple prayer timeline — only on Day 9
+    updateTripleCountdown(stage);
+}
+
+// Prayer times for Arafah Day (May 26, 2026) — Cairo UTC+2, approximate
+const _ARAFAH_DATE = '2026-05-26';
+const _ARAFAH_PRAYERS = {
+    fajr:    new Date(`${_ARAFAH_DATE}T04:15:00+02:00`).getTime(),
+    dhuhr:   new Date(`${_ARAFAH_DATE}T12:12:00+02:00`).getTime(),
+    asr:     new Date(`${_ARAFAH_DATE}T15:47:00+02:00`).getTime(),
+    maghrib: new Date(`${_ARAFAH_DATE}T19:30:00+02:00`).getTime(),
+};
+
+function updateTripleCountdown(stage) {
+    const card = document.getElementById('arafah-triple-card');
+    if (!card) return;
+
+    if (stage !== 'arafah') {
+        card.style.display = 'none';
+        return;
+    }
+    card.style.display = '';
+
+    const lang = localStorage.getItem('noor-lang') || 'en';
+    const isAr = lang === 'ar';
+    const now = getCurrentTime();
+
+    const fmt = ms => {
+        if (ms <= 0) return null;
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms % 3600000) / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    };
+
+    const prayers = [
+        {
+            id: 'fajr',
+            icon: '🌄',
+            label: isAr ? 'الفجر' : 'Fajr',
+            sub: isAr ? 'بداية وقت عرفة' : 'Arafah wuquf begins',
+            time: _ARAFAH_PRAYERS.fajr,
+            timeStr: '04:15',
+        },
+        {
+            id: 'asr',
+            icon: '⭐',
+            label: isAr ? 'العصر' : 'Asr',
+            sub: isAr ? 'أفضل وقت للدعاء' : 'Peak dua time',
+            time: _ARAFAH_PRAYERS.asr,
+            timeStr: '15:47',
+            peak: true,
+        },
+        {
+            id: 'maghrib',
+            icon: '🌇',
+            label: isAr ? 'المغرب' : 'Maghrib',
+            sub: isAr ? 'نهاية وقت عرفة' : 'Arafah wuquf ends',
+            time: _ARAFAH_PRAYERS.maghrib,
+            timeStr: '19:30',
+        },
+    ];
+
+    // Determine peak window: between Asr and Maghrib
+    const inPeak = now >= _ARAFAH_PRAYERS.asr && now < _ARAFAH_PRAYERS.maghrib;
+
+    const cardHtml = prayers.map(p => {
+        const remaining = p.time - now;
+        const passed = remaining <= 0;
+        const countdown = fmt(remaining);
+        let statusHtml;
+        if (passed) {
+            if (p.peak && inPeak) {
+                statusHtml = `<div class="at-status at-status-live">${isAr ? '🔥 ادعُ الآن!' : '🔥 Make Dua NOW!'}</div>`;
+            } else {
+                statusHtml = `<div class="at-status at-status-done">${isAr ? '✓ انتهى' : '✓ Passed'}</div>`;
+            }
+        } else {
+            statusHtml = `<div class="at-countdown${p.peak ? ' at-countdown-peak' : ''}">${countdown}</div>`;
+        }
+        return `
+        <div class="at-prayer${p.peak ? ' at-prayer-peak' : ''}${passed && !(p.peak && inPeak) ? ' at-prayer-done' : ''}">
+            <div class="at-prayer-icon">${p.icon}</div>
+            <div class="at-prayer-label">${p.label}</div>
+            <div class="at-prayer-sub">${p.sub}</div>
+            <div class="at-prayer-time">${p.timeStr}</div>
+            ${statusHtml}
+        </div>`;
+    }).join('');
+
+    const titleEl = card.querySelector('.at-title');
+    const gridEl = card.querySelector('.at-grid');
+    if (titleEl) titleEl.textContent = isAr ? '⏱ مواقيت يوم عرفة' : '⏱ Arafah Day Timeline';
+    if (gridEl) gridEl.innerHTML = cardHtml;
 }
 
 const dhulHijjahDate = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
 // Progress bar fills over the 30 days leading up to Dhul Hijjah
 const dhulHijjahRefStart = dhulHijjahDate - (30 * 86400000);
 
-function updateDhulHijjahCountdown() {
-    const card = document.getElementById('dhul-hijjah-card');
-    const statusEl = document.getElementById('dhul-hijjah-status');
-    const timerEl = document.getElementById('dhul-hijjah-timer');
-    const messageEl = document.getElementById('dhul-hijjah-message');
-    const progressBar = document.getElementById('dh-progress-bar');
-    const progressText = document.getElementById('dh-progress-text');
-    const titleEl = document.getElementById('dhul-hijjah-title');
-    if (!card || !statusEl) return;
+// ═══════════════════════════════════════════════════
+// FASTING TRACKER (TASK 07) — Arafah Day only
+// ═══════════════════════════════════════════════════
+const _FT_KEY = 'noor_fast_1447';
 
-    if (titleEl) titleEl.textContent = t('dhulHijjahTitle');
+class FastingTracker {
+    constructor() {
+        const saved = JSON.parse(localStorage.getItem(_FT_KEY) || '{}');
+        this.fasting = saved.fasting || false;
+        this.milestones = saved.milestones || { dhuhr: false, asr: false, maghrib: false };
+    }
+
+    _save() {
+        localStorage.setItem(_FT_KEY, JSON.stringify({
+            fasting: this.fasting,
+            milestones: this.milestones
+        }));
+    }
+
+    _pct() {
+        const now = getCurrentTime();
+        const total = _ARAFAH_PRAYERS.maghrib - _ARAFAH_PRAYERS.fajr;
+        return Math.min(100, Math.max(0, Math.round((now - _ARAFAH_PRAYERS.fajr) / total * 100)));
+    }
+
+    _remaining() {
+        const diff = Math.max(0, _ARAFAH_PRAYERS.maghrib - getCurrentTime());
+        return { h: Math.floor(diff / 3600000), m: Math.floor(diff % 3600000 / 60000) };
+    }
+
+    _remText(isAr) {
+        const r = this._remaining();
+        if (r.h === 0 && r.m === 0) return isAr ? '\u2705 \u0627\u0643\u062a\u0645\u0644' : '\u2705 Complete';
+        return isAr ? `${r.h}\u0633 ${r.m}\u062f \u0645\u062a\u0628\u0642\u064a` : `${r.h}h ${r.m}m left`;
+    }
+
+    _milestoneMsg(isAr) {
+        const pct = this._pct();
+        if (pct >= 100) return isAr ? '\uD83C\uDF89 \u0623\u062a\u0645\u0645\u062a \u0627\u0644\u0635\u064a\u0627\u0645! \u062a\u0642\u0628\u0644 \u0627\u0644\u0644\u0647 \u0645\u0646\u0643' : '\uD83C\uDF89 Fast complete! May Allah accept it';
+        if (pct >= 80) return isAr ? '\u2B50 \u0627\u0644\u0645\u0631\u062d\u0644\u0629 \u0627\u0644\u0623\u062e\u064a\u0631\u0629 \u2014 \u0623\u0639\u0638\u0645 \u0627\u0644\u0633\u0627\u0639\u0627\u062a \u0642\u0627\u062f\u0645\u0629' : '\u2B50 Final stretch \u2014 the most blessed hours ahead';
+        if (pct >= 50) return isAr ? '\uD83D\uDCAA \u0646\u0635\u0641 \u0627\u0644\u0637\u0631\u064a\u0642! \u062a\u0642\u0628\u0644 \u0627\u0644\u0644\u0647 \u0635\u064a\u0627\u0645\u0643' : '\uD83D\uDCAA Halfway there! May Allah accept your fast';
+        return isAr ? '\uD83C\uDF05 \u0628\u062f\u0623 \u0635\u064a\u0627\u0645\u0643 \u2014 \u0627\u0644\u0644\u0647\u0645 \u062a\u0642\u0628\u0644 \u0645\u0646\u0627' : '\uD83C\uDF05 Fast begun \u2014 may Allah accept it from us';
+    }
+
+    init() {
+        const card = document.getElementById('ft-card');
+        const el = document.getElementById('ft-container');
+        if (!card || !el) return;
+
+        if (getDhStage() !== 'arafah') { card.style.display = 'none'; return; }
+        card.style.display = '';
+
+        const isAr = currentLang === 'ar';
+        const dir = isAr ? 'rtl' : 'ltr';
+
+        if (!this.fasting) {
+            el.innerHTML = `
+            <div class="ft-intention" dir="${dir}">
+                <p class="ft-hadith">"\u0635\u0650\u064a\u064e\u0627\u0645\u064f \u064a\u064e\u0648\u0645\u0650 \u0639\u064e\u0631\u064e\u0641\u064e\u0629\u060c \u0623\u064e\u062d\u0652\u062a\u064e\u0633\u0650\u0628\u064f \u0639\u064e\u0644\u064e\u0649 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0623\u064e\u0646\u0652 \u064a\u064f\u0643\u064e\u0641\u0651\u0650\u0631\u064e \u0627\u0644\u0633\u0651\u064e\u0646\u064e\u0629\u064e \u0627\u0644\u0651\u064e\u062a\u0650\u064a \u0642\u064e\u0628\u0652\u0644\u064e\u0647\u064f\u060c \u0648\u064e\u0627\u0644\u0633\u0651\u064e\u0646\u064e\u0629\u064e \u0627\u0644\u0651\u064e\u062a\u0650\u064a \u0628\u064e\u0639\u0652\u062f\u064e\u0647\u064f"
+                    <span class="ft-source">\u2014 ${isAr ? '\u0635\u062d\u064a\u062d \u0645\u0633\u0644\u0645' : 'Sahih Muslim'}</span></p>
+                <p class="ft-question">${isAr ? '\u0647\u0644 \u062a\u0635\u0648\u0645 \u064a\u0648\u0645 \u0639\u0631\u0641\u0629\u061f' : 'Are you fasting Arafah today?'}</p>
+                <div class="ft-btns">
+                    <button class="btn ft-yes-btn" id="ft-yes">${isAr ? '\u2705 \u0646\u0639\u0645\u060c \u0623\u0646\u0627 \u0635\u0627\u0626\u0645' : '\u2705 Yes, I\'m fasting'}</button>
+                    <button class="btn btn-outline ft-no-btn" id="ft-no">${isAr ? '\u0644\u0633\u062a \u0635\u0627\u0626\u0645\u064b\u0627' : 'Not today'}</button>
+                </div>
+            </div>`;
+            document.getElementById('ft-yes')?.addEventListener('click', () => {
+                this.fasting = true;
+                this._save();
+                this.init();
+                this._ftToast(isAr ? '\uD83C\uDF19 \u062a\u0642\u0628\u0644 \u0627\u0644\u0644\u0647 \u0635\u064a\u0627\u0645\u0643!' : '\uD83C\uDF19 May Allah accept your fast!');
+            });
+            document.getElementById('ft-no')?.addEventListener('click', () => {
+                card.style.display = 'none';
+            });
+        } else {
+            this._renderProgress(el, isAr);
+        }
+    }
+
+    _renderProgress(el, isAr) {
+        const pct = this._pct();
+        const dir = isAr ? 'rtl' : 'ltr';
+        el.innerHTML = `
+        <div class="ft-tracker" dir="${dir}">
+            <div class="ft-timeline">
+                <div class="ft-pt">
+                    <span class="ft-pt-icon">\uD83C\uDF05</span>
+                    <span class="ft-pt-label">${isAr ? '\u0627\u0644\u0641\u062c\u0631' : 'Fajr'}</span>
+                    <span class="ft-pt-time">04:15</span>
+                </div>
+                <div class="ft-bar-wrap">
+                    <div class="ft-bar">
+                        <div class="ft-fill" style="width:${pct}%"></div>
+                    </div>
+                    <span class="ft-pct">${pct}%</span>
+                </div>
+                <div class="ft-pt">
+                    <span class="ft-pt-icon">\uD83C\uDF07</span>
+                    <span class="ft-pt-label">${isAr ? '\u0627\u0644\u0645\u063a\u0631\u0628' : 'Maghrib'}</span>
+                    <span class="ft-pt-time">19:30</span>
+                </div>
+            </div>
+            <div class="ft-meta">
+                <span class="ft-rem">${this._remText(isAr)}</span>
+                <span class="ft-msg">${this._milestoneMsg(isAr)}</span>
+            </div>
+        </div>`;
+    }
+
+    tick() {
+        if (getDhStage() !== 'arafah' || !this.fasting) return;
+        const fill = document.querySelector('.ft-fill');
+        if (!fill) return;
+
+        const pct = this._pct();
+        const isAr = currentLang === 'ar';
+        fill.style.width = pct + '%';
+        const pctEl = document.querySelector('.ft-pct');
+        if (pctEl) pctEl.textContent = pct + '%';
+        const remEl = document.querySelector('.ft-rem');
+        if (remEl) remEl.textContent = this._remText(isAr);
+        const msgEl = document.querySelector('.ft-msg');
+        if (msgEl) msgEl.textContent = this._milestoneMsg(isAr);
+
+        this._checkMilestones(pct, isAr);
+    }
+
+    _checkMilestones(pct, isAr) {
+        if (pct >= 50 && !this.milestones.dhuhr) {
+            this.milestones.dhuhr = true; this._save();
+            this._ftToast(isAr ? '\uD83D\uDCAA \u0646\u0635\u0641 \u0627\u0644\u0637\u0631\u064a\u0642! \u062a\u0642\u0628\u0644 \u0627\u0644\u0644\u0647 \u0635\u064a\u0627\u0645\u0643' : '\uD83D\uDCAA Halfway there! May Allah accept your fast', 6000);
+        }
+        if (pct >= 80 && !this.milestones.asr) {
+            this.milestones.asr = true; this._save();
+            this._ftToast(isAr ? '\u2B50 \u0627\u0644\u0645\u0631\u062d\u0644\u0629 \u0627\u0644\u0623\u062e\u064a\u0631\u0629 \u2014 \u0623\u0639\u0638\u0645 \u0627\u0644\u0633\u0627\u0639\u0627\u062a \u0642\u0627\u062f\u0645\u0629' : '\u2B50 Final stretch \u2014 the most blessed hours ahead', 6000);
+        }
+        if (pct >= 100 && !this.milestones.maghrib) {
+            this.milestones.maghrib = true; this._save();
+            this._celebrate(isAr);
+        }
+    }
+
+    _celebrate(isAr) {
+        const colors = ['#D4AF37', '#c9963a', '#14b8a6', '#ffffff', '#F4C430'];
+        for (let i = 0; i < 120; i++) {
+            setTimeout(() => {
+                const p = document.createElement('div');
+                p.className = 'ft-confetti';
+                const size = 6 + Math.random() * 8;
+                p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;` +
+                    `background:${colors[Math.floor(Math.random()*colors.length)]};` +
+                    `animation-duration:${2 + Math.random()*3}s;border-radius:${Math.random() > 0.5 ? '50%' : '2px'}`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 5500);
+            }, i * 25);
+        }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'ft-celebrate-overlay';
+        overlay.innerHTML = `
+        <div class="ft-celebrate-box" dir="${isAr ? 'rtl' : 'ltr'}">
+            <div class="ft-celebrate-icon">\uD83C\uDF89</div>
+            <h2 class="ft-celebrate-title">${isAr ? '\u0645\u0628\u0631\u0648\u0643! \u0623\u062a\u0645\u0645\u062a \u0635\u064a\u0627\u0645 \u0623\u0639\u0638\u0645 \u064a\u0648\u0645' : 'Alhamdulillah! You fasted the best day of the year'}</h2>
+            <p class="ft-celebrate-msg">\uD83E\uDD32 ${isAr ? '\u063a\u064f\u0641\u0650\u0631 \u0644\u0643 \u0630\u0646\u0628 \u0633\u0646\u062a\u064a\u0646' : '2 years of sins forgiven'}</p>
+            <div class="ft-celebrate-hadith">"\u0635\u0650\u064a\u064e\u0627\u0645\u064f \u064a\u064e\u0648\u0645\u0650 \u0639\u064e\u0631\u064e\u0641\u064e\u0629\u060c \u0623\u064e\u062d\u0652\u062a\u064e\u0633\u0650\u0628\u064f \u0639\u064e\u0644\u064e\u0649 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0623\u064e\u0646\u0652 \u064a\u064f\u0643\u064e\u0641\u0651\u0650\u0631\u064e \u0627\u0644\u0633\u0651\u064e\u0646\u064e\u0629\u064e \u0627\u0644\u0651\u064e\u062a\u0650\u064a \u0642\u064e\u0628\u0652\u0644\u064e\u0647\u064f\u060c \u0648\u064e\u0627\u0644\u0633\u0651\u064e\u0646\u064e\u0629\u064e \u0627\u0644\u0651\u064e\u062a\u0650\u064a \u0628\u064e\u0639\u0652\u062f\u064e\u0647\u064f"
+                <br><small>\u2014 ${isAr ? '\u0635\u062d\u064a\u062d \u0645\u0633\u0644\u0645' : 'Sahih Muslim'}</small></div>
+            <button class="btn ft-celebrate-close" id="ft-celebrate-close">${isAr ? '\u0627\u0644\u062d\u0645\u062f \u0644\u0644\u0647 \u2728' : 'Alhamdulillah \u2728'}</button>
+        </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('ft-celebrate-show'));
+        document.getElementById('ft-celebrate-close')?.addEventListener('click', () => {
+            overlay.classList.remove('ft-celebrate-show');
+            setTimeout(() => overlay.remove(), 300);
+        });
+    }
+
+    _ftToast(msg, duration = 3500) {
+        document.querySelectorAll('.ft-toast').forEach(el => el.remove());
+        const el = document.createElement('div');
+        el.className = 'ft-toast';
+        el.textContent = msg;
+        document.body.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('ft-toast-show'));
+        setTimeout(() => { el.classList.remove('ft-toast-show'); setTimeout(() => el.remove(), 300); }, duration);
+    }
+}
+
+let fastingTracker;
+
+// ── Multi-stage Dhul Hijjah Countdown ──
+
+const _DH_TIPS_EN = [
+    "These 10 days are more beloved to Allah than any other days. Make every moment count!",
+    "Every good deed is multiplied immensely — fast, pray, give charity, and make dhikr.",
+    "The Prophet \uFDFAused to fast these first nine days. Consider fasting today.",
+    "Fill your day with Takbeer: Allahu Akbar, Allahu Akbar, La ilaha illallah, Allahu Akbar.",
+    "Give in charity today — even a little. Sadaqah multiplied these days becomes oceans of reward.",
+    "Recite Quran — even one page. Each letter earns hasanat, multiplied in these blessed days.",
+    "Seek sincere forgiveness today. Dhul Hijjah is a time of tawbah and abundant mercy.",
+    "Tomorrow is Yawm Arafah — the greatest day of the year. Prepare your duas tonight.",
+    "Fast today if you can! The Prophet \uFDFAsaid Arafah fasting expiates two years of sins.",
+    "Eid Mubarak! Pray Eid prayer, give Udhiyyah, and spread joy with your loved ones."
+];
+
+const _DH_TIPS_AR = [
+    "\u0647\u0630\u0647 \u0627\u0644\u0623\u064a\u0627\u0645 \u0627\u0644\u0639\u0634\u0631 \u0623\u062d\u0628 \u0625\u0644\u0649 \u0627\u0644\u0644\u0647 \u0645\u0646 \u0633\u0627\u0626\u0631 \u0623\u064a\u0627\u0645 \u0627\u0644\u0633\u0646\u0629. \u0627\u062c\u0639\u0644 \u0643\u0644 \u0644\u062d\u0638\u0629 \u062a\u064f\u062d\u0633\u0628!",
+    "\u0643\u0644 \u0639\u0645\u0644 \u0635\u0627\u0644\u062d \u0645\u0636\u0627\u0639\u0641 \u0627\u0644\u0623\u062c\u0631 \u2014 \u0635\u0645 \u0648\u0635\u0644\u0651 \u0648\u062a\u0635\u062f\u0651\u0642 \u0648\u0623\u0643\u062b\u0631 \u0645\u0646 \u0627\u0644\u0630\u0643\u0631.",
+    "\u0643\u0627\u0646 \u0627\u0644\u0646\u0628\u064a \ufdfa \u064a\u0635\u0648\u0645 \u0647\u0630\u0647 \u0627\u0644\u0623\u064a\u0627\u0645 \u0627\u0644\u062a\u0633\u0639\u0629. \u0641\u0643\u0651\u0631 \u0641\u064a \u0627\u0644\u0635\u064a\u0627\u0645 \u0627\u0644\u064a\u0648\u0645.",
+    "\u0627\u0643\u062b\u0631 \u0645\u0646 \u0627\u0644\u062a\u0643\u0628\u064a\u0631: \u0627\u0644\u0644\u0647 \u0623\u0643\u0628\u0631\u060c \u0627\u0644\u0644\u0647 \u0623\u0643\u0628\u0631\u060c \u0644\u0627 \u0625\u0644\u0647 \u0625\u0644\u0627 \u0627\u0644\u0644\u0647\u060c \u0627\u0644\u0644\u0647 \u0623\u0643\u0628\u0631.",
+    "\u062a\u0635\u062f\u0651\u0642 \u0627\u0644\u064a\u0648\u0645 \u0648\u0644\u0648 \u0628\u0627\u0644\u0642\u0644\u064a\u0644. \u0627\u0644\u0635\u062f\u0642\u0629 \u0627\u0644\u0645\u0636\u0627\u0639\u0641\u0629 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0623\u064a\u0627\u0645 \u062a\u0635\u0628\u062d \u0628\u062d\u0627\u0631\u0627\u064b \u0645\u0646 \u0627\u0644\u0623\u062c\u0631.",
+    "\u0627\u062a\u0644\u064f \u0627\u0644\u0642\u0631\u0622\u0646 \u0648\u0644\u0648 \u0635\u0641\u062d\u0629. \u0643\u0644 \u062d\u0631\u0641 \u0628\u062d\u0633\u0646\u0627\u062a \u0645\u0636\u0627\u0639\u0641\u0629 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0623\u064a\u0627\u0645 \u0627\u0644\u0645\u0628\u0627\u0631\u0643\u0629.",
+    "\u0627\u0633\u062a\u063a\u0641\u0631 \u0628\u0635\u062f\u0642 \u0627\u0644\u064a\u0648\u0645. \u0630\u0648 \u0627\u0644\u062d\u062c\u0629 \u0645\u0648\u0633\u0645 \u0627\u0644\u062a\u0648\u0628\u0629 \u0648\u0627\u0644\u0631\u062d\u0645\u0629 \u0627\u0644\u0625\u0644\u0647\u064a\u0629.",
+    "\u063a\u062f\u0627\u064b \u064a\u0648\u0645 \u0639\u0631\u0641\u0629 \u2014 \u0623\u0639\u0638\u0645 \u064a\u0648\u0645 \u0641\u064a \u0627\u0644\u0633\u0646\u0629. \u062c\u0647\u0651\u0632 \u0623\u062f\u0639\u064a\u062a\u0643 \u0627\u0644\u0644\u064a\u0644\u0629.",
+    "\u0635\u064f\u0645 \u0627\u0644\u064a\u0648\u0645 \u0625\u0646 \u0627\u0633\u062a\u0637\u0639\u062a! \u0642\u0627\u0644 \ufdfa: \u0635\u064a\u0627\u0645 \u064a\u0648\u0645 \u0639\u0631\u0641\u0629 \u064a\u0643\u0641\u0651\u0631 \u0633\u0646\u062a\u064a\u0646.",
+    "\u0639\u064a\u062f \u0645\u0628\u0627\u0631\u0643! \u0635\u0644\u0651 \u0635\u0644\u0627\u0629 \u0627\u0644\u0639\u064a\u062f \u0648\u0642\u062f\u0651\u0645 \u0627\u0644\u0623\u0636\u062d\u064a\u0629 \u0648\u0623\u0633\u0639\u062f \u0645\u0646 \u062d\u0648\u0644\u0643."
+];
+
+let _dhStage = null;
+let _dhLastLang = null;
+
+function _dhGetDay() {
+    // Returns the Dhul Hijjah day number (1-based) based on DHUL_HIJJAH_START
+    // Returns 0 if Dhul Hijjah hasn't started yet
+    const now = getCurrentTime();
+    const start = dhulHijjahDate;
+    if (now < start) return 0;
+    return Math.floor((now - start) / 86400000) + 1;
+}
+
+function getDhStage() {
+    const testDay = CONFIG.WT_TEST_DAY;
+    if (testDay !== undefined && testDay !== null) {
+        if (testDay >= 10) return 'eid';
+        if (testDay === 9) return 'arafah';
+        if (testDay === 8) return 'arafah-eve';
+        if (testDay >= 1) return 'during';
+    }
 
     const now = getCurrentTime();
-    const distance = dhulHijjahDate - now;
+    if (now < dhulHijjahDate) return 'pre';
 
-    // Progress bar: 0% → 100% over the 30 days before Dhul Hijjah
-    if (progressBar && progressText) {
+    const day = _dhGetDay();
+    if (day >= 10) return 'eid';
+    if (day === 9) return 'arafah';
+    if (day === 8) {
+        // After 19:30 local time → arafah-eve
+        const d = new Date(now);
+        const mins = d.getHours() * 60 + d.getMinutes();
+        if (mins >= 19 * 60 + 30) return 'arafah-eve';
+        return 'during';
+    }
+    return 'during';
+}
+
+function renderDhStage(stage, lang) {
+    const body = document.getElementById('dh-stage-body');
+    const titleEl = document.getElementById('dhul-hijjah-title');
+    if (!body) return;
+
+    const isAr = (lang || currentLang) === 'ar';
+
+    function arNum(n) {
+        return String(n).split('').map(d => '٠١٢٣٤٥٦٧٨٩'[+d]).join('');
+    }
+
+    if (stage === 'pre') {
+        if (titleEl) titleEl.textContent = t('dhulHijjahTitle');
+        const now = getCurrentTime();
+        const distance = Math.max(0, dhulHijjahDate - now);
+        const dL = Math.floor(distance / 86400000);
+        const hL = Math.floor((distance % 86400000) / 3600000);
+        const mL = Math.floor((distance % 3600000) / 60000);
+        const sL = Math.floor((distance % 60000) / 1000);
         const elapsed = now - dhulHijjahRefStart;
         const total = dhulHijjahDate - dhulHijjahRefStart;
         const pct = Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
-        progressBar.style.width = pct + '%';
-        progressText.textContent = t('dhulHijjahProgress', pct);
-    }
+        const daysLeft = dL;
+        const motiv = daysLeft > 10 ? t('dhulHijjahMotivation') : t('dhulHijjahChallenge', daysLeft);
 
-    if (distance <= 0) {
-        // Dhul Hijjah has begun
-        timerEl.style.display = 'none';
-        statusEl.textContent = t('dhulHijjahBegun');
-        if (messageEl) messageEl.textContent = '';
+        body.innerHTML = `
+            <div class="dh-status-text">${t('dhulHijjahSubStatus')}</div>
+            <div class="countdown-display dh-countdown">
+                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-days">${numFmt(String(dL).padStart(2,'0'))}</span><span class="time-label">${t('days')}</span></div>
+                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-hours">${numFmt(String(hL).padStart(2,'0'))}</span><span class="time-label">${t('hours')}</span></div>
+                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-minutes">${numFmt(String(mL).padStart(2,'0'))}</span><span class="time-label">${t('mins')}</span></div>
+                <div class="time-box dh-time-box"><span class="time-value dh-time-value" id="dh-secs">${numFmt(String(sL).padStart(2,'0'))}</span><span class="time-label">${t('secs')}</span></div>
+            </div>
+            <div class="dh-message">${motiv}</div>
+            <div class="dh-progress-container"><div class="dh-progress-bar" id="dh-progress-bar" style="width:${pct}%"></div></div>
+            <div id="dh-progress-text" style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">${t('dhulHijjahProgress', pct)}</div>
+        `;
         return;
     }
 
-    const daysLeft = Math.floor(distance / 86400000);
-    const hoursLeft = Math.floor((distance % 86400000) / 3600000);
-    const minsLeft = Math.floor((distance % 3600000) / 60000);
+    if (stage === 'during') {
+        if (titleEl) titleEl.textContent = isAr ? '🕋 أيام ذي الحجة المباركة' : '🕋 Days of Dhul Hijjah';
 
-    timerEl.style.display = '';
-    const dhDays = document.getElementById('dh-days');
-    const dhHours = document.getElementById('dh-hours');
-    const dhMinutes = document.getElementById('dh-minutes');
-    if (dhDays) dhDays.textContent = String(daysLeft).padStart(2, '0');
-    if (dhHours) dhHours.textContent = String(hoursLeft).padStart(2, '0');
-    if (dhMinutes) dhMinutes.textContent = String(minsLeft).padStart(2, '0');
+        const testDay = CONFIG.WT_TEST_DAY;
+        const day = (testDay !== undefined && testDay !== null && testDay >= 1 && testDay < 10)
+            ? testDay
+            : Math.min(9, Math.max(1, _dhGetDay()));
 
-    statusEl.textContent = t('dhulHijjahSubStatus');
+        const tipEn = _DH_TIPS_EN[day - 1] || '';
+        const tipAr = _DH_TIPS_AR[day - 1] || '';
+        const tip = isAr ? tipAr : tipEn;
 
-    if (messageEl) {
-        messageEl.textContent = daysLeft > 10
-            ? t('dhulHijjahMotivation')
-            : t('dhulHijjahChallenge', daysLeft);
+        // Build pips
+        let pipsHtml = '';
+        for (let i = 1; i <= 10; i++) {
+            const done = i <= day;
+            pipsHtml += `<div class="dh-pip${done ? ' dh-pip-done' : ''}" style="left:${((i-1)/9)*100}%"></div>`;
+        }
+
+        const fillPct = ((day - 1) / 9) * 100;
+        const dayDisp = isAr ? arNum(day) : day;
+        const tenDisp = isAr ? arNum(10) : 10;
+
+        // Until next day: ms until next midnight
+        const now = getCurrentTime();
+        const msUntilMidnight = 86400000 - (now % 86400000);
+        const nH = Math.floor(msUntilMidnight / 3600000);
+        const nM = Math.floor((msUntilMidnight % 3600000) / 60000);
+        const nS = Math.floor((msUntilMidnight % 60000) / 1000);
+        const nextLabel = isAr ? 'حتى اليوم التالي:' : 'Until next day:';
+
+        body.innerHTML = `
+            <div class="dh-during">
+                <div class="dh-day-ring">
+                    <span class="dh-day-num" id="dh-ring-num">${dayDisp}</span>
+                    <span class="dh-day-of">/ ${tenDisp}</span>
+                </div>
+                <div class="dh-days-bar-wrap">
+                    <div class="dh-days-track">
+                        <div class="dh-days-fill" id="dh-days-fill" style="width:${fillPct}%"></div>
+                        ${pipsHtml}
+                    </div>
+                    <div class="dh-days-labels">
+                        <span>1</span><span>10</span>
+                    </div>
+                </div>
+                <div class="dh-tip-box">
+                    <span class="dh-tip-icon">💡</span>
+                    <p class="dh-tip-text">${tip}</p>
+                </div>
+                <div class="dh-next-day">
+                    <span class="dh-next-label">${nextLabel}</span>
+                    <span class="dh-next-time" id="dh-next-time">${numFmt(String(nH).padStart(2,'0'))}:${numFmt(String(nM).padStart(2,'0'))}:${numFmt(String(nS).padStart(2,'0'))}</span>
+                </div>
+            </div>
+        `;
+        return;
     }
+
+    if (stage === 'arafah-eve') {
+        if (titleEl) titleEl.textContent = isAr ? '⭐ غداً يوم عرفة' : '⭐ Tomorrow: Yawm Arafah';
+
+        // Countdown to midnight (start of day 9)
+        const now = getCurrentTime();
+        const msUntilMidnight = 86400000 - (now % 86400000);
+        const hL = Math.floor(msUntilMidnight / 3600000);
+        const mL = Math.floor((msUntilMidnight % 3600000) / 60000);
+        const sL = Math.floor((msUntilMidnight % 60000) / 1000);
+
+        const badgeText = isAr ? '⭐ الليلة قبل يوم عرفة' : '⭐ Eve of Arafah';
+        const eveMsg = isAr
+            ? 'يوم عرفة غداً — أعظم يوم في السنة. جهّز أدعيتك، أكثر من الاستغفار، وأخلص النية.'
+            : 'Yawm Arafah is tomorrow — the greatest day of the year. Prepare your duas, seek forgiveness, and set your intentions.';
+
+        const prepTitle = isAr ? 'جهّز نفسك:' : 'Prepare yourself:';
+        const prepItems = isAr
+            ? ['🌙 نيّة الصيام الليلة لغد عرفة', '📋 اكتب قائمة أدعيتك قبل النوم', '🤲 أكثر من الاستغفار والذكر الآن']
+            : ['🌙 Make your niyyah tonight to fast tomorrow', '📋 Write your dua list before you sleep', '🤲 Increase in istighfar and dhikr now'];
+
+        body.innerHTML = `
+            <div class="dh-arafah-eve">
+                <div class="dh-arafah-eve-badge">${badgeText}</div>
+                <p class="dh-arafah-eve-msg">${eveMsg}</p>
+                <div class="countdown-display dh-countdown">
+                    <div class="time-box dh-time-box dh-arafah-box"><span class="time-value dh-time-value" id="dh-eve-h">${numFmt(String(hL).padStart(2,'0'))}</span><span class="time-label">${t('hours')}</span></div>
+                    <div class="time-box dh-time-box dh-arafah-box"><span class="time-value dh-time-value" id="dh-eve-m">${numFmt(String(mL).padStart(2,'0'))}</span><span class="time-label">${t('mins')}</span></div>
+                    <div class="time-box dh-time-box dh-arafah-box"><span class="time-value dh-time-value" id="dh-eve-s">${numFmt(String(sL).padStart(2,'0'))}</span><span class="time-label">${t('secs')}</span></div>
+                </div>
+                <div class="dh-arafah-prep">
+                    <div class="dh-prep-title">${prepTitle}</div>
+                    <ul class="dh-prep-list">
+                        ${prepItems.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    if (stage === 'arafah') {
+        // The arafah-banner above already shows the full Arafah content — just show day progress + tip here
+        if (titleEl) titleEl.textContent = isAr ? '⭐ اليوم التاسع' : '⭐ Day 9 of 10';
+        const tip = isAr ? _DH_TIPS_AR[8] : _DH_TIPS_EN[8];
+        const pips = Array.from({length: 10}, (_, i) => {
+            const pos = i === 0 ? '0' : i === 9 ? 'calc(100% - 5px)' : (i * 11.11).toFixed(1) + '%';
+            return `<span class="dh-pip${i < 9 ? ' dh-pip-done' : ''}" style="left:${pos}"></span>`;
+        }).join('');
+        body.innerHTML = `
+            <div class="dh-during">
+                <div class="dh-days-bar-wrap">
+                    <div class="dh-days-track">
+                        <div class="dh-days-fill" style="width:90%"></div>
+                        ${pips}
+                    </div>
+                    <div class="dh-days-labels"><span>${isAr ? '\u0661' : '1'}</span><span>${isAr ? '\u0661\u0660' : '10'}</span></div>
+                </div>
+                <div class="dh-tip-box">
+                    <span class="dh-tip-icon">\uD83E\uDD32</span>
+                    <p class="dh-tip-text">${tip}</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    if (stage === 'eid') {
+        if (titleEl) titleEl.textContent = isAr ? '🎉 عيد الأضحى' : '🎉 Eid al-Adha';
+        const eidMsg = isAr
+            ? 'تقبّل الله منا ومنكم صالح الأعمال. أعاده الله عليكم بالخير واليُمن والبركات.'
+            : 'May Allah accept from us and from you. May He return this day to you with goodness, joy, and blessings.';
+
+        body.innerHTML = `
+            <div class="dh-eid">
+                <span class="dh-eid-icon">🎉</span>
+                <div class="dh-eid-title">${isAr ? 'عيد مبارك!' : 'Eid Mubarak!'}</div>
+                <p class="dh-eid-msg">${eidMsg}</p>
+                <div class="dh-eid-ar">تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُم</div>
+            </div>
+        `;
+        return;
+    }
+}
+
+function tickDhStage(stage) {
+    if (stage === 'pre') {
+        const now = getCurrentTime();
+        const distance = Math.max(0, dhulHijjahDate - now);
+        const dL = Math.floor(distance / 86400000);
+        const hL = Math.floor((distance % 86400000) / 3600000);
+        const mL = Math.floor((distance % 3600000) / 60000);
+        const sL = Math.floor((distance % 60000) / 1000);
+        const elapsed = now - dhulHijjahRefStart;
+        const total = dhulHijjahDate - dhulHijjahRefStart;
+        const pct = Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
+
+        const eD = document.getElementById('dh-days');
+        const eH = document.getElementById('dh-hours');
+        const eM = document.getElementById('dh-minutes');
+        const eS = document.getElementById('dh-secs');
+        const ePB = document.getElementById('dh-progress-bar');
+        const ePT = document.getElementById('dh-progress-text');
+        if (eD) eD.textContent = numFmt(String(dL).padStart(2,'0'));
+        if (eH) eH.textContent = numFmt(String(hL).padStart(2,'0'));
+        if (eM) eM.textContent = numFmt(String(mL).padStart(2,'0'));
+        if (eS) eS.textContent = numFmt(String(sL).padStart(2,'0'));
+        if (ePB) ePB.style.width = pct + '%';
+        if (ePT) ePT.textContent = t('dhulHijjahProgress', numFmt(pct));
+        return;
+    }
+
+    if (stage === 'during') {
+        const now = getCurrentTime();
+        const msUntilMidnight = 86400000 - (now % 86400000);
+        const nH = Math.floor(msUntilMidnight / 3600000);
+        const nM = Math.floor((msUntilMidnight % 3600000) / 60000);
+        const nS = Math.floor((msUntilMidnight % 60000) / 1000);
+        const eNT = document.getElementById('dh-next-time');
+        if (eNT) eNT.textContent = `${numFmt(String(nH).padStart(2,'0'))}:${numFmt(String(nM).padStart(2,'0'))}:${numFmt(String(nS).padStart(2,'0'))}`;
+        return;
+    }
+
+    if (stage === 'arafah-eve') {
+        const now = getCurrentTime();
+        const msUntilMidnight = 86400000 - (now % 86400000);
+        const hL = Math.floor(msUntilMidnight / 3600000);
+        const mL = Math.floor((msUntilMidnight % 3600000) / 60000);
+        const sL = Math.floor((msUntilMidnight % 60000) / 1000);
+        const eH = document.getElementById('dh-eve-h');
+        const eM = document.getElementById('dh-eve-m');
+        const eS = document.getElementById('dh-eve-s');
+        if (eH) eH.textContent = numFmt(String(hL).padStart(2,'0'));
+        if (eM) eM.textContent = numFmt(String(mL).padStart(2,'0'));
+        if (eS) eS.textContent = numFmt(String(sL).padStart(2,'0'));
+        return;
+    }
+    // arafah and eid are static — no tick needed
+}
+
+function updateDhulHijjahCountdown() {
+    const body = document.getElementById('dh-stage-body');
+    if (!body) return;
+
+    const stage = getDhStage();
+    const lang = currentLang;
+
+    if (stage !== _dhStage || lang !== _dhLastLang) {
+        _dhStage = stage;
+        _dhLastLang = lang;
+        renderDhStage(stage, lang);
+    } else {
+        tickDhStage(stage);
+    }
+
+    // Triple prayer timeline — refreshes every second on Day 9
+    updateTripleCountdown(stage);
+
+    // Fasting tracker tick — updates bar/time/milestones
+    if (fastingTracker) fastingTracker.tick();
 }
 
 function loadChecklist() {
@@ -1010,6 +3391,8 @@ function updateProgress(c, tot) {
     } else if (c < tot) {
         window.hasCelebrated = false;
     }
+    // Recompute badge progress whenever checklist changes
+    if (badgeSystem) badgeSystem.update();
 }
 
 function triggerConfetti() {
@@ -1298,6 +3681,79 @@ function generateICS() {
         }
     });
 
+    // ── Dhul Hijjah 1447 — May 18–27, 2026 (Egypt / Cairo UTC+2) ──
+    // Prayer times (approximate, late May Cairo):
+    //   Fajr 04:15 | Dhuhr 12:12 | Asr 15:47 | Maghrib 19:30 | Isha 21:05
+    const dhDays = [
+        { n: 1,  date: "20260518" }, { n: 2,  date: "20260519" },
+        { n: 3,  date: "20260520" }, { n: 4,  date: "20260521" },
+        { n: 5,  date: "20260522" }, { n: 6,  date: "20260523" },
+        { n: 7,  date: "20260524" }, { n: 8,  date: "20260525" },
+        { n: 9,  date: "20260526" }, // Arafa
+        { n: 10, date: "20260527" }  // Eid al-Adha
+    ];
+
+    const dhPrayers = t('dhPrayers');
+    const addEvent = (uid, date, start, end, summary, desc) => {
+        lines.push("BEGIN:VEVENT");
+        lines.push(`UID:${uid}`);
+        lines.push(`DTSTART:${date}T${start}`);
+        lines.push(`DTEND:${date}T${end}`);
+        lines.push(`SUMMARY:${summary}`);
+        lines.push(`DESCRIPTION:${desc}`);
+        lines.push("END:VEVENT");
+    };
+
+    dhDays.forEach(day => {
+        const d = day.date;
+        const n = day.n;
+
+        if (n === 9) {
+            // ── Arafa Day — special prayer-by-prayer schedule ──
+
+            // After Fajr block (04:20 → 06:30) — extended dhikr session
+            addEvent(`noornights-arafa-fajr@eman`, d, "042000", "063000",
+                t('dhCalArafaAfterFajrSummary'), t('dhCalArafaAfterFajrDesc'));
+
+            // Dhuhr (12:12 → 12:22)
+            addEvent(`noornights-arafa-dhuhr@eman`, d, "121200", "122200",
+                t('dhCalArafaDhuhrSummary'), t('dhCalArafaDhuhrDesc'));
+
+            // Asr (15:47 → 15:57) — alerting that golden hour is near
+            addEvent(`noornights-arafa-asr@eman`, d, "154700", "155700",
+                t('dhCalArafaAsrSummary'), t('dhCalArafaAsrDesc'));
+
+            // Golden hour block (18:00 → 19:30) — peak dua time before Maghrib
+            addEvent(`noornights-arafa-golden@eman`, d, "180000", "193000",
+                t('dhCalArafaGoldenSummary'), t('dhCalArafaGoldenDesc'));
+
+            // Maghrib (19:30 → 19:45) — break fast
+            addEvent(`noornights-arafa-maghrib@eman`, d, "193000", "194500",
+                t('dhCalArafaMaghribSummary'), t('dhCalArafaMaghribDesc'));
+
+            // Isha (21:05 → 21:20)
+            addEvent(`noornights-arafa-isha@eman`, d, "210500", "212000",
+                t('dhCalArafaIshaSummary'), t('dhCalArafaIshaDesc'));
+
+        } else {
+            // ── Regular Dhul Hijjah days — 5 prayer reminders each ──
+            addEvent(`noornights-dh-${n}-fajr@eman`, d, "041500", "042000",
+                t('dhCalPrayerSummary', n, dhPrayers.fajr), t('dhCalPrayerDesc'));
+
+            addEvent(`noornights-dh-${n}-dhuhr@eman`, d, "121200", "121700",
+                t('dhCalPrayerSummary', n, dhPrayers.dhuhr), t('dhCalPrayerDesc'));
+
+            addEvent(`noornights-dh-${n}-asr@eman`, d, "154700", "155200",
+                t('dhCalPrayerSummary', n, dhPrayers.asr), t('dhCalPrayerDesc'));
+
+            addEvent(`noornights-dh-${n}-maghrib@eman`, d, "193000", "194000",
+                t('dhCalPrayerSummary', n, dhPrayers.maghrib), t('dhCalPrayerDesc'));
+
+            addEvent(`noornights-dh-${n}-isha@eman`, d, "210500", "211000",
+                t('dhCalPrayerSummary', n, dhPrayers.isha), t('dhCalPrayerDesc'));
+        }
+    });
+
     lines.push("END:VCALENDAR");
     return lines.join('\r\n');
 }
@@ -1322,12 +3778,21 @@ function checkDayChange() {
     if (key !== currentChecklistKey) {
         currentChecklistKey = key;
         loadChecklist();
+        initArafahMode(); // re-evaluate golden mode on day rollover
     }
 }
 
 // ═══════════════════════════════════════════════════
 // TASBEEH COUNTER LOGIC
 // ═══════════════════════════════════════════════════
+const TASBEEH_DHIKR = {
+    subhanallah:      { ar: 'سُبْحَانَ اللَّهِ',           rec: 33 },
+    alhamdulillah:    { ar: 'الْحَمْدُ لِلَّهِ',          rec: 33 },
+    allahuakbar:      { ar: 'اللَّهُ أَكْبَرُ',            rec: 34 },
+    laillahaillallah: { ar: 'لَا إِلَٰهَ إِلَّا اللَّهُ', rec: 100 },
+    astaghfirullah:   { ar: 'أَسْتَغْفِرُ اللَّهَ',        rec: 100 }
+};
+let tasbeehActiveKey = 'subhanallah';
 let tasbeehData = {
     goal: 100,
     counts: {
@@ -1372,62 +3837,92 @@ const TASBEEH_COLORS = [
 function updateTasbeehUI() {
     const grid = document.getElementById('tasbeeh-grid');
     if (!grid) return;
+    const isAr = currentLang === 'ar';
+    const phrases = t('phrases');
+    const total = Object.values(tasbeehData.counts).reduce((a, b) => a + b, 0);
+
+    const totalRow = document.getElementById('tasbeeh-total');
+    if (totalRow) {
+        totalRow.textContent = isAr
+            ? `المجموع: ${numFmt(total)} ذكر`
+            : `Total today: ${total} dhikr`;
+    }
 
     grid.innerHTML = '';
-
-    const phrases = t('phrases');
     Object.keys(tasbeehData.counts).forEach(key => {
         const count = tasbeehData.counts[key];
         const phraseLabel = phrases[key];
-
-        const display = document.createElement('div');
-        display.className = 'tasbeeh-display';
-        display.onclick = () => incrementTasbeeh(key);
-
-        const radius = 60;
+        const dhikr = TASBEEH_DHIKR[key];
+        const isActive = key === tasbeehActiveKey;
+        const rec = dhikr.rec;
+        const radius = 50;
         const circumference = radius * 2 * Math.PI;
-
-        // Progress within the current 100
-        const currentLapProgress = count % 100;
-        const isExactHundred = count > 0 && currentLapProgress === 0;
-        const progressFactor = isExactHundred ? 1 : currentLapProgress / 100;
-
+        const progressInRec = count % rec;
+        const progressFactor = (progressInRec === 0 && count > 0) ? 1 : progressInRec / rec;
         const offset = circumference - (progressFactor * circumference);
-
-        // Color changes every 100
-        const colorIdx = Math.floor(count / 100) % TASBEEH_COLORS.length;
+        const laps = Math.floor(count / rec);
+        const colorIdx = Math.min(laps, TASBEEH_COLORS.length - 1);
         const strokeColor = TASBEEH_COLORS[colorIdx];
 
-        display.innerHTML = `
-            <svg class="progress-ring" width="140" height="140">
-                <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6" fill="transparent"
-                    r="${radius}" cx="70" cy="70" />
-                <circle class="progress-ring__circle" stroke="${strokeColor}" stroke-width="6"
-                    stroke-linecap="round" fill="transparent" r="${radius}" cx="70" cy="70" 
-                    style="stroke-dasharray: ${circumference} ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.2s, stroke 0.5s;"/>
-            </svg>
-            <div class="tasbeeh-content">
-                <div class="tasbeeh-count" style="color: ${strokeColor}">${count}</div>
-                <div class="tasbeeh-active-phrase" title="${phraseLabel}">${phraseLabel}</div>
+        const lapDots = laps > 0
+            ? Array.from({ length: Math.min(laps, 7) }, (_, i) =>
+                `<span class="tb-lap-dot" style="background:${TASBEEH_COLORS[Math.min(i, TASBEEH_COLORS.length - 1)]}"></span>`
+              ).join('') + (laps > 7 ? `<span class="tb-lap-more">+${laps - 7}</span>` : '')
+            : '';
+
+        const wrap = document.createElement('div');
+        wrap.className = `tasbeeh-display${isActive ? ' tasbeeh-is-active' : ''}`;
+        wrap.dataset.tbKey = key;
+        wrap.innerHTML = `
+            <div class="tb-ar-text" dir="rtl">${dhikr.ar}</div>
+            <div class="tb-ring-wrap">
+                <svg class="progress-ring" width="116" height="116">
+                    <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.07)" stroke-width="8" fill="transparent" r="${radius}" cx="58" cy="58"/>
+                    <circle class="progress-ring__circle" stroke="${strokeColor}" stroke-width="8" stroke-linecap="round" fill="transparent" r="${radius}" cx="58" cy="58"
+                        style="stroke-dasharray:${circumference} ${circumference}; stroke-dashoffset:${offset}; transition:stroke-dashoffset 0.25s,stroke 0.4s;"/>
+                </svg>
+                <div class="tb-ring-inner">
+                    <div class="tb-count" style="color:${strokeColor}">${numFmt(count)}</div>
+                    <div class="tb-rec">/ ${numFmt(rec)}</div>
+                </div>
             </div>
+            <div class="tb-label">${phraseLabel}</div>
+            <div class="tb-laps">${lapDots}</div>
         `;
-        grid.appendChild(display);
+        wrap.addEventListener('click', () => incrementTasbeeh(key));
+        grid.appendChild(wrap);
     });
 }
 
 function incrementTasbeeh(key) {
-    if (!tasbeehData.counts[key] && tasbeehData.counts[key] !== 0) return;
-
+    if (!Object.prototype.hasOwnProperty.call(tasbeehData.counts, key)) return;
+    tasbeehActiveKey = key;
     tasbeehData.counts[key]++;
+    const cur = tasbeehData.counts[key];
+    const rec = TASBEEH_DHIKR[key]?.rec || 100;
 
-    if (tasbeehData.counts[key] === tasbeehData.goal) {
-        trackEvent('/tasbeeh-completed', `Goal ${tasbeehData.goal} reached for ${key}`);
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    if (cur % rec === 0) {
+        if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+        const isAr = currentLang === 'ar';
+        const phrases = t('phrases');
+        const msg = isAr
+            ? `ما شاء الله! ${numFmt(cur)} — ${TASBEEH_DHIKR[key].ar} ✨`
+            : `Masha'Allah! ${cur} — ${phrases[key]} ✨`;
+        _tasbeehToast(msg);
     }
-
     saveTasbeeh();
     updateTasbeehUI();
     trackEvent('/tasbeeh-increment', `Counted ${key}`);
+}
+
+function _tasbeehToast(msg) {
+    document.querySelectorAll('.tb-toast').forEach(t => t.remove());
+    const el = document.createElement('div');
+    el.className = 'tb-toast';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('tb-toast-show'));
+    setTimeout(() => { el.classList.remove('tb-toast-show'); setTimeout(() => el.remove(), 300); }, 3500);
 }
 
 function resetTasbeeh() {
@@ -1440,16 +3935,12 @@ function resetTasbeeh() {
     showMessage(t('tasbeehTitle'), t('tasbeehResetSuccess'));
 }
 
-// Remove shareTasbeehMilestone for now or update it later if needed
-// Keyboard support for spacebar - might be tricky with multiple circles, 
-// so let's disable spacebar increment for multi-mode or pick the first one.
 window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && document.activeElement.tagName !== 'SELECT' && document.activeElement.tagName !== 'BUTTON') {
+    if (e.code === 'Space' && !['SELECT','BUTTON','INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
         const container = document.getElementById('tasbeeh-container');
         if (container && container.getBoundingClientRect().top < window.innerHeight && container.getBoundingClientRect().bottom > 0) {
             e.preventDefault();
-            // Default to incrementing the first one if space is pressed
-            incrementTasbeeh(Object.keys(tasbeehData.counts)[0]);
+            incrementTasbeeh(tasbeehActiveKey);
         }
     }
 });
@@ -1460,7 +3951,21 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCountdown();
     setInterval(updateCountdown, 1000);
     updateDhulHijjahCountdown();
-    setInterval(updateDhulHijjahCountdown, 60000); // refresh every minute
+    setInterval(updateDhulHijjahCountdown, 1000); // tick every second for live countdowns
+    worshipTracker = new WorshipTracker();
+    worshipTracker.renderSection();
+    badgeSystem = new BadgeSystem();
+    badgeSystem.renderSection();
+    virtueCards = new VirtueCards();
+    virtueCards.renderSection();
+    duaCompanion = new DuaCompanion();
+    duaCompanion.renderSection();
+    prayerAPI = new PrayerTimesAPI();
+    prayerWidget = new PrayerTimesWidget(prayerAPI);
+    prayerWidget.init();
+    fastingTracker = new FastingTracker();
+    fastingTracker.init();
+    initArafahMode();
     checkDayChange();
     setInterval(checkDayChange, 60000); // Check for day change every minute
     rotateYoussefDua();
