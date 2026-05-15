@@ -2,7 +2,7 @@
   <img src="assets/icons/icon-192.png" width="128" alt="Noor Nights Logo">
 </p>
 
-# 🕋 ليالي النور — Noor Nights
+<h1 align="center">🕋 ليالي النور — Noor Nights</h1>
 
 **Noor Nights (ليالي النور)** is a minimalist, bilingual PWA (Progressive Web App) designed to help Muslims make the most of the first ten blessed days of Dhul Hijjah. It provides tools for spiritual tracking, community duas, real-time push reminders, and effortlessly sharing Prophetic supplications.
 
@@ -33,47 +33,6 @@ Visit the site on your mobile device:
 
 ### For Developers
 Serve the root directory statically (e.g. VS Code Live Server, Python's `http.server`). No build step required.
-
----
-
-## 🔐 Secrets & Deployment
-
-The app uses GitHub Actions to inject secrets at deploy time — no credentials are ever committed to the repository.
-
-### Required GitHub Repository Secrets
-Go to **Settings → Secrets and variables → Actions** and add:
-
-| Secret | Description |
-|--------|-------------|
-| `SUPABASE_URL` | Your Supabase project URL |
-| `SUPABASE_ANON_KEY` | Your Supabase anon (public) key |
-| `ONESIGNAL_REST_API_KEY` | OneSignal REST API key for push notifications |
-
-### Supabase Table Setup
-Run this SQL once in your Supabase SQL Editor to create the community duas table:
-
-```sql
-create table community_duas (
-  id uuid default gen_random_uuid() primary key,
-  text text not null check (char_length(text) <= 500),
-  created_at timestamptz default now()
-);
-
-alter table community_duas enable row level security;
-
-create policy "Anyone can read duas"
-  on community_duas for select using (true);
-
-create policy "Anyone can insert duas"
-  on community_duas for insert with check (char_length(text) >= 3);
-```
-
-### `.env` file (for local Node.js scripts)
-```text
-ONESIGNAL_REST_API_KEY=your_onesignal_rest_api_key_here
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_anon_key_here
-```
 
 ---
 
