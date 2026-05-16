@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="src/css/modern.css">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
@@ -38,197 +38,455 @@
         <div class="sl sl2"></div>
         <div class="sl sl3"></div>
     </div>
-    <div class="container">
-        <header>
-            <button id="about-toggle" class="about-toggle-btn"
-                onclick="trackEvent('/about-open', 'About Click'); document.getElementById('about-modal').style.display='flex'">✨ <span data-i18n="aboutToggleLabel">About</span></button>
-            <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLanguage()">العربية</button>
-            <div class="art-header">✨ 🌙 ✨</div>
-            <h1 data-i18n="appName">Noor Nights</h1>
-            <div class="subtitle" data-i18n="subtitle">Illuminate your worship in the ten blessed days</div>
 
+    <div class="container">
+
+        <!-- ── Persistent Header (always visible) ── -->
+        <header id="topbar">
+            <div class="tb-icon-row">✦ 🌙 ✦</div>
+            <h1 class="tb-logo" data-i18n="appName">Noor Nights</h1>
         </header>
 
-        <div class="memorial-banner" id="memorial-banner">
-            <span class="memorial-text" data-i18n-en="This app is Sadaqah Jariyah for Youssef Abdelkader — may Allah have mercy on him 🤲" data-i18n-ar="هذا التطبيق صدقة جارية عن روح يوسف عبد القادر — رحمه الله 🤲">This app is Sadaqah Jariyah for Youssef Abdelkader — may Allah have mercy on him 🤲</span>
-        </div>
 
-        <div class="card install-card" id="app-install-card"
-            style="display: none; border: 1px solid var(--neon-cyan); background: rgba(10, 17, 40, 0.6);">
-            <h2 data-i18n="downloadAppTitle" style="color: var(--neon-cyan);">📲 Get the Noor Nights App</h2>
-            <p data-i18n="downloadAppDesc">Install Noor Nights directly on your device for the best experience and
-                reliable background notifications.</p>
+        <!-- ── Today's Glance bar (persistent, shown during Dhul Hijjah) ── -->
+        <div id="today-glance" style="display:none"></div>
 
-            <div id="android-install-section" style="display:none; margin-top: 1rem;">
-                <button class="btn" id="android-install-action" onclick="handleInstallClick()"
-                    data-i18n="installAndroidBtn">🤖 Install App (1-Click)</button>
-            </div>
-
-            <div id="ios-install-section"
-                style="display:none; margin-top: 1rem; border: 1px dashed var(--neon-cyan); padding: 1rem; border-radius: 8px; background: rgba(0, 0, 0, 0.3);">
-                <p style="margin-bottom: 0.5rem; font-size: 0.95rem;"><span data-i18n="installIOSStep1">1. Tap the Share
-                        icon at the bottom of Safari.</span> <b style="font-size: 1.2rem; vertical-align: middle;">⎙</b>
-                </p>
-                <p style="margin-bottom: 0; font-size: 0.95rem;"><span data-i18n="installIOSStep2">2. Scroll down and
-                        tap</span> <b>Add to Home Screen ➕</b>.</p>
-                <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--amber-glow);" data-i18n="installIOSNote">
-                    ⚠️ Safari is required. Notifications only work after adding to Home Screen.</p>
-            </div>
-        </div>
-
-
-        <!-- Arafa Day Banner (Day 9 — shown only when arafah-mode active) -->
+        <!-- ── Arafah Banner (always visible, shown by JS on Day 9) ── -->
         <div class="arafah-banner" id="arafah-banner">
             <div class="arafah-banner-icon">⭐</div>
             <div class="arafah-banner-title" data-i18n="arafahBannerTitle">Yawm Arafah — The Greatest Day</div>
             <div class="arafah-banner-sub" data-i18n="arafahBannerSub">Fast today, make dua, and seek forgiveness. Allah frees more servants from the Fire on this day than any other.</div>
-            <div class="arafah-banner-dua">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
+            <div class="arafah-banner-dua arabic-text" lang="ar" dir="rtl">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
         </div>
 
-        <div class="section-label">⏳ Today</div>
+        <!-- ══════════════════════════════════════════ -->
+        <!-- TAB: HOME                                  -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="tab-content active" id="tab-home">
 
-        <!-- Dhul Hijjah Countdown Card -->
-        <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
-            <h2 id="dhul-hijjah-title">🕋 Countdown to Dhul Hijjah</h2>
-            <div id="dh-stage-body"></div>
-            <div class="dh-quickjump" id="dh-quickjump">
-                <a class="dh-qj-btn" href="#worship-anchor" data-i18n="qjTrackWorship">✓ Track Worship</a>
-                <a class="dh-qj-btn" href="#duas-anchor" data-i18n="qjOpenDuas">🤲 Open Duas</a>
+            <!-- Badge Progress Strip -->
+            <div class="badge-strip" id="badge-strip">
+                <span class="badge-strip-label" data-i18n="badgeStripLabel">Badges</span>
+                <div class="badge-strip-icons" id="badge-strip-icons"></div>
+                <div id="badge-strip-active"></div>
+                <button class="badge-strip-cta" onclick="switchTab('tracker')" data-i18n="badgeStripCta">View all →</button>
             </div>
-        </div>
 
-        <!-- Prayer Times Widget (position 2 — right after countdown) -->
-        <div class="card pt-card" id="pt-card">
-            <h2 class="pt-heading">🕌 Prayer Times</h2>
-            <div id="pt-container"><p class="pt-loading">Loading…</p></div>
-        </div>
-
-        <!-- Arafah Prayer Timeline (Day 9 only — shown via JS) -->
-        <div class="card arafah-triple-card" id="arafah-triple-card" style="display:none">
-            <h2 class="at-title">⏱ Arafah Day Timeline</h2>
-            <div class="at-grid"></div>
-        </div>
-
-        <!-- Arafah Fasting Tracker (Day 9 only — shown via JS) -->
-        <div class="card ft-card" id="ft-card" style="display:none">
-            <h2 class="ft-heading">🌙 Arafah Fast</h2>
-            <div id="ft-container"></div>
-        </div>
-
-        <div class="section-label">🌟 Worship</div>
-
-        <div id="worship-anchor"></div>
-
-        <!-- Worship Tracker Card -->
-        <div class="card wt-card">
-            <div class="wt-card-header">
-                <h2 class="wt-card-title" data-i18n="wtCardTitle">🔥 Worship Tracker</h2>
-                <span class="wt-streak-badge" id="wt-streak-badge"></span>
+            <!-- Dhul Hijjah Countdown Card -->
+            <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
+                <h2 id="dhul-hijjah-title">Countdown to Dhul Hijjah</h2>
+                <div id="dh-stage-body"></div>
+                <div class="dh-quickjump" id="dh-quickjump">
+                    <a class="btn-qj-primary" href="#" onclick="switchTab('tracker'); return false;" data-i18n="qjTrackWorship">✓ Track Worship</a>
+                    <a class="btn-qj-secondary" href="#" onclick="switchTab('duas'); return false;" data-i18n="qjOpenDuas">🤲 Open Duas</a>
+                </div>
             </div>
-            <div id="worship-tracker-container"></div>
-        </div>
 
-        <!-- Badge System Card -->
-        <div class="card badge-section-card">
-            <h2 class="badge-section-title" data-i18n="badgeSectionTitle">🏅 Dhul Hijjah Badges</h2>
-            <p class="badge-section-subtitle" data-i18n="badgeSectionSubtitle">Earn badges by completing worship goals during the 10 blessed days</p>
-            <div id="badge-grid" class="badge-grid"></div>
-        </div>
+            <!-- Prayer Times Widget -->
+            <div class="card pt-card" id="pt-card">
+                <div class="pt-card-header">
+                    <h2 class="pt-heading">Prayer Times</h2>
+                </div>
+                <div id="pt-container"><p class="pt-loading">Loading…</p></div>
+            </div>
 
-        <div class="card">
-            <h2 data-i18n="calendarTitle">📅 Add to My Calendar</h2>
-            <p data-i18n="calendarDesc">Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).</p>
-            <button class="btn" onclick="downloadICS()" data-i18n="calendarBtn">📅 Download Calendar (.ics)</button>
-            <div id="calendar-success" class="success-box"
-                style="display:none; margin-top: 15px; padding: 15px; background: rgba(52, 211, 153, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
-                <h4 style="color: var(--neon-cyan); margin-bottom: 8px;" data-i18n="calSuccessTitle">🎉 Successfully
-                    Downloaded!</h4>
+            <!-- Virtue of the Day -->
+            <div class="card vc-section-card">
+                <button class="vc-toggle-btn" onclick="toggleVirtueCard(this)" aria-expanded="false">
+                    <h2 data-i18n="vcTitle">Virtue of the Day</h2>
+                    <span class="vc-chevron">▾</span>
+                </button>
+                <div id="virtue-cards-container" class="vc-body vc-body-collapsed"></div>
+            </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
-                    <div>
-                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calGoogleTitle">
-                            Google Calendar:</p>
-                        <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
-                            <li data-i18n="calGoogleStep1">Go to <b>Settings</b> > <b>Import & Export</b>.</li>
-                            <li data-i18n="calGoogleStep2">Upload <code>noor-nights.ics</code>.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calAppleTitle">
-                            Apple Calendar (Mac):</p>
-                        <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
-                            <li data-i18n="calAppleStep1">Double-click the file or drag into Calendar.</li>
-                            <li data-i18n="calAppleStep2">Select a destination calendar and click <b>OK</b>.</li>
-                        </ul>
+            <!-- Arafah Prayer Timeline (Day 9 only) -->
+            <div class="card arafah-triple-card" id="arafah-triple-card" style="display:none">
+                <h2 class="at-title">Arafah Day Timeline</h2>
+                <div class="at-grid"></div>
+            </div>
+
+            <!-- Arafah Fasting Tracker (Day 9 only) -->
+            <div class="card ft-card" id="ft-card" style="display:none">
+                <h2 class="ft-heading">Arafah Fast</h2>
+                <div id="ft-container"></div>
+            </div>
+
+        </div><!-- /tab-home -->
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- TAB: TRACKER                               -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-tracker">
+
+            <div id="worship-anchor"></div>
+
+            <!-- Worship Tracker Card -->
+            <div class="card wt-card">
+                <div class="wt-card-header">
+                    <h2 class="wt-card-title" data-i18n="wtCardTitle">Worship Tracker</h2>
+                </div>
+                <div id="worship-tracker-container"></div>
+            </div>
+
+            <!-- Badge System Card -->
+            <div class="card badge-section-card">
+                <h2 class="badge-section-title" data-i18n="badgeSectionTitle">Dhul Hijjah Badges</h2>
+                <p class="badge-section-subtitle" data-i18n="badgeSectionSubtitle">Earn badges by completing worship goals during the 10 blessed days</p>
+                <div id="badge-grid" class="badge-grid"></div>
+            </div>
+
+
+        </div><!-- /tab-tracker -->
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- TAB: DHIKR                                 -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-dhikr">
+
+            <!-- ÷<div class="section-label">Dhikr</div> -->
+
+            <div class="card" id="tasbeeh-container">
+                <h2 data-i18n="tasbeehTitle">Tasbeeh Counter</h2>
+                <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
+                <div id="tasbeeh-grid" class="tasbeeh-grid"></div>
+                <div class="tasbeeh-actions">
+                    <button class="btn btn-outline" onclick="resetTasbeeh()" data-i18n="tasbeehReset">Reset All</button>
+                </div>
+                <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap a circle to count • Space = active circle</p>
+            </div>
+
+            <!-- ── Dhul Hijjah Takbeer ── -->
+            <div class="dhikr-section" data-section="takbeer">
+                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-takbeer')" data-i18n="dhikrSectionDhulHijjah">Dhul Hijjah Takbeer <span class="dhikr-chevron">▾</span></button>
+                <div class="dhikr-section-body" id="dhs-takbeer">
+                    <div class="card dhikr-card dhikr-card-gold">
+                        <div class="dhikr-arabic">اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، وَلِلَّهِ الْحَمْدُ</div>
+                        <div class="dhikr-transliteration">Allāhu Akbar, Allāhu Akbar, Lā ilāha illallāh, wallāhu Akbar, Allāhu Akbar, wa lillāhil-ḥamd</div>
+                        <div class="dhikr-translation">Allah is the Greatest, Allah is the Greatest. None has the right to be worshipped except Allah. And Allah is the Greatest, Allah is the Greatest. And all praise is due to Allah</div>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Recite abundantly in the Ten Days of Dhul Hijjah — Ibn ʿUmar and Abu Hurayrah would proclaim it aloud in the markets. — Bukhārī (muʿallaq)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أكثِر منه في أيام ذي الحجة العشرة — كان ابن عمر وأبو هريرة رضي الله عنهما يجهران به في الأسواق. — البخاري (معلقاً)</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Virtue of the Day Cards -->
-        <div class="card vc-section-card">
-            <h2 data-i18n="vcTitle">🌟 Virtue of the Day</h2>
-            <div id="virtue-cards-container"></div>
-        </div>
-
-        <div class="section-label">🤲 Duas</div>
-
-        <div id="duas-anchor"></div>
-
-        <!-- Dua Companion Card -->
-        <div class="card dc-card" id="dc-card">
-            <h2 class="dc-heading" data-i18n="dcTitle">🤲 Dua Companion</h2>
-            <div id="dc-container"></div>
-        </div>
-
-        <div class="section-label">📿 Tools</div>
-
-        <div class="card" id="tasbeeh-container">
-            <h2 data-i18n="tasbeehTitle">📿 Tasbeeh Counter</h2>
-            <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
-
-            <div id="tasbeeh-grid" class="tasbeeh-grid">
-                <!-- Circles will be rendered here by JS -->
+            <!-- ── Most Virtuous Remembrances ── -->
+            <div class="dhikr-section" data-section="virtuous">
+                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-virtuous')" data-i18n="dhikrSectionVirtuous">Most Virtuous Remembrances <span class="dhikr-chevron">▾</span></button>
+                <div class="dhikr-section-body" id="dhs-virtuous">
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ</div>
+                        <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi, SubḥānAllāhil-ʿAẓīm</div>
+                        <div class="dhikr-translation">Glory be to Allah and all praise is due to Him; Glory be to Allah, the Magnificent</div>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: "Two words light on the tongue, heavy on the Scale, beloved to the Most Merciful." — Bukhārī & Muslim</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: "كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن." — البخاري ومسلم</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+                        <div class="dhikr-transliteration">Lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shay'in qadīr</div>
+                        <div class="dhikr-translation">None has the right to be worshipped except Allah alone, no partner has He; His is the dominion and His is the praise and He is over all things All-Powerful</div>
+                        <button class="dhikr-counter" data-target="100" data-key="tahleel-100" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Equivalent to freeing ten slaves, 100 good deeds written, 100 sins erased, protection from Shaytān all day. — Bukhārī</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: تعدل عتق عشر رقاب، وتُكتب له مئة حسنة، وتُمحى عنه مئة سيئة، وتكون حرزاً من الشيطان يومه. — البخاري</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
+                        <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi</div>
+                        <div class="dhikr-translation">Glory be to Allah and all praise is due to Him</div>
+                        <button class="dhikr-counter" data-target="100" data-key="sbh-bihamdihi-100" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Sins forgiven even if they are as much as the foam of the sea. — Muslim</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: حُطَّت خطاياه وإن كانت مثل زبد البحر. — مسلم</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ</div>
+                        <div class="dhikr-transliteration">Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik</div>
+                        <div class="dhikr-translation">O Allah, help me to remember You, to be grateful to You, and to worship You in the best manner</div>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: The Prophet ﷺ commanded Muʿādh ibn Jabal to say this after every prayer. — Abū Dāwūd (Ṣaḥīḥ)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أوصى به النبي ﷺ معاذ بن جبل أن يقوله دُبُر كل صلاة. — أبو داود (صحيح)</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="tasbeeh-actions">
-                <button class="btn btn-outline" onclick="resetTasbeeh()" data-i18n="tasbeehReset">Reset All</button>
+            <!-- ── Morning & Evening ── -->
+            <div class="dhikr-section" data-section="morning">
+                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-morning')" data-i18n="dhikrSectionMorningEvening">Morning & Evening <span class="dhikr-chevron">▾</span></button>
+                <div class="dhikr-section-body" id="dhs-morning">
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</div>
+                        <div class="dhikr-transliteration">Ḥasbiyallāhu lā ilāha illā huwa, ʿalayhi tawakkaltu wa huwa rabbul-ʿarshil-ʿaẓīm</div>
+                        <div class="dhikr-translation">Allah is sufficient for me; there is no deity except Him. I have relied upon Him, and He is Lord of the Magnificent Throne</div>
+                        <button class="dhikr-counter" data-target="7" data-key="hasbiyallah-7" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">7</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Allah will suffice him in whatever worries him of this world and the Hereafter. — Abū Dāwūd (Ṣaḥīḥ)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: كفاه الله ما أهمه من أمر الدنيا والآخرة. — أبو داود (صحيح)</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+                        <div class="dhikr-transliteration">Aṣbaḥnā wa aṣbaḥal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shay'in qadīr</div>
+                        <div class="dhikr-translation">We have reached the morning and at this very time the dominion belongs to Allah. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner</div>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: From the morning adhkar of the Prophet ﷺ. — Abū Dāwūd</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: من أذكار الصباح النبوية. — أبو داود</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ</div>
+                        <div class="dhikr-transliteration">Allāhumma bika aṣbaḥnā, wa bika amsaynā, wa bika naḥyā, wa bika namūtu, wa ilaykan-nushūr</div>
+                        <div class="dhikr-translation">O Allah, by Your leave we have reached the morning, and by Your leave we have reached the evening, by Your leave we live and die, and unto You is our resurrection</div>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Morning adhkar of the Prophet ﷺ. — Tirmidhī (Ḥasan)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: من أذكار الصباح النبوية. — الترمذي (حسن)</div>
+                    </div>
+                </div>
             </div>
-            <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap a circle to count • Space = active circle</p>
-        </div>
 
-        <div id="jawami-duas-container" class="card">
-            <div class="card-body">
-                <h2 data-i18n="jamawiTitle">📖 Prophetic Duas</h2>
-                <p class="subtitle" style="margin-bottom:1.5rem" data-i18n="jamawiSubtitle">Comprehensive prayers from
-                    the Prophet (ﷺ)</p>
+            <!-- ── Daily Protection ── -->
+            <div class="dhikr-section" data-section="protection">
+                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-protection')" data-i18n="dhikrSectionProtection">Daily Protection <span class="dhikr-chevron">▾</span></button>
+                <div class="dhikr-section-body" id="dhs-protection">
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</div>
+                        <div class="dhikr-transliteration">Bismillāhil-ladhī lā yaḍurru maʿasmihi shay'un fil-arḍi wa lā fis-samā'i wa huwas-samīʿul-ʿalīm</div>
+                        <div class="dhikr-translation">In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, All-Knowing</div>
+                        <button class="dhikr-counter" data-target="3" data-key="bismillah-3" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Nothing will harm him. — Abū Dāwūd & Tirmidhī (Ṣaḥīḥ)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: لم يضره شيء. — أبو داود والترمذي (صحيح)</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</div>
+                        <div class="dhikr-transliteration">Aʿūdhu bikalimātillāhit-tāmmāti min sharri mā khalaq</div>
+                        <div class="dhikr-translation">I seek refuge in the Perfect Words of Allah from the evil of what He has created</div>
+                        <button class="dhikr-counter" data-target="3" data-key="awdhu-3" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: No harm from anything will afflict him until he moves on from that place. — Muslim</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: لم يضره شيء حتى يرتحل من مكانه ذلك. — مسلم</div>
+                    </div>
+                    <div class="card dhikr-card">
+                        <div class="dhikr-arabic">اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</div>
+                        <div class="dhikr-transliteration">Allāhumma innī aṣbaḥtu ushhiduka, wa ushhidu ḥamalata ʿarshika, wa malā'ikataka, wa jamīʿa khalqika, annaka antallāhu lā ilāha illā anta waḥdaka lā sharīka lak, wa anna Muḥammadan ʿabduka wa rasūluk</div>
+                        <div class="dhikr-translation">O Allah, I have risen to bear witness — with the bearers of Your Throne, Your angels, and all creation — that You are Allah, none has the right to be worshipped except You alone, no partner have You, and that Muḥammad is Your servant and Messenger</div>
+                        <button class="dhikr-counter" data-target="4" data-key="ushhiduka-4" onclick="tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">4</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: A quarter of himself will be freed from the Fire. — Abū Dāwūd (Ḥasan)</div>
+                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أعتق الله ربعه من النار. — أبو داود (حسن)</div>
+                    </div>
+                </div>
             </div>
-        </div>
 
+        </div><!-- /tab-dhikr -->
 
-        <footer class="dedication-footer">
-            <div class="footer-arabic-text">إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>
-            <div class="dedication">
-                <p data-i18n="footerMemory">In loving memory of</p>
-                <h3 data-i18n="footerName">YOUSSEF ABDELKADER</h3>
-                <p class="footer-arabic-text">رَحِمَهُ اللَّهُ</p>
+        <!-- ══════════════════════════════════════════ -->
+        <!-- TAB: DUAS                                  -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-duas">
+
+            <div id="duas-anchor"></div>
+            <!-- <div class="section-label">Duas</div> -->
+
+            <!-- Dua Companion (Community Wall + Essential Duas) -->
+            <div class="card dc-card" id="dc-card">
+                <h2 class="dc-heading" data-i18n="dcTitle">Dua Companion</h2>
+                <div id="dc-container"></div>
             </div>
 
-            <div id="dynamic-youssef-dua" class="dua-card">
-                <div id="youssef-dua-arabic" class="arabic-text"></div>
-                <div id="youssef-dua-english" class="translation"></div>
+            <!-- Section Divider -->
+            <div class="duas-section-divider" data-i18n="propheticDuasLabel">Prophetic Duas</div>
+
+            <!-- Prophetic Duas -->
+            <div id="jawami-duas-container" class="card">
+                <div class="card-body">
+                    <h2 data-i18n="jamawiTitle">Prophetic Duas</h2>
+                    <p class="subtitle" style="margin-bottom:1.5rem" data-i18n="jamawiSubtitle">Comprehensive prayers from the Prophet (ﷺ)</p>
+                </div>
             </div>
 
-            <div class="sadaqah-message">
-                <p data-i18n="footerSadaqah">This app is Sadaqah Jariyah (ongoing charity) for him.</p>
+        </div><!-- /tab-duas -->
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- TAB: MORE                                  -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="tab-content" id="tab-more">
+
+            <!-- Settings Section Label -->
+            <div class="settings-section-label" data-i18n="sectionLabelSettings">Settings</div>
+
+            <!-- Settings Card -->
+            <div class="card settings-card">
+
+                <!-- Language -->
+                <div class="settings-row">
+                    <div class="settings-row-label">
+                        <span class="settings-icon">🌐</span>
+                        <div>
+                            <div class="settings-row-name" data-i18n="settingsLang">Language</div>
+                            <div class="settings-row-sub" data-i18n="settingsLangSub">English / العربية</div>
+                        </div>
+                    </div>
+                    <button class="settings-toggle-btn" onclick="toggleLanguage()" id="settings-lang-btn">EN → AR</button>
+                </div>
+
+                <!-- Location -->
+                <div class="settings-row">
+                    <div class="settings-row-label">
+                        <span class="settings-icon">📍</span>
+                        <div>
+                            <div class="settings-row-name" data-i18n="settingsLocation">Prayer Location</div>
+                            <div class="settings-row-sub" id="settings-location-name">—</div>
+                        </div>
+                    </div>
+                    <button class="settings-toggle-btn" onclick="detectPrayerLocation()" data-i18n="ptDetectBtn">📍 Change</button>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-row">
+                    <div class="settings-row-label">
+                        <span class="settings-icon">🔔</span>
+                        <div>
+                            <div class="settings-row-name" data-i18n="settingsNotif">Prayer Reminders</div>
+                            <div class="settings-row-sub" data-i18n="settingsNotifSub">Toggle per-prayer reminders</div>
+                        </div>
+                    </div>
+                    <button class="settings-toggle-btn" onclick="toggleSettingsPrayerPanel()" id="settings-notif-btn" data-i18n="settingsManageBtn">Manage →</button>
+                </div>
+                <div id="settings-prayer-toggles" class="settings-prayer-toggles" style="display:none"></div>
+
+                <!-- Share App -->
+                <div class="settings-row">
+                    <div class="settings-row-label">
+                        <span class="settings-icon">🔗</span>
+                        <div>
+                            <div class="settings-row-name" data-i18n="settingsShare">Share App</div>
+                            <div class="settings-row-sub" data-i18n="settingsShareSub">Spread the reward — share with family &amp; friends</div>
+                        </div>
+                    </div>
+                    <button class="settings-toggle-btn" onclick="shareApp()" data-i18n="settingsShareBtn">🔗 Share</button>
+                </div>
             </div>
-        </footer>
 
-        <div class="app-bottom-info">
-            <span data-i18n="footerMadeWith">Made with ❤️ for Dhul Hijjah.</span>
-        </div>
-    </div>
+            <!-- About Section Label -->
+            <div class="settings-section-label" data-i18n="sectionLabelAbout">About</div>
 
+            <!-- About Card -->
+            <div class="card about-card">
+                <h2 class="about-card-title" data-i18n="aboutTitle">🌟 About Noor Nights</h2>
+                <p class="about-card-text" data-i18n="aboutText1">The first ten days of Dhul Hijjah are among the most blessed days of the year. Allah swore by them in the Quran, and the Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." (Bukhari)</p>
+                <p class="about-card-text about-card-text-muted" data-i18n="aboutText2">This app helps you track your daily worship goals, fast and make du'a on Arafah Day, access comprehensive prophetic supplications (Jawami' ad-Du'a), and stay spiritually engaged throughout these ten precious days.</p>
+                <p class="about-card-dua" data-i18n="aboutText3">Please keep the developer and all those involved in your sincere prayers.</p>
+            </div>
+
+            <!-- Install Card -->
+            <div class="card install-card" id="app-install-card"
+                style="display: none; border: 1px solid var(--neon-cyan); background: rgba(10, 17, 40, 0.6);">
+                <h2 data-i18n="downloadAppTitle" style="color: var(--neon-cyan);">Get the App</h2>
+                <p data-i18n="downloadAppDesc">Install Noor Nights directly on your device for the best experience and reliable background notifications.</p>
+
+                <div id="android-install-section" style="display:none; margin-top: 1rem;">
+                    <button class="btn" id="android-install-action" onclick="handleInstallClick()"
+                        data-i18n="installAndroidBtn">🤖 Install App (1-Click)</button>
+                </div>
+
+                <div id="ios-install-section"
+                    style="display:none; margin-top: 1rem; border: 1px dashed var(--neon-cyan); padding: 1rem; border-radius: 8px; background: rgba(0, 0, 0, 0.3);">
+                    <p style="margin-bottom: 0.5rem; font-size: 0.95rem;"><span data-i18n="installIOSStep1">1. Tap the Share icon at the bottom of Safari.</span> <b style="font-size: 1.2rem; vertical-align: middle;">⎙</b></p>
+                    <p style="margin-bottom: 0; font-size: 0.95rem;"><span data-i18n="installIOSStep2">2. Scroll down and tap</span> <b>Add to Home Screen ➕</b>.</p>
+                    <p style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--amber-glow);" data-i18n="installIOSNote">⚠️ Safari is required. Notifications only work after adding to Home Screen.</p>
+                </div>
+            </div>
+
+            <!-- Calendar Card -->
+            <div class="card">
+                <h2 data-i18n="calendarTitle">Add to My Calendar</h2>
+                <p data-i18n="calendarDesc">Get daily reminders at Maghrib time for all 10 nights (Egypt timezone).</p>
+                <button class="btn" onclick="downloadICS()" data-i18n="calendarBtn">📅 Download Calendar (.ics)</button>
+                <div id="calendar-success" class="success-box"
+                    style="display:none; margin-top: 15px; padding: 15px; background: rgba(52, 211, 153, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
+                    <h4 style="color: var(--neon-cyan); margin-bottom: 8px;" data-i18n="calSuccessTitle">🎉 Successfully Downloaded!</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
+                        <div>
+                            <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calGoogleTitle">Google Calendar:</p>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
+                                <li data-i18n="calGoogleStep1">Go to <b>Settings</b> > <b>Import & Export</b>.</li>
+                                <li data-i18n="calGoogleStep2">Upload <code>noor-nights.ics</code>.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p style="font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;" data-i18n="calAppleTitle">Apple Calendar (Mac):</p>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 0.8rem; line-height: 1.4;">
+                                <li data-i18n="calAppleStep1">Double-click the file or drag into Calendar.</li>
+                                <li data-i18n="calAppleStep2">Select a destination calendar and click <b>OK</b>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dedication Card -->
+            <div class="card dedication-card">
+                <div class="footer-arabic-text">إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ</div>
+                <div class="dedication">
+                    <p data-i18n="footerMemory">In loving memory of</p>
+                    <h3 data-i18n="footerName">YOUSSEF ABDELKADER</h3>
+                    <p class="footer-arabic-text">رَحِمَهُ اللَّهُ</p>
+                </div>
+                <div id="dynamic-youssef-dua" class="dua-card">
+                    <div id="youssef-dua-arabic" class="arabic-text"></div>
+                    <div id="youssef-dua-english" class="translation"></div>
+                </div>
+                <div class="sadaqah-message">
+                    <p data-i18n="footerSadaqah">This app is Sadaqah Jariyah (ongoing charity) for him.</p>
+                </div>
+            </div>
+
+            <div class="app-bottom-info">
+                <span data-i18n="footerMadeWith">Made with ❤️ for Dhul Hijjah.</span>
+            </div>
+
+        </div><!-- /tab-more -->
+
+    </div><!-- /container -->
+
+    <!-- ── Bottom Tab Navigation ── -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home')" data-tab="home">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="nav-label" data-i18n="navHome">Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('duas')" data-tab="duas">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            <span class="nav-label" data-i18n="navDuas">Duas</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('dhikr')" data-tab="dhikr">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+            <span class="nav-label" data-i18n="navDhikr">Dhikr</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tracker')" data-tab="tracker">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <span class="nav-label" data-i18n="navTracker">Tracker</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('more')" data-tab="more">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <span class="nav-label" data-i18n="navMore">Settings</span>
+        </button>
+    </nav>
+
+    <!-- ── Modals ── -->
     <div id="msg-modal" class="modal">
         <div class="modal-content">
             <h2 id="modal-title" data-i18n="modalTitle">Message</h2>
@@ -238,35 +496,126 @@
         </div>
     </div>
 
-    <div id="about-modal" class="modal">
-        <div class="modal-content" style="text-align: left; padding: 2rem;">
-            <h2 data-i18n="aboutTitle" style="color: var(--neon-cyan); margin-bottom: 1rem; margin-top: 0;">🌟 About
-                Noor Nights</h2>
-            <p data-i18n="aboutText1"
-                style="color: var(--text-main); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify;">
-                The first ten days of Dhul Hijjah are among the most blessed days of the year. Allah swore by them in the Quran, and the Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." (Bukhari)
-            </p>
-            <p data-i18n="aboutText2"
-                style="color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; font-size: 0.9rem; text-align: justify;">
-                This app helps you track your daily worship goals, fast and make du'a on Arafah Day, access comprehensive prophetic supplications (Jawami' ad-Du'a), and stay spiritually engaged throughout these ten precious days.
-            </p>
-            <p data-i18n="aboutText3"
-                style="font-weight: 500; color: var(--emerald-teal); font-size: 0.95rem; text-align: center; margin-bottom: 1.5rem;">
-                Please keep the developer and all those involved in your sincere prayers.
-            </p>
-            <button class="btn" style="width: 100%;"
-                onclick="trackEvent('/about-close', 'About Modal Closed'); document.getElementById('about-modal').style.display='none'"
-                data-i18n="closeBtn">Close</button>
+    <!-- ── Onboarding Modal (first visit only) ── -->
+    <div id="onboarding-modal" class="modal">
+        <div class="modal-content onboarding-content">
+            <div class="onboarding-crescent">🌙</div>
+            <div class="onboarding-arabic" dir="rtl">أَيَّامٌ مَعْدُودَاتٌ</div>
+            <h2 class="onboarding-title" data-i18n="onboardingTitle">The 10 Greatest Days</h2>
+            <p class="onboarding-body" data-i18n="onboardingBody">The Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." These are those days. Let's make every one count.</p>
+            <div class="onboarding-steps">
+                <div class="onboarding-step">
+                    <span class="onboarding-step-num">①</span>
+                    <span data-i18n="onboardingF1">Open the app each day for your Daily Focus</span>
+                </div>
+                <div class="onboarding-step">
+                    <span class="onboarding-step-num">②</span>
+                    <span data-i18n="onboardingF2">Make dhikr, read duas, track your worship</span>
+                </div>
+                <div class="onboarding-step">
+                    <span class="onboarding-step-num">③</span>
+                    <span data-i18n="onboardingF3">Share a dua — your brothers & sisters say Ameen</span>
+                </div>
+                <div class="onboarding-step">
+                    <span class="onboarding-step-num">④</span>
+                    <span data-i18n="onboardingF4">Install the app for prayer time reminders</span>
+                </div>
+            </div>
+            <button class="btn onboarding-btn"
+                onclick="closeOnboarding()" data-i18n="onboardingBtn">Begin — بسم الله →</button>
         </div>
     </div>
 
-<script src="src/js/duas.js"></script>
+    <script src="src/js/duas.js"></script>
     <script src="src/js/app.js"></script>
     <script>
+        // ── Tab Navigation ──
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+            document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+            var tab = document.getElementById('tab-' + name);
+            if (tab) tab.classList.add('active');
+            var btn = document.querySelector('.nav-item[data-tab="' + name + '"]');
+            if (btn) btn.classList.add('active');
+            window.scrollTo(0, 0);
+            try { localStorage.setItem('noor_active_tab', name); } catch(e) {}
+        }
+
+        // ── Onboarding ──
+        function closeOnboarding() {
+            document.getElementById('onboarding-modal').style.display = 'none';
+            try { localStorage.setItem('noor_welcomed_v1', '1'); } catch(e) {}
+            // Pulse the tracker nav button to guide new users
+            var trackerBtn = document.querySelector('.nav-item[data-tab="tracker"]');
+            if (trackerBtn) {
+                trackerBtn.classList.add('nav-pulse');
+                setTimeout(function() { trackerBtn.classList.remove('nav-pulse'); }, 3000);
+            }
+        }
+
+        // ── Virtue Card Toggle ──
+        function toggleVirtueCard(btn) {
+            var body = document.getElementById('virtue-cards-container');
+            if (!body) return;
+            var isOpen = !body.classList.contains('vc-body-collapsed');
+            body.classList.toggle('vc-body-collapsed', isOpen);
+            btn.setAttribute('aria-expanded', String(!isOpen));
+            var chev = btn.querySelector('.vc-chevron');
+            if (chev) chev.style.transform = isOpen ? 'rotate(-90deg)' : '';
+        }
+
+        // ── Dhikr Card Counters ──
+        function tapDhikrCounter(btn) {
+            var target = parseInt(btn.dataset.target);
+            var key = 'dhikr_cnt_' + btn.dataset.key;
+            var count = parseInt(localStorage.getItem(key) || '0');
+            if (count >= target) return;
+            count++;
+            localStorage.setItem(key, count);
+            btn.querySelector('.dc-curr').textContent = count;
+            var done = count >= target;
+            btn.classList.toggle('dc-done', done);
+            btn.classList.add('dc-tapped');
+            setTimeout(function() { btn.classList.remove('dc-tapped'); }, 130);
+        }
+        function resetDhikrCounter(btn) {
+            var key = 'dhikr_cnt_' + btn.dataset.key;
+            localStorage.removeItem(key);
+            btn.querySelector('.dc-curr').textContent = '0';
+            btn.classList.remove('dc-done');
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.dhikr-counter').forEach(function(btn) {
+                var count = parseInt(localStorage.getItem('dhikr_cnt_' + btn.dataset.key) || '0');
+                btn.querySelector('.dc-curr').textContent = count;
+                if (count >= parseInt(btn.dataset.target)) btn.classList.add('dc-done');
+            });
+        });
+
+        // ── Render Duas ──
         function renderAllDuas() {
             renderDuaCarousel(jawamiDuas, 'jawami-duas-container', 'jaw');
         }
-        document.addEventListener('DOMContentLoaded', renderAllDuas);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restore last active tab AFTER app.js has initialized everything
+            try {
+                var saved = localStorage.getItem('noor_active_tab');
+                if (saved && document.getElementById('tab-' + saved)) {
+                    switchTab(saved);
+                }
+            } catch(e) {}
+
+            // Show onboarding on first visit
+            try {
+                if (!localStorage.getItem('noor_welcomed_v1')) {
+                    document.getElementById('onboarding-modal').style.display = 'flex';
+                }
+            } catch(e) {}
+
+            // Render prophetic duas
+            renderAllDuas();
+        });
     </script>
     <!-- GoatCounter: free, no-cookie visitor analytics. Dashboard: noor-nights.goatcounter.com -->
     <script data-goatcounter="https://noor-nights.goatcounter.com/count" async

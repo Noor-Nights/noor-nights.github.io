@@ -628,5 +628,49 @@ const youssefDuas = [
     {
         "arabic": "اللَّهُمَّ اكْفِهِ كُلَّ هَوْلٍ دُونَ الْجَنَّةِ حَتَّى تُبَلِّغَهُ إِيَّاهَا بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
         "english": "O Allah, spare him from every terror before Paradise until You deliver him to it by Your Mercy, O Most Merciful of those who show mercy"
+    },
+    {
+        "arabic": "اللَّهُمَّ تَقَبَّلْ صَالِحَ أَعْمَالِ يُوسُفَ عَبْدِ الْقَادِرِ وَتَجَاوَزْ عَنْ سَيِّئَاتِهِ وَاجْزِهِ خَيْرَ الْجَزَاءِ",
+        "english": "O Allah, accept the righteous deeds of Youssef Abdelkader, overlook his shortcomings, and reward him with the finest of rewards"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْهُ ذُخْرًا لِأَهْلِهِ وَوَالِدَيْهِ يَوْمَ الْقِيَامَةِ، وَشَفِيعًا مَقْبُولًا عِنْدَكَ",
+        "english": "O Allah, make him a treasure for his family and parents on the Day of Resurrection, and an accepted intercessor before You"
+    },
+    {
+        "arabic": "اللَّهُمَّ لَا تَحْرِمْنَا أَجْرَهُ وَلَا تَفْتِنَّا بَعْدَهُ، وَاجْمَعْنَا بِهِ فِي جَنَّتِكَ",
+        "english": "O Allah, do not deprive us of his reward, do not let us fall into trial after him, and reunite us with him in Your Paradise"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَعِذْهُ مِنَ الضَّيِّقِ وَالْوَحْدَةِ وَالظَّلَامِ وَالْوَحْشَةِ، وَآنِسْهُ بِرَحْمَتِكَ",
+        "english": "O Allah, protect him from constriction, loneliness, darkness, and desolation, and comfort him with Your mercy"
+    },
+    {
+        "arabic": "اللَّهُمَّ أَلْهِمْ أَهْلَهُ وَذَوِيهِ الصَّبْرَ الْجَمِيلَ، وَعَوِّضْهُمْ عَنْهُ خَيْرًا",
+        "english": "O Allah, inspire his family and loved ones with beautiful patience, and recompense them with what is better"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْ قُرَّةَ عَيْنِ أَهْلِهِ بِرُؤْيَتِهِ يَوْمَ يَلْقَوْنَكَ، وَأَسْعِدْنَا بِلِقَائِهِ فِي الْجَنَّةِ",
+        "english": "O Allah, let the joy of his family's eyes be in seeing him on the day they meet You, and bless us with his company in Paradise"
+    },
+    {
+        "arabic": "رَبِّ اغْفِرْ لِيُوسُفَ وَارْحَمْهُ وَأَنْتَ خَيْرُ الرَّاحِمِينَ",
+        "english": "My Lord, forgive Youssef and have mercy on him — You are the best of those who show mercy"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْعَلْهُ مِنَ الْمُقَرَّبِينَ إِلَيْكَ، الْمُنَعَّمِينَ بِالنَّظَرِ إِلَى وَجْهِكَ الْكَرِيمِ",
+        "english": "O Allah, make him among those nearest to You, blessed with gazing upon Your noble Face"
+    },
+    {
+        "arabic": "اللَّهُمَّ وَسِّعْ لَهُ فِي الْجَنَّةِ مَدَّ بَصَرِهِ، وَاجْعَلْ رِضَاكَ عَنْهُ دَائِمًا أَبَدًا",
+        "english": "O Allah, expand for him in Paradise as far as the eye can see, and let Your pleasure with him be everlasting"
+    },
+    {
+        "arabic": "اللَّهُمَّ اجْزِهِ عَنِ الْإِسْلَامِ وَأَهْلِهِ خَيْرًا، وَاجْعَلْ مَا قَدَّمَهُ صَدَقَةً جَارِيَةً إِلَى يَوْمِ الْقِيَامَةِ",
+        "english": "O Allah, reward him greatly on behalf of Islam and its people, and make all that he gave forth a continuous charity until the Day of Judgment"
+    },
+    {
+        "arabic": "اللَّهُمَّ يَا حَيُّ يَا قَيُّومُ ارْحَمْ يُوسُفَ عَبْدَ الْقَادِرِ رَحْمَةً وَاسِعَةً تَسَعُ كُلَّ ذَنْبٍ وَكُلَّ تَقْصِيرٍ",
+        "english": "O Allah, O Ever-Living, O Sustainer of all — have mercy on Youssef Abdelkader with a mercy vast enough to encompass every sin and every shortcoming"
     }
 ];
