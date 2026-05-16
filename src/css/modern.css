@@ -4259,8 +4259,9 @@ h2 {
 
 /* Dhul Hijjah countdown card — the #1 CLS culprit (score 0.549).
    Reserve space so the card does not collapse before JS runs.
+   360px covers: h2 + status text + 4 time-boxes + dh-message + progress bar + quickjump.
    #dh-stage-body has a skeleton placeholder so only needs line-height worth of space. */
-#dhul-hijjah-card { min-height: 280px; }
+#dhul-hijjah-card { min-height: 360px; }
 #dh-stage-body    { min-height: 2em; }
 
 /* Badge strip — reserve a single row's height */
