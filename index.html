@@ -76,8 +76,12 @@
 
             <!-- Dhul Hijjah Countdown Card -->
             <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
-                <h2 id="dhul-hijjah-title">Countdown to Dhul Hijjah</h2>
-                <div id="dh-stage-body"></div>
+                <h2 id="dhul-hijjah-title">🕋 Countdown to Dhul Hijjah</h2>
+                <!-- Skeleton content — JS replaces this once loaded.
+                     Keeps the LCP element painted from first frame to avoid LCP regression. -->
+                <div id="dh-stage-body">
+                    <p class="dh-message" id="dh-skeleton-msg" aria-hidden="true">✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.</p>
+                </div>
                 <div class="dh-quickjump" id="dh-quickjump">
                     <a class="btn-qj-primary" href="#" onclick="switchTab('tracker'); return false;" data-i18n="qjTrackWorship">✓ Track Worship</a>
                     <a class="btn-qj-secondary" href="#" onclick="switchTab('duas'); return false;" data-i18n="qjOpenDuas">🤲 Open Duas</a>
@@ -528,8 +532,8 @@
         </div>
     </div>
 
-    <script src="src/js/duas.js"></script>
-    <script src="src/js/app.js"></script>
+    <script src="src/js/duas.js" defer></script>
+    <script src="src/js/app.js" defer></script>
     <script>
         // ── Tab Navigation ──
         function switchTab(name) {
