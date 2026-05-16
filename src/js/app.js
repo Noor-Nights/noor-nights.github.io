@@ -4960,96 +4960,95 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// Global Initialization
+// Global Initialization — two phases for faster LCP:
+//   Phase 1 (rAF): language + DH countdown — lets skeleton text paint first
+//   Phase 2 (setTimeout 0): everything else, yielded after first paint
 document.addEventListener('DOMContentLoaded', () => {
-    loadTasbeeh();
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-    updateDhulHijjahCountdown();
-    setInterval(updateDhulHijjahCountdown, 1000); // tick every second for live countdowns
-    worshipTracker = new WorshipTracker();
-    worshipTracker.renderSection();
-    badgeSystem = new BadgeSystem();
-    badgeSystem.renderSection();
-    badgeSystem.renderStrip();
-    virtueCards = new VirtueCards();
-    virtueCards.renderSection();
-    duaCompanion = new DuaCompanion();
-    duaCompanion.renderSection();
-    prayerAPI = new PrayerTimesAPI();
-    prayerReminders = new PrayerReminders(prayerAPI);
-    prayerWidget = new PrayerTimesWidget(prayerAPI);
-    prayerWidget.init().then(() => {
-        if (prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
-    });
-    fastingTracker = new FastingTracker();
-    fastingTracker.init();
-    initArafahMode();
-    renderDailyFocusCard();
-    renderTodayGlance();
-    // Deferred re-render: after worship tracker fully initialises, update glance with fresh data
-    setTimeout(() => { renderTodayGlance(); }, 300);
-    _updateSettingsCard();
-    initDhikrSections();
-    checkDayChange();
-    setInterval(checkDayChange, 60000); // Check for day change every minute
-    rotateYoussefDua();
-    _checkReEngagement();
-    _checkDay1Banner();
 
-    // Dhikr card collapse on tap (toggle transliteration/translation)
-    document.addEventListener('click', function(e) {
-        const card = e.target.closest('.dhikr-card');
-        if (!card) return;
-        // Don't collapse if clicking a button inside the card
-        if (e.target.closest('button')) return;
-        card.classList.toggle('dhikr-card-collapsed');
-    });
-
-    // Apply saved language preference
+    // Phase 1: apply language immediately, then update countdown after first frame
     applyLanguage(currentLang);
+    requestAnimationFrame(() => {
+        updateDhulHijjahCountdown();
+        setInterval(updateDhulHijjahCountdown, 1000);
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
 
-    // Unregister legacy sw.js so OneSignal can cleanly own its worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-            for (const reg of registrations) {
-                const url = (reg.active || reg.installing || reg.waiting || {}).scriptURL || '';
-                if (url.includes('sw.js') && !url.includes('OneSignal')) {
-                    reg.unregister();
-                    console.log('[Noor Nights] Unregistered legacy sw.js');
+    // Phase 2: defer all non-critical init until after first paint
+    setTimeout(() => {
+        loadTasbeeh();
+        worshipTracker = new WorshipTracker();
+        worshipTracker.renderSection();
+        badgeSystem = new BadgeSystem();
+        badgeSystem.renderSection();
+        badgeSystem.renderStrip();
+        virtueCards = new VirtueCards();
+        virtueCards.renderSection();
+        duaCompanion = new DuaCompanion();
+        duaCompanion.renderSection();
+        prayerAPI = new PrayerTimesAPI();
+        prayerReminders = new PrayerReminders(prayerAPI);
+        prayerWidget = new PrayerTimesWidget(prayerAPI);
+        prayerWidget.init().then(() => {
+            if (prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+        });
+        fastingTracker = new FastingTracker();
+        fastingTracker.init();
+        initArafahMode();
+        renderDailyFocusCard();
+        renderTodayGlance();
+        setTimeout(() => { renderTodayGlance(); }, 300);
+        _updateSettingsCard();
+        initDhikrSections();
+        checkDayChange();
+        setInterval(checkDayChange, 60000);
+        rotateYoussefDua();
+        _checkReEngagement();
+        _checkDay1Banner();
+
+        // Dhikr card collapse on tap
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('.dhikr-card');
+            if (!card) return;
+            if (e.target.closest('button')) return;
+            card.classList.toggle('dhikr-card-collapsed');
+        });
+
+        // Unregister legacy sw.js so OneSignal can cleanly own its worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then((registrations) => {
+                for (const reg of registrations) {
+                    const url = (reg.active || reg.installing || reg.waiting || {}).scriptURL || '';
+                    if (url.includes('sw.js') && !url.includes('OneSignal')) {
+                        reg.unregister();
+                    }
                 }
+            });
+        }
+
+        // Set notify button state once OneSignal is ready
+        if (window.OneSignalDeferred) {
+            window.OneSignalDeferred.push(async function (OneSignal) {
+                const btn = document.getElementById('notify-btn');
+                if (btn) _updateNotifyBtnState(btn, OneSignal.User.PushSubscription.optedIn);
+            });
+        }
+
+        // Dynamic Install App Card
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+        if (!isStandalone) {
+            const installCard = document.getElementById('app-install-card');
+            const iosSection = document.getElementById('ios-install-section');
+            if (installCard) {
+                installCard.style.display = 'block';
+                trackEvent('/a2hs-shown', 'a2hs_shown_ios_fallback');
             }
-        });
-        // NOTE: OneSignalSDKWorker.js is registered automatically by the OneSignal SDK.
-        // Do NOT register it manually here - doing so causes a race condition.
-    }
-
-    // Set notify button state once OneSignal is ready
-    if (window.OneSignalDeferred) {
-        window.OneSignalDeferred.push(async function (OneSignal) {
-            const btn = document.getElementById('notify-btn');
-            if (btn) _updateNotifyBtnState(btn, OneSignal.User.PushSubscription.optedIn);
-        });
-    }
-
-    // --- Dynamic Install App Card Logic ---
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-
-    // Only show the install card if it's not already installed
-    if (!isStandalone) {
-        const installCard = document.getElementById('app-install-card');
-        const iosSection = document.getElementById('ios-install-section');
-        if (installCard) {
-            installCard.style.display = 'block';
-            trackEvent('/a2hs-shown', 'a2hs_shown_ios_fallback');
+            if (isIOS && iosSection) {
+                iosSection.style.display = 'block';
+            }
         }
-
-        if (isIOS && iosSection) {
-            // Show iOS manual instructions
-            iosSection.style.display = 'block';
-        }
-    }
+    }, 0);
 });
 
 let deferredPrompt;

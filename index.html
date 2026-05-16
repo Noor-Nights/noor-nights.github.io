@@ -13,6 +13,11 @@
     <!-- Preload critical CSS so it starts downloading immediately -->
     <link rel="preload" href="src/css/modern.css" as="style">
     <link rel="stylesheet" href="src/css/modern.css">
+    <!-- Preload JS entry points so the browser starts downloading them
+         at HTML-parse time, not when the parser reaches them at bottom of body.
+         They still execute after parsing (defer), but download starts earlier. -->
+    <link rel="preload" href="src/js/duas.js" as="script">
+    <link rel="preload" href="src/js/app.js" as="script">
     <!-- Load Google Fonts asynchronously to avoid render-blocking (saves ~825 ms FCP) -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap"></noscript>
