@@ -10,10 +10,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
+    <!-- Preload critical CSS so it starts downloading immediately -->
+    <link rel="preload" href="src/css/modern.css" as="style">
     <link rel="stylesheet" href="src/css/modern.css">
+    <!-- Load Google Fonts asynchronously to avoid render-blocking (saves ~825 ms FCP) -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Mulish:wght@300;400;500;600&display=swap"></noscript>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon.png">
     <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">

@@ -10,10 +10,6 @@ const CONFIG = {
     SUPABASE_ANON_KEY: '__SUPABASE_ANON_KEY__',
 };
 
-// ── Theme Background Preload ──
-const shareBg1 = new Image();
-shareBg1.src = 'assets/backgrounds/Background.png';
-
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
 // ═══════════════════════════════════════════════════
@@ -841,14 +837,6 @@ function getWrappedLines(ctx, text, maxWidth) {
     return lines;
 }
 
-async function ensureBackgroundLoaded(img) {
-    if (img.complete) return;
-    return new Promise((resolve) => {
-        img.addEventListener('load', () => resolve(), { once: true });
-        img.addEventListener('error', () => resolve(), { once: true });
-    });
-}
-
 function getCurrentNight() {
     const targetDate = new Date(CONFIG.TARGET_DATE).getTime();
     const distance = targetDate - getCurrentTime();
@@ -1176,9 +1164,6 @@ function triggerDownload(url, filename) {
 
 async function shareImage(type, idx) {
     let dua = type === 'ess' ? essentialDuas[idx] : jawamiDuas[idx];
-    const activeBg = shareBg1;
-    await ensureBackgroundLoaded(activeBg);
-
     const blob = await generateCanvasBlob(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, dua.badge, false);
     if (!blob) return;
 
@@ -1227,7 +1212,6 @@ async function shareImage(type, idx) {
 
 async function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
-    await ensureBackgroundLoaded(shareBg1);
     const blob = await generateCanvasBlob(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
     if (!blob) return;
 

@@ -4249,3 +4249,25 @@ h2 {
    ═══════════════════════════════════════════════════ */
 .tab-content { padding-bottom: calc(var(--nav) + 32px); }
 .app-bottom-info { padding-bottom: calc(var(--nav) + 24px); }
+
+/* ═══════════════════════════════════════════════════
+   PERF — CLS Prevention: reserve height for JS-injected content
+   These min-heights prevent layout shifts (CLS) that occur when
+   JavaScript populates dynamic sections after the page first paints.
+   The values match the rendered dimensions from Lighthouse audit.
+   ═══════════════════════════════════════════════════ */
+
+/* Dhul Hijjah countdown card — the #1 CLS culprit (score 0.549).
+   Reserve 280px minimum so the card does not collapse before JS runs. */
+#dhul-hijjah-card { min-height: 280px; }
+#dh-stage-body    { min-height: 200px; }
+
+/* Badge strip — reserve a single row's height */
+#badge-strip { min-height: 48px; }
+
+/* Prayer times widget — reserve space for rows before API data arrives */
+#pt-card      { min-height: 180px; }
+#pt-container { min-height: 120px; }
+
+/* Daily focus card — collapses when empty; reserve row height */
+#today-glance { min-height: 40px; }

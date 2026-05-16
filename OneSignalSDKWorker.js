@@ -6,8 +6,9 @@
 // ═══════════════════════════════════════════════════════
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 
-// ── PWA Cache ────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v19';
+// ── PWA Cache ────────────────────────────────────────────────
+const CACHE_NAME = 'noor-nights-v20';
+// Core shell assets to pre-cache on install.
 const ASSETS = [
     '/',
     '/index.html',
@@ -20,7 +21,6 @@ const ASSETS = [
     '/assets/icons/favicon.png',
     '/assets/icons/favicon-32.png',
     '/assets/icons/badge-96.png',
-    '/assets/backgrounds/Background.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -41,8 +41,34 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests and OneSignal API calls
+    // Skip cross-origin requests and non-GET requests
     if (!event.request.url.startsWith(self.location.origin)) return;
+    if (event.request.method !== 'GET') return;
+
+    const url = new URL(event.request.url);
+
+    // Stale-While-Revalidate for JS and CSS: serve cached immediately,
+    // then refresh in the background. This overcomes GitHub Pages' short
+    // 600-second Cache-Control max-age for repeat visitors.
+    if (url.pathname.match(/\.(js|css)$/)) {
+        event.respondWith(
+            caches.open(CACHE_NAME).then((cache) =>
+                cache.match(event.request).then((cached) => {
+                    const fetchPromise = fetch(event.request).then((response) => {
+                        if (response && response.ok) {
+                            cache.put(event.request, response.clone());
+                        }
+                        return response;
+                    }).catch(() => cached);
+                    // Return the cached version immediately while refreshing
+                    return cached || fetchPromise;
+                })
+            )
+        );
+        return;
+    }
+
+    // Cache-First for all other same-origin requests (HTML, images, icons)
     event.respondWith(
         caches.match(event.request).then((cached) => cached || fetch(event.request))
     );
