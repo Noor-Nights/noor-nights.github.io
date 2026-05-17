@@ -15,12 +15,13 @@
     --neon-cyan: #14b8a6;    /* alias for emerald-teal, used in inline styles */
 
     /* ── Rebrand tokens — Dusk Manuscript palette ── */
-    --bg: #1c2235; --bg2: #242d45; --bg3: #2e3a56; --bg4: #354263;
+    --bg: #1c2235; --bg2: #242d45; --bg3: #2e3a56; --bg4: #3a4a6a;
     --gold: #c5a352; --gold2: #dbbf6e; --gold3: #eecf8a;
     --goldfaint: rgba(197,163,82,.13); --goldborder: rgba(197,163,82,.22);
     --teal: #38b99f; --tealfaint: rgba(56,185,159,.1); --tealborder: rgba(56,185,159,.25);
+    --cream-beige: #f2ede6;
     --cream: #f2ede6; --cream2: rgba(242,237,230,.65); --cream3: rgba(242,237,230,.09); --cream4: rgba(242,237,230,.06);
-    --border: rgba(242,237,230,.08); --border2: rgba(242,237,230,.14);
+    --border: rgba(242,237,230,.08); --border2: rgba(242,237,230,.13);
     --fs: 'Playfair Display', Georgia, serif;
     --fa: 'Amiri', serif;
     --fn: 'Mulish', sans-serif;
@@ -3709,7 +3710,7 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 }
 .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
 .settings-row-label { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-.settings-icon { font-size: 1.2rem; flex-shrink: 0; }
+.settings-icon { flex-shrink: 0; }
 .settings-row-name { font-size: 0.9rem; color: var(--cream); font-weight: 500; }
 .settings-row-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 .settings-toggle-btn {
@@ -3855,6 +3856,27 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
     padding: 6px 0 10px;
     transition: color .18s;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+.nav-icon-img {
+    width: 24px;
+    height: 24px;
+    display: block;
+    opacity: 0.38;
+    transition: opacity 0.18s;
+}
+.nav-item.active .nav-icon-img { opacity: 1; }
+.nav-item.active .nav-label { color: var(--gold); }
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
 }
 
 .nav-item.active { color: var(--gold2); }
@@ -3865,14 +3887,6 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 }
 .nav-item.nav-pulse { animation: nav-pulse-anim 0.7s ease-in-out 4; }
 
-.nav-icon {
-    width: 21px;
-    height: 21px;
-    stroke: currentColor;
-    stroke-width: 1.5;
-    fill: none;
-    transition: stroke .18s;
-}
 
 .nav-label {
     font-size: 9.5px;
@@ -4261,7 +4275,7 @@ h2 {
    Reserve space so the card does not collapse before JS runs.
    360px covers: h2 + status text + 4 time-boxes + dh-message + progress bar + quickjump.
    #dh-stage-body has a skeleton placeholder so only needs line-height worth of space. */
-#dhul-hijjah-card { min-height: 360px; }
+#dhul-hijjah-card { min-height: unset; }
 #dh-stage-body    { min-height: 2em; }
 
 /* Badge strip — reserve a single row's height */
@@ -4273,3 +4287,37 @@ h2 {
 
 /* Daily focus card — collapses when empty; reserve row height */
 #today-glance { min-height: 40px; }
+
+/* ═══════════════════════════════════════════════════
+   SECTION HEADING CHIPS & ROWS (Task 3)
+   ═══════════════════════════════════════════════════ */
+.section-icon-chip {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(196,164,74,.12);
+  border: 0.5px solid rgba(196,164,74,.22);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.section-icon-chip img { width: 18px; height: 18px; display: block; }
+.section-heading-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.section-heading-row h2, .section-heading-row h3 { margin: 0; }
+
+/* ═══════════════════════════════════════════════════
+   SETTINGS ROW ICONS (Task 4)
+   ═══════════════════════════════════════════════════ */
+.settings-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.settings-icon img { width: 20px; height: 20px; display: block; }
+.settings-icon.si-language { background: rgba(58,185,166,.12); }
+.settings-icon.si-location { background: rgba(196,164,74,.12); }
+.settings-icon.si-bell { background: rgba(219,191,110,.12); }
+.settings-icon.si-share { background: rgba(91,158,245,.12); }
+.settings-icon.si-calendar { background: rgba(56,185,166,.12); }
+.settings-icon.si-info { background: rgba(196,164,74,.08); }

@@ -25,7 +25,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon.png">
     <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#070d1f">
+    <meta name="theme-color" content="#1c2235">
 
     <!-- OneSignal Web Push SDK -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -34,6 +34,11 @@
         OneSignalDeferred.push(async function (OneSignal) {
             await OneSignal.init({
                 appId: "520970e9-567b-4556-8022-3093a50b765f",
+                welcomeNotification: {
+                    title: "Noor Nights",
+                    message: "You'll receive daily spiritual reminders during the 10 days of Dhul Hijjah.",
+                    icon: "https://noor-nights.github.io/assets/icons/icon-192.png",
+                },
             });
         });
     </script>
@@ -81,7 +86,10 @@
 
             <!-- Dhul Hijjah Countdown Card -->
             <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
-                <h2 id="dhul-hijjah-title">🕋 Countdown to Dhul Hijjah</h2>
+                <div class="section-heading-row">
+                  <div class="section-icon-chip"><img src="assets/icons/countdown.svg" alt="" aria-hidden="true"></div>
+                  <h2 id="dhul-hijjah-title">Countdown to Dhul Hijjah</h2>
+                </div>
                 <!-- Skeleton content — JS replaces this once loaded.
                      Keeps the LCP element painted from first frame to avoid LCP regression. -->
                 <div id="dh-stage-body">
@@ -155,14 +163,20 @@
             <!-- Worship Tracker Card -->
             <div class="card wt-card">
                 <div class="wt-card-header">
-                    <h2 class="wt-card-title" data-i18n="wtCardTitle">Worship Tracker</h2>
+                    <div class="section-heading-row">
+                      <div class="section-icon-chip"><img src="assets/icons/tracker.svg" alt="" aria-hidden="true"></div>
+                      <h2 class="wt-card-title" data-i18n="wtCardTitle">Worship Tracker</h2>
+                    </div>
                 </div>
                 <div id="worship-tracker-container"></div>
             </div>
 
             <!-- Badge System Card -->
             <div class="card badge-section-card">
-                <h2 class="badge-section-title" data-i18n="badgeSectionTitle">Dhul Hijjah Badges</h2>
+                <div class="section-heading-row">
+                  <div class="section-icon-chip"><img src="assets/icons/badges.svg" alt="" aria-hidden="true"></div>
+                  <h2 class="badge-section-title" data-i18n="badgeSectionTitle">Dhul Hijjah Badges</h2>
+                </div>
                 <p class="badge-section-subtitle" data-i18n="badgeSectionSubtitle">Earn badges by completing worship goals during the 10 blessed days</p>
                 <div id="badge-grid" class="badge-grid"></div>
             </div>
@@ -178,7 +192,10 @@
             <!-- ÷<div class="section-label">Dhikr</div> -->
 
             <div class="card" id="tasbeeh-container">
-                <h2 data-i18n="tasbeehTitle">Tasbeeh Counter</h2>
+                <div class="section-heading-row">
+                  <div class="section-icon-chip"><img src="assets/icons/tasbeeh.svg" alt="" aria-hidden="true"></div>
+                  <h2 data-i18n="tasbeehTitle">Tasbeeh Counter</h2>
+                </div>
                 <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
                 <div id="tasbeeh-grid" class="tasbeeh-grid"></div>
                 <div class="tasbeeh-actions">
@@ -334,7 +351,10 @@
 
             <!-- Dua Companion (Community Wall + Essential Duas) -->
             <div class="card dc-card" id="dc-card">
-                <h2 class="dc-heading" data-i18n="dcTitle">Dua Companion</h2>
+                <div class="section-heading-row">
+                  <div class="section-icon-chip"><img src="assets/icons/dua-companion.svg" alt="" aria-hidden="true"></div>
+                  <h2 class="dc-heading" data-i18n="dcTitle">Dua Companion</h2>
+                </div>
                 <div id="dc-container"></div>
             </div>
 
@@ -344,7 +364,10 @@
             <!-- Prophetic Duas -->
             <div id="jawami-duas-container" class="card">
                 <div class="card-body">
-                    <h2 data-i18n="jamawiTitle">Prophetic Duas</h2>
+                    <div class="section-heading-row">
+                      <div class="section-icon-chip"><img src="assets/icons/prophetic-duas.svg" alt="" aria-hidden="true"></div>
+                      <h2 data-i18n="jamawiTitle">Prophetic Duas</h2>
+                    </div>
                     <p class="subtitle" style="margin-bottom:1.5rem" data-i18n="jamawiSubtitle">Comprehensive prayers from the Prophet (ﷺ)</p>
                 </div>
             </div>
@@ -365,7 +388,7 @@
                 <!-- Language -->
                 <div class="settings-row">
                     <div class="settings-row-label">
-                        <span class="settings-icon">🌐</span>
+                        <div class="settings-icon si-language"><img src="assets/icons/language.svg" alt="" aria-hidden="true"></div>
                         <div>
                             <div class="settings-row-name" data-i18n="settingsLang">Language</div>
                             <div class="settings-row-sub" data-i18n="settingsLangSub">English / العربية</div>
@@ -377,7 +400,7 @@
                 <!-- Location -->
                 <div class="settings-row">
                     <div class="settings-row-label">
-                        <span class="settings-icon">📍</span>
+                        <div class="settings-icon si-location"><img src="assets/icons/location.svg" alt="" aria-hidden="true"></div>
                         <div>
                             <div class="settings-row-name" data-i18n="settingsLocation">Prayer Location</div>
                             <div class="settings-row-sub" id="settings-location-name">—</div>
@@ -389,7 +412,7 @@
                 <!-- Notifications -->
                 <div class="settings-row">
                     <div class="settings-row-label">
-                        <span class="settings-icon">🔔</span>
+                        <div class="settings-icon si-bell"><img src="assets/icons/bell.svg" alt="" aria-hidden="true"></div>
                         <div>
                             <div class="settings-row-name" data-i18n="settingsNotif">Prayer Reminders</div>
                             <div class="settings-row-sub" data-i18n="settingsNotifSub">Toggle per-prayer reminders</div>
@@ -402,7 +425,7 @@
                 <!-- Share App -->
                 <div class="settings-row">
                     <div class="settings-row-label">
-                        <span class="settings-icon">🔗</span>
+                        <div class="settings-icon si-share"><img src="assets/icons/share.svg" alt="" aria-hidden="true"></div>
                         <div>
                             <div class="settings-row-name" data-i18n="settingsShare">Share App</div>
                             <div class="settings-row-sub" data-i18n="settingsShareSub">Spread the reward — share with family &amp; friends</div>
@@ -497,23 +520,23 @@
     <!-- ── Bottom Tab Navigation ── -->
     <nav class="bottom-nav" id="bottom-nav">
         <button class="nav-item active" onclick="switchTab('home')" data-tab="home">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <img src="assets/icons/home.svg" class="nav-icon-img" alt="" aria-hidden="true">
             <span class="nav-label" data-i18n="navHome">Home</span>
         </button>
         <button class="nav-item" onclick="switchTab('duas')" data-tab="duas">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            <img src="assets/icons/duas.svg" class="nav-icon-img" alt="" aria-hidden="true">
             <span class="nav-label" data-i18n="navDuas">Duas</span>
         </button>
         <button class="nav-item" onclick="switchTab('dhikr')" data-tab="dhikr">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+            <img src="assets/icons/dhikr.svg" class="nav-icon-img" alt="" aria-hidden="true">
             <span class="nav-label" data-i18n="navDhikr">Dhikr</span>
         </button>
         <button class="nav-item" onclick="switchTab('tracker')" data-tab="tracker">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <img src="assets/icons/tracker.svg" class="nav-icon-img" alt="" aria-hidden="true">
             <span class="nav-label" data-i18n="navTracker">Tracker</span>
         </button>
         <button class="nav-item" onclick="switchTab('more')" data-tab="more">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            <img src="assets/icons/settings.svg" class="nav-icon-img" alt="" aria-hidden="true">
             <span class="nav-label" data-i18n="navMore">Settings</span>
         </button>
     </nav>
