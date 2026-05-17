@@ -10,7 +10,10 @@
       "Bash(node --check src/js/app.js)",
       "Bash(grep -E '\\\\.png$')",
       "Bash(python3 -c \"import cairosvg; print\\('cairosvg'\\)\")",
-      "Bash(rsvg-convert -w 96 -h 96 /Users/emanmhmd/Documents/Projects/noor-nights/assets/icons/icon-96-mono.svg -o /Users/emanmhmd/Documents/Projects/noor-nights/assets/icons/icon-96-mono.png)"
+      "Bash(rsvg-convert -w 96 -h 96 /Users/emanmhmd/Documents/Projects/noor-nights/assets/icons/icon-96-mono.svg -o /Users/emanmhmd/Documents/Projects/noor-nights/assets/icons/icon-96-mono.png)",
+      "Bash(rsvg-convert -w 200 -h 200 --background-color=\"#1c2235\" /Users/emanmhmd/Documents/Projects/noor-nights/assets/icons/icon-96-mono.svg -o /tmp/icon-preview.png)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)"
     ]
   }
 }

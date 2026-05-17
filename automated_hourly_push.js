@@ -192,8 +192,10 @@ async function sendPush(heading, body_text, collapseId) {
         headings:  { en: heading,    ar: heading },
         contents:  { en: body_text,  ar: body_text },
         url: 'https://noor-nights.github.io',
-        chrome_web_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
-        firefox_icon:    'https://noor-nights.github.io/assets/icons/icon-192.png',
+        chrome_web_icon:  'https://noor-nights.github.io/assets/icons/icon-192.png',
+        chrome_web_badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
+        firefox_icon:     'https://noor-nights.github.io/assets/icons/icon-192.png',
+        large_icon:       'https://noor-nights.github.io/assets/icons/icon-192.png',
         collapse_id: collapseId,
     };
 
