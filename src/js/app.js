@@ -5006,7 +5006,8 @@ document.addEventListener('DOMContentLoaded', () => {
         _checkReEngagement();
         _checkDay1Banner();
 
-        // Dhikr card collapse on tap
+        // Dhikr cards: collapsed by default, tap to expand
+        document.querySelectorAll('.dhikr-card').forEach(c => c.classList.add('dhikr-card-collapsed'));
         document.addEventListener('click', function(e) {
             const card = e.target.closest('.dhikr-card');
             if (!card) return;
