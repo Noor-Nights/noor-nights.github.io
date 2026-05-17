@@ -5069,6 +5069,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 iosSection.style.display = 'block';
             }
         }
+
+        // Dismiss launch splash once app is ready
+        const splash = document.getElementById('launch-splash');
+        if (splash) {
+            setTimeout(() => splash.classList.add('ls-hidden'), 400);
+        }
     }, 0);
 });
 
