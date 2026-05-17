@@ -1,12 +1,12 @@
 {
   "name": "Noor Nights 🌙",
   "short_name": "Noor Nights",
-  "description": "Spiritual tracking for the last ten nights of Ramadan.",
+  "description": "Spiritual tracking for the 10 blessed days of Dhul Hijjah.",
   "start_url": "index.html",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0a1128",
-  "theme_color": "#0a1128",
+  "background_color": "#070d1f",
+  "theme_color": "#070d1f",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",
