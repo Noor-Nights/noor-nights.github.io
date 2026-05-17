@@ -2806,23 +2806,21 @@ class DuaCompanion {
             const prev = parseInt(countEl ? countEl.textContent || '0' : '0', 10);
             if (countEl) countEl.textContent = String(prev + 1);
         }
-        // Increment ameen_count in Supabase
+        // Increment ameen_count in Supabase atomically via RPC
         if (this._isSupabaseConfigured()) {
             const entry = this.community && this.community.find(s => {
                 return this._ameenId(s.text, new Date(s.created_at).getTime()) === id;
             });
             if (entry) {
-                const newCount = (entry.ameen_count || 0) + 1;
-                entry.ameen_count = newCount; // optimistic update
-                fetch(`${CONFIG.SUPABASE_URL}/rest/v1/community_duas?text=eq.${encodeURIComponent(entry.text)}&created_at=eq.${encodeURIComponent(entry.created_at)}`, {
-                    method: 'PATCH',
+                entry.ameen_count = (entry.ameen_count || 0) + 1; // optimistic local update
+                fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/increment_ameen`, {
+                    method: 'POST',
                     headers: {
                         'apikey': CONFIG.SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ ameen_count: newCount })
+                    body: JSON.stringify({ dua_text: entry.text, dua_ts: entry.created_at })
                 }).catch(() => {});
             }
         }
