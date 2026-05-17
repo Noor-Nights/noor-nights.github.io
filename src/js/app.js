@@ -190,7 +190,7 @@ const TRANSLATIONS = {
         tasbeehResetSuccess: 'All counters have been reset to zero.',
 
         dhulHijjahTitle: '🕋 Countdown to Dhul Hijjah',
-        dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH',
+        dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH (Egypt Time)',
         qjTrackWorship: '✓ Track Worship',
         qjOpenDuas: '🤲 Open Duas',
         dhulHijjahMotivation: '✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.',
@@ -407,7 +407,7 @@ const TRANSLATIONS = {
         tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.',
 
         dhulHijjahTitle: '🕋 العد التنازلي لذي الحجة',
-        dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ',
+        dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ (توقيت مصر)',
         qjTrackWorship: '✓ تتبع العبادة',
         qjOpenDuas: '🤲 فتح الأدعية',
         dhulHijjahMotivation: '✨ هيّئ قلبك لذي الحجة — أفضل أيام العام.',
@@ -3991,9 +3991,10 @@ function getDhStage() {
     if (day >= 10) return 'eid';
     if (day === 9) return 'arafah';
     if (day === 8) {
-        // After 19:30 local time → arafah-eve
-        const d = new Date(now);
-        const mins = d.getHours() * 60 + d.getMinutes();
+        // After 19:30 Egypt time (UTC+2) → arafah-eve
+        const egyptOffsetMs = 2 * 60 * 60 * 1000;
+        const egyptDate = new Date(now + egyptOffsetMs);
+        const mins = egyptDate.getUTCHours() * 60 + egyptDate.getUTCMinutes();
         if (mins >= 19 * 60 + 30) return 'arafah-eve';
         return 'during';
     }

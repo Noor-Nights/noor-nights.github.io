@@ -31,7 +31,8 @@
       "Bash(git stash:*)",
       "Bash(curl -s \"https://api.aladhan.com/v1/timings/18-5-2026?latitude=30.0444&longitude=31.2357&method=5\")",
       "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const t=JSON.parse\\(d\\).data.timings; console.log\\('Fajr:',t.Fajr,'Dhuhr:',t.Dhuhr,'Asr:',t.Asr,'Maghrib:',t.Maghrib,'Isha:',t.Isha\\)\")",
-      "Bash(node --check /Users/emanmhmd/Documents/Projects/noor-nights/automated_hourly_push.js)"
+      "Bash(node --check /Users/emanmhmd/Documents/Projects/noor-nights/automated_hourly_push.js)",
+      "Bash(gh run:*)"
     ]
   }
 }
