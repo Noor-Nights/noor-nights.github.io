@@ -2663,7 +2663,7 @@ class DuaCompanion {
         if (!this._isSupabaseConfigured()) { this.community = null; return; }
         try {
             const res = await fetch(
-                `${CONFIG.SUPABASE_URL}/rest/v1/community_duas?select=text,created_at&order=created_at.desc&limit=40`,
+                `${CONFIG.SUPABASE_URL}/rest/v1/community_duas?select=text,created_at,ameen_count&order=created_at.desc&limit=40`,
                 { headers: { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}` } }
             );
             if (res.ok) {
@@ -2800,14 +2800,31 @@ class DuaCompanion {
         if (data[id]) return; // already said Ameen
         data[id] = Date.now();
         this._saveAmeens(data);
-        // Persist the local ameen count for this dua
-        const countKey = 'noor_ameen_cnt_' + id;
-        const prevCount = parseInt(localStorage.getItem(countKey) || '0', 10);
-        localStorage.setItem(countKey, String(prevCount + 1));
         if (btnEl) {
             btnEl.classList.add('dc-ameen-done');
             const countEl = btnEl.querySelector('.dc-ameen-count');
-            if (countEl) countEl.textContent = String(prevCount + 1);
+            const prev = parseInt(countEl ? countEl.textContent || '0' : '0', 10);
+            if (countEl) countEl.textContent = String(prev + 1);
+        }
+        // Increment ameen_count in Supabase
+        if (this._isSupabaseConfigured()) {
+            const entry = this.community && this.community.find(s => {
+                return this._ameenId(s.text, new Date(s.created_at).getTime()) === id;
+            });
+            if (entry) {
+                const newCount = (entry.ameen_count || 0) + 1;
+                entry.ameen_count = newCount; // optimistic update
+                fetch(`${CONFIG.SUPABASE_URL}/rest/v1/community_duas?text=eq.${encodeURIComponent(entry.text)}&created_at=eq.${encodeURIComponent(entry.created_at)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ ameen_count: newCount })
+                }).catch(() => {});
+            }
         }
     }
 
@@ -2822,7 +2839,7 @@ class DuaCompanion {
             return this.community.map(s => {
                 const aid = this._ameenId(s.text, new Date(s.created_at).getTime());
                 const said = !!ameens[aid];
-                const cnt = parseInt(localStorage.getItem('noor_ameen_cnt_' + aid) || '0', 10);
+                const cnt = s.ameen_count || 0;
                 return `
                 <div class="dc-shared-item">
                     <span class="dc-shared-text">${this._escape(s.text)}</span>
