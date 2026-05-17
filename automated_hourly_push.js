@@ -1,6 +1,7 @@
 // automated_hourly_push.js
 // GitHub Actions CRON job — runs every hour during the 10 blessed days of Dhul Hijjah 1447.
 // Sends contextual Arabic duas and reminders to all subscribed users via OneSignal.
+// Also sends prayer time call notifications when the current hour matches a Cairo prayer time.
 //
 // Schedule: runs Days 1–10 of Dhul Hijjah, between 05:00–22:00 Cairo time.
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
@@ -84,6 +85,67 @@ const arafahDuas = [
     "اللَّهُمَّ اغْفِرْ لَنَا وَلِوَالِدَيْنَا وَلِلْمُسْلِمِينَ أَجْمَعِينَ",
 ];
 
+// ── Prayer Time Notifications ─────────────────────────────────────────────────
+
+const CAIRO_LAT = 30.0444;
+const CAIRO_LNG = 31.2357;
+
+const prayerNotifications = {
+    fajr:    {
+        heading: '🌅 حان وقت صلاة الفجر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nمن صلى الفجر في جماعة فكأنما قام الليل كله — لا تفوّتها.',
+    },
+    dhuhr:   {
+        heading: '☀️ حان وقت صلاة الظهر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🕌\nاستقبل منتصف يومك بالصلاة، وأكثر من التكبير في هذه الأيام المباركة.',
+    },
+    asr:     {
+        heading: '🌤️ حان وقت صلاة العصر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌟\n"من فاتته صلاة العصر فكأنما وُتِر أهله وماله" — النبي ﷺ',
+    },
+    maghrib: {
+        heading: '🌅 حان وقت صلاة المغرب',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nأسرع إلى الصلاة وادعُ بعدها — ما بين الأذان والإقامة دعوة لا تُرد.',
+    },
+    isha:    {
+        heading: '🌙 حان وقت صلاة العشاء',
+        body: 'حيّ على الصلاة، حيّ على الفلاح ✨\nاختم يومك بالصلاة والاستغفار — من صلى العشاء في جماعة فكأنما قام نصف الليل.',
+    },
+};
+
+async function getCairoPrayerTimes() {
+    const day   = now.getDate();
+    const month = now.getMonth() + 1;
+    const year  = now.getFullYear();
+    try {
+        const res = await fetch(
+            `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${CAIRO_LAT}&longitude=${CAIRO_LNG}&method=5`
+        );
+        const data = await res.json();
+        if (data.code === 200) {
+            const t = data.data.timings;
+            return {
+                fajr:    t.Fajr,
+                dhuhr:   t.Dhuhr,
+                asr:     t.Asr,
+                maghrib: t.Maghrib,
+                isha:    t.Isha,
+            };
+        }
+    } catch (e) {
+        console.warn('⚠️ Could not fetch prayer times:', e.message);
+    }
+    return null;
+}
+
+function getPrayerAtHour(times, hour) {
+    for (const [key, timeStr] of Object.entries(times)) {
+        const [h] = timeStr.split(':').map(Number);
+        if (h === hour) return key;
+    }
+    return null;
+}
+
 // ── MESSAGES ──────────────────────────────────────────────────────────────────
 
 // Morning messages (05:00–11:00)
@@ -122,82 +184,102 @@ const eveningMessages = [
     `🙌 اختم يومك بالاستغفار — "مَنْ قَالَ: أَسْتَغْفِرُ اللَّهَ العَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الحَيَّ القَيُّومَ وَأَتُوبُ إِلَيْهِ — غُفِرَ لَهُ"`,
 ];
 
-// ── Build notification content ────────────────────────────────────────────────
-let heading, body_text;
+// ── OneSignal Send ─────────────────────────────────────────────────────────────
+async function sendPush(heading, body_text, collapseId) {
+    const payload = {
+        app_id: APP_ID,
+        included_segments: ['All'],
+        headings:  { en: heading,    ar: heading },
+        contents:  { en: body_text,  ar: body_text },
+        url: 'https://noor-nights.github.io',
+        chrome_web_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
+        firefox_icon:    'https://noor-nights.github.io/assets/icons/icon-192.png',
+        collapse_id: collapseId,
+    };
 
-if (dayNum === 10) {
-    // ── EID AL-ADHA ──────────────────────────────────────────────────────────
-    heading   = '🎉 عيد الأضحى المبارك! تقبّل الله منا ومنكم';
-    body_text = 'عيد مبارك! 🕋 صلِّ صلاة العيد، وقدّم الأضحية إن استطعت، وأسعد من حولك. تقبّل الله منا ومنكم صالح الأعمال. كل عام وأنتم بخير 🤍';
-
-} else if (dayNum === 9) {
-    // ── ARAFAH DAY ───────────────────────────────────────────────────────────
-    const dua = arafahDuas[hours % arafahDuas.length];
-    let arafahMsg;
-    if (hours < 10) {
-        arafahMsg = '🌅 يوم عرفة بدأ — صم اليوم وأكثر من الدعاء. اللهم أعتق رقابنا من النار.';
-    } else if (hours < 15) {
-        arafahMsg = '🕋 أفضل الدعاء دعاء يوم عرفة — لا تفتر لسانك عن ذكر الله واللهج بالدعاء.';
-    } else if (hours < 18) {
-        arafahMsg = '⏳ الساعة الذهبية تقترب — الساعة الأخيرة قبل الغروب أعظم أوقات الدعاء. هيّئ قلبك وارفع يديك.';
+    const res = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Key ${REST_API_KEY}`
+        },
+        body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.id) {
+        console.log(`✅ Delivered! Notification ID: ${data.id}`);
     } else {
-        arafahMsg = '🌙 انتهى يوم عرفة المبارك — الله أعتق فيه عباداً من النار أكثر من أي يوم. تقبّل الله منا.';
+        console.error('❌ Delivery failed:', JSON.stringify(data));
     }
-    heading   = `⭐ يوم عرفة — أعظم يوم في السنة`;
-    body_text = `${arafahMsg}\n\n"${dua}"`;
-
-} else {
-    // ── REGULAR DAYS 1–8 ─────────────────────────────────────────────────────
-    let msgPool;
-    if      (hours < 11) msgPool = morningMessages;
-    else if (hours < 15) msgPool = middayMessages;
-    else if (hours < 18) msgPool = afternoonMessages;
-    else                 msgPool = eveningMessages;
-
-    const msg = msgPool[(dayNum + hours) % msgPool.length];
-    const dua = dhDuas[(dayNum + hours) % dhDuas.length];
-
-    heading   = `🕋 اليوم ${dayNum} من ذي الحجة`;
-    body_text = `${msg}\n\n"${dua}"`;
 }
 
-// ── OneSignal Payload ─────────────────────────────────────────────────────────
-const payload = {
-    app_id: APP_ID,
-    included_segments: ['All'],
-    headings:  { en: heading,    ar: heading },
-    contents:  { en: body_text,  ar: body_text },
-    url: 'https://noor-nights.github.io',
-    chrome_web_icon: 'https://noor-nights.github.io/assets/icons/icon-192.png',
-    firefox_icon:    'https://noor-nights.github.io/assets/icons/icon-192.png',
-    // Collapse identical notifications within the same hour
-    collapse_id: `dh-day${dayNum}-hour${hours}`,
-};
+// ── Main ──────────────────────────────────────────────────────────────────────
+async function main() {
+    console.log(`\n🚀 Running — Day ${dayNum} of Dhul Hijjah, ${hours}:00 Cairo...`);
 
-// ── Send ──────────────────────────────────────────────────────────────────────
-async function sendHourlyPush() {
-    console.log(`\n🚀 Sending push — Day ${dayNum} of Dhul Hijjah, ${hours}:00 Cairo...`);
+    // ── Prayer time check (Cairo) ──────────────────────────────────────────────
+    const prayerTimes = await getCairoPrayerTimes();
+    if (prayerTimes) {
+        const matchedPrayer = getPrayerAtHour(prayerTimes, hours);
+        if (matchedPrayer && prayerNotifications[matchedPrayer]) {
+            const { heading, body } = prayerNotifications[matchedPrayer];
+            console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
+            try {
+                await sendPush(heading, body, `dh-prayer-${matchedPrayer}-day${dayNum}`);
+            } catch (err) {
+                console.error('❌ Prayer notification error:', err.message);
+            }
+        }
+    }
+
+    // ── Regular hourly notification ────────────────────────────────────────────
+    let heading, body_text;
+
+    if (dayNum === 10) {
+        // ── EID AL-ADHA ──────────────────────────────────────────────────────────
+        heading   = '🎉 عيد الأضحى المبارك! تقبّل الله منا ومنكم';
+        body_text = 'عيد مبارك! 🕋 صلِّ صلاة العيد، وقدّم الأضحية إن استطعت، وأسعد من حولك. تقبّل الله منا ومنكم صالح الأعمال. كل عام وأنتم بخير 🤍';
+
+    } else if (dayNum === 9) {
+        // ── ARAFAH DAY ───────────────────────────────────────────────────────────
+        const dua = arafahDuas[hours % arafahDuas.length];
+        let arafahMsg;
+        if (hours < 10) {
+            arafahMsg = '🌅 يوم عرفة بدأ — صم اليوم وأكثر من الدعاء. اللهم أعتق رقابنا من النار.';
+        } else if (hours < 15) {
+            arafahMsg = '🕋 أفضل الدعاء دعاء يوم عرفة — لا تفتر لسانك عن ذكر الله واللهج بالدعاء.';
+        } else if (hours < 18) {
+            arafahMsg = '⏳ الساعة الذهبية تقترب — الساعة الأخيرة قبل الغروب أعظم أوقات الدعاء. هيّئ قلبك وارفع يديك.';
+        } else {
+            arafahMsg = '🌙 انتهى يوم عرفة المبارك — الله أعتق فيه عباداً من النار أكثر من أي يوم. تقبّل الله منا.';
+        }
+        heading   = `⭐ يوم عرفة — أعظم يوم في السنة`;
+        body_text = `${arafahMsg}\n\n"${dua}"`;
+
+    } else {
+        // ── REGULAR DAYS 1–8 ─────────────────────────────────────────────────────
+        let msgPool;
+        if      (hours < 11) msgPool = morningMessages;
+        else if (hours < 15) msgPool = middayMessages;
+        else if (hours < 18) msgPool = afternoonMessages;
+        else                 msgPool = eveningMessages;
+
+        const msg = msgPool[(dayNum + hours) % msgPool.length];
+        const dua = dhDuas[(dayNum + hours) % dhDuas.length];
+
+        heading   = `🕋 اليوم ${dayNum} من ذي الحجة`;
+        body_text = `${msg}\n\n"${dua}"`;
+    }
+
+    console.log(`📣 Sending hourly message...`);
     if (dayNum === 9) console.log('⭐ ARAFAH DAY — using special duas');
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
     try {
-        const res = await fetch('https://onesignal.com/api/v1/notifications', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Key ${REST_API_KEY}`
-            },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data.id) {
-            console.log(`✅ Delivered! Notification ID: ${data.id}`);
-        } else {
-            console.error('❌ Delivery failed:', JSON.stringify(data));
-        }
+        await sendPush(heading, body_text, `dh-day${dayNum}-hour${hours}`);
     } catch (err) {
-        console.error('❌ Network error:', err.message);
+        console.error('❌ Hourly notification error:', err.message);
     }
 }
 
-sendHourlyPush();
+main();
