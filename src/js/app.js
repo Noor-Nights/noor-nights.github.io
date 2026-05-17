@@ -2846,7 +2846,7 @@ class DuaCompanion {
                             <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
                             <span class="dc-shared-time">${this._timeAgo(new Date(s.created_at).getTime(), isAr)}</span>
                         </span>
-                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" onclick="duaCompanion.tapAmeen('${aid}',this)">
+                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${this._escape(aid)}">
                             🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
                         </button>
                     </div>
@@ -2867,7 +2867,7 @@ class DuaCompanion {
                         <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
                         <span class="dc-shared-time">${this._timeAgo(s.ts, isAr)}</span>
                     </span>
-                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" onclick="duaCompanion.tapAmeen('${aid}',this)">
+                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${this._escape(aid)}">
                         🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
                     </button>
                 </div>
@@ -2888,6 +2888,16 @@ class DuaCompanion {
 
     _listen(lang) {
         const isAr = lang === 'ar';
+
+        // Ameen buttons — event delegation to avoid inline onclick with Arabic strings
+        const feed = document.getElementById('dc-shared-feed');
+        if (feed) {
+            feed.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-ameen-id]');
+                if (!btn) return;
+                this.tapAmeen(btn.dataset.ameenId, btn);
+            });
+        }
 
         document.querySelectorAll('[data-dc-cat]').forEach(btn => {
             btn.addEventListener('click', () => {
