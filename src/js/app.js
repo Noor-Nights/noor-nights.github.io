@@ -2889,16 +2889,6 @@ class DuaCompanion {
     _listen(lang) {
         const isAr = lang === 'ar';
 
-        // Ameen buttons — event delegation to avoid inline onclick with Arabic strings
-        const feed = document.getElementById('dc-shared-feed');
-        if (feed) {
-            feed.addEventListener('click', (e) => {
-                const btn = e.target.closest('[data-ameen-id]');
-                if (!btn) return;
-                this.tapAmeen(btn.dataset.ameenId, btn);
-            });
-        }
-
         document.querySelectorAll('[data-dc-cat]').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.cat = btn.dataset.dcCat;
@@ -5011,6 +5001,12 @@ document.addEventListener('DOMContentLoaded', () => {
         virtueCards.renderSection();
         duaCompanion = new DuaCompanion();
         duaCompanion.renderSection();
+        // Single document-level delegation for Ameen buttons — survives re-renders
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-ameen-id]');
+            if (!btn || !duaCompanion) return;
+            duaCompanion.tapAmeen(btn.dataset.ameenId, btn);
+        });
         prayerAPI = new PrayerTimesAPI();
         prayerReminders = new PrayerReminders(prayerAPI);
         prayerWidget = new PrayerTimesWidget(prayerAPI);
