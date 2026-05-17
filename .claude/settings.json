@@ -25,7 +25,8 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://noor-nights.github.io/assets/icons/icon-96-mono.png)",
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://noor-nights.github.io/OneSignalSDKWorker.js)"
     ]
   }
 }

@@ -42,12 +42,6 @@ if (time < DH_START || time > DH_END) {
     process.exit(0);
 }
 
-// ── Guard: Active hours 05:00–22:00 only ────────────────────────────────────
-if (hours < 5 || hours > 22) {
-    console.log(`🌙 Skipping: Outside active hours (currently ${hours}:00 Cairo time).`);
-    process.exit(0);
-}
-
 // ── Calculate Day Number (1–10) ──────────────────────────────────────────────
 const dayNum = Math.min(Math.floor((time - DH_START) / 86400000) + 1, 10);
 
@@ -193,7 +187,7 @@ async function sendPush(heading, body_text, collapseId) {
         contents:  { en: body_text,  ar: body_text },
         url: 'https://noor-nights.github.io',
         chrome_web_icon:  'https://noor-nights.github.io/assets/icons/icon-512.png',
-        chrome_web_badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.svg',
+        chrome_web_badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
         firefox_icon:     'https://noor-nights.github.io/assets/icons/icon-512.png',
         large_icon:       'https://noor-nights.github.io/assets/icons/icon-512.png',
         collapse_id: collapseId,
@@ -219,19 +213,24 @@ async function sendPush(heading, body_text, collapseId) {
 async function main() {
     console.log(`\n🚀 Running — Day ${dayNum} of Dhul Hijjah, ${hours}:00 Cairo...`);
 
-    // ── Prayer time check (Cairo) ──────────────────────────────────────────────
+    // ── Prayer time check — runs before active-hours guard so Fajr isn't missed ──
     const prayerTimes = await getCairoPrayerTimes();
-    if (prayerTimes) {
-        const matchedPrayer = getPrayerAtHour(prayerTimes, hours);
-        if (matchedPrayer && prayerNotifications[matchedPrayer]) {
-            const { heading, body } = prayerNotifications[matchedPrayer];
-            console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
-            try {
-                await sendPush(heading, body, `dh-prayer-${matchedPrayer}-day${dayNum}`);
-            } catch (err) {
-                console.error('❌ Prayer notification error:', err.message);
-            }
+    const matchedPrayer = prayerTimes ? getPrayerAtHour(prayerTimes, hours) : null;
+
+    if (matchedPrayer && prayerNotifications[matchedPrayer]) {
+        const { heading, body } = prayerNotifications[matchedPrayer];
+        console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
+        try {
+            await sendPush(heading, body, `dh-prayer-${matchedPrayer}-day${dayNum}`);
+        } catch (err) {
+            console.error('❌ Prayer notification error:', err.message);
         }
+    }
+
+    // ── Active hours guard for general dhikr messages (05:00–22:00 only) ────────
+    if (hours < 5 || hours > 22) {
+        console.log(`🌙 Outside active hours — prayer check done, skipping general message.`);
+        return;
     }
 
     // ── Regular hourly notification ────────────────────────────────────────────

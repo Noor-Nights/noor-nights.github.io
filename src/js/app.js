@@ -3317,6 +3317,18 @@ async function detectPrayerLocation() {
         await prayerWidget.init();
         if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
         showMessage(t('ptLocationUpdated'), loc.name);
+        // Save city + timezone as OneSignal tags so server can segment by location
+        if (window.OneSignalDeferred) {
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+                await OneSignal.User.addTags({
+                    city: loc.name || 'unknown',
+                    timezone: tz,
+                    lat: String(Math.round((loc.lat || 0) * 10) / 10),
+                    lng: String(Math.round((loc.lng || 0) * 10) / 10),
+                });
+            });
+        }
     } catch (e) {
         const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
         showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);

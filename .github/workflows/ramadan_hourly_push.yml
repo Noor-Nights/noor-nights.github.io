@@ -1,12 +1,12 @@
 name: Dhul Hijjah Hourly Reminders
 
 on:
-  # Runs every hour between 05:00 and 22:00 UTC+3 (Cairo).
-  # UTC schedule: 02:00–19:00 UTC covers 05:00–22:00 Cairo (UTC+3).
+  # Runs every hour between 03:00 and 22:00 Cairo (UTC+3).
+  # UTC schedule: 00:00–19:00 UTC covers 03:00–22:00 Cairo, catching Fajr (~03:30–04:00).
+  # General dhikr messages are still gated to 05:00–22:00 inside the script.
   # Active only during the 10 days of Dhul Hijjah 1447 (May 18–27, 2026).
-  # The script itself guards against running outside that window.
   schedule:
-    - cron: '0 2-19 * * *'   # Every hour, 02:00–19:00 UTC = 05:00–22:00 Cairo
+    - cron: '0 0-19 * * *'   # Every hour, 00:00–19:00 UTC = 03:00–22:00 Cairo
   workflow_dispatch:          # Allow manual trigger for testing
 
 jobs:
