@@ -2917,8 +2917,20 @@ class DuaCompanion {
             const inp = document.getElementById('dc-share-input');
             const raw = (inp?.value || '').trim();
             if (!raw) return;
+            if (raw.length < 5) {
+                this._toast(isAr ? 'الدعاء قصير جداً (٥ أحرف على الأقل)' : 'Dua is too short (min 5 characters)');
+                return;
+            }
             if (raw.length > 200 || /https?:\/\//i.test(raw)) {
                 this._toast(isAr ? 'المحتوى غير مقبول' : 'Content not allowed');
+                return;
+            }
+            const lastSubmit = parseInt(localStorage.getItem('noor_dua_last_submit') || '0');
+            const cooldownMs = 60 * 60 * 1000;
+            const elapsed = Date.now() - lastSubmit;
+            if (elapsed < cooldownMs) {
+                const remaining = Math.ceil((cooldownMs - elapsed) / 60000);
+                this._toast(isAr ? `انتظر ${remaining} دقيقة قبل المشاركة مجدداً` : `Please wait ${remaining} min before sharing again`);
                 return;
             }
             const btn = document.getElementById('dc-share-submit');
@@ -2926,6 +2938,7 @@ class DuaCompanion {
             const ok = await this._submitCommunity(raw);
             if (ok) {
                 if (inp) inp.value = '';
+                localStorage.setItem('noor_dua_last_submit', Date.now().toString());
                 this._toast(isAr ? '🤲 تمت المشاركة بنجاح' : '🤲 Shared with the community!');
             } else {
                 this._toast(isAr ? '❌ فشلت المشاركة، حاول مجدداً' : '❌ Failed to share, try again');

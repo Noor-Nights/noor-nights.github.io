@@ -25,4 +25,5 @@ jobs:
       - name: 🕋 Fire Dhul Hijjah Hourly Push
         env:
           ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+          ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
         run: node automated_hourly_push.js

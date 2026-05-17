@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const APP_ID = '520970e9-567b-4556-8022-3093a50b765f';
+const APP_ID = process.env.ONESIGNAL_APP_ID || '520970e9-567b-4556-8022-3093a50b765f';
 
 // Fallback to local .env file if it exists (for local testing)
 const envPath = path.resolve(__dirname, '.env');
