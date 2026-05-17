@@ -4207,10 +4207,11 @@ function tickDhStage(stage) {
 
     if (stage === 'during') {
         const now = getCurrentTime();
-        const msUntilMidnight = 86400000 - (now % 86400000);
-        const nH = Math.floor(msUntilMidnight / 3600000);
-        const nM = Math.floor((msUntilMidnight % 3600000) / 60000);
-        const nS = Math.floor((msUntilMidnight % 60000) / 1000);
+        const elapsed = now - dhulHijjahDate;
+        const msUntilNextDay = 86400000 - (elapsed % 86400000);
+        const nH = Math.floor(msUntilNextDay / 3600000);
+        const nM = Math.floor((msUntilNextDay % 3600000) / 60000);
+        const nS = Math.floor((msUntilNextDay % 60000) / 1000);
         const eNT = document.getElementById('dh-next-time');
         if (eNT) eNT.textContent = `${numFmt(String(nH).padStart(2,'0'))}:${numFmt(String(nM).padStart(2,'0'))}:${numFmt(String(nS).padStart(2,'0'))}`;
         return;
@@ -4218,10 +4219,11 @@ function tickDhStage(stage) {
 
     if (stage === 'arafah-eve') {
         const now = getCurrentTime();
-        const msUntilMidnight = 86400000 - (now % 86400000);
-        const hL = Math.floor(msUntilMidnight / 3600000);
-        const mL = Math.floor((msUntilMidnight % 3600000) / 60000);
-        const sL = Math.floor((msUntilMidnight % 60000) / 1000);
+        const elapsed = now - dhulHijjahDate;
+        const msUntilNextDay = 86400000 - (elapsed % 86400000);
+        const hL = Math.floor(msUntilNextDay / 3600000);
+        const mL = Math.floor((msUntilNextDay % 3600000) / 60000);
+        const sL = Math.floor((msUntilNextDay % 60000) / 1000);
         const eH = document.getElementById('dh-eve-h');
         const eM = document.getElementById('dh-eve-m');
         const eS = document.getElementById('dh-eve-s');
