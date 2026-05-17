@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════
 const CONFIG = {
     TARGET_DATE: "2026-03-09T17:54:00+02:00",
-    DHUL_HIJJAH_START: "2026-05-18T00:00:00+02:00", // 1 Dhul Hijjah 1447 AH (Umm al-Qura)
+    DHUL_HIJJAH_START: "2026-05-17T19:30:00+02:00", // Night of 1 Dhul Hijjah 1447 AH — Islamic day begins at Maghrib (Egypt ~19:30)
     //WT_TEST_DAY: 9, // TESTING ONLY — remove before launch (forces tracker to show this day)
     ONESIGNAL_APP_ID: "520970e9-567b-4556-8022-3093a50b765f",
     SUPABASE_URL: '__SUPABASE_URL__',
@@ -3990,14 +3990,7 @@ function getDhStage() {
     const day = _dhGetDay();
     if (day >= 10) return 'eid';
     if (day === 9) return 'arafah';
-    if (day === 8) {
-        // After 19:30 Egypt time (UTC+2) → arafah-eve
-        const egyptOffsetMs = 2 * 60 * 60 * 1000;
-        const egyptDate = new Date(now + egyptOffsetMs);
-        const mins = egyptDate.getUTCHours() * 60 + egyptDate.getUTCMinutes();
-        if (mins >= 19 * 60 + 30) return 'arafah-eve';
-        return 'during';
-    }
+    if (day === 8) return 'arafah-eve'; // Day 8 starts at Maghrib — entire day is eve of Arafah
     return 'during';
 }
 
