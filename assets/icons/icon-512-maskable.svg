@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#111827"/>
+  <!-- scale artwork to 80% centered — safe zone for maskable -->
+  <g transform="translate(10,10) scale(0.8)">
+    <circle cx="50" cy="52" r="36" fill="rgba(196,164,74,.07)"/>
+    <path d="M62 25 C44 25 30 38 30 55 C30 72 44 85 62 85 C52 85 40 77 40 55 C40 33 52 25 62 25 Z"
+          fill="#c5a352" opacity=".15"/>
+    <path d="M63 22 C44 22 28 37 28 56 C28 75 44 90 63 90 C53 90 40 82 40 56 C40 30 53 22 63 22 Z"
+          fill="none" stroke="#dbbf6e" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M63 22 C53 22 44 26 38 33"
+          fill="none" stroke="#eecf8a" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+    <circle cx="70" cy="56" r="30" fill="#111827"/>
+    <g transform="translate(50,56)">
+      <polygon points="0,-9 2.1,-2.9 8.6,-2.9 3.5,1.1 5.3,7.3 0,3.6 -5.3,7.3 -3.5,1.1 -8.6,-2.9 -2.1,-2.9"
+               fill="#c5a352"/>
+      <polygon points="0,-6.5 1.5,-2.1 6.2,-2.1 2.5,0.8 3.8,5.3 0,2.6 -3.8,5.3 -2.5,0.8 -6.2,-2.1 -1.5,-2.1"
+               fill="#eecf8a"/>
+    </g>
+    <circle cx="24" cy="34" r="1.2" fill="#dbbf6e" opacity=".6"/>
+    <circle cx="78" cy="28" r="1"   fill="#dbbf6e" opacity=".5"/>
+    <circle cx="82" cy="72" r="0.8" fill="#eecf8a" opacity=".4"/>
+    <circle cx="18" cy="68" r="1"   fill="#dbbf6e" opacity=".35"/>
+    <circle cx="36" cy="22" r="0.8" fill="#eecf8a" opacity=".5"/>
+  </g>
+</svg>
