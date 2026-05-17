@@ -1,9 +1,7 @@
 // automated_hourly_push.js
-// GitHub Actions CRON job — runs every hour during the 10 blessed days of Dhul Hijjah 1447.
-// Sends contextual Arabic duas and reminders to all subscribed users via OneSignal.
-// Also sends prayer time call notifications when the current hour matches a Cairo prayer time.
-//
-// Schedule: runs Days 1–10 of Dhul Hijjah, between 05:00–22:00 Cairo time.
+// GitHub Actions CRON job — runs every hour, year-round.
+// Prayer time notifications: sent every day when Cairo prayer hour matches.
+// Dhul Hijjah messages: only sent during the 10 blessed days (May 18–27, 2026).
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
 
 const fs = require('fs');
@@ -33,17 +31,14 @@ const hours = now.getHours();
 const time  = now.getTime();
 
 // Dhul Hijjah 1447: 1st = May 18, 2026 (Umm al-Qura) — 10th = May 27 (Eid)
-const DH_START = new Date('2026-05-18T00:00:00+03:00').getTime();
-const DH_END   = new Date('2026-05-27T23:59:00+03:00').getTime();
+const DH_START   = new Date('2026-05-18T00:00:00+03:00').getTime();
+const DH_END     = new Date('2026-05-27T23:59:00+03:00').getTime();
+const inDhulHijjah = time >= DH_START && time <= DH_END;
 
-// ── Guard: Only fire during the 10 days ─────────────────────────────────────
-if (time < DH_START || time > DH_END) {
-    console.log('🕋 Skipping: Not currently within the 10 days of Dhul Hijjah.');
-    process.exit(0);
-}
-
-// ── Calculate Day Number (1–10) ──────────────────────────────────────────────
-const dayNum = Math.min(Math.floor((time - DH_START) / 86400000) + 1, 10);
+// ── Calculate Day Number (1–10, or 0 outside Dhul Hijjah) ───────────────────
+const dayNum = inDhulHijjah
+    ? Math.min(Math.floor((time - DH_START) / 86400000) + 1, 10)
+    : 0;
 
 // ── DUAS ─────────────────────────────────────────────────────────────────────
 
@@ -211,9 +206,9 @@ async function sendPush(heading, body_text, collapseId) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-    console.log(`\n🚀 Running — Day ${dayNum} of Dhul Hijjah, ${hours}:00 Cairo...`);
+    console.log(`\n🚀 Running — ${hours}:00 Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}`);
 
-    // ── Prayer time check — runs before active-hours guard so Fajr isn't missed ──
+    // ── Prayer time check — always runs, year-round ───────────────────────────
     const prayerTimes = await getCairoPrayerTimes();
     const matchedPrayer = prayerTimes ? getPrayerAtHour(prayerTimes, hours) : null;
 
@@ -221,10 +216,16 @@ async function main() {
         const { heading, body } = prayerNotifications[matchedPrayer];
         console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
         try {
-            await sendPush(heading, body, `dh-prayer-${matchedPrayer}-day${dayNum}`);
+            await sendPush(heading, body, `prayer-${matchedPrayer}-${now.toISOString().slice(0,10)}`);
         } catch (err) {
             console.error('❌ Prayer notification error:', err.message);
         }
+    }
+
+    // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
+    if (!inDhulHijjah) {
+        console.log('📅 Outside Dhul Hijjah — prayer check done, skipping dhikr message.');
+        return;
     }
 
     // ── Active hours guard for general dhikr messages (05:00–22:00 only) ────────
