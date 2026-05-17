@@ -4057,12 +4057,13 @@ function renderDhStage(stage, lang) {
         const dayDisp = isAr ? arNum(day) : day;
         const tenDisp = isAr ? arNum(10) : 10;
 
-        // Until next day: ms until next midnight
+        // Until next day: ms until next Islamic day boundary (= next Maghrib, every 24h from DHUL_HIJJAH_START)
         const now = getCurrentTime();
-        const msUntilMidnight = 86400000 - (now % 86400000);
-        const nH = Math.floor(msUntilMidnight / 3600000);
-        const nM = Math.floor((msUntilMidnight % 3600000) / 60000);
-        const nS = Math.floor((msUntilMidnight % 60000) / 1000);
+        const elapsed = now - dhulHijjahDate;
+        const msUntilNextDay = 86400000 - (elapsed % 86400000);
+        const nH = Math.floor(msUntilNextDay / 3600000);
+        const nM = Math.floor((msUntilNextDay % 3600000) / 60000);
+        const nS = Math.floor((msUntilNextDay % 60000) / 1000);
         const nextLabel = isAr ? 'حتى اليوم التالي:' : 'Until next day:';
 
         body.innerHTML = `
