@@ -3221,10 +3221,10 @@ class PrayerReminders {
         const names = t('dhPrayers');
         if (this._prefs[prayer]) {
             if (times) this._schedule(prayer, times);
-            showMessage(t('ptReminderSetTitle'), t('ptReminderSetMsg')(names[prayer]));
+            showMessage(t('ptReminderSetTitle'), t('ptReminderSetMsg', names[prayer]));
         } else {
             if (this._timers[prayer]) { clearTimeout(this._timers[prayer]); delete this._timers[prayer]; }
-            showMessage(t('ptReminderOffTitle'), t('ptReminderOffMsg')(names[prayer]));
+            showMessage(t('ptReminderOffTitle'), t('ptReminderOffMsg', names[prayer]));
         }
 
         // Update bell UI without full re-render
