@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icons/icon-192.png" width="128" alt="Noor Nights Logo">
+  <img src="assets/icons/icon-512.svg" width="128" alt="Noor Nights Logo">
 </p>
 
 <h1 align="center">✦ 🌙 ✦ ليالي النور — Noor Nights</h1>
