@@ -3292,9 +3292,10 @@ class PrayerReminders {
         const body = isAr
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
+        const _base = window.location.origin;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/icon-96-mono.png',
-            tag: `noor-prayer-${prayer}`, renotify: true, vibrate: [300, 100, 300, 100, 300],
+            body, icon: `${_base}/assets/icons/icon-512.png`, badge: `${_base}/assets/icons/icon-96-mono.png`,
+            tag: `noor-prayer-${prayer}`, silent: false, renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
         };
         if ('serviceWorker' in navigator) {
@@ -3360,9 +3361,10 @@ function testPrayerReminder() {
         const body = isAr
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
+        const _base = window.location.origin;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/icon-96-mono.png',
-            tag: 'noor-prayer-test', renotify: true, vibrate: [300, 100, 300, 100, 300],
+            body, icon: `${_base}/assets/icons/icon-512.png`, badge: `${_base}/assets/icons/icon-96-mono.png`,
+            tag: 'noor-prayer-test', silent: false, renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
         };
 
@@ -4494,19 +4496,22 @@ function _sendSuccessNotification() {
 
     const title = t('subActivated');
     const body = t('subActivatedMsg');
+    const base = window.location.origin;
     const options = {
-        body: body,
-        icon: 'assets/icons/icon-512.png',
-        badge: 'assets/icons/icon-96-mono.png',
-        tag: 'noor-nights-success',
-        renotify: true,
-        vibrate: [100, 50, 100],
+        body,
+        // Absolute URLs required — Android OS resolves these outside the page context
+        // and silently drops the notification if the URL is relative or broken
+        icon: `${base}/assets/icons/icon-512.png`,
+        badge: `${base}/assets/icons/icon-96-mono.png`,
+        // Unique tag per subscribe so Android treats it as a fresh notification
+        // (same tag + renotify=true gets suppressed as a silent update on many devices)
+        tag: `noor-nights-welcome-${Date.now()}`,
+        silent: false,
+        vibrate: [200, 100, 200],
         data: { url: window.location.href }
     };
 
     if ('serviceWorker' in navigator) {
-        // Always go through the SW — works on mobile even when controller is null
-        // (SW activates via skipWaiting but isn't yet the page controller)
         navigator.serviceWorker.ready
             .then(reg => reg.showNotification(title, options))
             .catch(() => new Notification(title, options));
@@ -4573,10 +4578,8 @@ function sendActualTest() {
     const title = `Noor Nights`;
     const options = {
         body: `🤲 ${msg}\n\n"${dua.arabic.replace(/\n/g, '<br>')}"`,
-        // Big icon in the body (The Navy/Gold App Icon)
-        icon: 'assets/icons/icon-512.png',
-        // Small icon in the system/header (Pure white silhouette mask)
-        badge: 'assets/icons/icon-96-mono.png',
+        icon: `${window.location.origin}/assets/icons/icon-512.png`,
+        badge: `${window.location.origin}/assets/icons/icon-96-mono.png`,
         tag: 'noor-nights-remind',
         renotify: true,
         vibrate: [200, 100, 200],
