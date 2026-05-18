@@ -39,8 +39,8 @@ const TRANSLATIONS = {
         settingsLocation: 'Prayer Location', settingsNotif: 'Prayer Reminders',
         settingsNotifSub: 'Toggle per-prayer reminders',
         settingsManageBtn: 'Manage →',
-        settingsDailyNotif: 'Daily Notifications',
-        settingsDailyNotifSub: 'Enable daily notifications for prayers and azkar',
+        settingsDailyNotif: 'Daily Reminders',
+        settingsDailyNotifSub: 'Prayers, azkar & more',
         settingsShare: 'Share App',
         settingsShareSub: 'Spread the reward — share with family & friends',
         settingsShareBtn: '🔗 Share',
@@ -62,7 +62,7 @@ const TRANSLATIONS = {
         onboardingF4: 'Install the app for prayer time reminders',
         onboardingBtn: 'Begin — بسم الله →',
         modalTitle: 'Message',
-        notifyBtn: '🔔 Enable Daily Reminders',
+        notifyBtn: '🔔 Enable',
         notifyEnabled: '✅ Notifications Enabled',
         testBtn: '🧪 Send Test Notification',
         checklistTitle: '✅ Worship Checklist',
@@ -258,8 +258,8 @@ const TRANSLATIONS = {
         settingsLocation: 'موقع أوقات الصلاة', settingsNotif: 'تذكيرات الصلاة',
         settingsNotifSub: 'فعّل تذكيرات كل صلاة',
         settingsManageBtn: '← إدارة',
-        settingsDailyNotif: 'الإشعارات اليومية',
-        settingsDailyNotifSub: 'فعّل الإشعارات اليومية للصلوات والأذكار',
+        settingsDailyNotif: 'التذكيرات اليومية',
+        settingsDailyNotifSub: 'صلوات وأذكار وأكثر',
         settingsShare: 'شارك التطبيق',
         settingsShareSub: 'انشر الأجر — شارك مع العائلة والأصدقاء',
         settingsShareBtn: '🔗 مشاركة',
@@ -281,7 +281,7 @@ const TRANSLATIONS = {
         onboardingF4: 'ثبّت التطبيق لتذكيرات أوقات الصلاة',
         onboardingBtn: '← ابدأ — بسم الله',
         modalTitle: 'رسالة',
-        notifyBtn: '🔔 تفعيل التذكيرات اليومية',
+        notifyBtn: '🔔 تفعيل',
         notifyEnabled: '✅ تم تفعيل الإشعارات',
         testBtn: '🧪 إرسال إشعار تجريبي',
         checklistTitle: '✅ قائمة العبادات',
@@ -4464,14 +4464,19 @@ function requestNotifications() {
         window.OneSignalDeferred.push(async function (OneSignal) {
             clearTimeout(fallbackTimer);
             try {
-                // Focus on enabling: Refresh opt-in status every time.
                 await OneSignal.User.PushSubscription.optIn();
-                _updateNotifyBtnState(btn, true);
-                trackEvent('/push-opt-in', 'push_opt_in_triggered');
-
-                // Show modal AND trigger a native system notification for immediate feedback
-                showMessage(t('subActivated'), t('subActivatedMsg'));
-                _sendSuccessNotification();
+                const subscribed = OneSignal.User.PushSubscription.optedIn;
+                if (subscribed) {
+                    localStorage.setItem('noor-push-opted-in', '1');
+                    _updateNotifyBtnState(btn, true);
+                    trackEvent('/push-opt-in', 'push_opt_in_triggered');
+                    showMessage(t('subActivated'), t('subActivatedMsg'));
+                    _sendSuccessNotification();
+                } else {
+                    // optIn() resolved but permission was dismissed or denied
+                    _updateNotifyBtnState(btn, false);
+                    showMessage(t('permNeeded'), t('permNeededAndroid'));
+                }
             } catch (err) {
                 console.warn('[OneSignal] Error — falling back to native:', err);
                 _fallbackNativeNotification(btn);
@@ -4514,6 +4519,7 @@ function _fallbackNativeNotification(btn) {
     }
     Notification.requestPermission().then((p) => {
         if (p === 'granted') {
+            localStorage.setItem('noor-push-opted-in', '1');
             _updateNotifyBtnState(btn, true);
             showMessage(t('subActivated'), t('subActivatedMsg'));
             _sendSuccessNotification();
@@ -5073,11 +5079,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Set notify button state once OneSignal is ready
+        // Restore button state immediately from localStorage (no OneSignal wait needed)
+        const _notifyBtn = document.getElementById('notify-btn');
+        if (_notifyBtn && localStorage.getItem('noor-push-opted-in') === '1') {
+            _updateNotifyBtnState(_notifyBtn, true);
+        }
+        // Then verify with OneSignal — clear the flag if the user revoked from browser settings
         if (window.OneSignalDeferred) {
             window.OneSignalDeferred.push(async function (OneSignal) {
                 const btn = document.getElementById('notify-btn');
-                if (btn) _updateNotifyBtnState(btn, OneSignal.User.PushSubscription.optedIn);
+                if (!btn) return;
+                const subscribed = OneSignal.User.PushSubscription.optedIn;
+                _updateNotifyBtnState(btn, subscribed);
+                if (!subscribed) localStorage.removeItem('noor-push-opted-in');
             });
         }
 
