@@ -4497,15 +4497,19 @@ function _sendSuccessNotification() {
     const options = {
         body: body,
         icon: 'assets/icons/icon-512.png',
-        badge: 'assets/icons/badge-96.png',
+        badge: 'assets/icons/icon-96-mono.png',
         tag: 'noor-nights-success',
         renotify: true,
         vibrate: [100, 50, 100],
         data: { url: window.location.href }
     };
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+    if ('serviceWorker' in navigator) {
+        // Always go through the SW — works on mobile even when controller is null
+        // (SW activates via skipWaiting but isn't yet the page controller)
+        navigator.serviceWorker.ready
+            .then(reg => reg.showNotification(title, options))
+            .catch(() => new Notification(title, options));
     } else {
         new Notification(title, options);
     }
