@@ -9,8 +9,8 @@ const path = require('path');
 
 const APP_ID = process.env.ONESIGNAL_APP_ID;
 if (!APP_ID) {
-    console.error('❌ ONESIGNAL_APP_ID is not set. Skipping.');
-    process.exit(1);
+    console.log('⚠️ ONESIGNAL_APP_ID is not set. Skipping.');
+    process.exit(0);
 }
 
 // Fallback to local .env file if it exists (for local testing)
@@ -25,8 +25,8 @@ if (fs.existsSync(envPath)) {
 
 const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
 if (!REST_API_KEY) {
-    console.error('❌ ONESIGNAL_REST_API_KEY is not set. Skipping.');
-    process.exit(1);
+    console.log('⚠️ ONESIGNAL_REST_API_KEY is not set. Skipping.');
+    process.exit(0);
 }
 
 // ── Time Setup (Cairo = Africa/Cairo, GMT+3 in summer) ──────────────────────
