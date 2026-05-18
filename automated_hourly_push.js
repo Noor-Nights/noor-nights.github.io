@@ -7,7 +7,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const APP_ID = process.env.ONESIGNAL_APP_ID || '520970e9-567b-4556-8022-3093a50b765f';
+const APP_ID = process.env.ONESIGNAL_APP_ID;
+if (!APP_ID) {
+    console.error('❌ ONESIGNAL_APP_ID is not set. Skipping.');
+    process.exit(1);
+}
 
 // Fallback to local .env file if it exists (for local testing)
 const envPath = path.resolve(__dirname, '.env');

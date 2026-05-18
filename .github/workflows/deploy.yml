@@ -30,8 +30,20 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "::error::SUPABASE_URL secret is empty — aborting deployment"
+            exit 1
+          fi
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_ANON_KEY secret is empty — aborting deployment"
+            exit 1
+          fi
           sed -i "s|__SUPABASE_URL__|$SUPABASE_URL|g" src/js/app.js
           sed -i "s|__SUPABASE_ANON_KEY__|$SUPABASE_ANON_KEY|g" src/js/app.js
+          if grep -q '__SUPABASE_URL__\|__SUPABASE_ANON_KEY__' src/js/app.js; then
+            echo "::error::Placeholder strings still present in app.js after injection — check secret names match exactly"
+            exit 1
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
