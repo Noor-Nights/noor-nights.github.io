@@ -3293,12 +3293,12 @@ class PrayerReminders {
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/badge-96.png',
+            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/icon-96-mono.png',
             tag: `noor-prayer-${prayer}`, renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
         };
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
         } else {
             new Notification(title, options);
         }
@@ -3361,9 +3361,17 @@ function testPrayerReminder() {
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/badge-96.png',
+            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/icon-96-mono.png',
             tag: 'noor-prayer-test', renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
+        };
+
+        const _showNotif = () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
+            } else {
+                new Notification(title, options);
+            }
         };
 
         // Show countdown in modal so user is ready to see the system notification
@@ -3384,19 +3392,11 @@ function testPrayerReminder() {
                 } else {
                     clearInterval(tick);
                     modal.style.display = 'none';
-                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
-                    } else {
-                        new Notification(title, options);
-                    }
+                    _showNotif();
                 }
             }, 1000);
         } else {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
-            } else {
-                new Notification(title, options);
-            }
+            _showNotif();
         }
 
         trackEvent('/test-prayer-reminder', 'Test Prayer Reminder');
@@ -4576,7 +4576,7 @@ function sendActualTest() {
         // Big icon in the body (The Navy/Gold App Icon)
         icon: 'assets/icons/icon-512.png',
         // Small icon in the system/header (Pure white silhouette mask)
-        badge: 'assets/icons/badge-96.png',
+        badge: 'assets/icons/icon-96-mono.png',
         tag: 'noor-nights-remind',
         renotify: true,
         vibrate: [200, 100, 200],
@@ -4586,10 +4586,8 @@ function sendActualTest() {
         }
     };
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, options);
-        });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
     } else {
         new Notification(title, options);
     }
