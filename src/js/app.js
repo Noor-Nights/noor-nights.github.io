@@ -500,11 +500,7 @@ function applyLanguage(lang) {
     updateCountdown();
     loadChecklist();
     const notifyBtn = document.getElementById('notify-btn');
-    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
-        notifyBtn.textContent = t('notifyEnabled');
-    } else if (notifyBtn) {
-        notifyBtn.textContent = t('notifyBtn');
-    }
+    if (notifyBtn) _updateNotifyBtnState(notifyBtn, notifyBtn.dataset.subscribed === 'true');
 
     const memBanner = document.querySelector('.memorial-text');
     if (memBanner) memBanner.textContent = lang === 'ar'
@@ -4462,7 +4458,11 @@ function requestNotifications() {
 
     // ── OneSignal path — true background push ──
     if (window.OneSignalDeferred) {
+        // Safety net: re-enable button if OneSignal SDK never calls back (blocked/unavailable)
+        const fallbackTimer = setTimeout(() => _fallbackNativeNotification(btn), 5000);
+
         window.OneSignalDeferred.push(async function (OneSignal) {
+            clearTimeout(fallbackTimer);
             try {
                 // Focus on enabling: Refresh opt-in status every time.
                 await OneSignal.User.PushSubscription.optIn();
