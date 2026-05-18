@@ -39,6 +39,8 @@ const TRANSLATIONS = {
         settingsLocation: 'Prayer Location', settingsNotif: 'Prayer Reminders',
         settingsNotifSub: 'Toggle per-prayer reminders',
         settingsManageBtn: 'Manage →',
+        settingsDailyNotif: 'Daily Notifications',
+        settingsDailyNotifSub: 'Enable daily notifications for prayers and azkar',
         settingsShare: 'Share App',
         settingsShareSub: 'Spread the reward — share with family & friends',
         settingsShareBtn: '🔗 Share',
@@ -60,7 +62,7 @@ const TRANSLATIONS = {
         onboardingF4: 'Install the app for prayer time reminders',
         onboardingBtn: 'Begin — بسم الله →',
         modalTitle: 'Message',
-        notifyBtn: '🔔 Enable Daily Night Number Reminders',
+        notifyBtn: '🔔 Enable Daily Reminders',
         notifyEnabled: '✅ Notifications Enabled',
         testBtn: '🧪 Send Test Notification',
         checklistTitle: '✅ Worship Checklist',
@@ -256,6 +258,8 @@ const TRANSLATIONS = {
         settingsLocation: 'موقع أوقات الصلاة', settingsNotif: 'تذكيرات الصلاة',
         settingsNotifSub: 'فعّل تذكيرات كل صلاة',
         settingsManageBtn: '← إدارة',
+        settingsDailyNotif: 'الإشعارات اليومية',
+        settingsDailyNotifSub: 'فعّل الإشعارات اليومية للصلوات والأذكار',
         settingsShare: 'شارك التطبيق',
         settingsShareSub: 'انشر الأجر — شارك مع العائلة والأصدقاء',
         settingsShareBtn: '🔗 مشاركة',
@@ -277,7 +281,7 @@ const TRANSLATIONS = {
         onboardingF4: 'ثبّت التطبيق لتذكيرات أوقات الصلاة',
         onboardingBtn: '← ابدأ — بسم الله',
         modalTitle: 'رسالة',
-        notifyBtn: '🔔 تفعيل تذكيرات الليالي',
+        notifyBtn: '🔔 تفعيل التذكيرات اليومية',
         notifyEnabled: '✅ تم تفعيل الإشعارات',
         testBtn: '🧪 إرسال إشعار تجريبي',
         checklistTitle: '✅ قائمة العبادات',
@@ -496,11 +500,7 @@ function applyLanguage(lang) {
     updateCountdown();
     loadChecklist();
     const notifyBtn = document.getElementById('notify-btn');
-    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
-        notifyBtn.textContent = t('notifyEnabled');
-    } else if (notifyBtn) {
-        notifyBtn.textContent = t('notifyBtn');
-    }
+    if (notifyBtn) _updateNotifyBtnState(notifyBtn, notifyBtn.dataset.subscribed === 'true');
 
     const memBanner = document.querySelector('.memorial-text');
     if (memBanner) memBanner.textContent = lang === 'ar'
@@ -4458,7 +4458,11 @@ function requestNotifications() {
 
     // ── OneSignal path — true background push ──
     if (window.OneSignalDeferred) {
+        // Safety net: re-enable button if OneSignal SDK never calls back (blocked/unavailable)
+        const fallbackTimer = setTimeout(() => _fallbackNativeNotification(btn), 5000);
+
         window.OneSignalDeferred.push(async function (OneSignal) {
+            clearTimeout(fallbackTimer);
             try {
                 // Focus on enabling: Refresh opt-in status every time.
                 await OneSignal.User.PushSubscription.optIn();
