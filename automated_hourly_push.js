@@ -4,23 +4,10 @@
 // Dhul Hijjah messages: only sent during the 10 blessed days (May 18–27, 2026).
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
 
-const fs = require('fs');
-const path = require('path');
-
 const APP_ID = process.env.ONESIGNAL_APP_ID;
 if (!APP_ID) {
     console.log('⚠️ ONESIGNAL_APP_ID is not set. Skipping.');
     process.exit(0);
-}
-
-// Fallback to local .env file if it exists (for local testing)
-const envPath = path.resolve(__dirname, '.env');
-if (fs.existsSync(envPath)) {
-    const envConfig = fs.readFileSync(envPath, 'utf8').split('\n');
-    envConfig.forEach(line => {
-        const parts = line.split('=');
-        if (parts.length >= 2) process.env[parts[0].trim()] = parts.slice(1).join('=').trim();
-    });
 }
 
 const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;

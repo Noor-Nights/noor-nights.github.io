@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.onesignal.com https://onesignal.com https://*.onesignal.com https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://onesignal.com https://*.onesignal.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://*.onesignal.com https://api.onesignal.com https://noor-nights.goatcounter.com https://gc.zgo.at https://api.aladhan.com https://nominatim.openstreetmap.org; worker-src 'self' blob: https://cdn.onesignal.com https://*.onesignal.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
+        content="default-src 'self'; script-src 'self' https://cdn.onesignal.com https://onesignal.com https://*.onesignal.com https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://onesignal.com https://*.onesignal.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://*.onesignal.com https://api.onesignal.com https://noor-nights.goatcounter.com https://gc.zgo.at https://api.aladhan.com https://nominatim.openstreetmap.org; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <title>🌙 Noor Nights | Illuminate Your Worship</title>
@@ -32,36 +32,7 @@
 
     <!-- OneSignal Web Push SDK -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function (OneSignal) {
-            await OneSignal.init({
-                appId: "520970e9-567b-4556-8022-3093a50b765f",
-                serviceWorkerParam: { scope: "/" },
-                notifyButton: { enable: false },
-                welcomeNotification: {
-                    disable: false,
-                    title: "Noor Nights",
-                    message: "You'll receive spiritual reminders throughout the 10 blessed days.",
-                    icon: "https://noor-nights.github.io/assets/icons/icon-512.png",
-                },
-                promptOptions: {
-                    slidedown: {
-                        prompts: [{
-                            type: "push",
-                            autoPrompt: false,
-                            text: {
-                                actionMessage: "Receive daily worship reminders during Dhul Hijjah.",
-                                acceptButton: "Allow",
-                                cancelButton: "Later",
-                            },
-                            icon: "https://noor-nights.github.io/assets/icons/icon-512.png",
-                        }]
-                    }
-                }
-            });
-        });
-    </script>
+    <script src="src/js/onesignal-init.js" defer></script>
 </head>
 
 <body>
@@ -158,25 +129,7 @@
                     <!-- LCP skeleton: inline script computes the exact message app.js will show,
                          so the LCP element is correct from frame 0 (no element render delay). -->
                     <p class="dh-message" id="dh-skeleton-msg">✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.</p>
-                    <script>
-                        (function() {
-                            var DH_START = new Date('2026-05-18T00:00:00+02:00').getTime();
-                            var now = Date.now();
-                            var el = document.getElementById('dh-skeleton-msg');
-                            if (!el) return;
-                            if (now >= DH_START) {
-                                // During Dhul Hijjah — show day number
-                                var day = Math.min(10, Math.max(1, Math.floor((now - DH_START) / 86400000) + 1));
-                                el.textContent = '🕋 Day ' + day + ' of Dhul Hijjah — make every moment count.';
-                            } else {
-                                var daysLeft = Math.ceil((DH_START - now) / 86400000);
-                                if (daysLeft <= 10) {
-                                    el.textContent = '🌟 Only ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left! Begin your daily spiritual challenge.';
-                                }
-                                // else keep the default motivation text already in the p
-                            }
-                        })();
-                    </script>
+                    <script src="src/js/dh-skeleton.js"></script>
                 </div>
                 <div class="dh-quickjump" id="dh-quickjump">
                     <a class="btn-qj-primary" href="#" onclick="switchTab('tracker'); return false;" data-i18n="qjTrackWorship">✓ Track Worship</a>
@@ -693,95 +646,7 @@
 
     <script src="src/js/duas.js" defer></script>
     <script src="src/js/app.js" defer></script>
-    <script>
-        // ── Tab Navigation ──
-        function switchTab(name) {
-            document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
-            document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
-            var tab = document.getElementById('tab-' + name);
-            if (tab) tab.classList.add('active');
-            var btn = document.querySelector('.nav-item[data-tab="' + name + '"]');
-            if (btn) btn.classList.add('active');
-            window.scrollTo(0, 0);
-            try { localStorage.setItem('noor_active_tab', name); } catch(e) {}
-        }
-
-        // ── Onboarding ──
-        function closeOnboarding() {
-            document.getElementById('onboarding-modal').style.display = 'none';
-            try { localStorage.setItem('noor_welcomed_v1', '1'); } catch(e) {}
-            // Pulse the tracker nav button to guide new users
-            var trackerBtn = document.querySelector('.nav-item[data-tab="tracker"]');
-            if (trackerBtn) {
-                trackerBtn.classList.add('nav-pulse');
-                setTimeout(function() { trackerBtn.classList.remove('nav-pulse'); }, 3000);
-            }
-        }
-
-        // ── Virtue Card Toggle ──
-        function toggleVirtueCard(btn) {
-            var body = document.getElementById('virtue-cards-container');
-            if (!body) return;
-            var isOpen = !body.classList.contains('vc-body-collapsed');
-            body.classList.toggle('vc-body-collapsed', isOpen);
-            btn.setAttribute('aria-expanded', String(!isOpen));
-            var chev = btn.querySelector('.vc-chevron');
-            if (chev) chev.style.transform = isOpen ? 'rotate(-90deg)' : '';
-        }
-
-        // ── Dhikr Card Counters ──
-        function tapDhikrCounter(btn) {
-            var target = parseInt(btn.dataset.target);
-            var key = 'dhikr_cnt_' + btn.dataset.key;
-            var count = parseInt(localStorage.getItem(key) || '0');
-            if (count >= target) return;
-            count++;
-            localStorage.setItem(key, count);
-            btn.querySelector('.dc-curr').textContent = count;
-            var done = count >= target;
-            btn.classList.toggle('dc-done', done);
-            btn.classList.add('dc-tapped');
-            setTimeout(function() { btn.classList.remove('dc-tapped'); }, 130);
-        }
-        function resetDhikrCounter(btn) {
-            var key = 'dhikr_cnt_' + btn.dataset.key;
-            localStorage.removeItem(key);
-            btn.querySelector('.dc-curr').textContent = '0';
-            btn.classList.remove('dc-done');
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.dhikr-counter').forEach(function(btn) {
-                var count = parseInt(localStorage.getItem('dhikr_cnt_' + btn.dataset.key) || '0');
-                btn.querySelector('.dc-curr').textContent = count;
-                if (count >= parseInt(btn.dataset.target)) btn.classList.add('dc-done');
-            });
-        });
-
-        // ── Render Duas ──
-        function renderAllDuas() {
-            renderDuaCarousel(jawamiDuas, 'jawami-duas-container', 'jaw');
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Restore last active tab AFTER app.js has initialized everything
-            try {
-                var saved = localStorage.getItem('noor_active_tab');
-                if (saved && document.getElementById('tab-' + saved)) {
-                    switchTab(saved);
-                }
-            } catch(e) {}
-
-            // Show onboarding on first visit
-            try {
-                if (!localStorage.getItem('noor_welcomed_v1')) {
-                    document.getElementById('onboarding-modal').style.display = 'flex';
-                }
-            } catch(e) {}
-
-            // Render prophetic duas
-            renderAllDuas();
-        });
-    </script>
+    <script src="src/js/ui-init.js" defer></script>
     <!-- GoatCounter: free, no-cookie visitor analytics. Dashboard: noor-nights.goatcounter.com -->
     <script data-goatcounter="https://noor-nights.goatcounter.com/count" async
         src="https://gc.zgo.at/count.js"></script>

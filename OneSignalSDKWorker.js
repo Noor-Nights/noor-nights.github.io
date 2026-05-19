@@ -4,7 +4,7 @@
 //
 //  OneSignal MUST be imported FIRST, before any other code.
 // ═══════════════════════════════════════════════════════
-importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+importScripts("/OneSignalSDK.sw.js");
 
 // ── PWA Cache ────────────────────────────────────────────────
 const CACHE_NAME = 'noor-nights-v23';
@@ -16,6 +16,10 @@ const ASSETS = [
     '/src/css/modern.css',
     '/src/js/app.js',
     '/src/js/duas.js',
+    '/src/js/onesignal-init.js',
+    '/src/js/dh-skeleton.js',
+    '/src/js/ui-init.js',
+    '/assets/icons/icon-192.png',
     '/assets/icons/icon-512.png',
     '/assets/icons/icon-96-mono.png',
 ];
