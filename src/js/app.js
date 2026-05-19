@@ -3071,7 +3071,10 @@ class PrayerTimesAPI {
             const lat = loc ? loc.lat : 30.0444;
             const lng = loc ? loc.lng : 31.2357;
             const url = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${lat}&longitude=${lng}&method=5`;
-            const res = await fetch(url);
+            const controller = new AbortController();
+            const tid = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(tid);
             if (!res.ok) throw new Error('api_err');
             const json = await res.json();
             if (json.code !== 200) throw new Error('api_err');
@@ -3097,6 +3100,14 @@ class PrayerTimesAPI {
         const [y, m] = dateStr.split('-').map(Number);
         const times = await this._fetchMonth(y, m);
         return (times && times[dateStr]) || _PT_FALLBACK;
+    }
+
+    getCachedTimesForDate(dateStr) {
+        const [y, m] = dateStr.split('-').map(Number);
+        const key = `${y}-${String(m).padStart(2,'0')}`;
+        const cached = this._cache[key];
+        if (cached && cached.times && cached.times[dateStr]) return cached.times[dateStr];
+        return null;
     }
 
     getCurrentPrayer(times) {
@@ -3132,11 +3143,20 @@ class PrayerTimesWidget {
     }
 
     async init() {
-        this._locTimeout = setTimeout(() => { this._api.upgradeLocationName(); }, 2000); // silently fix coordinate-only names in background
-        this._times = await this._api.getTimesForDate(this._api._todayStr());
+        this._locTimeout = setTimeout(() => { this._api.upgradeLocationName(); }, 2000);
+        // Render immediately with cached or fallback times so user never sees perpetual "Loading…"
+        const today = this._api._todayStr();
+        const instant = this._api.getCachedTimesForDate(today);
+        this._times = instant || _PT_FALLBACK;
         this.render();
         if (!this._interval) {
             this._interval = setInterval(() => this._tick(), 60000);
+        }
+        // Fetch fresh data in the background and re-render if different
+        const fresh = await this._api.getTimesForDate(today);
+        if (fresh && fresh !== this._times) {
+            this._times = fresh;
+            this.render();
         }
     }
 
