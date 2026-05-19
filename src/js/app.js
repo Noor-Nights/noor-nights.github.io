@@ -39,6 +39,8 @@ const TRANSLATIONS = {
         settingsLocation: 'Prayer Location', settingsNotif: 'Prayer Reminders',
         settingsNotifSub: 'Toggle per-prayer reminders',
         settingsManageBtn: 'Manage →',
+        settingsDailyNotif: 'Daily Reminders',
+        settingsDailyNotifSub: 'Prayers, azkar & more',
         settingsShare: 'Share App',
         settingsShareSub: 'Spread the reward — share with family & friends',
         settingsShareBtn: '🔗 Share',
@@ -60,7 +62,7 @@ const TRANSLATIONS = {
         onboardingF4: 'Install the app for prayer time reminders',
         onboardingBtn: 'Begin — بسم الله →',
         modalTitle: 'Message',
-        notifyBtn: '🔔 Enable Daily Night Number Reminders',
+        notifyBtn: '🔔 Enable',
         notifyEnabled: '✅ Notifications Enabled',
         testBtn: '🧪 Send Test Notification',
         checklistTitle: '✅ Worship Checklist',
@@ -256,6 +258,8 @@ const TRANSLATIONS = {
         settingsLocation: 'موقع أوقات الصلاة', settingsNotif: 'تذكيرات الصلاة',
         settingsNotifSub: 'فعّل تذكيرات كل صلاة',
         settingsManageBtn: '← إدارة',
+        settingsDailyNotif: 'التذكيرات اليومية',
+        settingsDailyNotifSub: 'صلوات وأذكار وأكثر',
         settingsShare: 'شارك التطبيق',
         settingsShareSub: 'انشر الأجر — شارك مع العائلة والأصدقاء',
         settingsShareBtn: '🔗 مشاركة',
@@ -277,7 +281,7 @@ const TRANSLATIONS = {
         onboardingF4: 'ثبّت التطبيق لتذكيرات أوقات الصلاة',
         onboardingBtn: '← ابدأ — بسم الله',
         modalTitle: 'رسالة',
-        notifyBtn: '🔔 تفعيل تذكيرات الليالي',
+        notifyBtn: '🔔 تفعيل',
         notifyEnabled: '✅ تم تفعيل الإشعارات',
         testBtn: '🧪 إرسال إشعار تجريبي',
         checklistTitle: '✅ قائمة العبادات',
@@ -496,11 +500,7 @@ function applyLanguage(lang) {
     updateCountdown();
     loadChecklist();
     const notifyBtn = document.getElementById('notify-btn');
-    if (notifyBtn && notifyBtn.dataset.enabled === 'true') {
-        notifyBtn.textContent = t('notifyEnabled');
-    } else if (notifyBtn) {
-        notifyBtn.textContent = t('notifyBtn');
-    }
+    if (notifyBtn) _updateNotifyBtnState(notifyBtn, notifyBtn.dataset.subscribed === 'true');
 
     const memBanner = document.querySelector('.memorial-text');
     if (memBanner) memBanner.textContent = lang === 'ar'
@@ -3293,13 +3293,14 @@ class PrayerReminders {
         const body = isAr
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
+        const _base = window.location.origin;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/badge-96.png',
-            tag: `noor-prayer-${prayer}`, renotify: true, vibrate: [300, 100, 300, 100, 300],
+            body, icon: `${_base}/assets/icons/icon-512.png`, badge: `${_base}/assets/icons/icon-96-mono.png`,
+            tag: `noor-prayer-${prayer}`, silent: false, renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
         };
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
         } else {
             new Notification(title, options);
         }
@@ -3361,10 +3362,19 @@ function testPrayerReminder() {
         const body = isAr
             ? `حان وقت صلاة ${names[prayer]} — حيّ على الصلاة`
             : `It's time for ${names[prayer]} — Hayya 'ala-s-Salah`;
+        const _base = window.location.origin;
         const options = {
-            body, icon: 'assets/icons/icon-512.png', badge: 'assets/icons/badge-96.png',
-            tag: 'noor-prayer-test', renotify: true, vibrate: [300, 100, 300, 100, 300],
+            body, icon: `${_base}/assets/icons/icon-512.png`, badge: `${_base}/assets/icons/icon-96-mono.png`,
+            tag: 'noor-prayer-test', silent: false, renotify: true, vibrate: [300, 100, 300, 100, 300],
             requireInteraction: true,
+        };
+
+        const _showNotif = () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
+            } else {
+                new Notification(title, options);
+            }
         };
 
         // Show countdown in modal so user is ready to see the system notification
@@ -3385,19 +3395,11 @@ function testPrayerReminder() {
                 } else {
                     clearInterval(tick);
                     modal.style.display = 'none';
-                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
-                    } else {
-                        new Notification(title, options);
-                    }
+                    _showNotif();
                 }
             }, 1000);
         } else {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
-            } else {
-                new Notification(title, options);
-            }
+            _showNotif();
         }
 
         trackEvent('/test-prayer-reminder', 'Test Prayer Reminder');
@@ -4459,16 +4461,25 @@ function requestNotifications() {
 
     // ── OneSignal path — true background push ──
     if (window.OneSignalDeferred) {
-        window.OneSignalDeferred.push(async function (OneSignal) {
-            try {
-                // Focus on enabling: Refresh opt-in status every time.
-                await OneSignal.User.PushSubscription.optIn();
-                _updateNotifyBtnState(btn, true);
-                trackEvent('/push-opt-in', 'push_opt_in_triggered');
+        // Safety net: re-enable button if OneSignal SDK never calls back (blocked/unavailable)
+        const fallbackTimer = setTimeout(() => _fallbackNativeNotification(btn), 5000);
 
-                // Show modal AND trigger a native system notification for immediate feedback
-                showMessage(t('subActivated'), t('subActivatedMsg'));
-                _sendSuccessNotification();
+        window.OneSignalDeferred.push(async function (OneSignal) {
+            clearTimeout(fallbackTimer);
+            try {
+                await OneSignal.User.PushSubscription.optIn();
+                const subscribed = OneSignal.User.PushSubscription.optedIn;
+                if (subscribed) {
+                    localStorage.setItem('noor-push-opted-in', '1');
+                    _updateNotifyBtnState(btn, true);
+                    trackEvent('/push-opt-in', 'push_opt_in_triggered');
+                    showMessage(t('subActivated'), t('subActivatedMsg'));
+                    _sendSuccessNotification();
+                } else {
+                    // optIn() resolved but permission was dismissed or denied
+                    _updateNotifyBtnState(btn, false);
+                    showMessage(t('permNeeded'), t('permNeededAndroid'));
+                }
             } catch (err) {
                 console.warn('[OneSignal] Error — falling back to native:', err);
                 _fallbackNativeNotification(btn);
@@ -4486,18 +4497,25 @@ function _sendSuccessNotification() {
 
     const title = t('subActivated');
     const body = t('subActivatedMsg');
+    const base = window.location.origin;
     const options = {
-        body: body,
-        icon: 'assets/icons/icon-512.png',
-        badge: 'assets/icons/badge-96.png',
-        tag: 'noor-nights-success',
-        renotify: true,
-        vibrate: [100, 50, 100],
+        body,
+        // Absolute URLs required — Android OS resolves these outside the page context
+        // and silently drops the notification if the URL is relative or broken
+        icon: `${base}/assets/icons/icon-512.png`,
+        badge: `${base}/assets/icons/icon-96-mono.png`,
+        // Unique tag per subscribe so Android treats it as a fresh notification
+        // (same tag + renotify=true gets suppressed as a silent update on many devices)
+        tag: `noor-nights-welcome-${Date.now()}`,
+        silent: false,
+        vibrate: [200, 100, 200],
         data: { url: window.location.href }
     };
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready
+            .then(reg => reg.showNotification(title, options))
+            .catch(() => new Notification(title, options));
     } else {
         new Notification(title, options);
     }
@@ -4511,6 +4529,7 @@ function _fallbackNativeNotification(btn) {
     }
     Notification.requestPermission().then((p) => {
         if (p === 'granted') {
+            localStorage.setItem('noor-push-opted-in', '1');
             _updateNotifyBtnState(btn, true);
             showMessage(t('subActivated'), t('subActivatedMsg'));
             _sendSuccessNotification();
@@ -4560,10 +4579,8 @@ function sendActualTest() {
     const title = `Noor Nights`;
     const options = {
         body: `🤲 ${msg}\n\n"${dua.arabic.replace(/\n/g, '<br>')}"`,
-        // Big icon in the body (The Navy/Gold App Icon)
-        icon: 'assets/icons/icon-512.png',
-        // Small icon in the system/header (Pure white silhouette mask)
-        badge: 'assets/icons/badge-96.png',
+        icon: `${window.location.origin}/assets/icons/icon-512.png`,
+        badge: `${window.location.origin}/assets/icons/icon-96-mono.png`,
         tag: 'noor-nights-remind',
         renotify: true,
         vibrate: [200, 100, 200],
@@ -4573,10 +4590,8 @@ function sendActualTest() {
         }
     };
 
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, options);
-        });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
     } else {
         new Notification(title, options);
     }
@@ -5070,11 +5085,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Set notify button state once OneSignal is ready
+        // Restore button state immediately from localStorage (no OneSignal wait needed)
+        const _notifyBtn = document.getElementById('notify-btn');
+        if (_notifyBtn && localStorage.getItem('noor-push-opted-in') === '1') {
+            _updateNotifyBtnState(_notifyBtn, true);
+        }
+        // Then verify with OneSignal — clear the flag if the user revoked from browser settings
         if (window.OneSignalDeferred) {
             window.OneSignalDeferred.push(async function (OneSignal) {
                 const btn = document.getElementById('notify-btn');
-                if (btn) _updateNotifyBtnState(btn, OneSignal.User.PushSubscription.optedIn);
+                if (!btn) return;
+                const subscribed = OneSignal.User.PushSubscription.optedIn;
+                _updateNotifyBtnState(btn, subscribed);
+                if (!subscribed) localStorage.removeItem('noor-push-opted-in');
             });
         }
 

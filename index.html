@@ -424,6 +424,18 @@
                     <button class="settings-toggle-btn" onclick="detectPrayerLocation()" data-i18n="ptDetectBtn">📍 Change</button>
                 </div>
 
+                <!-- Daily Push Notifications -->
+                <div class="settings-row">
+                    <div class="settings-row-label">
+                        <div class="settings-icon si-bell"><img src="assets/icons/bell.svg" alt="" aria-hidden="true"></div>
+                        <div>
+                            <div class="settings-row-name" data-i18n="settingsDailyNotif">Daily Notifications</div>
+                            <div class="settings-row-sub" data-i18n="settingsDailyNotifSub">Enable daily notifications for prayers and azkar</div>
+                        </div>
+                    </div>
+                    <button class="settings-toggle-btn" id="notify-btn" onclick="requestNotifications()">🔔 Enable</button>
+                </div>
+
                 <!-- Notifications -->
                 <div class="settings-row">
                     <div class="settings-row-label">
