@@ -2984,7 +2984,7 @@ const _PT_CACHE_KEY = 'noor_pt_cache_v2';
 const _PT_LOC_KEY   = 'noor_pt_location';
 const _PR_KEY       = 'noor_pr_prefs';
 const _PT_PRAYERS_LIST = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-const _PT_FALLBACK = { fajr: '04:23', dhuhr: '12:51', asr: '16:28', maghrib: '19:41', isha: '21:09' };
+const _PT_FALLBACK = { fajr: '04:18', dhuhr: '12:52', asr: '16:28', maghrib: '19:45', isha: '21:14' };
 const _PT_EID_TIME = '06:30'; // Eid al-Adha prayer, Cairo, May 27 2026
 
 class PrayerTimesAPI {

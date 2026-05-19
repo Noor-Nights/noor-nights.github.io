@@ -7,7 +7,7 @@
 importScripts("/OneSignalSDK.sw.js");
 
 // ── PWA Cache ────────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v23';
+const CACHE_NAME = 'noor-nights-v24';
 // Core shell assets to pre-cache on install.
 const ASSETS = [
     '/',
