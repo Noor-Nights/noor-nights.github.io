@@ -15,6 +15,7 @@ const ASSETS = [
     '/manifest.json',
     '/src/css/modern.css',
     '/src/js/app.js',
+    '/src/js/cairo-times.js',
     '/src/js/duas.js',
     '/src/js/onesignal-init.js',
     '/src/js/dh-skeleton.js',

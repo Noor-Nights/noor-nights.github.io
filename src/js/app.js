@@ -2985,6 +2985,10 @@ const _PT_LOC_KEY   = 'noor_pt_location';
 const _PR_KEY       = 'noor_pr_prefs';
 const _PT_PRAYERS_LIST = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const _PT_FALLBACK = { fajr: '04:18', dhuhr: '12:52', asr: '16:28', maghrib: '19:45', isha: '21:14' };
+function _getBakedFallback(dateStr) {
+    if (typeof CAIRO_BAKED_TIMES !== 'undefined' && CAIRO_BAKED_TIMES[dateStr]) return CAIRO_BAKED_TIMES[dateStr];
+    return _PT_FALLBACK;
+}
 const _PT_EID_TIME = '06:30'; // Eid al-Adha prayer, Cairo, May 27 2026
 
 class PrayerTimesAPI {
@@ -3099,7 +3103,7 @@ class PrayerTimesAPI {
     async getTimesForDate(dateStr) {
         const [y, m] = dateStr.split('-').map(Number);
         const times = await this._fetchMonth(y, m);
-        return (times && times[dateStr]) || _PT_FALLBACK;
+        return (times && times[dateStr]) || _getBakedFallback(dateStr);
     }
 
     getCachedTimesForDate(dateStr) {
@@ -3147,7 +3151,7 @@ class PrayerTimesWidget {
         // Render immediately with cached or fallback times so user never sees perpetual "Loading…"
         const today = this._api._todayStr();
         const instant = this._api.getCachedTimesForDate(today);
-        this._times = instant || _PT_FALLBACK;
+        this._times = instant || _getBakedFallback(today);
         this.render();
         if (!this._interval) {
             this._interval = setInterval(() => this._tick(), 60000);

@@ -18,6 +18,7 @@
     <!-- Preload JS entry points so the browser starts downloading them
          at HTML-parse time, not when the parser reaches them at bottom of body.
          They still execute after parsing (defer), but download starts earlier. -->
+    <link rel="preload" href="src/js/cairo-times.js" as="script">
     <link rel="preload" href="src/js/duas.js" as="script">
     <link rel="preload" href="src/js/app.js" as="script">
     <!-- Load Google Fonts asynchronously to avoid render-blocking (saves ~825 ms FCP) -->
@@ -644,6 +645,7 @@
         </div>
     </div>
 
+    <script src="src/js/cairo-times.js" defer></script>
     <script src="src/js/duas.js" defer></script>
     <script src="src/js/app.js" defer></script>
     <script src="src/js/ui-init.js" defer></script>
