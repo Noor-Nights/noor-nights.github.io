@@ -2643,6 +2643,11 @@ const DC_DUAS = {
     ],
 };
 
+function _escape(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+}
+
 class DuaCompanion {
     constructor() {
         const saved = JSON.parse(localStorage.getItem('noor_duas_1447') || '{}');
@@ -2840,13 +2845,13 @@ class DuaCompanion {
                 const cnt = s.ameen_count || 0;
                 return `
                 <div class="dc-shared-item">
-                    <span class="dc-shared-text">${this._escape(s.text)}</span>
+                    <span class="dc-shared-text">${_escape(s.text)}</span>
                     <div class="dc-shared-footer">
                         <span class="dc-shared-meta">
                             <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
                             <span class="dc-shared-time">${this._timeAgo(new Date(s.created_at).getTime(), isAr)}</span>
                         </span>
-                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${this._escape(aid)}">
+                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
                             🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
                         </button>
                     </div>
@@ -2861,13 +2866,13 @@ class DuaCompanion {
             const cnt = parseInt(localStorage.getItem('noor_ameen_cnt_' + aid) || '0', 10);
             return `
             <div class="dc-shared-item">
-                <span class="dc-shared-text">${this._escape(s.text)}</span>
+                <span class="dc-shared-text">${_escape(s.text)}</span>
                 <div class="dc-shared-footer">
                     <span class="dc-shared-meta">
                         <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
                         <span class="dc-shared-time">${this._timeAgo(s.ts, isAr)}</span>
                     </span>
-                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${this._escape(aid)}">
+                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
                         🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
                     </button>
                 </div>
@@ -2946,11 +2951,6 @@ class DuaCompanion {
             if (btn) { btn.disabled = false; btn.textContent = t('dcShareBtn'); }
             if (!this._isSupabaseConfigured()) this.renderSection();
         });
-    }
-
-    _escape(s) {
-        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
     }
 
     _timeAgo(ts, isAr) {
@@ -3214,7 +3214,7 @@ class PrayerTimesWidget {
         el.innerHTML = `
         <div class="pt-wrap" dir="${dir}">
             <div class="pt-location-row">
-                <span class="pt-location">📍 ${this._escape(locName)}</span>
+                <span class="pt-location">📍 ${_escape(locName)}</span>
                 <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
             </div>
             <div class="pt-list">${eidRow}${rows}</div>
