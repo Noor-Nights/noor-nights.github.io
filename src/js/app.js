@@ -5107,6 +5107,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             });
+
+            // Reload when a new SW version activates so stale JS is never kept running
+            navigator.serviceWorker.addEventListener('message', (e) => {
+                if (e.data && e.data.type === 'SW_UPDATED') window.location.reload();
+            });
         }
 
         // Restore button state immediately from localStorage (no OneSignal wait needed)
