@@ -2949,7 +2949,8 @@ class DuaCompanion {
     }
 
     _escape(s) {
-        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
     }
 
     _timeAgo(ts, isAr) {
@@ -3189,7 +3190,7 @@ class PrayerTimesWidget {
         el.innerHTML = `
         <div class="pt-wrap" dir="${dir}">
             <div class="pt-location-row">
-                <span class="pt-location">📍 ${locName}</span>
+                <span class="pt-location">📍 ${this._escape(locName)}</span>
                 <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
             </div>
             <div class="pt-list">${eidRow}${rows}</div>
