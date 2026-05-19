@@ -45,6 +45,17 @@ jobs:
             exit 1
           fi
 
+      - name: Bake Cairo prayer times
+        run: |
+          node scripts/bake-prayer-times.js > src/js/cairo-times.js
+          echo "Generated $(grep -c 'fajr' src/js/cairo-times.js) days of Cairo prayer times"
+
+      - name: Stamp SW cache version with git SHA
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          sed -i "s/noor-nights-v[0-9]*/noor-nights-${SHA}/" OneSignalSDKWorker.js
+          echo "SW cache stamped: noor-nights-${SHA}"
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
