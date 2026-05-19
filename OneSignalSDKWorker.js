@@ -19,7 +19,7 @@ const ASSETS = [
     '/src/js/onesignal-init.js',
     '/src/js/dh-skeleton.js',
     '/src/js/ui-init.js',
-    '/assets/icons/icon-192.png',
+    '/assets/icons/icon-192.svg',
     '/assets/icons/icon-512.png',
     '/assets/icons/icon-96-mono.png',
 ];
