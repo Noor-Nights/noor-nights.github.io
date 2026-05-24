@@ -145,6 +145,27 @@ export default {
             return new Response('Subscription failed', { status: 502, headers });
         }
 
+        // Record the subscriber in Supabase for count tracking.
+        // Upsert so re-subscribing the same token just updates subscribed_at.
+        const supabaseUrl = (env && env.SUPABASE_URL)
+            || (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL);
+        const supabaseKey = (env && env.SUPABASE_ANON_KEY)
+            || (typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY);
+
+        if (supabaseUrl && supabaseKey) {
+            const country = request.headers.get('cf-ipcountry') || null;
+            await fetch(`${supabaseUrl}/rest/v1/fcm_subscribers`, {
+                method: 'POST',
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates',
+                },
+                body: JSON.stringify({ token, country, subscribed_at: new Date().toISOString() }),
+            }).catch((err) => console.warn('Supabase upsert failed (non-fatal):', err.message));
+        }
+
         return new Response('subscribed', { status: 200, headers });
     },
 };
