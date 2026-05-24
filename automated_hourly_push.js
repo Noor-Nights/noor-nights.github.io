@@ -245,6 +245,35 @@ async function sendPush(heading, body_text, collapseId) {
     }
 }
 
+async function sendOneSignalPush(heading, body_text) {
+    const appId = process.env.ONESIGNAL_APP_ID;
+    const apiKey = process.env.ONESIGNAL_REST_API_KEY;
+    if (!appId || !apiKey) {
+        console.warn('⚠️  OneSignal env vars not set — skipping OneSignal send');
+        return;
+    }
+    const res = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${apiKey}`,
+        },
+        body: JSON.stringify({
+            app_id: appId,
+            included_segments: ['All'],
+            headings: { en: heading },
+            contents: { en: body_text },
+        }),
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        console.warn(`⚠️  OneSignal HTTP ${res.status}: ${text}`);
+        return;
+    }
+    const data = await res.json();
+    console.log(`✅ OneSignal delivered — recipients: ${data.recipients ?? '?'}`);
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
     console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}`);
@@ -261,6 +290,7 @@ async function main() {
         } catch (err) {
             console.error('❌ Prayer notification error:', err.message);
         }
+        await sendOneSignalPush(heading, body).catch((err) => console.warn('⚠️  OneSignal prayer error:', err.message));
     }
 
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
@@ -329,6 +359,7 @@ async function main() {
     } catch (err) {
         console.error('❌ Hourly notification error:', err.message);
     }
+    await sendOneSignalPush(heading, body_text).catch((err) => console.warn('⚠️  OneSignal dhikr error:', err.message));
 }
 
 main();
