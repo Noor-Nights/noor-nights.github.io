@@ -107,9 +107,16 @@ export default {
             return new Response('Missing or invalid token field', { status: 400, headers });
         }
 
+        // Support both ES-modules format (env binding) and Service-Worker format
+        // (global variable) — the CF dashboard editor deploys in Service-Worker
+        // mode even when the source uses `export default`, so env may be empty.
+        const saRaw = (env && env.FIREBASE_SERVICE_ACCOUNT_JSON)
+            // eslint-disable-next-line no-undef
+            || (typeof FIREBASE_SERVICE_ACCOUNT_JSON !== 'undefined' && FIREBASE_SERVICE_ACCOUNT_JSON);
         let serviceAccount;
         try {
-            serviceAccount = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_JSON);
+            if (!saRaw) throw new Error('not set');
+            serviceAccount = JSON.parse(saRaw);
         } catch {
             return new Response('Server misconfiguration', { status: 500, headers });
         }
