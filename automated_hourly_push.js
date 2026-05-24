@@ -22,14 +22,15 @@ const _cairoParts = Object.fromEntries(
     new Intl.DateTimeFormat('en-US', {
         timeZone: 'Africa/Cairo',
         year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', hour12: false,
+        hour: 'numeric', minute: 'numeric', hour12: false,
     }).formatToParts(_nowUTC)
     .filter(p => p.type !== 'literal')
     .map(p => [p.type, parseInt(p.value, 10)])
 );
 // hour12:false can return 24 at midnight — normalise to 0
-const hours = _cairoParts.hour === 24 ? 0 : _cairoParts.hour;
-const time  = _nowUTC.getTime(); // actual UTC ms — used for DH date range check
+const hours   = _cairoParts.hour === 24 ? 0 : _cairoParts.hour;
+const minutes = _cairoParts.minute;
+const time    = _nowUTC.getTime(); // actual UTC ms — used for DH date range check
 
 // Dhul Hijjah 1447: 1st = May 18, 2026 (Umm al-Qura) — 10th = May 27 (Eid)
 const DH_START   = new Date('2026-05-18T00:00:00+03:00').getTime();
@@ -128,10 +129,10 @@ async function getCairoPrayerTimes() {
     return null;
 }
 
-function getPrayerAtHour(times, hour) {
+function getPrayerAtTime(times, hour, minute) {
     for (const [key, timeStr] of Object.entries(times)) {
-        const [h] = timeStr.split(':').map(Number);
-        if (h === hour) return key;
+        const [h, m] = timeStr.split(':').map(Number);
+        if (h === hour && m === minute) return key;
     }
     return null;
 }
@@ -207,17 +208,17 @@ async function sendPush(heading, body_text, collapseId) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-    console.log(`\n🚀 Running — ${hours}:00 Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}`);
+    console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}`);
 
     // ── Prayer time check — always runs, year-round ───────────────────────────
     const prayerTimes = await getCairoPrayerTimes();
-    const matchedPrayer = prayerTimes ? getPrayerAtHour(prayerTimes, hours) : null;
+    const matchedPrayer = prayerTimes ? getPrayerAtTime(prayerTimes, hours, minutes) : null;
 
     if (matchedPrayer && prayerNotifications[matchedPrayer]) {
         const { heading, body } = prayerNotifications[matchedPrayer];
         console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
         try {
-            await sendPush(heading, body, `prayer-${matchedPrayer}-${now.toISOString().slice(0,10)}`);
+            await sendPush(heading, body, `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`);
         } catch (err) {
             console.error('❌ Prayer notification error:', err.message);
         }
@@ -226,6 +227,12 @@ async function main() {
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
     if (!inDhulHijjah) {
         console.log('📅 Outside Dhul Hijjah — prayer check done, skipping dhikr message.');
+        return;
+    }
+
+    // ── Dhikr fires once per hour (at minute 0) ──────────────────────────────
+    if (minutes !== 0) {
+        console.log(`⏱ Minute ${minutes} — prayer check done, skipping dhikr message.`);
         return;
     }
 
