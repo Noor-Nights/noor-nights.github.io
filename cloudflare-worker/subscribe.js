@@ -129,9 +129,14 @@ export default {
             return new Response('Auth failed', { status: 502, headers });
         }
 
+        // access_token_auth: true is required by the IID API when using an
+        // OAuth2 bearer token instead of the legacy FCM server key.
         const iidRes = await fetch(`${IID_API}/${token}/rel/topics/daily-reminders`, {
             method: 'POST',
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'access_token_auth': 'true',
+            },
         });
 
         if (!iidRes.ok) {
