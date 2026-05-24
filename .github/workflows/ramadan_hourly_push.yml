@@ -9,6 +9,8 @@ on:
     - cron: '* 0-20 * * *'   # Every minute, 00:00–20:59 UTC = 03:00–23:59 Cairo (UTC+3 in summer)
   workflow_dispatch:          # Allow manual trigger for testing
 
+permissions: {}   # least-privilege: this workflow only calls external APIs, needs no GitHub token
+
 jobs:
   send-push-reminders:
     runs-on: ubuntu-latest

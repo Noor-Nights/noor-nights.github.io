@@ -2,8 +2,10 @@
 //  Noor Nights — Unified Service Worker
 //  Handles: Background Push (Firebase Messaging) + PWA Caching
 // ═══════════════════════════════════════════════════════
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+// Vendored locally (src/js/vendor/) to avoid loading scripts from an external CDN.
+// To upgrade: download new versions from gstatic, replace files, bump CACHE_NAME.
+importScripts('/src/js/vendor/firebase-app-compat.js');
+importScripts('/src/js/vendor/firebase-messaging-compat.js');
 
 // Firebase client config — these are public project identifiers, not secrets.
 // Security is enforced via Firebase Security Rules and App Check, not by
@@ -33,7 +35,7 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ── PWA Cache ────────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v25';
+const CACHE_NAME = 'noor-nights-v26';
 const ASSETS = [
     '/',
     '/index.html',
@@ -44,6 +46,8 @@ const ASSETS = [
     '/src/js/duas.js',
     '/src/js/dh-skeleton.js',
     '/src/js/ui-init.js',
+    '/src/js/vendor/firebase-app-compat.js',
+    '/src/js/vendor/firebase-messaging-compat.js',
     '/assets/icons/icon-192.svg',
     '/assets/icons/icon-512.png',
     '/assets/icons/icon-96-mono.png',
