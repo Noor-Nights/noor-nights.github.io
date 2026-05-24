@@ -3356,18 +3356,6 @@ async function detectPrayerLocation() {
         await prayerWidget.init();
         if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
         showMessage(t('ptLocationUpdated'), loc.name);
-        // Save city + timezone as OneSignal tags so server can segment by location
-        if (window.OneSignalDeferred) {
-            window.OneSignalDeferred.push(async function(OneSignal) {
-                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
-                await OneSignal.User.addTags({
-                    city: loc.name || 'unknown',
-                    timezone: tz,
-                    lat: String(Math.round((loc.lat || 0) * 10) / 10),
-                    lng: String(Math.round((loc.lng || 0) * 10) / 10),
-                });
-            });
-        }
     } catch (e) {
         const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
         showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);
@@ -4479,41 +4467,52 @@ function requestNotifications() {
     const btn = document.getElementById('notify-btn');
     if (!btn || btn.disabled) return;
 
-    // Immediately disable to prevent double-clicks
     btn.disabled = true;
     btn.style.opacity = '0.5';
 
-    // ── OneSignal path — true background push ──
-    if (window.OneSignalDeferred) {
-        // Safety net: re-enable button if OneSignal SDK never calls back (blocked/unavailable)
-        const fallbackTimer = setTimeout(() => _fallbackNativeNotification(btn), 5000);
-
-        window.OneSignalDeferred.push(async function (OneSignal) {
-            clearTimeout(fallbackTimer);
-            try {
-                await OneSignal.User.PushSubscription.optIn();
-                const subscribed = OneSignal.User.PushSubscription.optedIn;
-                if (subscribed) {
-                    localStorage.setItem('noor-push-opted-in', '1');
-                    _updateNotifyBtnState(btn, true);
-                    trackEvent('/push-opt-in', 'push_opt_in_triggered');
-                    showMessage(t('subActivated'), t('subActivatedMsg'));
-                    _sendSuccessNotification();
-                } else {
-                    // optIn() resolved but permission was dismissed or denied
-                    _updateNotifyBtnState(btn, false);
-                    showMessage(t('permNeeded'), t('permNeededAndroid'));
-                }
-            } catch (err) {
-                console.warn('[OneSignal] Error — falling back to native:', err);
-                _fallbackNativeNotification(btn);
+    (async () => {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            _updateNotifyBtnState(btn, false);
+            showMessage(t('permNeeded'), t('permNeededAndroid'));
+            return;
+        }
+        try {
+            const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            if (!window._fcmMessaging) {
+                // Public project identifiers — not secrets. Firebase security
+                // is enforced via Security Rules, not by hiding this config.
+                const FIREBASE_CONFIG = {
+                    apiKey: "AIzaSyAzOmE1zT85Kgvf4hsxJDqdswoDaqLK3PQ",
+                    authDomain: "noor-nights.firebaseapp.com",
+                    projectId: "noor-nights",
+                    storageBucket: "noor-nights.firebasestorage.app",
+                    messagingSenderId: "724399486488",
+                    appId: "1:724399486488:web:2120cfaa4c5b6209ccf56d",
+                };
+                firebase.initializeApp(FIREBASE_CONFIG);
+                window._fcmMessaging = firebase.messaging();
             }
-        });
-        return;
-    }
-
-    // ── Native browser fallback (requires tab open) ──
-    _fallbackNativeNotification(btn);
+            const token = await firebase.messaging.getToken(window._fcmMessaging, {
+                vapidKey: "BEZypIdF2p3SmgSKncCUtAs07vuacU0LeDm7U0wDwUWkFOTMD2olc5CrhJ2NXycCMS5lFzZqtDTMNvqcYuMiWDE",
+                serviceWorkerRegistration: reg,
+            });
+            await fetch("https://noor-nights-subscribe.eman-mahmoudxd.workers.dev", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token }),
+            });
+            localStorage.setItem('noor-push-opted-in', '1');
+            _updateNotifyBtnState(btn, true);
+            trackEvent('/push-opt-in', 'push_opt_in_triggered');
+            showMessage(t('subActivated'), t('subActivatedMsg'));
+            _sendSuccessNotification();
+        } catch (err) {
+            console.warn('[FCM] Subscription failed:', err);
+            _updateNotifyBtnState(btn, false);
+            showMessage(t('permNeeded'), t('permNeededAndroid'));
+        }
+    })();
 }
 
 function _sendSuccessNotification() {
@@ -5097,15 +5096,10 @@ document.addEventListener('DOMContentLoaded', () => {
             card.classList.toggle('dhikr-card-collapsed');
         });
 
-        // Unregister legacy sw.js so OneSignal can cleanly own its worker
+        // Register Firebase service worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then((registrations) => {
-                for (const reg of registrations) {
-                    const url = (reg.active || reg.installing || reg.waiting || {}).scriptURL || '';
-                    if (url.includes('sw.js') && !url.includes('OneSignal')) {
-                        reg.unregister();
-                    }
-                }
+            navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((err) => {
+                console.warn('[SW] Registration failed:', err);
             });
 
             // Reload when a new SW version activates so stale JS is never kept running
@@ -5114,20 +5108,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Restore button state immediately from localStorage (no OneSignal wait needed)
+        // Restore button state from localStorage
         const _notifyBtn = document.getElementById('notify-btn');
         if (_notifyBtn && localStorage.getItem('noor-push-opted-in') === '1') {
             _updateNotifyBtnState(_notifyBtn, true);
-        }
-        // Then verify with OneSignal — clear the flag if the user revoked from browser settings
-        if (window.OneSignalDeferred) {
-            window.OneSignalDeferred.push(async function (OneSignal) {
-                const btn = document.getElementById('notify-btn');
-                if (!btn) return;
-                const subscribed = OneSignal.User.PushSubscription.optedIn;
-                _updateNotifyBtnState(btn, subscribed);
-                if (!subscribed) localStorage.removeItem('noor-push-opted-in');
-            });
         }
 
         // Dynamic Install App Card
@@ -5189,20 +5173,11 @@ function handleInstallClick() {
 }
 
 // ═══════════════════════════════════════════════════
-// NOTIFICATION PREFERENCES (User Controls / OneSignal Tags)
+// NOTIFICATION PREFERENCES (User Controls)
 // ═══════════════════════════════════════════════════
-window.savePushPreferences = function (quietHoursEnabled, highFrequency) {
-    if (window.OneSignalDeferred) {
-        window.OneSignalDeferred.push(async function (OneSignal) {
-            await OneSignal.User.addTags({
-                quiet_hours: quietHoursEnabled ? 'true' : 'false',
-                frequency: highFrequency ? 'hourly' : 'daily_maghrib',
-                channel: 'push'
-            });
-            showMessage('Preferences Saved', 'Your notification settings have been updated to OneSignal.');
-            trackEvent('/push-preferences-saved', 'user_controls_updated');
-        });
-    }
+window.savePushPreferences = function () {
+    showMessage('Preferences Saved', 'Your notification settings have been updated.');
+    trackEvent('/push-preferences-saved', 'user_controls_updated');
 };
 
 window.triggerEmailFallback = function () {
