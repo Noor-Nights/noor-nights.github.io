@@ -4490,10 +4490,12 @@ function requestNotifications() {
                     messagingSenderId: "724399486488",
                     appId: "1:724399486488:web:2120cfaa4c5b6209ccf56d",
                 };
-                firebase.initializeApp(FIREBASE_CONFIG);
+                // Guard against double-init (second click, or refresh before _fcmMessaging restored)
+                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
                 window._fcmMessaging = firebase.messaging();
             }
-            const token = await firebase.messaging.getToken(window._fcmMessaging, {
+            // Compat SDK: call getToken() on the messaging instance, not as a static method
+            const token = await window._fcmMessaging.getToken({
                 vapidKey: "BEZypIdF2p3SmgSKncCUtAs07vuacU0LeDm7U0wDwUWkFOTMD2olc5CrhJ2NXycCMS5lFzZqtDTMNvqcYuMiWDE",
                 serviceWorkerRegistration: reg,
             });
