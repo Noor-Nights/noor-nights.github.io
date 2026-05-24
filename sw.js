@@ -5,14 +5,18 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-firebase.initializeApp({
+// Firebase client config — these are public project identifiers, not secrets.
+// Security is enforced via Firebase Security Rules and App Check, not by
+// hiding this config. See: https://firebase.google.com/docs/projects/api-keys
+const FIREBASE_CONFIG = {
     apiKey: "AIzaSyAzOmE1zT85Kgvf4hsxJDqdswoDaqLK3PQ",
     authDomain: "noor-nights.firebaseapp.com",
     projectId: "noor-nights",
     storageBucket: "noor-nights.firebasestorage.app",
     messagingSenderId: "724399486488",
     appId: "1:724399486488:web:2120cfaa4c5b6209ccf56d",
-});
+};
+firebase.initializeApp(FIREBASE_CONFIG);
 
 const messaging = firebase.messaging();
 

@@ -4480,14 +4480,17 @@ function requestNotifications() {
         try {
             const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
             if (!window._fcmMessaging) {
-                firebase.initializeApp({
+                // Public project identifiers — not secrets. Firebase security
+                // is enforced via Security Rules, not by hiding this config.
+                const FIREBASE_CONFIG = {
                     apiKey: "AIzaSyAzOmE1zT85Kgvf4hsxJDqdswoDaqLK3PQ",
                     authDomain: "noor-nights.firebaseapp.com",
                     projectId: "noor-nights",
                     storageBucket: "noor-nights.firebasestorage.app",
                     messagingSenderId: "724399486488",
                     appId: "1:724399486488:web:2120cfaa4c5b6209ccf56d",
-                });
+                };
+                firebase.initializeApp(FIREBASE_CONFIG);
                 window._fcmMessaging = firebase.messaging();
             }
             const token = await firebase.messaging.getToken(window._fcmMessaging, {
