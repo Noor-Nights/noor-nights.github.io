@@ -16,10 +16,20 @@ if (!REST_API_KEY) {
     process.exit(0);
 }
 
-// ── Time Setup (Cairo = Africa/Cairo, GMT+3 in summer) ──────────────────────
-const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Africa/Cairo' }));
-const hours = now.getHours();
-const time  = now.getTime();
+// ── Time Setup (Cairo = Africa/Cairo, UTC+3 in summer) ──────────────────────
+const _nowUTC = new Date();
+const _cairoParts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Africa/Cairo',
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', hour12: false,
+    }).formatToParts(_nowUTC)
+    .filter(p => p.type !== 'literal')
+    .map(p => [p.type, parseInt(p.value, 10)])
+);
+// hour12:false can return 24 at midnight — normalise to 0
+const hours = _cairoParts.hour === 24 ? 0 : _cairoParts.hour;
+const time  = _nowUTC.getTime(); // actual UTC ms — used for DH date range check
 
 // Dhul Hijjah 1447: 1st = May 18, 2026 (Umm al-Qura) — 10th = May 27 (Eid)
 const DH_START   = new Date('2026-05-18T00:00:00+03:00').getTime();
@@ -94,9 +104,9 @@ const prayerNotifications = {
 };
 
 async function getCairoPrayerTimes() {
-    const day   = now.getDate();
-    const month = now.getMonth() + 1;
-    const year  = now.getFullYear();
+    const day   = _cairoParts.day;
+    const month = _cairoParts.month;
+    const year  = _cairoParts.year;
     try {
         const res = await fetch(
             `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${CAIRO_LAT}&longitude=${CAIRO_LNG}&method=5`
