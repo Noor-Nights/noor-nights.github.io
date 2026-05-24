@@ -1,12 +1,12 @@
 name: Noor Nights — Prayer & Dhikr Reminders
 
 on:
-  # Runs every hour, year-round.
-  # Prayer notifications: sent daily whenever Cairo prayer hour matches (Fajr–Isha).
-  # Dhul Hijjah dhikr messages: only during May 18–27, 2026 (gated inside the script).
-  # UTC 00:00–20:00 covers Cairo 02:00–22:00 (UTC+2), catching all 5 prayers.
+  # Runs every minute, year-round (public repo = free unlimited minutes).
+  # Prayer notifications: sent at the exact Cairo prayer minute (Fajr–Isha).
+  # Dhul Hijjah dhikr messages: only during May 18–27, 2026, once per hour at :00.
+  # UTC 00:00–20:59 covers Cairo 03:00–23:59 (UTC+3 in summer), catching all 5 prayers.
   schedule:
-    - cron: '0 0-20 * * *'   # Every hour, 00:00–20:00 UTC = 02:00–22:00 Cairo
+    - cron: '* 0-20 * * *'   # Every minute, 00:00–20:59 UTC = 03:00–23:59 Cairo (UTC+3 in summer)
   workflow_dispatch:          # Allow manual trigger for testing
 
 jobs:
