@@ -4466,6 +4466,10 @@ function requestNotifications() {
     trackEvent('/enable-reminders', 'Enable Reminders Click');
     const btn = document.getElementById('notify-btn');
     if (!btn || btn.disabled) return;
+    if (btn.dataset.subscribed === 'true') {
+        trackEvent('/push-already-subscribed', 'Push Already Subscribed');
+        return;
+    }
 
     btn.disabled = true;
     btn.style.opacity = '0.5';
@@ -4473,10 +4477,12 @@ function requestNotifications() {
     (async () => {
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
+            trackEvent('/push-permission-denied', 'Push Permission Denied');
             _updateNotifyBtnState(btn, false);
             showMessage(t('permNeeded'), t('permNeededAndroid'));
             return;
         }
+        trackEvent('/push-permission-granted', 'Push Permission Granted');
         try {
             const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
             if (!window._fcmMessaging) {
@@ -4495,15 +4501,26 @@ function requestNotifications() {
                 window._fcmMessaging = firebase.messaging();
             }
             // Compat SDK: call getToken() on the messaging instance, not as a static method
-            const token = await window._fcmMessaging.getToken({
-                vapidKey: "BEZypIdF2p3SmgSKncCUtAs07vuacU0LeDm7U0wDwUWkFOTMD2olc5CrhJ2NXycCMS5lFzZqtDTMNvqcYuMiWDE",
-                serviceWorkerRegistration: reg,
-            });
-            await fetch("https://noor-nights-subscribe.eman-mahmoudxd.workers.dev", {
+            let token;
+            try {
+                token = await window._fcmMessaging.getToken({
+                    vapidKey: "BEZypIdF2p3SmgSKncCUtAs07vuacU0LeDm7U0wDwUWkFOTMD2olc5CrhJ2NXycCMS5lFzZqtDTMNvqcYuMiWDE",
+                    serviceWorkerRegistration: reg,
+                });
+                trackEvent('/push-token-obtained', 'FCM Token Obtained');
+            } catch (tokenErr) {
+                trackEvent('/push-token-error', 'FCM Token Error');
+                throw tokenErr;
+            }
+            const subRes = await fetch("https://noor-nights-subscribe.eman-mahmoudxd.workers.dev", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token }),
             });
+            if (!subRes.ok) {
+                trackEvent(`/push-subscribe-error-${subRes.status}`, `CF Worker Error ${subRes.status}`);
+                throw new Error(`CF Worker ${subRes.status}`);
+            }
             localStorage.setItem('noor-push-opted-in', '1');
             _updateNotifyBtnState(btn, true);
             trackEvent('/push-opt-in', 'push_opt_in_triggered');
@@ -4511,6 +4528,7 @@ function requestNotifications() {
             _sendSuccessNotification();
         } catch (err) {
             console.warn('[FCM] Subscription failed:', err);
+            trackEvent('/push-subscribe-failed', 'Push Subscribe Failed');
             _updateNotifyBtnState(btn, false);
             showMessage(t('permNeeded'), t('permNeededAndroid'));
         }
