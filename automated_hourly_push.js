@@ -4,17 +4,18 @@
 // Dhul Hijjah messages: only sent during the 10 blessed days (May 18–27, 2026).
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
 
-const APP_ID = process.env.ONESIGNAL_APP_ID;
-if (!APP_ID) {
-    console.log('⚠️ ONESIGNAL_APP_ID is not set. Skipping.');
+const PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
+if (!PROJECT_ID) {
+    console.log('⚠️ FIREBASE_PROJECT_ID is not set. Skipping.');
     process.exit(0);
 }
 
-const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
-if (!REST_API_KEY) {
-    console.log('⚠️ ONESIGNAL_REST_API_KEY is not set. Skipping.');
+const SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+if (!SERVICE_ACCOUNT_JSON) {
+    console.log('⚠️ FIREBASE_SERVICE_ACCOUNT_JSON is not set. Skipping.');
     process.exit(0);
 }
+const SERVICE_ACCOUNT = JSON.parse(SERVICE_ACCOUNT_JSON);
 
 // ── Time Setup (Cairo = Africa/Cairo, UTC+3 in summer) ──────────────────────
 const _nowUTC = new Date();
@@ -175,32 +176,60 @@ const eveningMessages = [
     `🙌 اختم يومك بالاستغفار — "مَنْ قَالَ: أَسْتَغْفِرُ اللَّهَ العَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الحَيَّ القَيُّومَ وَأَتُوبُ إِلَيْهِ — غُفِرَ لَهُ"`,
 ];
 
-// ── OneSignal Send ─────────────────────────────────────────────────────────────
+// ── FCM HTTP v1 Send ──────────────────────────────────────────────────────────
+const { GoogleAuth } = require('google-auth-library');
+
+let _fcmAccessToken = null;
+
+async function getAccessToken() {
+    if (!_fcmAccessToken) {
+        const auth = new GoogleAuth({
+            credentials: SERVICE_ACCOUNT,
+            scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+        });
+        const client = await auth.getClient();
+        const { token } = await client.getAccessToken();
+        _fcmAccessToken = token;
+    }
+    return _fcmAccessToken;
+}
+
 async function sendPush(heading, body_text, collapseId) {
+    const accessToken = await getAccessToken();
     const payload = {
-        app_id: APP_ID,
-        included_segments: ['All'],
-        headings:  { en: heading,    ar: heading },
-        contents:  { en: body_text,  ar: body_text },
-        url: 'https://noor-nights.github.io',
-        chrome_web_icon:  'https://noor-nights.github.io/assets/icons/icon-512.png',
-        chrome_web_badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
-        firefox_icon:     'https://noor-nights.github.io/assets/icons/icon-512.png',
-        large_icon:       'https://noor-nights.github.io/assets/icons/icon-512.png',
-        collapse_id: collapseId,
+        message: {
+            topic: 'daily-reminders',
+            notification: {
+                title: heading,
+                body: body_text,
+            },
+            webpush: {
+                notification: {
+                    icon: 'https://noor-nights.github.io/assets/icons/icon-512.png',
+                    badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
+                    tag: collapseId,
+                    silent: false,
+                    vibrate: [200, 100, 200],
+                },
+                fcm_options: { link: 'https://noor-nights.github.io' },
+            },
+        },
     };
 
-    const res = await fetch('https://onesignal.com/api/v1/notifications', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Key ${REST_API_KEY}`
-        },
-        body: JSON.stringify(payload)
-    });
+    const res = await fetch(
+        `https://fcm.googleapis.com/v1/projects/${PROJECT_ID}/messages:send`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(payload),
+        }
+    );
     const data = await res.json();
-    if (data.id) {
-        console.log(`✅ Delivered! Notification ID: ${data.id}`);
+    if (data.name) {
+        console.log(`✅ Delivered! Message: ${data.name}`);
     } else {
         console.error('❌ Delivery failed:', JSON.stringify(data));
     }
