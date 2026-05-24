@@ -15,7 +15,13 @@ if (!SERVICE_ACCOUNT_JSON) {
     console.log('⚠️ FIREBASE_SERVICE_ACCOUNT_JSON is not set. Skipping.');
     process.exit(0);
 }
-const SERVICE_ACCOUNT = JSON.parse(SERVICE_ACCOUNT_JSON);
+let SERVICE_ACCOUNT;
+try {
+    SERVICE_ACCOUNT = JSON.parse(SERVICE_ACCOUNT_JSON);
+} catch (e) {
+    console.error('❌ FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON:', e.message);
+    process.exit(1);
+}
 
 // ── Time Setup (Cairo = Africa/Cairo, UTC+3 in summer) ──────────────────────
 const _nowUTC = new Date();
@@ -227,6 +233,10 @@ async function sendPush(heading, body_text, collapseId) {
             body: JSON.stringify(payload),
         }
     );
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`FCM HTTP ${res.status}: ${text}`);
+    }
     const data = await res.json();
     if (data.name) {
         console.log(`✅ Delivered! Message: ${data.name}`);
