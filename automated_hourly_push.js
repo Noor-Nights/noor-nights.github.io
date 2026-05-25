@@ -321,7 +321,8 @@ async function main() {
     }
 
     // ── Active hours guard (05:00–22:00 for regular days; Day 9 stops at Maghrib ~20:00) ──
-    // Day 9 after Maghrib: Arafa window has closed — no more reminders
+    // Day 9 after Maghrib: Arafa window has closed — no more reminders.
+    // hours >= 20 is used as proxy for "after Maghrib" (Cairo Maghrib ≈ 19:30 in late May UTC+3).
     if (dayNum === 9 && hours >= 20) {
         console.log(`🌙 Arafa Day ended after Maghrib — no more hourly reminders.`);
         return;
@@ -379,7 +380,7 @@ async function main() {
     }
 
     console.log(`📣 Sending hourly message...`);
-    if (dayNum === 9) console.log('⭐ ARAFAH DAY — using special duas');
+    if (dayNum === 9) console.log(`⭐ ARAFAH DAY — ${hours >= 18 ? 'peak golden-hour message' : 'using Arafa duas'}`);
     if (dayNum === 8 && hours >= 20) console.log('🌙 ARAFA EVE — sending arafa-eve warmup');
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
