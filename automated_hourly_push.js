@@ -71,6 +71,21 @@ const dhDuas = [
     "رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِينَ سَبَقُونَا بِالْإِيمَانِ",
 ];
 
+// Arafa-eve duas — for tonight (Day 8, after Maghrib)
+const arafahEveDuas = [
+    "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+    "اللَّهُمَّ اجْعَلْنَا مِمَّنْ أَعْتَقْتَهُمْ مِنَ النَّارِ فِي يَوْمِ عَرَفَة",
+    "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    "اللَّهُمَّ ثَبِّتْ قَلْبِي عَلَى دِينِكَ وَأَعِنِّي عَلَى طَاعَتِكَ غَداً",
+];
+
+const arafahEveMessages = [
+    '⭐ غداً يوم عرفة — أعظم يوم في السنة. اكتب قائمة دعائك الليلة وهيّئ قلبك.',
+    '🤲 ليلة عرفة — ادعُ الله واستغفره الآن. الله يسمعك وهو أقرب إليك من حبل الوريد.',
+    '🌙 غداً صم وأكثر من الدعاء. "أفضل الدعاء دعاء يوم عرفة" — ابدأ التهيّؤ له الليلة.',
+    '📿 أكثر من التكبير الليلة: الله أكبر الله أكبر لا إله إلا الله والله أكبر الله أكبر ولله الحمد',
+];
+
 // Arafah Day duas — the greatest day of the year
 const arafahDuas = [
     "لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
@@ -305,7 +320,13 @@ async function main() {
         return;
     }
 
-    // ── Active hours guard for general dhikr messages (05:00–22:00 only) ────────
+    // ── Active hours guard (05:00–22:00 for regular days; Day 9 stops at Maghrib ~20:00) ──
+    // Day 9 after Maghrib: Arafa window has closed — no more reminders.
+    // hours >= 20 is used as proxy for "after Maghrib" (Cairo Maghrib ≈ 19:30 in late May UTC+3).
+    if (dayNum === 9 && hours >= 20) {
+        console.log(`🌙 Arafa Day ended after Maghrib — no more hourly reminders.`);
+        return;
+    }
     if (hours < 5 || hours > 22) {
         console.log(`🌙 Outside active hours — prayer check done, skipping general message.`);
         return;
@@ -320,7 +341,7 @@ async function main() {
         body_text = 'عيد مبارك! 🕋 صلِّ صلاة العيد، وقدّم الأضحية إن استطعت، وأسعد من حولك. تقبّل الله منا ومنكم صالح الأعمال. كل عام وأنتم بخير 🤍';
 
     } else if (dayNum === 9) {
-        // ── ARAFAH DAY ───────────────────────────────────────────────────────────
+        // ── ARAFAH DAY (05:00–19:59 Cairo, stops at Maghrib) ────────────────────
         const dua = arafahDuas[hours % arafahDuas.length];
         let arafahMsg;
         if (hours < 10) {
@@ -330,10 +351,18 @@ async function main() {
         } else if (hours < 18) {
             arafahMsg = '⏳ الساعة الذهبية تقترب — الساعة الأخيرة قبل الغروب أعظم أوقات الدعاء. هيّئ قلبك وارفع يديك.';
         } else {
-            arafahMsg = '🌙 انتهى يوم عرفة المبارك — الله أعتق فيه عباداً من النار أكثر من أي يوم. تقبّل الله منا.';
+            // 18:00–19:59: Peak golden hour — Maghrib is imminent, this is the most answered window
+            arafahMsg = '🌟 الآن — أعظم دقائق يوم عرفة. ارفع يديك وادعُ الله قبل المغرب. اللهم إنك عفو كريم تحب العفو فاعف عنا.';
         }
         heading   = `⭐ يوم عرفة — أعظم يوم في السنة`;
         body_text = `${arafahMsg}\n\n"${dua}"`;
+
+    } else if (dayNum === 8 && hours >= 20) {
+        // ── ARAFA EVE (tonight, Day 8 after Maghrib ~19:30) ─────────────────────
+        const eveMsg = arafahEveMessages[hours % arafahEveMessages.length];
+        const eveDua = arafahEveDuas[hours % arafahEveDuas.length];
+        heading   = '🌙 ليلة عرفة — غداً أعظم يوم';
+        body_text = `${eveMsg}\n\n"${eveDua}"`;
 
     } else {
         // ── REGULAR DAYS 1–8 ─────────────────────────────────────────────────────
@@ -351,7 +380,8 @@ async function main() {
     }
 
     console.log(`📣 Sending hourly message...`);
-    if (dayNum === 9) console.log('⭐ ARAFAH DAY — using special duas');
+    if (dayNum === 9) console.log(`⭐ ARAFAH DAY — ${hours >= 18 ? 'peak golden-hour message' : 'using Arafa duas'}`);
+    if (dayNum === 8 && hours >= 20) console.log('🌙 ARAFA EVE — sending arafa-eve warmup');
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
     try {
