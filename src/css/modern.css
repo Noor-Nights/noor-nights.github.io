@@ -3359,7 +3359,7 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 .dc-shared-count { font-size: 0.78rem; color: var(--text-muted); }
 
 .dc-shared-feed {
-    max-height: 180px; overflow-y: auto;
+    max-height: 480px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 0.4rem;
 }
 .dc-shared-item {
