@@ -565,7 +565,8 @@ h2 {
 }
 
 .share-dua-btn {
-    display: inline-flex;
+    display: flex;
+    width: fit-content;
     align-items: center;
     gap: 0.5rem;
     margin: 1rem auto 0;
