@@ -152,9 +152,13 @@ async function getCairoPrayerTimes() {
 }
 
 function getPrayerAtTime(times, hour, minute) {
+    // GitHub Actions cron is delayed by up to ~5 minutes on free repos.
+    // Match within a ±4-minute window to avoid missing prayers entirely.
+    const nowMinutes = hour * 60 + minute;
     for (const [key, timeStr] of Object.entries(times)) {
         const [h, m] = timeStr.split(':').map(Number);
-        if (h === hour && m === minute) return key;
+        const prayerMinutes = h * 60 + m;
+        if (Math.abs(nowMinutes - prayerMinutes) <= 4) return key;
     }
     return null;
 }
@@ -339,12 +343,6 @@ async function main() {
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
     if (!inDhulHijjah) {
         console.log('📅 Outside Dhul Hijjah — prayer check done, skipping dhikr message.');
-        return;
-    }
-
-    // ── Dhikr fires once per hour (at minute 0) ──────────────────────────────
-    if (minutes !== 0) {
-        console.log(`⏱ Minute ${minutes} — prayer check done, skipping dhikr message.`);
         return;
     }
 
