@@ -318,7 +318,6 @@ async function main() {
         } catch (err) {
             console.error('❌ Manual push error:', err.message);
         }
-        await sendOneSignalPush(heading, body_text).catch(err => console.warn('⚠️  OneSignal manual error:', err.message));
         return;
     }
 
