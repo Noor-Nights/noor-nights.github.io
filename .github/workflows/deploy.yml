@@ -50,6 +50,15 @@ jobs:
           node scripts/bake-prayer-times.js > src/js/cairo-times.js
           echo "Generated $(grep -c 'fajr' src/js/cairo-times.js) days of Cairo prayer times"
 
+      - name: Minify JS and CSS
+        run: |
+          npm install --no-save terser lightningcss
+          npx terser src/js/app.js         -o src/js/app.js         --compress --mangle
+          npx terser src/js/duas.js        -o src/js/duas.js        --compress --mangle
+          npx terser src/js/cairo-times.js -o src/js/cairo-times.js --compress --mangle
+          npx terser src/js/ui-init.js     -o src/js/ui-init.js     --compress --mangle
+          npx lightningcss --minify src/css/modern.css -o src/css/modern.css
+
       - name: Stamp SW cache version with git SHA
         run: |
           SHA=$(git rev-parse --short HEAD)
