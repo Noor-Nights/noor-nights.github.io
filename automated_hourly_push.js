@@ -297,7 +297,9 @@ async function main() {
 
     // ── Manual dispatch: send a random dua immediately and exit ──────────────
     if (isManual) {
-        const pool = (dayNum === 9 || (dayNum === 8 && hours >= 20)) ? arafahDuas : (inDhulHijjah ? dhDuas : dhDuas);
+        const pool = dayNum === 9 ? arafahDuas
+            : (dayNum === 8 && hours >= 20) ? arafahEveDuas
+            : dhDuas;
         const dua = pool[Math.floor(Math.random() * pool.length)];
         let heading, body_text;
         if (dayNum === 9 || (dayNum === 8 && hours >= 20)) {
