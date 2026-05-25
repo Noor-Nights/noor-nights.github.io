@@ -3273,7 +3273,7 @@ class PrayerReminders {
 
         const names = t('dhPrayers');
         if (this._prefs[prayer]) {
-            if (times) this._schedule(prayer, times);
+            if (times) { this._times = times; this._schedule(prayer, times); }
             showMessage(t('ptReminderSetTitle'), t('ptReminderSetMsg', names[prayer]));
         } else {
             if (this._timers[prayer]) { clearTimeout(this._timers[prayer]); delete this._timers[prayer]; }
@@ -3287,6 +3287,7 @@ class PrayerReminders {
     }
 
     scheduleAll(times) {
+        this._times = times;
         this.cancelAll();
         for (const p of _PT_PRAYERS_LIST) {
             if (this._prefs[p]) this._schedule(p, times);
@@ -3304,12 +3305,13 @@ class PrayerReminders {
         const now = new Date(getCurrentTime());
         const target = new Date(now);
         target.setHours(h, m, 0, 0);
+        if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 1);
         const ms = target.getTime() - now.getTime();
-        if (ms <= 0) return; // prayer time already passed today
         this._timers[prayer] = setTimeout(() => this._fire(prayer), ms);
     }
 
     _fire(prayer) {
+        delete this._timers[prayer];
         if (!('Notification' in window) || Notification.permission !== 'granted') return;
         const names = t('dhPrayers');
         const isAr = currentLang === 'ar';
@@ -3328,6 +3330,7 @@ class PrayerReminders {
         } else {
             new Notification(title, options);
         }
+        if (this._times) this._schedule(prayer, this._times);
     }
 }
 
