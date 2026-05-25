@@ -3675,6 +3675,8 @@ const _ARAFAH_PRAYERS = {
     asr:     new Date(`${_ARAFAH_DATE}T15:47:00+02:00`).getTime(),
     maghrib: new Date(`${_ARAFAH_DATE}T19:30:00+02:00`).getTime(),
 };
+// Islamic Arafa Day starts at tonight's Maghrib (Day 8) and ends at tomorrow's Maghrib (Day 9).
+const _TARWIYAH_MAGHRIB = new Date('2026-05-25T19:30:00+02:00').getTime();
 
 function updateTripleCountdown(stage) {
     const card = document.getElementById('arafah-triple-card');
@@ -4007,8 +4009,16 @@ function getDhStage() {
 
     const day = _dhGetDay();
     if (day >= 10) return 'eid';
-    if (day === 9) return 'arafah';
-    if (day === 8) return 'arafah-eve'; // Day 8 starts at Maghrib — entire day is eve of Arafah
+    if (day === 9) {
+        // Islamic Arafa Day ends at Maghrib — after that it's Eid night
+        if (now >= _ARAFAH_PRAYERS.maghrib) return 'eid';
+        return 'arafah';
+    }
+    if (day === 8) {
+        // Islamic Arafa Day begins at tonight's Maghrib
+        if (now >= _TARWIYAH_MAGHRIB) return 'arafah';
+        return 'arafah-eve';
+    }
     return 'during';
 }
 
@@ -4115,14 +4125,14 @@ function renderDhStage(stage, lang) {
     if (stage === 'arafah-eve') {
         if (titleEl) titleEl.textContent = isAr ? '🕌 يوم التروية' : '🕌 Yawm al-Tarwiyah';
 
-        // Countdown to midnight (start of day 9)
+        // Countdown to tonight's Maghrib — Islamic Arafa Day begins at sunset
         const now = getCurrentTime();
-        const msUntilMidnight = 86400000 - (now % 86400000);
-        const hL = Math.floor(msUntilMidnight / 3600000);
-        const mL = Math.floor((msUntilMidnight % 3600000) / 60000);
-        const sL = Math.floor((msUntilMidnight % 60000) / 1000);
+        const msUntilMaghrib = Math.max(0, _TARWIYAH_MAGHRIB - now);
+        const hL = Math.floor(msUntilMaghrib / 3600000);
+        const mL = Math.floor((msUntilMaghrib % 3600000) / 60000);
+        const sL = Math.floor((msUntilMaghrib % 60000) / 1000);
 
-        const badgeText = isAr ? '🕌 يوم التروية — اليوم الثامن' : '🕌 Yawm al-Tarwiyah — Day 8';
+        const badgeText = isAr ? '🌅 يوم عرفة يبدأ عند المغرب' : '🌅 Arafa Day begins at Maghrib';
         const eveMsg = isAr
             ? 'يوم التروية هو اليوم الثامن من ذي الحجة. سُمّي بذلك لأن الحجاج كانوا يتروّون (يحملون الماء) استعداداً للتوجه إلى منى. غداً يوم عرفة — أعظم يوم في السنة. جهّز أدعيتك، نوِّ الصيام، وأكثر من الاستغفار والذكر.'
             : "Yawm al-Tarwiyah is the 8th of Dhul Hijjah — named for when pilgrims would gather water (tarwiyah) before setting out to Mina. Tomorrow is Yawm Arafah, the greatest day of the year. Prepare your duas, set your intention to fast, and increase in istighfar and dhikr.";
@@ -4237,11 +4247,10 @@ function tickDhStage(stage) {
 
     if (stage === 'arafah-eve') {
         const now = getCurrentTime();
-        const elapsed = now - dhulHijjahDate;
-        const msUntilNextDay = 86400000 - (elapsed % 86400000);
-        const hL = Math.floor(msUntilNextDay / 3600000);
-        const mL = Math.floor((msUntilNextDay % 3600000) / 60000);
-        const sL = Math.floor((msUntilNextDay % 60000) / 1000);
+        const msUntilMaghrib = Math.max(0, _TARWIYAH_MAGHRIB - now);
+        const hL = Math.floor(msUntilMaghrib / 3600000);
+        const mL = Math.floor((msUntilMaghrib % 3600000) / 60000);
+        const sL = Math.floor((msUntilMaghrib % 60000) / 1000);
         const eH = document.getElementById('dh-eve-h');
         const eM = document.getElementById('dh-eve-m');
         const eS = document.getElementById('dh-eve-s');
