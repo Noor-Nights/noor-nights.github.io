@@ -564,31 +564,21 @@ h2 {
     opacity: 0.5;
 }
 
-.dua-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.6rem;
-    margin-top: 1rem;
-}
-
-.share-dua-btn, .rotate-dua-btn {
+.share-dua-btn {
     display: flex;
     width: fit-content;
     align-items: center;
     gap: 0.5rem;
+    margin: 1rem auto 0;
     padding: 0.55rem 1.4rem;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
     border-radius: 100px;
+    color: var(--gold);
     font-size: 0.85rem;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
-}
-
-.share-dua-btn {
-    background: rgba(212, 175, 55, 0.12);
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    color: var(--gold);
 }
 .share-dua-btn:hover {
     background: rgba(212, 175, 55, 0.22);
@@ -599,20 +589,6 @@ h2 {
     outline-offset: 3px;
 }
 .share-dua-btn img { opacity: 0.8; filter: invert(1); }
-
-.rotate-dua-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.7);
-}
-.rotate-dua-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-.rotate-dua-btn:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 3px;
-}
 
 .sadaqah-message {
     margin-top: 1.5rem;
