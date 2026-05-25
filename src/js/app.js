@@ -2931,11 +2931,11 @@ class DuaCompanion {
                 return;
             }
             const lastSubmit = parseInt(localStorage.getItem('noor_dua_last_submit') || '0');
-            const cooldownMs = 60 * 60 * 1000;
+            const cooldownMs = 10 * 1000;
             const elapsed = Date.now() - lastSubmit;
             if (elapsed < cooldownMs) {
-                const remaining = Math.ceil((cooldownMs - elapsed) / 60000);
-                this._toast(isAr ? `انتظر ${remaining} دقيقة قبل المشاركة مجدداً` : `Please wait ${remaining} min before sharing again`);
+                const remaining = Math.ceil((cooldownMs - elapsed) / 1000);
+                this._toast(isAr ? `انتظر ${remaining} ثانية قبل المشاركة مجدداً` : `Please wait ${remaining} sec before sharing again`);
                 return;
             }
             const btn = document.getElementById('dc-share-submit');
