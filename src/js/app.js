@@ -2934,8 +2934,8 @@ class DuaCompanion {
             const cooldownMs = 10 * 1000;
             const elapsed = Date.now() - lastSubmit;
             if (elapsed < cooldownMs) {
-                const remaining = Math.ceil((cooldownMs - elapsed) / 60000);
-                this._toast(isAr ? `انتظر ${remaining} دقيقة قبل المشاركة مجدداً` : `Please wait ${remaining} min before sharing again`);
+                const remaining = Math.ceil((cooldownMs - elapsed) / 1000);
+                this._toast(isAr ? `انتظر ${remaining} ثانية قبل المشاركة مجدداً` : `Please wait ${remaining} sec before sharing again`);
                 return;
             }
             const btn = document.getElementById('dc-share-submit');
