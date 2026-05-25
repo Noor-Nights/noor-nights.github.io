@@ -52,14 +52,14 @@ jobs:
 
       - name: Minify JS and CSS
         run: |
-          npm install --no-save terser@5.48.0 lightningcss@1.32.0
+          npm install --no-save terser@5.48.0 clean-css-cli@5.6.3
           # Exclude dh-skeleton.js (synchronous inline script, 22 lines — no gain)
           # Exclude src/js/vendor/ (pre-minified Firebase SDK bundles)
           npx terser src/js/app.js         -o src/js/app.js         --compress --mangle
           npx terser src/js/duas.js        -o src/js/duas.js        --compress --mangle
           npx terser src/js/cairo-times.js -o src/js/cairo-times.js --compress --mangle
           npx terser src/js/ui-init.js     -o src/js/ui-init.js     --compress --mangle
-          npx lightningcss --minify src/css/modern.css -o src/css/modern.css
+          npx cleancss -o src/css/modern.css src/css/modern.css
 
       - name: Stamp SW cache version with git SHA
         run: |
