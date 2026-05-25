@@ -5,5 +5,9 @@
   "description": "GitHub Actions dependencies for Noor Nights push notifications",
   "dependencies": {
     "google-auth-library": "^10.6.2"
+  },
+  "devDependencies": {
+    "lightningcss": "^1.29.3",
+    "terser": "^5.39.0"
   }
 }

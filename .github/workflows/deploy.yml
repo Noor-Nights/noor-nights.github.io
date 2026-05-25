@@ -52,7 +52,9 @@ jobs:
 
       - name: Minify JS and CSS
         run: |
-          npm install --no-save terser lightningcss
+          npm ci --include=dev
+          # Exclude dh-skeleton.js (synchronous inline script, 22 lines — no gain)
+          # Exclude src/js/vendor/ (pre-minified Firebase SDK bundles)
           npx terser src/js/app.js         -o src/js/app.js         --compress --mangle
           npx terser src/js/duas.js        -o src/js/duas.js        --compress --mangle
           npx terser src/js/cairo-times.js -o src/js/cairo-times.js --compress --mangle
