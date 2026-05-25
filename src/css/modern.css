@@ -564,6 +564,27 @@ h2 {
     opacity: 0.5;
 }
 
+.share-dua-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem auto 0;
+    padding: 0.55rem 1.4rem;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 100px;
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+.share-dua-btn:hover {
+    background: rgba(212, 175, 55, 0.22);
+    border-color: rgba(212, 175, 55, 0.6);
+}
+.share-dua-btn img { opacity: 0.8; filter: invert(1); }
+
 .sadaqah-message {
     margin-top: 1.5rem;
     font-size: 0.9rem;
