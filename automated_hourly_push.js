@@ -289,9 +289,38 @@ async function sendOneSignalPush(heading, body_text) {
     console.log(`✅ OneSignal delivered — recipients: ${data.recipients ?? '?'}`);
 }
 
+const isManual = process.env.MANUAL_DISPATCH === 'true';
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-    console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}`);
+    console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}${isManual ? ' | MANUAL DISPATCH' : ''}`);
+
+    // ── Manual dispatch: send a random dua immediately and exit ──────────────
+    if (isManual) {
+        const pool = dayNum === 9 ? arafahDuas
+            : (dayNum === 8 && hours >= 20) ? arafahEveDuas
+            : dhDuas;
+        const dua = pool[Math.floor(Math.random() * pool.length)];
+        let heading, body_text;
+        if (dayNum === 9 || (dayNum === 8 && hours >= 20)) {
+            heading   = '⭐ يوم عرفة — دعاء';
+            body_text = `🤲 ادعُ الله الآن — هذا أعظم وقت في السنة.\n\n"${dua}"`;
+        } else if (inDhulHijjah) {
+            heading   = `🕋 اليوم ${dayNum} من ذي الحجة — دعاء`;
+            body_text = `🤲 توقف لحظة وادعُ الله.\n\n"${dua}"`;
+        } else {
+            heading   = '🤲 تذكير روحاني';
+            body_text = `"${dua}"`;
+        }
+        console.log(`📣 Manual dispatch — sending random dua`);
+        try {
+            await sendPush(heading, body_text, `manual-${_nowUTC.toISOString().slice(0,16)}`);
+        } catch (err) {
+            console.error('❌ Manual push error:', err.message);
+        }
+        await sendOneSignalPush(heading, body_text).catch(err => console.warn('⚠️  OneSignal manual error:', err.message));
+        return;
+    }
 
     // ── Prayer time check — always runs, year-round ───────────────────────────
     const prayerTimes = await getCairoPrayerTimes();
