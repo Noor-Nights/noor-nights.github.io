@@ -41,7 +41,7 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ── PWA Cache ────────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v26';
+const CACHE_NAME = 'noor-nights-v27';
 const ASSETS = [
     '/',
     '/index.html',
