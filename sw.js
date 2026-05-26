@@ -4,6 +4,12 @@
 // ═══════════════════════════════════════════════════════
 // Vendored locally (src/js/vendor/) to avoid loading scripts from an external CDN.
 // To upgrade: download new versions from gstatic, replace files, bump CACHE_NAME.
+
+// True only when a previous SW was already active — i.e. this is a version update,
+// not a first install. Checked in activate to avoid reloading the page on first visit
+// (which caused a 4.7 s redirect chain in Lighthouse — GH-83).
+let _isSWUpdate = false;
+
 importScripts('/src/js/vendor/firebase-app-compat.js');
 importScripts('/src/js/vendor/firebase-messaging-compat.js');
 
@@ -54,6 +60,8 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+    // If there is already an active SW, this is a version update not a fresh install.
+    _isSWUpdate = !!self.registration.active;
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
@@ -67,8 +75,14 @@ self.addEventListener('activate', (event) => {
                 keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
             ))
             .then(() => self.clients.claim())
-            .then(() => self.clients.matchAll({ type: 'window' }))
-            .then((clients) => clients.forEach((c) => c.postMessage({ type: 'SW_UPDATED' })))
+            .then(() => {
+                // Only reload clients when an existing SW was replaced by this version.
+                // Skipping this on fresh installs eliminates the self-redirect Lighthouse
+                // was measuring as a 4.7 s redirect chain (GH-83).
+                if (!_isSWUpdate) return;
+                return self.clients.matchAll({ type: 'window' })
+                    .then((clients) => clients.forEach((c) => c.postMessage({ type: 'SW_UPDATED' })));
+            })
     );
 });
 
