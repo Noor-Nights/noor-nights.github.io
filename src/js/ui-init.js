@@ -25,7 +25,7 @@ function createOnboardingModal() {
         '<div class="ob-wordmark-ar">ليالي النور</div>' +
         '<div class="ob-tagline" data-i18n="onboardingTitle">Ten blessed days · Dhul Hijjah</div>' +
         '</div>' +
-        '<p class="ob-hadith" data-i18n="onboardingBody">The Prophet سلى الله عليه وسلم said: "There are no days on which righteous deeds are more beloved to Allah than these ten days."</p>' +
+        '<p class="ob-hadith" data-i18n="onboardingBody">The Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days."</p>' +
         '<div class="onboarding-steps">' +
         '<div class="onboarding-step"><span class="onboarding-step-num">①</span><span data-i18n="onboardingF1">Open the app each day for your Daily Focus</span></div>' +
         '<div class="onboarding-step"><span class="onboarding-step-num">②</span><span data-i18n="onboardingF2">Make dhikr, read duas, track your worship</span></div>' +
