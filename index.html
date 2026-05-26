@@ -14,9 +14,35 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.aladhan.com">
     <link rel="preconnect" href="https://gc.zgo.at">
-    <!-- Preload critical CSS so it starts downloading immediately -->
-    <link rel="preload" href="src/css/modern.css" as="style">
-    <link rel="stylesheet" href="src/css/modern.css">
+    <!-- Critical CSS inlined to eliminate render-blocking round-trip (GH-87).
+         Contains only the styles needed for the initial above-the-fold paint:
+         custom properties, body reset, layout shell, header, bottom nav, tab
+         visibility, and the DH day-counter message.
+         Starfield animations and all component CSS load via modern.css below. -->
+    <style>
+:root{--midnight-blue:#0a1128;--royal-purple:#4c1d95;--warm-gold:#f59e0b;--emerald-teal:#14b8a6;--amber-glow:#fbbf24;--deep-emerald:#059669;--cream-beige:#fef3c7;--bg-gradient:linear-gradient(135deg,#0a1128 0%,#1e3a5f 50%,#4c1d95 100%);--card-gradient:linear-gradient(145deg,rgba(16,185,129,.1),rgba(139,92,246,.1));--text:#f1f5f9;--text-main:#f1f5f9;--text-muted:#cbd5e1;--neon-cyan:#14b8a6;--bg:#1c2235;--bg2:#242d45;--bg3:#2e3a56;--bg4:#3a4a6a;--gold:#c5a352;--gold2:#dbbf6e;--gold3:#eecf8a;--goldfaint:rgba(197,163,82,.13);--goldborder:rgba(197,163,82,.22);--teal:#38b99f;--tealfaint:rgba(56,185,159,.1);--tealborder:rgba(56,185,159,.25);--cream-beige:#f2ede6;--cream:#f2ede6;--cream2:rgba(242,237,230,.65);--cream3:rgba(242,237,230,.09);--cream4:rgba(242,237,230,.06);--border:rgba(242,237,230,.08);--border2:rgba(242,237,230,.13);--fs:'Playfair Display',Georgia,serif;--fa:'Amiri',serif;--fn:'Mulish',sans-serif;--r:13px;--nav:66px}
+body{background:var(--bg);background-attachment:fixed;color:var(--text);font-family:var(--fn);margin:0;padding:0;line-height:1.6}
+#stars-bg{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
+.container{position:relative;max-width:430px;margin:0 auto;padding:0;padding-bottom:calc(var(--nav) + 16px)}
+header{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 18px 12px;flex-shrink:0;position:relative;z-index:5;margin-bottom:0;border-bottom:none;animation:none}
+.tb-icon-row{font-size:1.5rem;letter-spacing:6px;margin-bottom:4px}
+.tb-logo{font-family:var(--fs);font-size:22px;font-weight:400;letter-spacing:.12em;color:var(--gold2);margin:0;text-align:center}
+.tb-btn{background:none;border:.5px solid var(--border2);border-radius:100px;padding:5px 13px;font-size:11px;color:var(--cream2);cursor:pointer;font-family:var(--fn)}
+.bottom-nav{height:var(--nav);background:rgba(28,34,53,.96);border-top:.5px solid var(--goldborder);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--cream2);font-family:var(--fn);font-size:9.5px;letter-spacing:.04em;padding:6px 0 10px;-webkit-tap-highlight-color:transparent;position:relative}
+.nav-icon-img{width:24px;height:24px;display:block;opacity:.38}
+.nav-item.active .nav-icon-img{opacity:1}
+.nav-item.active .nav-label{color:var(--gold)}
+.nav-item.active::before{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.nav-item.active{color:var(--gold2)}
+.nav-label{font-size:9.5px;font-weight:500;letter-spacing:.04em}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.dh-message{text-align:center;font-size:.95rem;color:var(--cream-beige);margin:1rem 0 .5rem;line-height:1.5;min-height:1.5em;font-style:italic}
+    </style>
+    <!-- Load full CSS async — does not block first paint (GH-87) -->
+    <link rel="preload" href="src/css/modern.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="src/css/modern.css"></noscript>
     <!-- Preload JS entry points so the browser starts downloading them
          at HTML-parse time, not when the parser reaches them at bottom of body.
          They still execute after parsing (defer), but download starts earlier. -->
