@@ -255,13 +255,14 @@ async function getAccessToken() {
 }
 
 async function sendPushWithRetry(heading, body_text, collapseId, retries = 2) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
+    const maxAttempts = Math.max(1, retries);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             return await sendPush(heading, body_text, collapseId);
         } catch (err) {
             if (attempt === retries) throw err;
             const delay = 1500 * attempt;
-            console.warn(`↩️  FCM send failed (attempt ${attempt}/${retries}), retrying in ${delay}ms — ${err.message}`);
+            console.warn(`↩️  FCM send failed (attempt ${attempt}/${maxAttempts}), retrying in ${delay}ms — ${err.message}`);
             await new Promise(r => setTimeout(r, delay));
         }
     }
@@ -406,9 +407,8 @@ async function main() {
     // prayer times rather than the hardcoded hours >= 20 proxy (actual ~19:28 in late May).
     if (dayNum === 9) {
         const maghribStr = prayerTimes?.maghrib;
-        const maghribTotalMin = maghribStr
-            ? maghribStr.split(':').map(Number).reduce((h, m) => h * 60 + m)
-            : 20 * 60; // safe fallback if times unavailable
+        const [mh, mm] = maghribStr ? maghribStr.split(':').map(Number) : [20, 0];
+        const maghribTotalMin = maghribStr ? mh * 60 + mm : 20 * 60;
         if (hours * 60 + minutes >= maghribTotalMin) {
             console.log(`🌙 Arafa Day ended — Maghrib was ${maghribStr ?? '~20:00'} Cairo`);
             return;
@@ -418,7 +418,7 @@ async function main() {
     // ── Dhikr gate: only fire once per hour (at minute 0–2 to absorb GHA startup jitter) ──
     // The cron fires every minute; without this guard ~60 identical FCM calls are made per hour.
     if (minutes > 2) {
-        console.log(`⏭️  Minute ${minutes} — dhikr already sent this hour, skipping.`);
+        console.log(`⏭️  Minute ${minutes} — outside dhikr window (0–2), skipping.`);
         return;
     }
 
