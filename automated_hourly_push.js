@@ -187,13 +187,13 @@ async function getCairoPrayerTimes() {
 }
 
 function getPrayerAtTime(times, hour, minute) {
-    // GitHub Actions cron is delayed by up to ~5 minutes on free repos.
-    // Match within a ±4-minute window to avoid missing prayers entirely.
+    // Per-minute cron has <60 s jitter. ±1 min covers startup latency without
+    // firing 9 times per prayer the way the old ±4 window did.
     const nowMinutes = hour * 60 + minute;
     for (const [key, timeStr] of Object.entries(times)) {
         const [h, m] = timeStr.split(':').map(Number);
         const prayerMinutes = h * 60 + m;
-        if (Math.abs(nowMinutes - prayerMinutes) <= 4) return key;
+        if (Math.abs(nowMinutes - prayerMinutes) <= 1) return key;
     }
     return null;
 }
@@ -252,6 +252,19 @@ async function getAccessToken() {
         _fcmAccessToken = token;
     }
     return _fcmAccessToken;
+}
+
+async function sendPushWithRetry(heading, body_text, collapseId, retries = 2) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            return await sendPush(heading, body_text, collapseId);
+        } catch (err) {
+            if (attempt === retries) throw err;
+            const delay = 1500 * attempt;
+            console.warn(`↩️  FCM send failed (attempt ${attempt}/${retries}), retrying in ${delay}ms — ${err.message}`);
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
 }
 
 async function sendPush(heading, body_text, collapseId) {
@@ -369,12 +382,12 @@ async function main() {
         const { heading, body } = prayerNotifications[matchedPrayer];
         const prayerCollapseId = `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`;
         console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
-        try {
-            await sendPush(heading, body, prayerCollapseId);
-        } catch (err) {
-            console.error('❌ Prayer notification error:', err.message);
-        }
-        await sendOneSignalPush(heading, body, prayerCollapseId).catch((err) => console.warn('⚠️  OneSignal prayer error:', err.message));
+        const results = await Promise.allSettled([
+            sendPushWithRetry(heading, body, prayerCollapseId),
+            sendOneSignalPush(heading, body, prayerCollapseId),
+        ]);
+        if (results[0].status === 'rejected') console.error('❌ Prayer FCM error:', results[0].reason.message);
+        if (results[1].status === 'rejected') console.warn('⚠️  Prayer OneSignal error:', results[1].reason.message);
     }
 
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
@@ -383,15 +396,29 @@ async function main() {
         return;
     }
 
-    // ── Active hours guard (05:00–22:00 for regular days; Day 9 stops at Maghrib ~20:00) ──
-    // Day 9 after Maghrib: Arafa window has closed — no more reminders.
-    // hours >= 20 is used as proxy for "after Maghrib" (Cairo Maghrib ≈ 19:30 in late May UTC+3).
-    if (dayNum === 9 && hours >= 20) {
-        console.log(`🌙 Arafa Day ended after Maghrib — no more hourly reminders.`);
-        return;
-    }
+    // ── Active hours guard (05:00–22:00 for regular days; Day 9 stops at actual Maghrib) ──
     if (hours < 5 || hours > 22) {
         console.log(`🌙 Outside active hours — prayer check done, skipping general message.`);
+        return;
+    }
+
+    // Day 9: Arafah window closes at Maghrib. Use actual Maghrib time from baked/fetched
+    // prayer times rather than the hardcoded hours >= 20 proxy (actual ~19:28 in late May).
+    if (dayNum === 9) {
+        const maghribStr = prayerTimes?.maghrib;
+        const maghribTotalMin = maghribStr
+            ? maghribStr.split(':').map(Number).reduce((h, m) => h * 60 + m)
+            : 20 * 60; // safe fallback if times unavailable
+        if (hours * 60 + minutes >= maghribTotalMin) {
+            console.log(`🌙 Arafa Day ended — Maghrib was ${maghribStr ?? '~20:00'} Cairo`);
+            return;
+        }
+    }
+
+    // ── Dhikr gate: only fire once per hour (at minute 0–2 to absorb GHA startup jitter) ──
+    // The cron fires every minute; without this guard ~60 identical FCM calls are made per hour.
+    if (minutes > 2) {
+        console.log(`⏭️  Minute ${minutes} — dhikr already sent this hour, skipping.`);
         return;
     }
 
@@ -448,12 +475,12 @@ async function main() {
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
     const dhikrCollapseId = `dh-day${dayNum}-hour${hours}`;
-    try {
-        await sendPush(heading, body_text, dhikrCollapseId);
-    } catch (err) {
-        console.error('❌ Hourly notification error:', err.message);
-    }
-    await sendOneSignalPush(heading, body_text, dhikrCollapseId).catch((err) => console.warn('⚠️  OneSignal dhikr error:', err.message));
+    const dhikrResults = await Promise.allSettled([
+        sendPushWithRetry(heading, body_text, dhikrCollapseId),
+        sendOneSignalPush(heading, body_text, dhikrCollapseId),
+    ]);
+    if (dhikrResults[0].status === 'rejected') console.error('❌ Dhikr FCM error:', dhikrResults[0].reason.message);
+    if (dhikrResults[1].status === 'rejected') console.warn('⚠️  Dhikr OneSignal error:', dhikrResults[1].reason.message);
 }
 
 main();
