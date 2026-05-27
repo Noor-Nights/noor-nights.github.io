@@ -1,8 +1,10 @@
 // automated_hourly_push.js
 // GitHub Actions CRON job — runs every minute, year-round.
 // Prayer time notifications: sent every day when Cairo prayer hour matches.
-// Dhul Hijjah messages: only sent during the 10 blessed days (May 18–27, 2026).
+// Dhul Hijjah messages: only sent during the 10 blessed days of Dhul Hijjah.
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
+// Dates are read from DHUL_HIJJAH_START / DHUL_HIJJAH_END env vars (set in the workflow);
+// update those vars each Hijri year — no code change needed.
 
 const fs = require('fs');
 const path = require('path');
@@ -42,9 +44,13 @@ const hours   = _cairoParts.hour === 24 ? 0 : _cairoParts.hour;
 const minutes = _cairoParts.minute;
 const time    = _nowUTC.getTime(); // actual UTC ms — used for DH date range check
 
-// Dhul Hijjah 1447: 1st = May 18, 2026 (Umm al-Qura) — 10th = May 27 (Eid)
-const DH_START   = new Date('2026-05-18T00:00:00+03:00').getTime();
-const DH_END     = new Date('2026-05-27T23:59:00+03:00').getTime();
+// Dhul Hijjah date range — read from workflow env vars; fallback to 1447 values.
+// To update: edit DHUL_HIJJAH_START / DHUL_HIJJAH_END in ramadan_hourly_push.yml.
+// Next update: Dhul Hijjah 1448 ≈ May 2027 (verify with Umm al-Qura calendar).
+const _dhStart = process.env.DHUL_HIJJAH_START || '2026-05-18';
+const _dhEnd   = process.env.DHUL_HIJJAH_END   || '2026-05-27';
+const DH_START   = new Date(`${_dhStart}T00:00:00+03:00`).getTime();
+const DH_END     = new Date(`${_dhEnd}T23:59:00+03:00`).getTime();
 const inDhulHijjah = time >= DH_START && time <= DH_END;
 
 // ── Calculate Day Number (1–10, or 0 outside Dhul Hijjah) ───────────────────
