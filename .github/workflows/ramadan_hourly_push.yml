@@ -3,7 +3,7 @@ name: Noor Nights — Prayer & Dhikr Reminders
 on:
   # Runs every minute, year-round (public repo = free unlimited minutes).
   # Prayer notifications: sent at the exact Cairo prayer minute (Fajr–Isha).
-  # Dhul Hijjah dhikr messages: only during May 18–27, 2026, once per hour at :00.
+  # Dhul Hijjah dhikr messages: only during the 10 blessed days (dates in env vars below).
   # UTC 00:00–20:59 covers Cairo 03:00–23:59 (UTC+3 in summer), catching all 5 prayers.
   schedule:
     - cron: '* 0-20 * * *'   # Every minute, 00:00–20:59 UTC = 03:00–23:59 Cairo (UTC+3 in summer)
@@ -54,4 +54,8 @@ jobs:
           ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
           ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
           MANUAL_DISPATCH: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
+          # Dhul Hijjah 1447 (current year). Update for 1448 ≈ May 2027 (Umm al-Qura).
+          # ISO 8601 date strings; the script appends +03:00 (Cairo time) when parsing.
+          DHUL_HIJJAH_START: '2026-05-18'
+          DHUL_HIJJAH_END:   '2026-05-27'
         run: node automated_hourly_push.js
