@@ -383,12 +383,13 @@ async function main() {
         const { heading, body } = prayerNotifications[matchedPrayer];
         const prayerCollapseId = `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`;
         console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
-        const results = await Promise.allSettled([
-            sendPushWithRetry(heading, body, prayerCollapseId),
-            sendOneSignalPush(heading, body, prayerCollapseId),
-        ]);
-        if (results[0].status === 'rejected') console.error('❌ Prayer FCM error:', results[0].reason.message);
-        if (results[1].status === 'rejected') console.warn('⚠️  Prayer OneSignal error:', results[1].reason.message);
+        try {
+            await sendPushWithRetry(heading, body, prayerCollapseId);
+        } catch (fcmErr) {
+            console.warn(`⚠️  Prayer FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
+            await sendOneSignalPush(heading, body, prayerCollapseId)
+                .catch(osErr => console.error(`❌ Prayer OneSignal fallback error: ${osErr.message}`));
+        }
     }
 
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
@@ -475,12 +476,13 @@ async function main() {
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
     const dhikrCollapseId = `dh-day${dayNum}-hour${hours}`;
-    const dhikrResults = await Promise.allSettled([
-        sendPushWithRetry(heading, body_text, dhikrCollapseId),
-        sendOneSignalPush(heading, body_text, dhikrCollapseId),
-    ]);
-    if (dhikrResults[0].status === 'rejected') console.error('❌ Dhikr FCM error:', dhikrResults[0].reason.message);
-    if (dhikrResults[1].status === 'rejected') console.warn('⚠️  Dhikr OneSignal error:', dhikrResults[1].reason.message);
+    try {
+        await sendPushWithRetry(heading, body_text, dhikrCollapseId);
+    } catch (fcmErr) {
+        console.warn(`⚠️  Dhikr FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
+        await sendOneSignalPush(heading, body_text, dhikrCollapseId)
+            .catch(osErr => console.error(`❌ Dhikr OneSignal fallback error: ${osErr.message}`));
+    }
 }
 
 main();
