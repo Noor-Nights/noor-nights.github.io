@@ -129,23 +129,23 @@ const CAIRO_LNG = 31.2357;
 const prayerNotifications = {
     fajr:    {
         heading: '🌅 حان وقت صلاة الفجر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nمن صلى الفجر في جماعة فكأنما قام الليل كله — لا تفوّتها.',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nمن صلى الفجر في جماعة فكأنما قام الليل كله — لا تفوّتها.\n(القاهرة)',
     },
     dhuhr:   {
         heading: '☀️ حان وقت صلاة الظهر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🕌\nاستقبل منتصف يومك بالصلاة، وأكثر من التكبير في هذه الأيام المباركة.',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🕌\nاستقبل منتصف يومك بالصلاة، وأكثر من التكبير في هذه الأيام المباركة.\n(القاهرة)',
     },
     asr:     {
         heading: '🌤️ حان وقت صلاة العصر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌟\n"من فاتته صلاة العصر فكأنما وُتِر أهله وماله" — النبي ﷺ',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌟\n"من فاتته صلاة العصر فكأنما وُتِر أهله وماله" — النبي ﷺ\n(القاهرة)',
     },
     maghrib: {
         heading: '🌅 حان وقت صلاة المغرب',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nأسرع إلى الصلاة وادعُ بعدها — ما بين الأذان والإقامة دعوة لا تُرد.',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nأسرع إلى الصلاة وادعُ بعدها — ما بين الأذان والإقامة دعوة لا تُرد.\n(القاهرة)',
     },
     isha:    {
         heading: '🌙 حان وقت صلاة العشاء',
-        body: 'حيّ على الصلاة، حيّ على الفلاح ✨\nاختم يومك بالصلاة والاستغفار — من صلى العشاء في جماعة فكأنما قام نصف الليل.',
+        body: 'حيّ على الصلاة، حيّ على الفلاح ✨\nاختم يومك بالصلاة والاستغفار — من صلى العشاء في جماعة فكأنما قام نصف الليل.\n(القاهرة)',
     },
 };
 
@@ -245,19 +245,31 @@ const eveningMessages = [
 // ── FCM HTTP v1 Send ──────────────────────────────────────────────────────────
 const { GoogleAuth } = require('google-auth-library');
 
-let _fcmAccessToken = null;
+const TOKEN_CACHE_PATH = '/tmp/noor-nights-fcm-token.json';
+const TOKEN_TTL_BUFFER_S = 60; // refresh if < 60 s remaining
 
 async function getAccessToken() {
-    if (!_fcmAccessToken) {
-        const auth = new GoogleAuth({
-            credentials: SERVICE_ACCOUNT,
-            scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
-        });
-        const client = await auth.getClient();
-        const { token } = await client.getAccessToken();
-        _fcmAccessToken = token;
+    // Try the /tmp cache first — tokens last 1 h; re-use across per-minute invocations.
+    try {
+        const cached = JSON.parse(fs.readFileSync(TOKEN_CACHE_PATH, 'utf8'));
+        if (cached.token && cached.expiresAt - Date.now() > TOKEN_TTL_BUFFER_S * 1000) {
+            return cached.token;
+        }
+    } catch (_) { /* cache miss or corrupt — fall through to fresh fetch */ }
+
+    const auth = new GoogleAuth({
+        credentials: SERVICE_ACCOUNT,
+        scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+    });
+    const client = await auth.getClient();
+    const { token, res } = await client.getAccessToken();
+    const expiresAt = res?.data?.expiry_date ?? (Date.now() + 3600 * 1000);
+    try {
+        fs.writeFileSync(TOKEN_CACHE_PATH, JSON.stringify({ token, expiresAt }));
+    } catch (e) {
+        console.warn(`⚠️  Could not write token cache: ${e.message}`);
     }
-    return _fcmAccessToken;
+    return token;
 }
 
 async function sendPushWithRetry(heading, body_text, collapseId, retries = 2) {
