@@ -9,7 +9,8 @@ on:
     - cron: '* 0-20 * * *'   # Every minute, 00:00–20:59 UTC = 03:00–23:59 Cairo (UTC+3 in summer)
   workflow_dispatch:          # Allow manual trigger for testing
 
-permissions: {}   # least-privilege: this workflow only calls external APIs, needs no GitHub token
+permissions:
+  actions: write   # needed to save the prayer-times cache
 
 jobs:
   send-push-reminders:
@@ -26,6 +27,25 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci
+
+      # Cache prayer times keyed on the Cairo calendar date.
+      # On cache hit: skip the bake step — aladhan.com is not called at all.
+      # On cache miss (first run of each new day): bake step runs once, then
+      # the result is cached for every subsequent run that day.
+      - name: 📅 Get Cairo date (cache key)
+        id: cairo-date
+        run: echo "date=$(TZ=Africa/Cairo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: 🗓️ Restore Cairo prayer times cache
+        id: prayer-cache
+        uses: actions/cache@v4
+        with:
+          path: src/js/cairo-times.json
+          key: cairo-times-${{ steps.cairo-date.outputs.date }}
+
+      - name: 🕌 Bake today's prayer times (cache miss only)
+        if: steps.prayer-cache.outputs.cache-hit != 'true'
+        run: node scripts/bake-prayer-times.js > /dev/null
 
       - name: 🕋 Fire Prayer & Dhikr Push
         env:

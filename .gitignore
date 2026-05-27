@@ -38,3 +38,6 @@ env/
 # Dependencies
 node_modules/
 
+# Generated at deploy/CI time — not tracked in source control
+src/js/cairo-times.json
+
