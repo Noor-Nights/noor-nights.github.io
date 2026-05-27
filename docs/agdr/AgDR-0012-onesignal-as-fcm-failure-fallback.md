@@ -77,8 +77,8 @@ Rationale:
 
 ## Consequences
 
-- The `Promise.allSettled` concurrency model from PR #96 is replaced with
-  sequential try/catch at both send sites. This increases per-invocation
+- The `Promise.allSettled` concurrency model introduced in PR #96 (AgDR-0011)
+  is replaced with sequential try/catch at both send sites. This increases per-invocation
   latency by `t_onesignal` on the FCM-failure path (uncommon), and eliminates
   it entirely on the success path.
 - OneSignal is now a fallback, not a co-primary. Log messages updated to
