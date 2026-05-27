@@ -48,7 +48,10 @@ jobs:
       - name: Bake Cairo prayer times
         run: |
           node scripts/bake-prayer-times.js > src/js/cairo-times.js
-          echo "Generated $(grep -c 'fajr' src/js/cairo-times.js) days of Cairo prayer times"
+          echo "Generated $(grep -c 'fajr' src/js/cairo-times.js) days of Cairo prayer times (JS bundle + JSON cache file)"
+          # cairo-times.json is consumed by the push-reminders job via GHA cache.
+          # Remove it before the Pages upload so it is not served publicly.
+          rm -f src/js/cairo-times.json
 
       - name: Minify JS and CSS
         run: |
