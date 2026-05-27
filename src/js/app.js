@@ -2360,7 +2360,8 @@ class VirtueCards {
         const start = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
         const diff = Math.floor((now - start) / 86400000);
         if (diff < 0) return 0;
-        if (diff >= 10) return 10;
+        if (diff >= 12) return -1;  // after Ayyam al-Tashreeq (days 11–12): hide section
+        if (diff >= 10) return 10;  // days 11–12: Eid al-Adha card remains visible
         return diff + 1;
     }
 
@@ -2369,6 +2370,13 @@ class VirtueCards {
         if (!container) return;
         const lang = localStorage.getItem('noor-lang') || 'en';
         const today = this._currentDay();
+
+        // Post-Tashreeq: hide the entire section (heading + cards)
+        if (today < 0) {
+            const section = container.closest('.vc-section-card') || container;
+            section.style.display = 'none';
+            return;
+        }
 
         // On first render, jump to today's card
         if (!this._initialised) {
