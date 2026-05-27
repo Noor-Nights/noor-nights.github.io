@@ -523,6 +523,7 @@ function applyLanguage(lang) {
     if (fastingTracker) fastingTracker.init();
     renderDailyFocusCard();
     renderTodayGlance();
+    renderHijriDate();
     _updateSettingsCard(lang);
 }
 
@@ -5081,14 +5082,17 @@ window.addEventListener('keydown', (e) => {
 function renderHijriDate() {
     const el = document.getElementById('hijri-date');
     if (!el) return;
+    const isAr = currentLang === 'ar';
+    el.dir = isAr ? 'rtl' : 'ltr';
     try {
-        el.textContent = new Intl.DateTimeFormat('ar-SA', {
+        el.textContent = new Intl.DateTimeFormat(isAr ? 'ar-SA' : 'en', {
             calendar: 'islamic-umalqura',
             day: 'numeric',
             month: 'long',
             year: 'numeric',
         }).format(new Date());
     } catch (_) {
+        console.warn('renderHijriDate: Intl islamic-umalqura not supported, hiding element');
         el.style.display = 'none';
     }
 }
