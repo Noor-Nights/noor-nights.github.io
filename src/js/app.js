@@ -5078,6 +5078,21 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+function renderHijriDate() {
+    const el = document.getElementById('hijri-date');
+    if (!el) return;
+    try {
+        el.textContent = new Intl.DateTimeFormat('ar-SA', {
+            calendar: 'islamic-umalqura',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(new Date());
+    } catch (_) {
+        el.style.display = 'none';
+    }
+}
+
 // Global Initialization — two phases for faster LCP:
 //   Phase 1 (rAF): language + DH countdown — lets skeleton text paint first
 //   Phase 2 (setTimeout 0): everything else, yielded after first paint
@@ -5085,6 +5100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Phase 1: apply language immediately, then update countdown after first frame
     applyLanguage(currentLang);
+    renderHijriDate();
     requestAnimationFrame(() => {
         updateDhulHijjahCountdown();
         setInterval(updateDhulHijjahCountdown, 1000);

@@ -27,6 +27,7 @@ body{background:var(--bg);background-attachment:fixed;color:var(--text);font-fam
 header{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 18px 12px;flex-shrink:0;position:relative;z-index:5;margin-bottom:0;border-bottom:none;animation:none}
 .tb-icon-row{font-size:1.5rem;letter-spacing:6px;margin-bottom:4px}
 .tb-logo{font-family:var(--fs);font-size:22px;font-weight:400;letter-spacing:.12em;color:var(--gold2);margin:0;text-align:center}
+.tb-hijri-date{font-family:var(--fa);font-size:13px;color:var(--cream2);margin-top:4px;letter-spacing:.02em;direction:rtl}
 .tb-btn{background:none;border:.5px solid var(--border2);border-radius:100px;padding:5px 13px;font-size:11px;color:var(--cream2);cursor:pointer;font-family:var(--fn)}
 .bottom-nav{height:var(--nav);background:rgba(28,34,53,.96);border-top:.5px solid var(--goldborder);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--cream2);font-family:var(--fn);font-size:9.5px;letter-spacing:.04em;padding:6px 0 10px;-webkit-tap-highlight-color:transparent;position:relative}
@@ -139,6 +140,7 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
         <header id="topbar">
             <div class="tb-icon-row">✦ 🌙 ✦</div>
             <h1 class="tb-logo" data-i18n="appName">Noor Nights</h1>
+            <div class="tb-hijri-date" id="hijri-date" aria-label="Today's Hijri date"></div>
         </header>
 
 
