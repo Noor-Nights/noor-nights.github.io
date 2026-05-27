@@ -1,8 +1,11 @@
 // automated_hourly_push.js
-// GitHub Actions CRON job — runs every hour, year-round.
+// GitHub Actions CRON job — runs every minute, year-round.
 // Prayer time notifications: sent every day when Cairo prayer hour matches.
 // Dhul Hijjah messages: only sent during the 10 blessed days (May 18–27, 2026).
 // Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
+
+const fs = require('fs');
+const path = require('path');
 
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
 if (!PROJECT_ID) {
@@ -140,10 +143,28 @@ const prayerNotifications = {
     },
 };
 
+// Baked prayer times are pre-fetched at deploy time by scripts/bake-prayer-times.js
+// and written to src/js/cairo-times.json. Reading from file avoids 1,260+ external
+// API calls per day (once-per-minute cron × 21 active hours). Falls back to a live
+// aladhan.com fetch only when today's date is not covered (e.g. stale deploy).
 async function getCairoPrayerTimes() {
-    const day   = _cairoParts.day;
-    const month = _cairoParts.month;
-    const year  = _cairoParts.year;
+    const { day, month, year } = _cairoParts;
+    const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+    // 1. Try the baked JSON file written at deploy time.
+    try {
+        const jsonPath = path.resolve(__dirname, 'src/js/cairo-times.json');
+        const baked = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (baked[dateKey]) {
+            console.log(`📅 Prayer times loaded from baked file for ${dateKey}`);
+            return baked[dateKey];
+        }
+        console.warn(`⚠️ Baked prayer times do not cover ${dateKey} — falling back to live fetch`);
+    } catch (e) {
+        console.warn(`⚠️ Could not read baked prayer times (${e.message}) — falling back to live fetch`);
+    }
+
+    // 2. Fallback: live fetch from aladhan.com (stale deploy or missing file).
     try {
         const res = await fetch(
             `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${CAIRO_LAT}&longitude=${CAIRO_LNG}&method=5`
@@ -152,15 +173,15 @@ async function getCairoPrayerTimes() {
         if (data.code === 200) {
             const t = data.data.timings;
             return {
-                fajr:    t.Fajr,
-                dhuhr:   t.Dhuhr,
-                asr:     t.Asr,
-                maghrib: t.Maghrib,
-                isha:    t.Isha,
+                fajr:    t.Fajr.split(' ')[0],
+                dhuhr:   t.Dhuhr.split(' ')[0],
+                asr:     t.Asr.split(' ')[0],
+                maghrib: t.Maghrib.split(' ')[0],
+                isha:    t.Isha.split(' ')[0],
             };
         }
     } catch (e) {
-        console.warn('⚠️ Could not fetch prayer times:', e.message);
+        console.warn('⚠️ Live prayer time fetch also failed:', e.message);
     }
     return null;
 }

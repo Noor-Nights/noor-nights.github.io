@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// Fetches Cairo prayer times from aladhan.com for the current + next month
-// and writes a JS module to stdout: const CAIRO_BAKED_TIMES = { ... };
+// Fetches Cairo prayer times from aladhan.com for the current + next month.
+// Writes two outputs:
+//   stdout            → src/js/cairo-times.js  (JS var, consumed by the browser bundle)
+//   src/js/cairo-times.json → plain JSON, consumed by automated_hourly_push.js
 //
 // Usage (in deploy.yml):
 //   node scripts/bake-prayer-times.js > src/js/cairo-times.js
@@ -8,6 +10,8 @@
 'use strict';
 
 const https = require('https');
+const fs    = require('fs');
+const path  = require('path');
 
 const LAT    = '30.0444';
 const LNG    = '31.2357';
@@ -66,6 +70,13 @@ async function main() {
     }
 
     const generated = new Date().toISOString();
+
+    // 1. Write plain JSON for automated_hourly_push.js (no var wrapper, no minification)
+    const jsonPath = path.resolve(__dirname, '../src/js/cairo-times.json');
+    fs.writeFileSync(jsonPath, JSON.stringify(all, null, 2) + '\n');
+    console.error(`Wrote ${jsonPath} (${Object.keys(all).length} days)`);
+
+    // 2. Write JS module to stdout → redirected to src/js/cairo-times.js by deploy.yml
     process.stdout.write(
         `// Auto-generated at deploy time — do not edit manually.\n` +
         `// Source: aladhan.com method=${METHOD}, Cairo lat=${LAT} lon=${LNG}\n` +
