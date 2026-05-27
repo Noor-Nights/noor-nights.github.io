@@ -278,7 +278,7 @@ async function sendPush(heading, body_text, collapseId) {
     }
 }
 
-async function sendOneSignalPush(heading, body_text) {
+async function sendOneSignalPush(heading, body_text, collapseId) {
     const appId = process.env.ONESIGNAL_APP_ID;
     const apiKey = process.env.ONESIGNAL_REST_API_KEY;
     if (!appId || !apiKey) {
@@ -296,6 +296,7 @@ async function sendOneSignalPush(heading, body_text) {
             included_segments: ['All'],
             headings: { en: heading },
             contents: { en: body_text },
+            collapse_id: collapseId,
         }),
     });
     if (!res.ok) {
@@ -345,13 +346,14 @@ async function main() {
 
     if (matchedPrayer && prayerNotifications[matchedPrayer]) {
         const { heading, body } = prayerNotifications[matchedPrayer];
+        const prayerCollapseId = `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`;
         console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
         try {
-            await sendPush(heading, body, `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`);
+            await sendPush(heading, body, prayerCollapseId);
         } catch (err) {
             console.error('❌ Prayer notification error:', err.message);
         }
-        await sendOneSignalPush(heading, body).catch((err) => console.warn('⚠️  OneSignal prayer error:', err.message));
+        await sendOneSignalPush(heading, body, prayerCollapseId).catch((err) => console.warn('⚠️  OneSignal prayer error:', err.message));
     }
 
     // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
@@ -424,12 +426,13 @@ async function main() {
     if (dayNum === 8 && hours >= 20) console.log('🌙 ARAFA EVE — sending arafa-eve warmup');
     if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
 
+    const dhikrCollapseId = `dh-day${dayNum}-hour${hours}`;
     try {
-        await sendPush(heading, body_text, `dh-day${dayNum}-hour${hours}`);
+        await sendPush(heading, body_text, dhikrCollapseId);
     } catch (err) {
         console.error('❌ Hourly notification error:', err.message);
     }
-    await sendOneSignalPush(heading, body_text).catch((err) => console.warn('⚠️  OneSignal dhikr error:', err.message));
+    await sendOneSignalPush(heading, body_text, dhikrCollapseId).catch((err) => console.warn('⚠️  OneSignal dhikr error:', err.message));
 }
 
 main();
