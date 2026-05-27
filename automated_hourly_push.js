@@ -260,7 +260,7 @@ async function sendPushWithRetry(heading, body_text, collapseId, retries = 2) {
         try {
             return await sendPush(heading, body_text, collapseId);
         } catch (err) {
-            if (attempt === retries) throw err;
+            if (attempt === maxAttempts) throw err;
             const delay = 1500 * attempt;
             console.warn(`↩️  FCM send failed (attempt ${attempt}/${maxAttempts}), retrying in ${delay}ms — ${err.message}`);
             await new Promise(r => setTimeout(r, delay));
