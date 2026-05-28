@@ -143,15 +143,6 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
             <div class="tb-hijri-date" id="hijri-date" aria-label="Today's Hijri date"></div>
         </header>
 
-
-<!-- ── Arafah Banner (always visible, shown by JS on Day 9) ── -->
-        <div class="arafah-banner" id="arafah-banner">
-            <div class="arafah-banner-icon">⭐</div>
-            <div class="arafah-banner-title" data-i18n="arafahBannerTitle">Yawm Arafah — The Greatest Day</div>
-            <div class="arafah-banner-sub" data-i18n="arafahBannerSub">Fast today, make dua, and seek forgiveness. Allah frees more servants from the Fire on this day than any other.</div>
-            <div class="arafah-banner-dua arabic-text" lang="ar" dir="rtl">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</div>
-        </div>
-
         <!-- ══════════════════════════════════════════ -->
         <!-- TAB: HOME                                  -->
         <!-- ══════════════════════════════════════════ -->
@@ -165,45 +156,12 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
                 <button class="badge-strip-cta" onclick="switchTab('tracker')" data-i18n="badgeStripCta">View all →</button>
             </div>
 
-            <!-- Dhul Hijjah Countdown Card -->
-            <div class="card dhul-hijjah-card" id="dhul-hijjah-card">
-                <div class="section-heading-row">
-                  <div class="section-icon-chip"><img src="assets/icons/countdown.svg" alt="" aria-hidden="true" width="24" height="24"></div>
-                  <h2 id="dhul-hijjah-title">Countdown to Dhul Hijjah</h2>
-                </div>
-                <!-- Skeleton content — JS replaces this once loaded.
-                     Keeps the LCP element painted from first frame to avoid LCP regression. -->
-                <div id="dh-stage-body">
-                    <!-- LCP skeleton: inline script computes the exact message app.js will show,
-                         so the LCP element is correct from frame 0 (no element render delay).
-                         Inlined to eliminate the render-blocking network round-trip (GH-85). -->
-                    <p class="dh-message" id="dh-skeleton-msg">✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.</p>
-                    <script>(function(){var DH_START=new Date('2026-05-18T00:00:00+02:00').getTime();var now=Date.now();var el=document.getElementById('dh-skeleton-msg');if(!el)return;if(now>=DH_START){var day=Math.min(10,Math.max(1,Math.floor((now-DH_START)/86400000)+1));el.textContent='🕋 Day '+day+' of Dhul Hijjah — make every moment count.';}else{var daysLeft=Math.ceil((DH_START-now)/86400000);if(daysLeft<=10){el.textContent='🌟 Only '+daysLeft+' day'+(daysLeft!==1?'s':'')+' left! Begin your daily spiritual challenge.';}}})();</script>
-                </div>
-                <div class="dh-quickjump" id="dh-quickjump">
-                    <a class="btn-qj-primary" href="#" onclick="switchTab('tracker'); return false;" data-i18n="qjTrackWorship">✓ Track Worship</a>
-                    <a class="btn-qj-secondary" href="#" onclick="switchTab('duas'); return false;" data-i18n="qjOpenDuas">🤲 Open Duas</a>
-                </div>
-            </div>
-
             <!-- Prayer Times Widget -->
             <div class="card pt-card" id="pt-card">
                 <div class="pt-card-header">
                     <h2 class="pt-heading">Prayer Times</h2>
                 </div>
                 <div id="pt-container"><p class="pt-loading">Loading…</p></div>
-            </div>
-
-            <!-- Arafah Prayer Timeline (Day 9 only) -->
-            <div class="card arafah-triple-card" id="arafah-triple-card" style="display:none">
-                <h2 class="at-title">Arafah Day Timeline</h2>
-                <div class="at-grid"></div>
-            </div>
-
-            <!-- Arafah Fasting Tracker (Day 9 only) -->
-            <div class="card ft-card" id="ft-card" style="display:none">
-                <h2 class="ft-heading">Arafah Fast</h2>
-                <div id="ft-container"></div>
             </div>
 
         </div><!-- /tab-home -->
