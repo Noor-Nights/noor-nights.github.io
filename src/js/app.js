@@ -3000,8 +3000,6 @@ function _getBakedFallback(dateStr) {
     if (typeof CAIRO_BAKED_TIMES !== 'undefined' && CAIRO_BAKED_TIMES[dateStr]) return CAIRO_BAKED_TIMES[dateStr];
     return _PT_FALLBACK;
 }
-const _PT_EID_TIME = '06:30'; // Eid al-Adha prayer, Cairo, May 27 2026
-
 class PrayerTimesAPI {
     constructor() {
         this._cache = this._loadCache();
@@ -3191,14 +3189,6 @@ class PrayerTimesWidget {
             ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
             : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
 
-        const _dhRealDay = Math.floor((getCurrentTime() - new Date(CONFIG.DHUL_HIJJAH_START).getTime()) / 86400000) + 1;
-        const isEid = _dhRealDay >= 10;
-        const eidRow = isEid ? `
-            <div class="pt-row pt-row-eid">
-                <span class="pt-name">🎉 ${isAr ? 'صلاة العيد' : 'Eid Prayer'}</span>
-                <span class="pt-time">${numFmt(_PT_EID_TIME)}</span>
-            </div>` : '';
-
         const savedLoc = this._api.getSavedLocation();
         const rawLocName = savedLoc ? savedLoc.name : (isAr ? 'القاهرة، مصر' : 'Cairo, Egypt');
         const _coordPattern = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
@@ -3228,7 +3218,7 @@ class PrayerTimesWidget {
                 <span class="pt-location">📍 ${_escape(locName)}</span>
                 <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
             </div>
-            <div class="pt-list">${eidRow}${rows}</div>
+            <div class="pt-list">${rows}</div>
             <div class="pt-next" id="pt-next">${nextText}</div>
             ${reminderHint}
         </div>`;
@@ -3243,7 +3233,7 @@ class PrayerTimesWidget {
         const nextH = Math.floor(next.mins / 60);
         const nextM = next.mins % 60;
 
-        document.querySelectorAll('.pt-row:not(.pt-row-eid)').forEach((row, i) => {
+        document.querySelectorAll('.pt-row').forEach((row, i) => {
             row.classList.toggle('pt-row-current', _PT_PRAYERS_LIST[i] === current);
         });
         const nextEl = document.getElementById('pt-next');
