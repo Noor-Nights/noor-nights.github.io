@@ -1324,7 +1324,7 @@ class WorshipTracker {
         try {
             const saved = localStorage.getItem(this.STORAGE_KEY);
             if (saved) this.data = JSON.parse(saved);
-        } catch {}
+        } catch (e) { console.warn('WorshipTracker: failed to parse saved data', e); }
         this._calcStreaks();
     }
 
@@ -1467,21 +1467,34 @@ class WorshipTracker {
     }
 
     _calcStreaks() {
-        const keys = Object.keys(this.data.days).sort();
-        let cur = 0, longest = this.data.streaks?.longest || 0, temp = 0;
         const today = this.getTodayKey();
-        // Walk backwards from today for current streak
-        for (let i = keys.length - 1; i >= 0; i--) {
-            if (keys[i] > today) continue;
-            if (this.data.days[keys[i]].completed) cur++;
-            else break;
+        const keys = Object.keys(this.data.days).filter(k => k <= today).sort();
+        let cur = 0, longest = this.data.streaks?.longest || 0, temp = 0;
+
+        // Current streak: walk back from today; a missing day or incomplete day breaks it
+        for (let i = 0; ; i++) {
+            const k = this._offsetDay(today, -i);
+            const d = this.data.days[k];
+            if (!d || !d.completed) break;
+            cur++;
         }
-        // Walk forward for longest streak
-        keys.forEach(k => {
-            if (this.data.days[k].completed) { temp++; longest = Math.max(longest, temp); }
+
+        // Longest streak: walk forward through sorted keys; calendar gaps break the run
+        for (let i = 0; i < keys.length; i++) {
+            if (i > 0) {
+                const gap = Math.round((new Date(keys[i]) - new Date(keys[i - 1])) / 86400000);
+                if (gap > 1) temp = 0;
+            }
+            if (this.data.days[keys[i]].completed) { temp++; longest = Math.max(longest, temp); }
             else temp = 0;
-        });
+        }
         this.data.streaks = { current: cur, longest };
+    }
+
+    _offsetDay(dateStr, delta) {
+        const d = new Date(dateStr);
+        d.setDate(d.getDate() + delta);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     _streakEmoji(n) {
