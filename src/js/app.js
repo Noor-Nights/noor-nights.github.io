@@ -3277,6 +3277,27 @@ class PrayerReminders {
 
     isEnabled(prayer) { return !!this._prefs[prayer]; }
 
+    enable(prayer, times) {
+        if (this._prefs[prayer]) return;
+        this._prefs[prayer] = true;
+        this._save();
+        // If times aren't available yet, preference is saved and timer will be scheduled by scheduleAll() once times load.
+        if (times) { this._times = times; this._schedule(prayer, times); }
+        const names = t('dhPrayers');
+        showMessage(t('ptReminderSetTitle'), t('ptReminderSetMsg', names[prayer]));
+        document.querySelectorAll(`.pt-bell[data-prayer="${prayer}"]`).forEach(btn => btn.classList.add('pt-bell-on'));
+    }
+
+    disable(prayer) {
+        if (!this._prefs[prayer]) return;
+        this._prefs[prayer] = false;
+        this._save();
+        if (this._timers[prayer]) { clearTimeout(this._timers[prayer]); delete this._timers[prayer]; }
+        const names = t('dhPrayers');
+        showMessage(t('ptReminderOffTitle'), t('ptReminderOffMsg', names[prayer]));
+        document.querySelectorAll(`.pt-bell[data-prayer="${prayer}"]`).forEach(btn => btn.classList.remove('pt-bell-on'));
+    }
+
     toggle(prayer, times) {
         const wasOn = !!this._prefs[prayer];
         this._prefs[prayer] = !wasOn;
@@ -3511,16 +3532,19 @@ function toggleSettingsPrayerPanel() {
 }
 
 function togglePrayerReminderFromSettings(prayer) {
-    if (prayerReminders) {
-        const isOn = prayerReminders.isEnabled(prayer);
-        if (isOn) {
-            prayerReminders.disable(prayer);
-        } else {
+    if (!prayerReminders) return;
+    const isOn = prayerReminders.isEnabled(prayer);
+    if (isOn) {
+        prayerReminders.disable(prayer);
+        _updateSettingsPrayerToggles();
+        if (prayerWidget) prayerWidget.render();
+    } else {
+        _ensureNotificationPermission(() => {
             prayerReminders.enable(prayer, prayerWidget ? prayerWidget._times : null);
-        }
+            _updateSettingsPrayerToggles();
+            if (prayerWidget) prayerWidget.render();
+        });
     }
-    _updateSettingsPrayerToggles();
-    if (prayerWidget) prayerWidget.render();
 }
 
 function _updateSettingsPrayerToggles() {
