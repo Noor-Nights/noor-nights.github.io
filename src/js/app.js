@@ -201,9 +201,6 @@ const TRANSLATIONS = {
         dhulHijjahBegun: '🕋 Dhul-Hijjah has begun! Seize these blessed 10 days. Allahu Akbar!',
         dhulHijjahProgress: (pct) => `${pct}% of the way there`,
 
-        arafahBannerTitle: 'Yawm Arafah — The Greatest Day',
-        arafahBannerSub: 'Fast today, make dua, and seek forgiveness. Allah frees more servants from the Fire on this day than any other.',
-
         wtCardTitle: 'Worship Tracker',
         badgeSectionTitle: 'Dhul Hijjah Badges',
         badgeSectionSubtitle: 'Earn badges by completing worship goals during the 10 blessed days',
@@ -420,9 +417,6 @@ const TRANSLATIONS = {
         dhulHijjahChallenge: (n) => `🌟 تبقّى ${n} يوم فقط! ابدأ تحديّك الروحاني اليومي.`,
         dhulHijjahBegun: '🕋 بدأت أيام ذي الحجة المباركة! اغتنم هذه العشر. الله أكبر!',
         dhulHijjahProgress: (pct) => `${pct}٪ من الطريق`,
-
-        arafahBannerTitle: 'يوم عرفة — أعظم يوم',
-        arafahBannerSub: 'صم اليوم، وأكثر من الدعاء، واطلب المغفرة. لا يوم يُعتق الله فيه من النار أكثر من يوم عرفة.',
 
         wtCardTitle: 'متتبع العبادة',
         badgeSectionTitle: 'شارات ذي الحجة',
