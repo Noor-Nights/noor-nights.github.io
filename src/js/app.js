@@ -5085,8 +5085,7 @@ function renderHijriDate() {
     const isAr = currentLang === 'ar';
     el.dir = isAr ? 'rtl' : 'ltr';
     try {
-        el.textContent = new Intl.DateTimeFormat(isAr ? 'ar-SA' : 'en', {
-            calendar: 'islamic-umalqura',
+        el.textContent = new Intl.DateTimeFormat(isAr ? 'ar-SA-u-ca-islamic-umalqura' : 'en-u-ca-islamic-umalqura', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
