@@ -3281,6 +3281,7 @@ class PrayerReminders {
         if (this._prefs[prayer]) return;
         this._prefs[prayer] = true;
         this._save();
+        // If times aren't available yet, preference is saved and timer will be scheduled by scheduleAll() once times load.
         if (times) { this._times = times; this._schedule(prayer, times); }
         const names = t('dhPrayers');
         showMessage(t('ptReminderSetTitle'), t('ptReminderSetMsg', names[prayer]));
