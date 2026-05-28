@@ -522,7 +522,6 @@ function applyLanguage(lang) {
     if (prayerWidget) prayerWidget.render();
     if (fastingTracker) fastingTracker.init();
     renderDailyFocusCard();
-    renderTodayGlance();
     renderHijriDate();
     _updateSettingsCard(lang);
 }
@@ -4264,61 +4263,6 @@ function _updateNotifyBtnState(btn, subscribed) {
     btn.disabled = false;
 }
 
-function renderTodayGlance() {
-    const el = document.getElementById('today-glance');
-    if (!el) return;
-    const day = getDhulHijjahDay();
-    if (day < 1 || day > 10) { el.style.display = 'none'; return; }
-    const isAr = currentLang === 'ar';
-    const wt = worshipTracker;
-    const dayData = wt ? (wt.data.days[day] || {}) : {};
-    const tasks = [
-        { key: 'allPrayers',    icon: '🕌', en: 'All prayers', ar: 'الصلوات الخمس' },
-        { key: 'fasting',       icon: '🌙', en: 'Fasting',     ar: 'الصيام' },
-        { key: 'quranJuz',      icon: '📖', en: 'Quran',        ar: 'القرآن' },
-        { key: 'tasbeeh',       icon: '📿', en: 'Tasbeeh',      ar: 'التسبيح' },
-        { key: 'adhkar',        icon: '🤲', en: 'Adhkar',       ar: 'الأذكار' },
-        { key: 'charity',       icon: '💝', en: 'Charity',      ar: 'الصدقة' },
-    ];
-    const done = tasks.filter(t => dayData[t.key] && dayData[t.key] !== 0 && dayData[t.key] !== false).length;
-    const total = tasks.length;
-    const pct = Math.round(done / total * 100);
-    const toAr = (n) => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
-    const dayLabel = isAr ? `اليوم ${toAr(day)} من ذي الحجة` : `Day ${day} of Dhul Hijjah`;
-    const dots = tasks.map(t => {
-        const isDone = dayData[t.key] && dayData[t.key] !== 0 && dayData[t.key] !== false;
-        return `<span class="tg-dot${isDone ? ' tg-dot-done' : ''}" title="${isAr ? t.ar : t.en}">${t.icon}</span>`;
-    }).join('');
-
-    // Streak: count consecutive days back from today where completed===true
-    let streak = 0;
-    if (wt) {
-        for (let d = day; d >= 1; d--) {
-            const dd = wt.data.days[d] || {};
-            const dayDone = tasks.filter(tk => dd[tk.key] && dd[tk.key] !== 0 && dd[tk.key] !== false).length;
-            if (dayDone > 0) streak++;
-            else break;
-        }
-    }
-    const streakHtml = streak > 1
-        ? `<div class="tg-streak">${isAr ? `🔥 ${toAr(streak)} أيام متتالية` : `🔥 ${streak}-day streak`}</div>`
-        : '';
-
-    el.style.display = '';
-    el.className = 'tg-bar-container';
-    el.innerHTML = `
-        <div class="tg-row" dir="${isAr ? 'rtl' : 'ltr'}">
-            <div class="tg-left">
-                <div class="tg-day-label">${dayLabel}</div>
-                <div class="tg-score">${isAr ? toAr(done) : done}<span class="tg-total">/${isAr ? toAr(total) : total}</span> ${isAr ? 'مكتمل' : 'done'}</div>
-                ${streakHtml}
-            </div>
-            <div class="tg-right">
-                <div class="tg-dots">${dots}</div>
-                <div class="tg-bar-wrap"><div class="tg-bar"><div class="tg-bar-fill" style="width:${pct}%"></div></div></div>
-            </div>
-        </div>`;
-}
 
 function shareApp() {
     const isAr = currentLang === 'ar';
@@ -4997,8 +4941,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fastingTracker.init();
         initArafahMode();
         renderDailyFocusCard();
-        renderTodayGlance();
-        setTimeout(() => { renderTodayGlance(); }, 300);
         _updateSettingsCard();
         initDhikrSections();
         checkDayChange();
