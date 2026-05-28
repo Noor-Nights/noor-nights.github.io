@@ -3191,14 +3191,6 @@ class PrayerTimesWidget {
             ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
             : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
 
-        const _dhRealDay = Math.floor((getCurrentTime() - new Date(CONFIG.DHUL_HIJJAH_START).getTime()) / 86400000) + 1;
-        const isEid = _dhRealDay >= 10;
-        const eidRow = isEid ? `
-            <div class="pt-row pt-row-eid">
-                <span class="pt-name">🎉 ${isAr ? 'صلاة العيد' : 'Eid Prayer'}</span>
-                <span class="pt-time">${numFmt(_PT_EID_TIME)}</span>
-            </div>` : '';
-
         const savedLoc = this._api.getSavedLocation();
         const rawLocName = savedLoc ? savedLoc.name : (isAr ? 'القاهرة، مصر' : 'Cairo, Egypt');
         const _coordPattern = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
@@ -3228,7 +3220,7 @@ class PrayerTimesWidget {
                 <span class="pt-location">📍 ${_escape(locName)}</span>
                 <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
             </div>
-            <div class="pt-list">${eidRow}${rows}</div>
+            <div class="pt-list">${rows}</div>
             <div class="pt-next" id="pt-next">${nextText}</div>
             ${reminderHint}
         </div>`;
