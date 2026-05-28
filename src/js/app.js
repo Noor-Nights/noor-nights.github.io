@@ -1539,8 +1539,11 @@ class WorshipTracker {
         const today = this.getCurrentDay();
         const { current: cur } = this.data.streaks;
 
+        const realDiff = CONFIG.WT_TEST_DAY ? null : Math.floor((getCurrentTime() - this.DH_START) / 86400000);
+        const isAfterSeason = !CONFIG.WT_TEST_DAY && realDiff !== null && realDiff >= 10;
+
         container.innerHTML =
-            (today >= 1 && today <= 10 ? this._renderEntry(today, lang, cur) : this._renderOffState(today, lang)) +
+            (today >= 1 && today <= 10 && !isAfterSeason ? this._renderEntry(today, lang, cur) : this._renderOffState(today, lang)) +
             this._renderCalendar(today, lang) +
             this._renderSummary(lang);
 
