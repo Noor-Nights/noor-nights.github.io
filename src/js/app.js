@@ -1315,15 +1315,16 @@ function updateCountdown() {
 // ═══════════════════════════════════════════════════
 class WorshipTracker {
     constructor() {
-        this.STORAGE_KEY = 'noor_tracker_dhulhijjah_1447';
-        this.DH_START = new Date(CONFIG.DHUL_HIJJAH_START).getTime();
+        this.STORAGE_KEY = 'noor_tracker_daily';
         this.data = { days: {}, streaks: { current: 0, longest: 0 } };
         this._load();
     }
 
     _load() {
-        const saved = localStorage.getItem(this.STORAGE_KEY);
-        if (saved) this.data = JSON.parse(saved);
+        try {
+            const saved = localStorage.getItem(this.STORAGE_KEY);
+            if (saved) this.data = JSON.parse(saved);
+        } catch (e) { console.warn('WorshipTracker: failed to parse saved data', e); }
         this._calcStreaks();
     }
 
@@ -1331,39 +1332,45 @@ class WorshipTracker {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
     }
 
-    getCurrentDay() {
-        if (CONFIG.WT_TEST_DAY) return CONFIG.WT_TEST_DAY;
-        const diff = getCurrentTime() - this.DH_START;
-        if (diff < 0) return 0;
-        return Math.min(Math.floor(diff / 86400000) + 1, 10);
+    getTodayKey() {
+        const d = new Date(getCurrentTime());
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    _initDay(n) {
-        if (!this.data.days[n]) {
-            this.data.days[n] = { sunnahPrayers: false, quranJuz: 0, charity: false, fasting: false, tasbeeh: false, adhkar: false, allPrayers: false, completed: false };
+    // Legacy getter — provides numeric-keyed Dhul Hijjah 1447 data for the badge system
+    get _dhulHijjahDays() {
+        try {
+            const saved = localStorage.getItem('noor_tracker_dhulhijjah_1447');
+            return saved ? JSON.parse(saved).days : {};
+        } catch { return {}; }
+    }
+
+    _initDay(key) {
+        if (!this.data.days[key]) {
+            this.data.days[key] = { sunnahPrayers: false, quranJuz: 0, charity: false, fasting: false, tasbeeh: false, adhkar: false, allPrayers: false, completed: false };
         }
     }
 
-    updateActivity(n, field, value) {
-        this._initDay(n);
-        const wasComplete = !!this.data.days[n].completed;
-        const prevPct = this._dayPct(n);
-        this.data.days[n][field] = value;
-        this._checkCompletion(n);
-        const nowComplete = !!this.data.days[n].completed;
-        const newPct = this._dayPct(n);
+    updateActivity(key, field, value) {
+        this._initDay(key);
+        const wasComplete = !!this.data.days[key].completed;
+        const prevPct = this._dayPct(key);
+        this.data.days[key][field] = value;
+        this._checkCompletion(key);
+        const nowComplete = !!this.data.days[key].completed;
+        const newPct = this._dayPct(key);
         this._calcStreaks();
         this._save();
         if (!wasComplete && nowComplete) {
-            this._showDayCompletePopup(n);
+            this._showDayCompletePopup();
         } else if (!nowComplete) {
             this._checkMilestone(prevPct, newPct);
         }
         if (badgeSystem) badgeSystem.update();
     }
 
-    _dayPct(n) {
-        const d = this.data.days[n];
+    _dayPct(key) {
+        const d = this.data.days[key];
         if (!d) return 0;
         const tasks = [d.sunnahPrayers, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar, d.allPrayers];
         const done = tasks.filter(Boolean).length;
@@ -1399,17 +1406,17 @@ class WorshipTracker {
         }, 4000);
     }
 
-    _showDayCompletePopup(n) {
-        _queueCelebration(() => this._doShowDayCompletePopup(n));
+    _showDayCompletePopup() {
+        _queueCelebration(() => this._doShowDayCompletePopup());
     }
 
-    _doShowDayCompletePopup(n) {
+    _doShowDayCompletePopup() {
         const lang = localStorage.getItem('noor-lang') || 'en';
         const isAr = lang === 'ar';
         const title = isAr ? '✅ يوم مكتمل!' : '✅ Day Complete!';
         const sub   = isAr
-            ? `أتممت اليوم ${this._toAr(n)} من ذي الحجة — جزاك الله خيراً!`
-            : `You completed Day ${n} of Dhul Hijjah — JazakAllah Khayran!`;
+            ? 'أتممت مهام اليوم — جزاك الله خيراً!'
+            : 'You completed all of today\'s goals — JazakAllah Khayran!';
         const dua   = isAr
             ? '«اللهم تقبّل منا إنك أنت السميع العليم»'
             : '"O Allah, accept from us. You are the All-Hearing, the All-Knowing."';
@@ -1453,23 +1460,41 @@ class WorshipTracker {
         });
     }
 
-    _checkCompletion(n) {
-        const d = this.data.days[n];
-        d.completed = d.sunnahPrayers && d.quranJuz > 0 && d.charity && d.fasting && d.tasbeeh && d.adhkar && d.allPrayers;
+    _checkCompletion(key) {
+        const d = this.data.days[key];
+        if (!d) return;
+        d.completed = d.sunnahPrayers && d.quranJuz > 0 && d.charity && d.tasbeeh && d.adhkar && d.allPrayers;
     }
 
     _calcStreaks() {
-        const nums = Object.keys(this.data.days).map(Number).sort((a, b) => a - b);
-        let cur = 0, longest = this.data.streaks.longest || 0, temp = 0;
-        for (let i = nums.length - 1; i >= 0; i--) {
-            if (this.data.days[nums[i]].completed) cur++;
-            else break;
+        const today = this.getTodayKey();
+        const keys = Object.keys(this.data.days).filter(k => k <= today).sort();
+        let cur = 0, longest = this.data.streaks?.longest || 0, temp = 0;
+
+        // Current streak: walk back from today; a missing day or incomplete day breaks it
+        for (let i = 0; ; i++) {
+            const k = this._offsetDay(today, -i);
+            const d = this.data.days[k];
+            if (!d || !d.completed) break;
+            cur++;
         }
-        nums.forEach(n => {
-            if (this.data.days[n].completed) { temp++; longest = Math.max(longest, temp); }
+
+        // Longest streak: walk forward through sorted keys; calendar gaps break the run
+        for (let i = 0; i < keys.length; i++) {
+            if (i > 0) {
+                const gap = Math.round((new Date(keys[i]) - new Date(keys[i - 1])) / 86400000);
+                if (gap > 1) temp = 0;
+            }
+            if (this.data.days[keys[i]].completed) { temp++; longest = Math.max(longest, temp); }
             else temp = 0;
-        });
+        }
         this.data.streaks = { current: cur, longest };
+    }
+
+    _offsetDay(dateStr, delta) {
+        const d = new Date(dateStr);
+        d.setDate(d.getDate() + delta);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     _streakEmoji(n) {
@@ -1499,56 +1524,14 @@ class WorshipTracker {
         return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     }
 
-    _gregorianDate(n) {
-        return new Date(this.DH_START + (n - 1) * 86400000)
-            .toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-
-    _overallPct() {
-        let done = 0;
-        Object.values(this.data.days).forEach(d => {
-            if (d.sunnahPrayers) done++;
-            if (d.quranJuz > 0) done++;
-            if (d.charity) done++;
-            if (d.fasting) done++;
-            if (d.tasbeeh) done++;
-            if (d.adhkar) done++;
-            if (d.allPrayers) done++;
-        });
-        return Math.round((done / 70) * 100);
-    }
-
-    _breakdown() {
-        const b = { sunnah: 0, quranDays: 0, quranJuz: 0, charity: 0, fasting: 0, tasbeeh: 0, adhkar: 0, allPrayers: 0 };
-        Object.values(this.data.days).forEach(d => {
-            if (d.sunnahPrayers) b.sunnah++;
-            if (d.quranJuz > 0) { b.quranDays++; b.quranJuz += d.quranJuz; }
-            if (d.charity) b.charity++;
-            if (d.fasting) b.fasting++;
-            if (d.tasbeeh) b.tasbeeh++;
-            if (d.adhkar) b.adhkar++;
-            if (d.allPrayers) b.allPrayers++;
-        });
-        return b;
-    }
-
     renderSection() {
         const container = document.getElementById('worship-tracker-container');
         if (!container) return;
         const lang = localStorage.getItem('noor-lang') || 'en';
-        const today = this.getCurrentDay();
+        const key = this.getTodayKey();
         const { current: cur } = this.data.streaks;
-
-        const realDiff = CONFIG.WT_TEST_DAY ? null : Math.floor((getCurrentTime() - this.DH_START) / 86400000);
-        const isAfterSeason = !CONFIG.WT_TEST_DAY && realDiff !== null && realDiff >= 10;
-
-        container.innerHTML =
-            (today >= 1 && today <= 10 && !isAfterSeason ? this._renderEntry(today, lang, cur) : this._renderOffState(today, lang)) +
-            this._renderCalendar(today, lang) +
-            this._renderSummary(lang);
-
+        container.innerHTML = this._renderEntry(key, lang, cur);
         this._attachListeners(lang);
-
     }
 
     _renderStreak(cur, longest, lang) {
@@ -1569,100 +1552,23 @@ class WorshipTracker {
         </div>`;
     }
 
-    _renderOffState(_today, lang) {
+    _renderEntry(key, lang, streak) {
+        const d = this.data.days[key] || {};
         const isAr = lang === 'ar';
-        // Check real diff to detect post-10-days (getCurrentDay caps at 10)
-        const realDiff = CONFIG.WT_TEST_DAY ? null : Math.floor((getCurrentTime() - this.DH_START) / 86400000);
-        const isAfter = CONFIG.WT_TEST_DAY ? false : (realDiff !== null && realDiff >= 10);
-        if (!isAfter) {
-            return `<div class="wt-empty-state">
-                <div class="wt-empty-icon">🌙</div>
-                <div class="wt-empty-title">${isAr ? 'العشر الأوائل لم تبدأ بعد' : 'The blessed ten days haven\'t started yet'}</div>
-                <div class="wt-empty-sub">${isAr ? 'سيبدأ المتتبع عند بداية ذي الحجة' : 'Your tracker will be ready on the first day of Dhul Hijjah'}</div>
-            </div>`;
-        }
-        // Post-10-days: rich summary
-        const days = this.data.days;
-        const completedDays = Object.values(days).filter(d => d.completed).length;
-        const { longest: bestStreak } = this.data.streaks;
-        const totalPts = Object.values(days).reduce((sum, d) => {
-            return sum + (d.sunnahPrayers ? 10 : 0) + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
-                   (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) +
-                   (d.adhkar ? 10 : 0) + (d.charity ? 10 : 0) + (d.allPrayers ? 15 : 0);
-        }, 0);
-        const taskCounts = { sunnahPrayers: 0, quranJuz: 0, fasting: 0, tasbeeh: 0, adhkar: 0, charity: 0, allPrayers: 0 };
-        Object.values(days).forEach(d => {
-            if (d.sunnahPrayers) taskCounts.sunnahPrayers++;
-            if (d.quranJuz > 0) taskCounts.quranJuz++;
-            if (d.fasting) taskCounts.fasting++;
-            if (d.tasbeeh) taskCounts.tasbeeh++;
-            if (d.adhkar) taskCounts.adhkar++;
-            if (d.charity) taskCounts.charity++;
-            if (d.allPrayers) taskCounts.allPrayers++;
-        });
-
-        const pct = Math.round((completedDays / 10) * 100);
-        const grade = pct >= 90 ? (isAr ? 'ممتاز' : 'Excellent') :
-                      pct >= 70 ? (isAr ? 'جيد جداً' : 'Great') :
-                      pct >= 50 ? (isAr ? 'جيد' : 'Good') :
-                                  (isAr ? 'واصل المحاولة' : 'Keep Going');
-        const gradeEmoji = pct >= 90 ? '🌟' : pct >= 70 ? '⭐' : pct >= 50 ? '💪' : '🤲';
-
-        const statRows = [
-            { icon: '🕌', en: 'Fajr on time', ar: 'فجر في وقته', val: taskCounts.sunnahPrayers },
-            { icon: '🙏', en: 'All 5 prayers', ar: 'الصلوات الخمس', val: taskCounts.allPrayers },
-            { icon: '🌙', en: 'Fasting days', ar: 'أيام الصيام', val: taskCounts.fasting },
-            { icon: '📖', en: 'Quran days', ar: 'أيام القرآن', val: taskCounts.quranJuz },
-            { icon: '📿', en: 'Tasbeeh days', ar: 'أيام التسبيح', val: taskCounts.tasbeeh },
-            { icon: '🤲', en: 'Adhkar days', ar: 'أيام الأذكار', val: taskCounts.adhkar },
-            { icon: '💝', en: 'Charity days', ar: 'أيام الصدقة', val: taskCounts.charity },
-        ].map(s => `
-            <div class="wt-sum-stat">
-                <span class="wt-sum-stat-icon">${s.icon}</span>
-                <span class="wt-sum-stat-name">${isAr ? s.ar : s.en}</span>
-                <span class="wt-sum-stat-val">${isAr ? this._toAr(s.val) : s.val}/10</span>
-            </div>`).join('');
-
-        return `
-        <div class="wt-summary-card" dir="${isAr ? 'rtl' : 'ltr'}">
-            <div class="wt-sum-title">${isAr ? '🏁 ملخص أيام ذي الحجة' : '🏁 Dhul Hijjah Summary'}</div>
-            <div class="wt-sum-grade">${gradeEmoji} ${grade}</div>
-            <div class="wt-sum-hero">
-                <div class="wt-sum-hero-num">${isAr ? this._toAr(completedDays) : completedDays}<span>/10</span></div>
-                <div class="wt-sum-hero-label">${isAr ? 'أيام مكتملة' : 'days complete'}</div>
-            </div>
-            <div class="wt-sum-bar-wrap">
-                <div class="wt-sum-bar"><div class="wt-sum-bar-fill" style="width:${pct}%"></div></div>
-                <span class="wt-sum-bar-pct">${isAr ? this._toAr(pct) : pct}%</span>
-            </div>
-            <div class="wt-sum-meta">
-                <div class="wt-sum-meta-item">🔥 ${isAr ? `${this._toAr(bestStreak || 0)} أفضل سلسلة` : `Best streak: ${bestStreak || 0}`}</div>
-                <div class="wt-sum-meta-item">✨ ${isAr ? `${this._toAr(totalPts)} نقطة` : `${totalPts} pts earned`}</div>
-            </div>
-            <div class="wt-sum-stats">${statRows}</div>
-            <div class="wt-sum-dua">${isAr ? '«اللهم تقبّل منا إنك أنت السميع العليم»' : '"O Allah, accept from us. You are the All-Hearing, the All-Knowing."'}</div>
-        </div>`;
-    }
-
-    _renderEntry(today, lang, streak) {
-        const d = this.data.days[today] || {};
-        const isAr = lang === 'ar';
-        const isArafah = today === 9;
         const cur = streak || 0;
         const streakHtml = cur > 0
             ? `<span class="wt-goals-streak">🔥 ${isAr ? `${numFmt(cur)} متواصل` : `${cur}-day streak`}</span>`
             : '';
 
-        // Calculate today's points
         const pts = (d.sunnahPrayers ? 10 : 0) + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
-                    (d.fasting ? (isArafah ? 20 : 15) : 0) + (d.tasbeeh ? 5 : 0) +
+                    (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) +
                     (d.adhkar ? 10 : 0) + (d.charity ? 10 : 0) + (d.allPrayers ? 15 : 0);
 
         const tasks = [
             { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 10,
               en: 'Fajr prayer on time', ar: 'صلاة الفجر في وقتها' },
-            { field: 'fasting', checked: !!d.fasting, pts: isArafah ? 20 : 15,
-              en: isArafah ? 'Arafah fast' : 'Fasting today', ar: isArafah ? 'صيام يوم عرفة' : 'الصيام اليوم' },
+            { field: 'fasting', checked: !!d.fasting, pts: 15,
+              en: 'Fasting today', ar: 'الصيام اليوم' },
             { field: 'allPrayers', checked: !!d.allPrayers, pts: 15,
               en: 'All 5 prayers on time', ar: 'الصلوات الخمس في أوقاتها' },
             { field: 'adhkar', checked: !!d.adhkar, pts: 10,
@@ -1677,8 +1583,8 @@ class WorshipTracker {
         const quz = d.quranJuz || 0;
 
         const taskRows = tasks.map(task => `
-            <label class="wt-task-row${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${today}">
-                <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${today}" ${task.checked ? 'checked' : ''} style="display:none">
+            <label class="wt-task-row${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+                <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
                 <span class="wt-task-circle">${task.checked ? '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>
                 <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
                 <span class="wt-task-pts">+${task.pts}</span>
@@ -1691,7 +1597,7 @@ class WorshipTracker {
                     <span class="wt-task-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
                     <div class="wt-quran-ctrl">
                         <input type="range" min="0" max="30" step="1" value="${quz}"
-                            data-wt-field="quranJuz" data-wt-day="${today}" class="wt-slider">
+                            data-wt-field="quranJuz" data-wt-day="${key}" class="wt-slider">
                         <span class="wt-quran-val" id="wt-quran-val">${isAr ? this._toAr(quz) : quz} ${isAr ? 'جزء' : 'Juz'}</span>
                     </div>
                 </div>
@@ -1714,65 +1620,11 @@ class WorshipTracker {
     </div>`;
     }
 
-    _renderCalendar(today, lang) {
-        const isAr = lang === 'ar';
-        const cells = Array.from({ length: 10 }, (_, i) => {
-            const n = i + 1;
-            const d = this.data.days[n];
-            const isToday = n === today;
-            const isFuture = n > today;
-            let cls = 'wt-day';
-            let icon = '⭕';
-            if (isFuture)       { cls += ' wt-day-future';  icon = '🔒'; }
-            else if (d?.completed) { cls += ' wt-day-done';  icon = '✅'; }
-            else if (d)         { cls += ' wt-day-partial'; icon = '⏳'; }
-            if (isToday) cls += ' wt-day-today';
-            const mini = d ? `
-                <div class="wt-day-mini">
-                    <span class="${d.sunnahPrayers ? 'on' : ''}">☪️</span>
-                    <span class="${d.quranJuz > 0 ? 'on' : ''}">📖</span>
-                    <span class="${d.charity ? 'on' : ''}">💚</span>
-                    <span class="${d.fasting ? 'on' : ''}">🌙</span>
-                </div>` : '';
-            return `
-            <div class="${cls}" data-wt-cal="${n}">
-                <span class="wt-day-n">${isAr ? this._toAr(n) : n}</span>
-                <span class="wt-day-icon">${icon}</span>
-                ${mini}
-            </div>`;
-        });
-        return `
-        <div class="wt-calendar">
-            <h3 class="wt-cal-title">${isAr ? 'أيام ذي الحجة العشرة' : '10 Days of Dhul Hijjah'}</h3>
-            <div class="wt-cal-grid">${cells.join('')}</div>
-        </div>`;
-    }
-
-    _renderSummary(lang) {
-        const isAr = lang === 'ar';
-        const pct = this._overallPct();
-        const b = this._breakdown();
-        return `
-        <div class="wt-summary">
-            <h3 class="wt-summary-title">${isAr ? 'ملخص التقدم' : 'Progress Summary'}</h3>
-            <div class="wt-overall">
-                <div class="wt-overall-bar"><div class="wt-overall-fill" style="width:${pct}%"></div></div>
-                <span class="wt-overall-pct">${isAr ? this._toAr(pct) : pct}%</span>
-            </div>
-            <div class="wt-breakdown">
-                <div class="wt-bd-item"><span>☪️</span><span>${isAr ? 'السنن' : 'Sunnah'}</span><strong>${isAr ? this._toAr(b.sunnah) : b.sunnah}/10</strong></div>
-                <div class="wt-bd-item"><span>📖</span><span>${isAr ? 'القرآن' : 'Quran'}</span><strong>${isAr ? this._toAr(b.quranDays) : b.quranDays} ${isAr ? 'أيام' : 'days'}</strong></div>
-                <div class="wt-bd-item"><span>💚</span><span>${isAr ? 'الصدقة' : 'Charity'}</span><strong>${isAr ? this._toAr(b.charity) : b.charity}/10</strong></div>
-                <div class="wt-bd-item"><span>🌙</span><span>${isAr ? 'الصيام' : 'Fasting'}</span><strong>${isAr ? this._toAr(b.fasting) : b.fasting}/10</strong></div>
-            </div>
-        </div>`;
-    }
-
     _attachListeners(lang) {
         const isAr = lang === 'ar';
         document.querySelectorAll('[data-wt-field][type="checkbox"]').forEach(cb => {
             cb.addEventListener('change', (e) => {
-                this.updateActivity(+e.target.dataset.wtDay, e.target.dataset.wtField, e.target.checked);
+                this.updateActivity(e.target.dataset.wtDay, e.target.dataset.wtField, e.target.checked);
                 this.renderSection();
             });
         });
@@ -1783,7 +1635,7 @@ class WorshipTracker {
                 if (el) el.textContent = `${isAr ? this._toAr(v) : v} ${isAr ? 'جزء' : 'Juz'}`;
             });
             slider.addEventListener('change', (e) => {
-                this.updateActivity(+e.target.dataset.wtDay, 'quranJuz', +e.target.value);
+                this.updateActivity(e.target.dataset.wtDay, 'quranJuz', +e.target.value);
                 this.renderSection();
             });
         });
@@ -1867,22 +1719,11 @@ class BadgeSystem {
     }
 
     _readDays() {
-        // Prefer WorshipTracker (primary source), indexed 1–10
+        // Use legacy Dhul Hijjah 1447 data (numeric keys 1–10) for badge evaluation
         if (typeof worshipTracker !== 'undefined' && worshipTracker) {
-            return worshipTracker.data.days;
+            return worshipTracker._dhulHijjahDays;
         }
-        // Fallback: read from existing Ramadan checklist localStorage, map fields
-        const days = {};
-        this.DH_DAYS.forEach((dateStr, i) => {
-            const raw = localStorage.getItem(`ramadan_checklist_${dateStr}`);
-            const cl = raw ? JSON.parse(raw) : {};
-            days[i + 1] = {
-                sunnahPrayers: !!cl['cb-qiyam'],
-                charity: !!cl['cb-sadaqah'],
-                quranJuz: cl['cb-quran'] ? 1 : 0
-            };
-        });
-        return days;
+        return {};
     }
 
     _computeProgress(def, days) {
