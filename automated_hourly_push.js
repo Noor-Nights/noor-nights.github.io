@@ -1,14 +1,12 @@
 // automated_hourly_push.js
-// GitHub Actions CRON job — runs every minute, year-round.
-// Prayer time notifications: sent every day when Cairo prayer hour matches.
-// Dhul Hijjah messages: only sent during the 10 blessed days of Dhul Hijjah.
-// Special handling: Day 9 = Arafah (peak duas all day), Day 10 = Eid al-Adha greeting.
-// Dates are read from DHUL_HIJJAH_START / DHUL_HIJJAH_END env vars (set in the workflow);
-// update those vars each Hijri year — no code change needed.
+// GitHub Actions CRON — runs every minute, year-round.
+// Prayer time notifications: sent at each Cairo prayer (Fajr–Isha), ±5 min window, once per day.
+// Hourly dhikr: one message per hour at minute 0–2, 05:00–22:00 Cairo.
 
-const fs = require('fs');
+const fs   = require('fs');
 const path = require('path');
 
+// ── Environment guards ────────────────────────────────────────────────────────
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
 if (!PROJECT_ID) {
     console.log('⚠️ FIREBASE_PROJECT_ID is not set. Skipping.');
@@ -28,7 +26,7 @@ try {
     process.exit(1);
 }
 
-// ── Time Setup (Cairo = Africa/Cairo, UTC+3 in summer) ──────────────────────
+// ── Time Setup (Cairo = Africa/Cairo, UTC+2 winter / UTC+3 summer) ───────────
 const _nowUTC = new Date();
 const _cairoParts = Object.fromEntries(
     new Intl.DateTimeFormat('en-US', {
@@ -42,26 +40,103 @@ const _cairoParts = Object.fromEntries(
 // hour12:false can return 24 at midnight — normalise to 0
 const hours   = _cairoParts.hour === 24 ? 0 : _cairoParts.hour;
 const minutes = _cairoParts.minute;
-const time    = _nowUTC.getTime(); // actual UTC ms — used for DH date range check
+const { year, month, day } = _cairoParts;
+const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 
-// Dhul Hijjah date range — read from workflow env vars; fallback to 1447 values.
-// To update: edit DHUL_HIJJAH_START / DHUL_HIJJAH_END in ramadan_hourly_push.yml.
-// Next update: Dhul Hijjah 1448 ≈ May 2027 (verify with Umm al-Qura calendar).
-const _dhStart = process.env.DHUL_HIJJAH_START || '2026-05-18';
-const _dhEnd   = process.env.DHUL_HIJJAH_END   || '2026-05-27';
-const DH_START   = new Date(`${_dhStart}T00:00:00+03:00`).getTime();
-const DH_END     = new Date(`${_dhEnd}T23:59:00+03:00`).getTime();
-const inDhulHijjah = time >= DH_START && time <= DH_END;
+// ── Prayer Window & Dedup ─────────────────────────────────────────────────────
+// GH Actions cron has 3–15 min scheduler jitter; ±5 min catches the prayer
+// even on busy runners. The .prayer-sent/ markers (cached per day via the
+// workflow) prevent duplicate sends within the wider window.
+const PRAYER_WINDOW_MIN = 5;
+const PRAYER_SENT_DIR   = path.resolve(__dirname, '.prayer-sent');
 
-// ── Calculate Day Number (1–10, or 0 outside Dhul Hijjah) ───────────────────
-const dayNum = inDhulHijjah
-    ? Math.min(Math.floor((time - DH_START) / 86400000) + 1, 10)
-    : 0;
+function prayerAlreadySent(prayer) {
+    try { return fs.existsSync(path.join(PRAYER_SENT_DIR, `${prayer}-${dateKey}.sent`)); }
+    catch { return false; }
+}
+function markPrayerSent(prayer) {
+    try {
+        fs.mkdirSync(PRAYER_SENT_DIR, { recursive: true });
+        fs.writeFileSync(path.join(PRAYER_SENT_DIR, `${prayer}-${dateKey}.sent`), '');
+    } catch (e) { console.warn(`⚠️  Could not write prayer-sent marker: ${e.message}`); }
+}
 
-// ── DUAS ─────────────────────────────────────────────────────────────────────
+// ── Prayer Time Notifications ─────────────────────────────────────────────────
+const CAIRO_LAT = 30.0444;
+const CAIRO_LNG = 31.2357;
 
-// General Dhul Hijjah duas (rotating daily)
-const dhDuas = [
+const prayerNotifications = {
+    fajr:    {
+        heading: '🌅 حان وقت صلاة الفجر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nمن صلى الفجر في جماعة فكأنما قام الليل كله — لا تفوّتها.\n(القاهرة)',
+    },
+    dhuhr:   {
+        heading: '☀️ حان وقت صلاة الظهر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🕌\nاستقبل منتصف يومك بالصلاة والذكر.\n(القاهرة)',
+    },
+    asr:     {
+        heading: '🌤️ حان وقت صلاة العصر',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌟\n"من فاتته صلاة العصر فكأنما وُتِر أهله وماله" — النبي ﷺ\n(القاهرة)',
+    },
+    maghrib: {
+        heading: '🌅 حان وقت صلاة المغرب',
+        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nأسرع إلى الصلاة وادعُ بعدها — ما بين الأذان والإقامة دعوة لا تُرد.\n(القاهرة)',
+    },
+    isha:    {
+        heading: '🌙 حان وقت صلاة العشاء',
+        body: 'حيّ على الصلاة، حيّ على الفلاح ✨\nاختم يومك بالصلاة والاستغفار — من صلى العشاء في جماعة فكأنما قام نصف الليل.\n(القاهرة)',
+    },
+};
+
+// Baked prayer times are written at deploy time by scripts/bake-prayer-times.js
+// to src/js/cairo-times.json. Falls back to a live aladhan.com fetch on cache miss.
+async function getCairoPrayerTimes() {
+    // 1. Try baked file
+    try {
+        const jsonPath = path.resolve(__dirname, 'src/js/cairo-times.json');
+        const baked = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (baked[dateKey]) {
+            console.log(`📅 Prayer times loaded from baked file for ${dateKey}`);
+            return baked[dateKey];
+        }
+        console.warn(`⚠️ Baked prayer times do not cover ${dateKey} — falling back to live fetch`);
+    } catch (e) {
+        console.warn(`⚠️ Could not read baked prayer times (${e.message}) — falling back to live fetch`);
+    }
+
+    // 2. Live fetch fallback
+    try {
+        const res = await fetch(
+            `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${CAIRO_LAT}&longitude=${CAIRO_LNG}&method=5`
+        );
+        const data = await res.json();
+        if (data.code === 200) {
+            const t = data.data.timings;
+            return {
+                fajr:    t.Fajr.split(' ')[0],
+                dhuhr:   t.Dhuhr.split(' ')[0],
+                asr:     t.Asr.split(' ')[0],
+                maghrib: t.Maghrib.split(' ')[0],
+                isha:    t.Isha.split(' ')[0],
+            };
+        }
+    } catch (e) {
+        console.warn('⚠️ Live prayer time fetch also failed:', e.message);
+    }
+    return null;
+}
+
+function getPrayerAtTime(times, hour, minute) {
+    const nowMinutes = hour * 60 + minute;
+    for (const [key, timeStr] of Object.entries(times)) {
+        const [h, m] = timeStr.split(':').map(Number);
+        if (Math.abs(nowMinutes - (h * 60 + m)) <= PRAYER_WINDOW_MIN) return key;
+    }
+    return null;
+}
+
+// ── Dhikr Content ─────────────────────────────────────────────────────────────
+const duas = [
     "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
     "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
     "اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَعَافِنِي وَارْزُقْنِي",
@@ -85,177 +160,55 @@ const dhDuas = [
     "اللَّهُمَّ إِنِّي أَسْأَلُكَ مُوجِبَاتِ رَحْمَتِكَ وَعَزَائِمَ مَغْفِرَتِكَ",
 ];
 
-// Arafa-eve duas — for tonight (Day 8, after Maghrib)
-const arafahEveDuas = [
-    "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
-    "اللَّهُمَّ اجْعَلْنَا مِمَّنْ أَعْتَقْتَهُمْ مِنَ النَّارِ فِي يَوْمِ عَرَفَة",
-    "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
-    "اللَّهُمَّ ثَبِّتْ قَلْبِي عَلَى دِينِكَ وَأَعِنِّي عَلَى طَاعَتِكَ غَداً",
-    "اللَّهُمَّ إِنِّي أَسْأَلُكَ التَّوْبَةَ قَبْلَ الْمَوْتِ وَالعَافِيَةَ قَبْلَ الْبَلَاءِ",
-    "يَا غَيَّاثَ الْمُسْتَغِيثِينَ أَغِثْنِي بِرَحْمَتِكَ فِي هَذِهِ اللَّيْلَةِ الْمُبَارَكَة",
-    "اللَّهُمَّ آمِنْ رَوْعَاتِي وَآمِنْ خَوْفِي وَاشْفِ سُقْمِي",
-];
-
-const arafahEveMessages = [
-    '⭐ غداً يوم عرفة — أعظم يوم في السنة. اكتب قائمة دعائك الليلة وهيّئ قلبك.',
-    '🤲 ليلة عرفة — ادعُ الله واستغفره الآن. الله يسمعك وهو أقرب إليك من حبل الوريد.',
-    '🌙 غداً صم وأكثر من الدعاء. "أفضل الدعاء دعاء يوم عرفة" — ابدأ التهيّؤ له الليلة.',
-    '📿 أكثر من التكبير الليلة: الله أكبر الله أكبر لا إله إلا الله والله أكبر الله أكبر ولله الحمد',
-];
-
-// Arafah Day duas — the greatest day of the year
-const arafahDuas = [
-    "لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
-    "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
-    "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ",
-    "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
-    "اللَّهُمَّ اجْعَلْنِي مِمَّنْ أَعْتَقْتَهُمْ مِنَ النَّارِ فِي هَذَا اليَوْم",
-    "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ",
-    "لَا إِلَهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ",
-    "اللَّهُمَّ اغْفِرْ لَنَا وَلِوَالِدَيْنَا وَلِلْمُسْلِمِينَ أَجْمَعِينَ",
-    "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ",
-    "اللَّهُمَّ اجْعَلْ قَلْبِي سَلِيمًا وَنِيَّتِي صَادِقَةً وَعَمَلِي صَالِحًا",
-    "يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ",
-    "اللَّهُمَّ اجْعَلْنَا مِنَ التَّوَّابِينَ وَاجْعَلْنَا مِنَ الْمُتَطَهِّرِينَ",
-    "اللَّهُمَّ إِنِّي أَسْأَلُكَ حُسْنَ الخَاتِمَةَ وَالشَّهَادَةَ فِي سَبِيلِكَ",
-    "رَبِّ اغْفِرْ وَارْحَمْ وَأَنتَ خَيْرُ الرَّاحِمِينَ",
-];
-
-// ── Prayer Time Notifications ─────────────────────────────────────────────────
-
-const CAIRO_LAT = 30.0444;
-const CAIRO_LNG = 31.2357;
-
-const prayerNotifications = {
-    fajr:    {
-        heading: '🌅 حان وقت صلاة الفجر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nمن صلى الفجر في جماعة فكأنما قام الليل كله — لا تفوّتها.\n(القاهرة)',
-    },
-    dhuhr:   {
-        heading: '☀️ حان وقت صلاة الظهر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🕌\nاستقبل منتصف يومك بالصلاة، وأكثر من التكبير في هذه الأيام المباركة.\n(القاهرة)',
-    },
-    asr:     {
-        heading: '🌤️ حان وقت صلاة العصر',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌟\n"من فاتته صلاة العصر فكأنما وُتِر أهله وماله" — النبي ﷺ\n(القاهرة)',
-    },
-    maghrib: {
-        heading: '🌅 حان وقت صلاة المغرب',
-        body: 'حيّ على الصلاة، حيّ على الفلاح 🌙\nأسرع إلى الصلاة وادعُ بعدها — ما بين الأذان والإقامة دعوة لا تُرد.\n(القاهرة)',
-    },
-    isha:    {
-        heading: '🌙 حان وقت صلاة العشاء',
-        body: 'حيّ على الصلاة، حيّ على الفلاح ✨\nاختم يومك بالصلاة والاستغفار — من صلى العشاء في جماعة فكأنما قام نصف الليل.\n(القاهرة)',
-    },
-};
-
-// Baked prayer times are pre-fetched at deploy time by scripts/bake-prayer-times.js
-// and written to src/js/cairo-times.json. Reading from file avoids 1,260+ external
-// API calls per day (once-per-minute cron × 21 active hours). Falls back to a live
-// aladhan.com fetch only when today's date is not covered (e.g. stale deploy).
-async function getCairoPrayerTimes() {
-    const { day, month, year } = _cairoParts;
-    const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-
-    // 1. Try the baked JSON file written at deploy time.
-    try {
-        const jsonPath = path.resolve(__dirname, 'src/js/cairo-times.json');
-        const baked = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-        if (baked[dateKey]) {
-            console.log(`📅 Prayer times loaded from baked file for ${dateKey}`);
-            return baked[dateKey];
-        }
-        console.warn(`⚠️ Baked prayer times do not cover ${dateKey} — falling back to live fetch`);
-    } catch (e) {
-        console.warn(`⚠️ Could not read baked prayer times (${e.message}) — falling back to live fetch`);
-    }
-
-    // 2. Fallback: live fetch from aladhan.com (stale deploy or missing file).
-    try {
-        const res = await fetch(
-            `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${CAIRO_LAT}&longitude=${CAIRO_LNG}&method=5`
-        );
-        const data = await res.json();
-        if (data.code === 200) {
-            const t = data.data.timings;
-            return {
-                fajr:    t.Fajr.split(' ')[0],
-                dhuhr:   t.Dhuhr.split(' ')[0],
-                asr:     t.Asr.split(' ')[0],
-                maghrib: t.Maghrib.split(' ')[0],
-                isha:    t.Isha.split(' ')[0],
-            };
-        }
-    } catch (e) {
-        console.warn('⚠️ Live prayer time fetch also failed:', e.message);
-    }
-    return null;
-}
-
-function getPrayerAtTime(times, hour, minute) {
-    // Per-minute cron has <60 s jitter. ±1 min covers startup latency without
-    // firing 9 times per prayer the way the old ±4 window did.
-    const nowMinutes = hour * 60 + minute;
-    for (const [key, timeStr] of Object.entries(times)) {
-        const [h, m] = timeStr.split(':').map(Number);
-        const prayerMinutes = h * 60 + m;
-        if (Math.abs(nowMinutes - prayerMinutes) <= 1) return key;
-    }
-    return null;
-}
-
-// ── MESSAGES ──────────────────────────────────────────────────────────────────
-
 // Morning messages (05:00–11:00)
 const morningMessages = [
-    `📿 الله أكبر الله أكبر، لا إله إلا الله، الله أكبر الله أكبر ولله الحمد — اليوم ${dayNum} من أفضل أيام العام`,
-    `🌅 استقبل يومك بالتكبير والتحميد — ما من أيام أحب إلى الله من هذه الأيام العشرة`,
-    `☪️ لا تفوّت سنة الفجر اليوم — من حافظ عليها كأنما قام الليل كله`,
-    `📖 خصص ولو صفحات من القرآن الكريم اليوم — الحسنات مضاعفة في هذه الأيام`,
-    `🌟 صيام يوم من ذي الحجة يعدل صيام سنة كاملة — هل نويت الصيام اليوم؟`,
-    `💚 الصدقة في هذه الأيام أعظم أجراً — تصدق ولو بالقليل، فكل حسنة مضاعفة`,
+    '🌅 صباحك نور — قل أذكار الصباح وابدأ يومك بذكر الله',
+    '📿 لا تفوّت سنة الفجر — من حافظ عليها كأنما قام الليل كله',
+    '📖 خصص ولو صفحات من القرآن الكريم — القرآن نور في قلبك ويومك',
+    '🤲 اللهم أعني على ذكرك وشكرك وحسن عبادتك',
+    '💚 الصدقة تطفئ الخطيئة — تصدق ولو بالقليل',
+    '☀️ استقبل يومك بالتكبير والتحميد: الله أكبر، الحمد لله، سبحان الله',
 ];
 
 // Midday messages (11:00–15:00)
 const middayMessages = [
-    `🕋 أكثر من التكبير والتسبيح والاستغفار — فما من عمل أزكى عند الله في هذه الأيام`,
-    `🤲 توقف لحظة وادعُ الله من قلبك — الله يسمعك وهو أقرب إليك من حبل الوريد`,
-    `📿 سبّح الله 33 مرة، احمده 33 مرة، كبّره 34 مرة — لا يعجز عنها أحد`,
-    `💡 اليوم ${dayNum} من ذي الحجة — استثمر ما تبقى منه قبل أن يذهب`,
-    `🌿 "مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ" — النبي ﷺ`,
+    '🕋 أكثر من التسبيح والتحميد والتكبير — لا يعجز عنها أحد',
+    '🤲 توقف لحظة وادعُ الله من قلبك — الله يسمعك وهو أقرب إليك من حبل الوريد',
+    '📿 سبّح الله 33 مرة، احمده 33 مرة، كبّره 34 مرة',
+    '🌿 "من أكثر من الاستغفار جعل الله له من كل هم فرجاً" — النبي ﷺ',
+    '💡 لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير',
 ];
 
 // Afternoon messages (15:00–18:00)
 const afternoonMessages = [
-    `🌤️ اقترب وقت العصر — صلِّ في أوله واجلس للذكر والدعاء بعدها`,
-    `🤲 ادعُ قبل المغرب — ساعة الإجابة قريبة، اللهم تقبّل منا`,
-    `🌅 قبيل الغروب من أوقات إجابة الدعاء — لا تدع هذا الوقت يمر دون دعاء`,
-    `💫 أكثر من الاستغفار — "مَنْ أَكْثَرَ مِنَ الِاسْتِغْفَارِ جَعَلَ اللَّهُ لَهُ مِنْ كُلِّ هَمٍّ فَرَجًا"`,
+    '🌤️ اقترب وقت العصر — صلِّ في أوله واجلس للذكر والدعاء بعدها',
+    '🤲 ادعُ قبل المغرب — ساعة الإجابة قريبة',
+    '🌅 قبيل الغروب من أوقات إجابة الدعاء — لا تدع هذا الوقت يمر دون دعاء',
+    '💫 أكثر من الاستغفار — "من أكثر من الاستغفار جعل الله له من كل هم فرجاً"',
 ];
 
 // Evening messages (18:00–22:00)
 const eveningMessages = [
-    `🌙 أمسيت في اليوم ${dayNum} من ذي الحجة — احمد الله على نعمة إدراك هذه الأيام`,
-    `🤲 ادعُ الله بعد المغرب — من أكثر من الصلاة على النبي ﷺ كفاه الله همومه`,
-    `📿 أكثر من التكبير في المساء: الله أكبر كبيراً والحمد لله كثيراً`,
-    `🌟 تأمل ما أنجزت اليوم وجدّد نيتك لغد أفضل — هذه الأيام لا تعود`,
-    `🙌 اختم يومك بالاستغفار — "مَنْ قَالَ: أَسْتَغْفِرُ اللَّهَ العَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الحَيَّ القَيُّومَ وَأَتُوبُ إِلَيْهِ — غُفِرَ لَهُ"`,
+    '🌙 قل أذكار المساء الآن — هي حصنك لليلتك كلها',
+    '🤲 أكثر من الصلاة على النبي ﷺ — من صلى عليه مرة صلى الله عليه عشراً',
+    '📿 اختم يومك بالاستغفار — "من قال: أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه — غُفر له"',
+    '🌟 تأمل يومك وجدّد نيتك لغد أفضل — الله يقبل التوبة ويعفو عن السيئات',
+    '🙌 سبحان الله وبحمده، سبحان الله العظيم — كلمتان خفيفتان على اللسان، ثقيلتان في الميزان',
 ];
 
 // ── FCM HTTP v1 Send ──────────────────────────────────────────────────────────
 const { GoogleAuth } = require('google-auth-library');
 
-const TOKEN_CACHE_PATH = '/tmp/noor-nights-fcm-token.json';
-const TOKEN_TTL_BUFFER_S = 60; // refresh if < 60 s remaining
+const TOKEN_CACHE_PATH    = '/tmp/noor-nights-fcm-token.json';
+const TOKEN_TTL_BUFFER_S  = 60; // refresh if < 60 s remaining
 
 async function getAccessToken() {
-    // Try the /tmp cache first — tokens last 1 h; re-use across per-minute invocations.
     try {
         const cached = JSON.parse(fs.readFileSync(TOKEN_CACHE_PATH, 'utf8'));
         if (cached.token && cached.expiresAt - Date.now() > TOKEN_TTL_BUFFER_S * 1000) {
             return cached.token;
         }
-    } catch (_) { /* cache miss or corrupt — fall through to fresh fetch */ }
+    } catch (_) { /* cache miss or corrupt — fall through */ }
 
     const auth = new GoogleAuth({
         credentials: SERVICE_ACCOUNT,
@@ -291,16 +244,13 @@ async function sendPush(heading, body_text, collapseId) {
     const payload = {
         message: {
             topic: 'daily-reminders',
-            notification: {
-                title: heading,
-                body: body_text,
-            },
+            notification: { title: heading, body: body_text },
             webpush: {
                 notification: {
-                    icon: 'https://noor-nights.github.io/assets/icons/icon-512.png',
-                    badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
-                    tag: collapseId,
-                    silent: false,
+                    icon:    'https://noor-nights.github.io/assets/icons/icon-512.png',
+                    badge:   'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
+                    tag:     collapseId,
+                    silent:  false,
                     vibrate: [200, 100, 200],
                 },
                 fcm_options: { link: 'https://noor-nights.github.io' },
@@ -311,9 +261,9 @@ async function sendPush(heading, body_text, collapseId) {
     const res = await fetch(
         `https://fcm.googleapis.com/v1/projects/${PROJECT_ID}/messages:send`,
         {
-            method: 'POST',
+            method:  'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type':  'application/json',
                 'Authorization': `Bearer ${accessToken}`,
             },
             body: JSON.stringify(payload),
@@ -332,24 +282,24 @@ async function sendPush(heading, body_text, collapseId) {
 }
 
 async function sendOneSignalPush(heading, body_text, collapseId) {
-    const appId = process.env.ONESIGNAL_APP_ID;
+    const appId  = process.env.ONESIGNAL_APP_ID;
     const apiKey = process.env.ONESIGNAL_REST_API_KEY;
     if (!appId || !apiKey) {
         console.warn('⚠️  OneSignal env vars not set — skipping OneSignal send');
         return;
     }
     const res = await fetch('https://onesignal.com/api/v1/notifications', {
-        method: 'POST',
+        method:  'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type':  'application/json',
             'Authorization': `Basic ${apiKey}`,
         },
         body: JSON.stringify({
-            app_id: appId,
+            app_id:            appId,
             included_segments: ['All'],
-            headings: { en: heading },
-            contents: { en: body_text },
-            collapse_id: collapseId,
+            headings:          { en: heading },
+            contents:          { en: body_text },
+            collapse_id:       collapseId,
         }),
     });
     if (!res.ok) {
@@ -365,28 +315,14 @@ const isManual = process.env.MANUAL_DISPATCH === 'true';
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-    console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo | ${inDhulHijjah ? `Day ${dayNum} of Dhul Hijjah` : 'Regular day'}${isManual ? ' | MANUAL DISPATCH' : ''}`);
+    console.log(`\n🚀 Running — ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')} Cairo${isManual ? ' | MANUAL DISPATCH' : ''}`);
 
-    // ── Manual dispatch: send a random dua immediately and exit ──────────────
+    // Manual dispatch: send a random dua immediately and exit
     if (isManual) {
-        const pool = dayNum === 9 ? arafahDuas
-            : (dayNum === 8 && hours >= 20) ? arafahEveDuas
-            : dhDuas;
-        const dua = pool[Math.floor(Math.random() * pool.length)];
-        let heading, body_text;
-        if (dayNum === 9 || (dayNum === 8 && hours >= 20)) {
-            heading   = '⭐ يوم عرفة — دعاء';
-            body_text = `🤲 ادعُ الله الآن — هذا أعظم وقت في السنة.\n\n"${dua}"`;
-        } else if (inDhulHijjah) {
-            heading   = `🕋 اليوم ${dayNum} من ذي الحجة — دعاء`;
-            body_text = `🤲 توقف لحظة وادعُ الله.\n\n"${dua}"`;
-        } else {
-            heading   = '🤲 تذكير روحاني';
-            body_text = `"${dua}"`;
-        }
-        console.log(`📣 Manual dispatch — sending random dua`);
+        const dua = duas[Math.floor(Math.random() * duas.length)];
+        console.log('📣 Manual dispatch — sending random dua');
         try {
-            await sendPush(heading, body_text, `manual-${_nowUTC.toISOString().slice(0,16)}`);
+            await sendPush('🤲 تذكير روحاني', `"${dua}"`, `manual-${_nowUTC.toISOString().slice(0,16)}`);
         } catch (err) {
             console.error('❌ Manual push error:', err.message);
         }
@@ -394,111 +330,56 @@ async function main() {
     }
 
     // ── Prayer time check — always runs, year-round ───────────────────────────
-    const prayerTimes = await getCairoPrayerTimes();
+    const prayerTimes   = await getCairoPrayerTimes();
     const matchedPrayer = prayerTimes ? getPrayerAtTime(prayerTimes, hours, minutes) : null;
 
     if (matchedPrayer && prayerNotifications[matchedPrayer]) {
-        const { heading, body } = prayerNotifications[matchedPrayer];
-        const prayerCollapseId = `prayer-${matchedPrayer}-${_nowUTC.toISOString().slice(0,10)}`;
-        console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
-        try {
-            await sendPushWithRetry(heading, body, prayerCollapseId);
-        } catch (fcmErr) {
-            console.warn(`⚠️  Prayer FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
-            await sendOneSignalPush(heading, body, prayerCollapseId)
-                .catch(osErr => console.error(`❌ Prayer OneSignal fallback error: ${osErr.message}`));
+        if (prayerAlreadySent(matchedPrayer)) {
+            console.log(`⏭️  ${matchedPrayer} already sent today — skipping duplicate`);
+        } else {
+            const { heading, body } = prayerNotifications[matchedPrayer];
+            const prayerCollapseId  = `prayer-${matchedPrayer}-${dateKey}`;
+            console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
+            try {
+                await sendPushWithRetry(heading, body, prayerCollapseId);
+                markPrayerSent(matchedPrayer);
+            } catch (fcmErr) {
+                console.warn(`⚠️  Prayer FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
+                await sendOneSignalPush(heading, body, prayerCollapseId)
+                    .then(() => markPrayerSent(matchedPrayer))
+                    .catch(osErr => console.error(`❌ Prayer OneSignal fallback error: ${osErr.message}`));
+            }
         }
     }
 
-    // ── Dhul Hijjah dhikr messages — only during the 10 days ─────────────────
-    if (!inDhulHijjah) {
-        console.log('📅 Outside Dhul Hijjah — prayer check done, skipping dhikr message.');
-        return;
-    }
-
-    // ── Active hours guard (05:00–22:00 for regular days; Day 9 stops at actual Maghrib) ──
+    // ── Hourly dhikr — once per hour (minute 0–2), 05:00–22:00 Cairo ─────────
     if (hours < 5 || hours > 22) {
-        console.log(`🌙 Outside active hours — prayer check done, skipping general message.`);
+        console.log('🌙 Outside active hours — skipping dhikr.');
         return;
     }
-
-    // Day 9: Arafah window closes at Maghrib. Use actual Maghrib time from baked/fetched
-    // prayer times rather than the hardcoded hours >= 20 proxy (actual ~19:28 in late May).
-    if (dayNum === 9) {
-        const maghribStr = prayerTimes?.maghrib;
-        const [mh, mm] = maghribStr ? maghribStr.split(':').map(Number) : [20, 0];
-        const maghribTotalMin = maghribStr ? mh * 60 + mm : 20 * 60;
-        if (hours * 60 + minutes >= maghribTotalMin) {
-            console.log(`🌙 Arafa Day ended — Maghrib was ${maghribStr ?? '~20:00'} Cairo`);
-            return;
-        }
-    }
-
-    // ── Dhikr gate: only fire once per hour (at minute 0–2 to absorb GHA startup jitter) ──
-    // The cron fires every minute; without this guard ~60 identical FCM calls are made per hour.
     if (minutes > 2) {
         console.log(`⏭️  Minute ${minutes} — outside dhikr window (0–2), skipping.`);
         return;
     }
 
-    // ── Regular hourly notification ────────────────────────────────────────────
-    let heading, body_text;
+    let msgPool;
+    if      (hours < 11) msgPool = morningMessages;
+    else if (hours < 15) msgPool = middayMessages;
+    else if (hours < 18) msgPool = afternoonMessages;
+    else                 msgPool = eveningMessages;
 
-    if (dayNum === 10) {
-        // ── EID AL-ADHA ──────────────────────────────────────────────────────────
-        heading   = '🎉 عيد الأضحى المبارك! تقبّل الله منا ومنكم';
-        body_text = 'عيد مبارك! 🕋 صلِّ صلاة العيد، وقدّم الأضحية إن استطعت، وأسعد من حولك. تقبّل الله منا ومنكم صالح الأعمال. كل عام وأنتم بخير 🤍';
+    const msg       = msgPool[hours % msgPool.length];
+    const dua       = duas[hours % duas.length];
+    const heading   = '📿 تذكير يومي';
+    const body_text = `${msg}\n\n"${dua}"`;
 
-    } else if (dayNum === 9) {
-        // ── ARAFAH DAY (05:00–19:59 Cairo, stops at Maghrib) ────────────────────
-        const dua = arafahDuas[hours % arafahDuas.length];
-        let arafahMsg;
-        if (hours < 10) {
-            arafahMsg = '🌅 يوم عرفة بدأ — صم اليوم وأكثر من الدعاء. اللهم أعتق رقابنا من النار.';
-        } else if (hours < 15) {
-            arafahMsg = '🕋 أفضل الدعاء دعاء يوم عرفة — لا تفتر لسانك عن ذكر الله واللهج بالدعاء.';
-        } else if (hours < 18) {
-            arafahMsg = '⏳ الساعة الذهبية تقترب — الساعة الأخيرة قبل الغروب أعظم أوقات الدعاء. هيّئ قلبك وارفع يديك.';
-        } else {
-            // 18:00–19:59: Peak golden hour — Maghrib is imminent, this is the most answered window
-            arafahMsg = '🌟 الآن — أعظم دقائق يوم عرفة. ارفع يديك وادعُ الله قبل المغرب. اللهم إنك عفو كريم تحب العفو فاعف عنا.';
-        }
-        heading   = `⭐ يوم عرفة — أعظم يوم في السنة`;
-        body_text = `${arafahMsg}\n\n"${dua}"`;
-
-    } else if (dayNum === 8 && hours >= 20) {
-        // ── ARAFA EVE (tonight, Day 8 after Maghrib ~19:30) ─────────────────────
-        const eveMsg = arafahEveMessages[hours % arafahEveMessages.length];
-        const eveDua = arafahEveDuas[hours % arafahEveDuas.length];
-        heading   = '🌙 ليلة عرفة — غداً أعظم يوم';
-        body_text = `${eveMsg}\n\n"${eveDua}"`;
-
-    } else {
-        // ── REGULAR DAYS 1–8 ─────────────────────────────────────────────────────
-        let msgPool;
-        if      (hours < 11) msgPool = morningMessages;
-        else if (hours < 15) msgPool = middayMessages;
-        else if (hours < 18) msgPool = afternoonMessages;
-        else                 msgPool = eveningMessages;
-
-        const msg = msgPool[(dayNum + hours) % msgPool.length];
-        const dua = dhDuas[(dayNum + hours) % dhDuas.length];
-
-        heading   = `🕋 اليوم ${dayNum} من ذي الحجة`;
-        body_text = `${msg}\n\n"${dua}"`;
-    }
-
-    console.log(`📣 Sending hourly message...`);
-    if (dayNum === 9) console.log(`⭐ ARAFAH DAY — ${hours >= 18 ? 'peak golden-hour message' : 'using Arafa duas'}`);
-    if (dayNum === 8 && hours >= 20) console.log('🌙 ARAFA EVE — sending arafa-eve warmup');
-    if (dayNum === 10) console.log('🎉 EID — sending Eid greeting');
-
-    const dhikrCollapseId = `dh-day${dayNum}-hour${hours}`;
+    console.log('📣 Sending hourly dhikr message...');
+    const collapseId = `dhikr-${dateKey}-hour${hours}`;
     try {
-        await sendPushWithRetry(heading, body_text, dhikrCollapseId);
+        await sendPushWithRetry(heading, body_text, collapseId);
     } catch (fcmErr) {
-        console.warn(`⚠️  Dhikr FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
-        await sendOneSignalPush(heading, body_text, dhikrCollapseId)
+        console.warn(`⚠️  Dhikr FCM failed — falling back to OneSignal: ${fcmErr.message}`);
+        await sendOneSignalPush(heading, body_text, collapseId)
             .catch(osErr => console.error(`❌ Dhikr OneSignal fallback error: ${osErr.message}`));
     }
 }
