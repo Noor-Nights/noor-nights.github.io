@@ -16,15 +16,15 @@ const CONFIG = {
 const TRANSLATIONS = {
     en: {
         appName: 'Noor Nights',
-        subtitle: 'Illuminate your worship in the ten blessed days',
+        subtitle: 'Illuminate your worship, every day',
         installBtn: '📲 Install App',
         countdownTitle: '⏳ Countdown to the Nights',
         calculating: 'Calculating...',
         untilBegin: 'Until Last Ten Nights of Ramadan begin (Egypt Time)',
         days: 'Days', hours: 'Hours', mins: 'Mins', secs: 'Secs',
         aboutTitle: '🌟 About Noor Nights',
-        aboutText1: 'The first ten days of Dhul Hijjah are among the most blessed days of the year. Allah swore by them in the Quran, and the Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." (Bukhari)',
-        aboutText2: 'This app helps you track your daily worship goals, fast and make du\'a on Arafah Day, access comprehensive prophetic supplications (Jawami\' ad-Du\'a), and stay spiritually engaged throughout these ten precious days.',
+        aboutText1: 'Noor Nights is your daily worship companion — built to help you stay spiritually consistent every day of the year. The Prophet ﷺ said: "The most beloved deeds to Allah are those done regularly, even if they are few." (Bukhari & Muslim)',
+        aboutText2: 'Track your daily worship goals, receive prayer time reminders for Cairo, make dhikr with the tasbeeh counter, access comprehensive prophetic supplications (Jawami\' ad-Du\'a), and share duas with the community — every single day.',
         aboutText3: 'Please keep the developer and all those involved in your sincere prayers.',
         closeBtn: 'Close',
         okBtn: 'OK',
@@ -54,12 +54,12 @@ const TRANSLATIONS = {
         ptReminderSetMsg: (name) => `You'll be notified at ${name} time — keep the app open in your browser.`,
         ptReminderOffTitle: '🔕 Reminder Removed',
         ptReminderOffMsg: (name) => `Reminder for ${name} turned off.`,
-        onboardingTitle: 'The 10 Greatest Days',
-        onboardingBody: 'The Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days." These are those days. Let\'s make every one count.',
-        onboardingF1: 'Open the app each day for your Daily Focus',
+        onboardingTitle: 'Daily Worship Companion',
+        onboardingBody: 'The Prophet ﷺ said: "The most beloved deeds to Allah are those done regularly, even if they are few." Noor Nights helps you build that consistency — every single day.',
+        onboardingF1: 'Get prayer time reminders for all 5 daily prayers',
         onboardingF2: 'Make dhikr, read duas, track your worship',
         onboardingF3: 'Share a dua — your brothers & sisters say Ameen',
-        onboardingF4: 'Install the app for prayer time reminders',
+        onboardingF4: 'Install the app for reliable background reminders',
         onboardingBtn: 'Begin — بسم الله →',
         modalTitle: 'Message',
         notifyBtn: '🔔 Enable',
@@ -75,7 +75,7 @@ const TRANSLATIONS = {
         ],
         progressText: (c, tot) => `${c} of ${tot} tasks completed today`,
         calendarTitle: '📅 Add to My Calendar',
-        calendarDesc: 'Get prayer-time reminders for all 10 Days of Dhul Hijjah — including special duas and a full golden-hour block for Arafa Day (Egypt timezone).',
+        calendarDesc: 'Get daily prayer-time reminders for all 5 prayers — including dhikr prompts and du\'a suggestions (Egypt timezone).',
         calendarBtn: '📅 Download Calendar (.ics)',
         essentialTitle: '🤲 Essential Duas',
         jamawiTitle: "Prophetic Duas",
@@ -83,7 +83,7 @@ const TRANSLATIONS = {
         nightStatus: (n) => `Tonight is Night ${n} of 10`,
         nightSubStatus: 'Make the most of it 🌙',
         reminderActive: '🔔 Reminders Active!',
-        reminderMsg: "You'll receive a dua reminder while this tab is open during the 10 blessed days of Dhul Hijjah.",
+        reminderMsg: "You'll receive a dua reminder while this tab is open.",
         notifTitle: 'Noor Nights 🌙',
         reminderNum: (n, msg) => `🌙 Reminder #${n} — ${msg}`,
         denied: 'Denied',
@@ -118,14 +118,14 @@ const TRANSLATIONS = {
         blessingHadith1: '"Whoever guides someone to goodness will have a reward like the one who did it." (Sahih Muslim)',
         blessingHadith2: '"When a servant dies, his deeds come to an end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for him." (Sahih Muslim)',
         blessingFooter: 'Every dua you share may inspire someone else—and you share in their reward.',
-        footerMadeWith: 'Made with ♥️ for Dhul Hijjah.',
+        footerMadeWith: 'Made with ♥️ for every believer.',
 
         permNeeded: '🔔 Permission Required',
         permNeededAndroid: '👉 On Android: Tap the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
         permNeededIOS: '👉 On iPhone: Add the app to your Home Screen first, then try enabling reminders inside the installed app.',
         permNeededDesktop: '👉 Click the 🔒 in your browser address bar → Site Settings → Notifications → Allow. Then try again.',
         subActivated: '🔔 Reminders Enabled!',
-        subActivatedMsg: 'Jazakallah Khayran! 🤲 You\'ll receive spiritual reminders throughout the 10 blessed days of Dhul Hijjah.',
+        subActivatedMsg: 'Jazakallah Khayran! 🤲 You\'ll receive daily prayer time reminders and spiritual messages.',
         downloadAppTitle: '📲 Get the Noor Nights App',
         downloadAppDesc: 'Install Noor Nights directly on your device for the best experience and reliable background notifications.',
         installAndroidBtn: '🤖 Install App (1-Click)',
@@ -147,9 +147,9 @@ const TRANSLATIONS = {
         installAppTitle: 'Install App',
         installAppMsg: 'Please use your browser menu to "Install App" or "Add to Home Screen".',
         calName: 'Noor Nights',
-        calDesc: 'Noor Nights — 10 Days of Dhul Hijjah 1447',
+        calDesc: 'Noor Nights — Daily Prayer & Dhikr Reminders',
         dhPrayers: { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' },
-        dhCalPrayerSummary: (n, p) => `☪️ Day ${n} of Dhul Hijjah — ${p} | Dhikr & Dua`,
+        dhCalPrayerSummary: (n, p) => `☪️ ${p} | Dhikr & Dua`,
         dhCalPrayerDesc: 'Glorify Allah after prayer: Takbeer (الله أكبر), Tahmeed (الحمد لله), Tahleel (لا إله إلا الله), Tasbeeh (سبحان الله).',
         dhCalArafaAfterFajrSummary: '🌅 Day of Arafa — After Fajr | Begin with Dhikr',
         dhCalArafaAfterFajrDesc: 'The best day of the year has begun. Repeat 100×: «لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير». Fast if not on Hajj.',
@@ -192,18 +192,18 @@ const TRANSLATIONS = {
         tasbeehShare: 'Share Milestone',
         tasbeehResetSuccess: 'All counters have been reset to zero.',
 
-        dhulHijjahTitle: '🕋 Countdown to Dhul Hijjah',
-        dhulHijjahSubStatus: 'Umm al-Qura Calendar • 1 Dhul Hijjah 1447 AH (Egypt Time)',
+        dhulHijjahTitle: '📅 Upcoming Blessed Days',
+        dhulHijjahSubStatus: 'Umm al-Qura Calendar (Egypt Time)',
         qjTrackWorship: '✓ Track Worship',
         qjOpenDuas: '🤲 Open Duas',
-        dhulHijjahMotivation: '✨ Prepare your heart for Dhul-Hijjah — the most blessed days of the year.',
+        dhulHijjahMotivation: '✨ Every day is an opportunity to draw closer to Allah.',
         dhulHijjahChallenge: (n) => `🌟 Only ${n} day${n !== 1 ? 's' : ''} left! Begin your daily spiritual challenge.`,
-        dhulHijjahBegun: '🕋 Dhul-Hijjah has begun! Seize these blessed 10 days. Allahu Akbar!',
+        dhulHijjahBegun: '🕋 The blessed days have begun! Make every moment count. Allahu Akbar!',
         dhulHijjahProgress: (pct) => `${pct}% of the way there`,
 
         wtCardTitle: 'Worship Tracker',
-        badgeSectionTitle: 'Dhul Hijjah Badges',
-        badgeSectionSubtitle: 'Earn badges by completing worship goals during the 10 blessed days',
+        badgeSectionTitle: 'Worship Badges',
+        badgeSectionSubtitle: 'Earn badges by completing your daily worship goals',
 
         vcTitle: 'Virtue of the Day',
         vcShare: '📤 Share',
@@ -225,7 +225,7 @@ const TRANSLATIONS = {
         dhikrSectionVirtuous: 'Most Virtuous Remembrances',
         dhikrSectionAfterPrayer: 'After Every Prayer',
         dhikrSectionMorningEvening: 'Morning & Evening',
-        dhikrSectionDhulHijjah: 'Dhul Hijjah Takbeer',
+        dhikrSectionDhulHijjah: 'Takbeer',
         dhikrSectionProtection: 'Daily Protection',
         dhikrVirtue: 'Virtue',
         dhikrTimes: 'times',
@@ -233,15 +233,15 @@ const TRANSLATIONS = {
     },
     ar: {
         appName: 'ليالي النور',
-        subtitle: 'أنِر عبادتك في الأيام العشرة المباركة',
+        subtitle: 'أنِر عبادتك كل يوم',
         installBtn: '📲 تثبيت التطبيق',
         countdownTitle: '⏳ العد التنازلي للليالي',
         calculating: 'جارٍ الحساب...',
         untilBegin: 'حتى بدء العشر الأواخر من رمضان (توقيت مصر)',
         days: 'أيام', hours: 'ساعات', mins: 'دقائق', secs: 'ثواني',
         aboutTitle: '🌟 عن تطبيق ليالي النور',
-        aboutText1: 'أيام العشر من ذي الحجة من أفضل أيام العام. أقسم الله بها في القرآن الكريم، وقال النبي ﷺ: "ما من أيام العمل الصالح فيها أحبّ إلى الله من هذه الأيام" (البخاري).',
-        aboutText2: 'يساعدك هذا التطبيق على تتبع عباداتك اليومية، والصيام والدعاء في يوم عرفة، والاستفادة من جوامع الأدعية النبوية الشاملة، والبقاء متصلًا بالعبادة طوال هذه الأيام العشرة الثمينة.',
+        aboutText1: 'ليالي النور رفيقك اليومي في العبادة — صُمِّم ليساعدك على الاستمرار في العبادة كل يوم من أيام السنة. قال النبي ﷺ: "أحب الأعمال إلى الله أدومها وإن قل." (البخاري ومسلم)',
+        aboutText2: 'تتبّع أهداف عبادتك اليومية، واحصل على تذكيرات أوقات الصلاة للقاهرة، وسبّح بالسبحة الرقمية، واستفد من جوامع الأدعية النبوية الشاملة، وشارك أدعيتك مع المجتمع — كل يوم.',
         aboutText3: 'نسألكم الدعاء بظهر الغيب لمن صمم ونشر هذا العمل.',
         closeBtn: 'إغلاق',
         okBtn: 'موافق',
@@ -271,12 +271,12 @@ const TRANSLATIONS = {
         ptReminderSetMsg: (name) => `ستُنبَّه عند وقت ${name} — ابقِ التطبيق مفتوحًا في المتصفح.`,
         ptReminderOffTitle: '🔕 تم إيقاف التذكير',
         ptReminderOffMsg: (name) => `تم إيقاف تذكير صلاة ${name}.`,
-        onboardingTitle: 'أفضل عشرة أيام',
-        onboardingBody: 'قال النبي ﷺ: «ما من أيام العمل الصالح فيها أحب إلى الله من هذه الأيام العشرة». هذه هي تلك الأيام — فلنجعل كل يوم يستحق.',
-        onboardingF1: 'افتح التطبيق يومياً لتحصل على تركيزك اليومي',
+        onboardingTitle: 'رفيقك اليومي في العبادة',
+        onboardingBody: 'قال النبي ﷺ: «أحب الأعمال إلى الله أدومها وإن قل». ليالي النور يساعدك على بناء هذا الاستمرار — كل يوم.',
+        onboardingF1: 'احصل على تذكيرات أوقات الصلوات الخمس',
         onboardingF2: 'سبّح وادعُ وتتبّع عبادتك',
         onboardingF3: 'شارك دعاءك — إخوانك يقولون آمين',
-        onboardingF4: 'ثبّت التطبيق لتذكيرات أوقات الصلاة',
+        onboardingF4: 'ثبّت التطبيق للتذكيرات في الخلفية',
         onboardingBtn: '← ابدأ — بسم الله',
         modalTitle: 'رسالة',
         notifyBtn: '🔔 تفعيل',
@@ -300,7 +300,7 @@ const TRANSLATIONS = {
         nightStatus: (n) => `الليلة هي الليلة ${n} من العشر`,
         nightSubStatus: 'استثمرها 🌙',
         reminderActive: '🔔 التذكيرات مفعّلة!',
-        reminderMsg: 'ستتلقى تذكيراً بالدعاء طالما هذا التبويب مفتوح خلال الأيام العشرة المباركة من ذي الحجة.',
+        reminderMsg: 'ستتلقى تذكيراً بالدعاء طالما هذا التبويب مفتوح.',
         notifTitle: 'ليالي النور 🌙',
         reminderNum: (n, msg) => `🌙 تذكير #${n} — ${msg}`,
         denied: 'مرفوض',
@@ -335,14 +335,14 @@ const TRANSLATIONS = {
         blessingHadith1: '"مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ" (صحيح مسلم)',
         blessingHadith2: '"إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَنْهُ عَمَلُهُ إِلاَّ مِنْ ثَلاَثَةٍ: إِلاَّ مِنْ صَدَقَةٍ جَارِيَةٍ، أَوْ عِلْمٍ يُنْتَفَعُ بِهِ، أَوْ وَلَدٍ صَالِحٍ يَدْعُو لَهُ" (صحيح مسلم)',
         blessingFooter: 'كل دعاء تشاركه قد يُلهم غيرك — فتنال من أجرهم الجميل.',
-        footerMadeWith: 'صُنع بـ ❤️ لذي الحجة.',
+        footerMadeWith: 'صُنع بـ ❤️ لكل مؤمن.',
 
         permNeeded: '🔔 إذن مطلوب',
         permNeededAndroid: '👉 على أندرويد: اضغط على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
         permNeededIOS: '👉 على آيفون: أضف التطبيق إلى شاشة الرئيسية أولاً، ثم فعّل التذكيرات من داخل التطبيق المثبت.',
         permNeededDesktop: '👉 انقر على 🔒 في شريط العنوان ← إعدادات الموقع ← الإشعارات ← سماح. ثم حاول مجدداً.',
         subActivated: '🔔 تم تفعيل التذكيرات!',
-        subActivatedMsg: 'جزاك الله خيرًا! 🤲 ستصلك تذكيرات روحانية طوال الأيام العشرة المباركة من ذي الحجة.',
+        subActivatedMsg: 'جزاك الله خيرًا! 🤲 ستصلك تذكيرات أوقات الصلاة اليومية ورسائل روحانية.',
         downloadAppTitle: '📲 احصل على تطبيق ليالي النور',
         downloadAppDesc: 'قم بتثبيت التطبيق على جهازك للحصول على أفضل تجربة وإشعارات خلفية موثوقة.',
         installAndroidBtn: '🤖 تثبيت التطبيق بضغطة واحدة',
@@ -364,9 +364,9 @@ const TRANSLATIONS = {
         installAppTitle: 'تثبيت التطبيق',
         installAppMsg: 'الرجاء استخدام قائمة المتصفح لـ "تثبيت التطبيق" أو "الإضافة للشاشة الرئيسية".',
         calName: 'ليالي النور',
-        calDesc: 'ليالي النور — عشر ذي الحجة 1447',
+        calDesc: 'ليالي النور — تذكيرات الصلاة والذكر اليومية',
         dhPrayers: { fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' },
-        dhCalPrayerSummary: (n, p) => `☪️ اليوم ${n} من ذي الحجة — ${p} | ذكر ودعاء`,
+        dhCalPrayerSummary: (n, p) => `☪️ ${p} | ذكر ودعاء`,
         dhCalPrayerDesc: 'سبّح الله بعد الصلاة: التكبير (الله أكبر)، التحميد (الحمد لله)، التهليل (لا إله إلا الله)، التسبيح (سبحان الله).',
         dhCalArafaAfterFajrSummary: '🌅 يوم عرفة — بعد الفجر | ابدأ بالذكر',
         dhCalArafaAfterFajrDesc: 'بدأ أفضل أيام السنة. قل ١٠٠ مرة: «لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير». صم إن لم تكن حاجاً.',
@@ -409,18 +409,18 @@ const TRANSLATIONS = {
         tasbeehShare: 'مشاركة الإنجاز',
         tasbeehResetSuccess: 'تم إعادة ضبط جميع العدادات إلى الصفر.',
 
-        dhulHijjahTitle: '🕋 العد التنازلي لذي الحجة',
-        dhulHijjahSubStatus: 'تقويم أم القرى • 1 ذو الحجة 1447 هـ (توقيت مصر)',
+        dhulHijjahTitle: '📅 الأيام المباركة القادمة',
+        dhulHijjahSubStatus: 'تقويم أم القرى (توقيت مصر)',
         qjTrackWorship: '✓ تتبع العبادة',
         qjOpenDuas: '🤲 فتح الأدعية',
-        dhulHijjahMotivation: '✨ هيّئ قلبك لذي الحجة — أفضل أيام العام.',
+        dhulHijjahMotivation: '✨ كل يوم فرصة للتقرب من الله.',
         dhulHijjahChallenge: (n) => `🌟 تبقّى ${n} يوم فقط! ابدأ تحديّك الروحاني اليومي.`,
-        dhulHijjahBegun: '🕋 بدأت أيام ذي الحجة المباركة! اغتنم هذه العشر. الله أكبر!',
+        dhulHijjahBegun: '🕋 بدأت الأيام المباركة! اغتنم كل لحظة. الله أكبر!',
         dhulHijjahProgress: (pct) => `${pct}٪ من الطريق`,
 
         wtCardTitle: 'متتبع العبادة',
-        badgeSectionTitle: 'شارات ذي الحجة',
-        badgeSectionSubtitle: 'احصل على الشارات بإتمام أهداف العبادة في الأيام العشرة المباركة',
+        badgeSectionTitle: 'شارات العبادة',
+        badgeSectionSubtitle: 'احصل على الشارات بإتمام أهداف عبادتك اليومية',
 
         vcTitle: 'فضيلة اليوم',
         vcShare: '📤 مشاركة',
@@ -442,7 +442,7 @@ const TRANSLATIONS = {
         dhikrSectionVirtuous: 'أفضل الأذكار',
         dhikrSectionAfterPrayer: 'بعد كل صلاة',
         dhikrSectionMorningEvening: 'أذكار الصباح والمساء',
-        dhikrSectionDhulHijjah: 'تكبيرات ذي الحجة',
+        dhikrSectionDhulHijjah: 'التكبير',
         dhikrSectionProtection: 'الحماية اليومية',
         dhikrVirtue: 'الفضل',
         dhikrTimes: 'مرة',
@@ -950,7 +950,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
 
     ctx.font = '22px "Mulish", sans-serif';
     ctx.fillStyle = 'rgba(220,200,155,0.75)';
-    ctx.fillText('10 Blessed Days of Dhul Hijjah 1447', W / 2, H - 72);
+    ctx.fillText('Noor Nights — Daily Worship Companion', W / 2, H - 72);
 
     ctx.font = 'italic 19px "Mulish", sans-serif';
     ctx.fillStyle = 'rgba(210,188,140,0.55)';
@@ -1040,8 +1040,8 @@ async function generateVCBlob(card, lang) {
 
     // ── Day badge ─────────────────────────────────────────
     const dayLbl = lang === 'ar'
-        ? `اليوم ${card.day} من ذي الحجة`
-        : `Day ${card.day} of Dhul Hijjah`;
+        ? (card.hijriDate || `بطاقة ${card.day}`)
+        : (card.hijriDate || `Card ${card.day}`);
     ctx.font = 'bold 36px "Inter", sans-serif';
     ctx.fillStyle = '#e8d195';
     ctx.fillText(dayLbl, W / 2, 276);
@@ -1133,7 +1133,7 @@ async function generateVCBlob(card, lang) {
 
     ctx.font = '23px "Inter", sans-serif';
     ctx.fillStyle = 'rgba(220,200,155,0.78)';
-    ctx.fillText('10 Blessed Days of Dhul Hijjah 1447', W / 2, H - 80);
+    ctx.fillText('Noor Nights — Daily Worship Companion', W / 2, H - 80);
 
     ctx.font = 'italic 20px "Inter", sans-serif';
     ctx.fillStyle = 'rgba(210,188,140,0.58)';
@@ -1955,217 +1955,277 @@ class BadgeSystem {
 let badgeSystem;
 
 // ═══════════════════════════════════════════════════
-// VIRTUE CARDS
+// VIRTUE CARDS — 10 pillars of year-round daily worship
 // ═══════════════════════════════════════════════════
 const VC_DATA = [
     {
-        day: 1, gregorianDate: 'May 18, 2026', hijriDate: '1 Dhul Hijjah 1447', icon: '🌙', color: '#4f46e5',
+        day: 1, hijriDate: 'Salah — Prayer', icon: '🕌', color: '#4f46e5',
         source: {
             type: 'verse',
-            arabic: 'وَأَذِّن فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ',
-            transliteration: "Wa adhdhin fin-nāsi bil-ḥajji ya'tūka rijālan wa 'alā kulli ḍāmirin ya'tīna min kulli fajjin 'amīq",
+            arabic: 'إِنَّنِي أَنَا اللَّهُ لَا إِلَٰهَ إِلَّا أَنَا فَاعْبُدْنِي وَأَقِمِ الصَّلَاةَ لِذِكْرِي',
+            transliteration: 'Innanī anā Allāhu lā ilāha illā anā fa-ʿbudnī wa-aqimi ṣ-ṣalāta li-dhikrī',
             translation: {
-                en: 'And proclaim to the people the Hajj; they will come to you on foot and on every lean camel; they will come from every distant pass.',
-                ar: 'وَأَذِّن فِي النَّاسِ بِالْحَجِّ يَأْتُوكَ رِجَالًا وَعَلَىٰ كُلِّ ضَامِرٍ يَأْتِينَ مِن كُلِّ فَجٍّ عَمِيقٍ'
+                en: 'Indeed, I am Allah. There is no deity except Me, so worship Me and establish prayer for My remembrance.',
+                ar: 'إِنَّنِي أَنَا اللَّهُ لَا إِلَٰهَ إِلَّا أَنَا فَاعْبُدْنِي وَأَقِمِ الصَّلَاةَ لِذِكْرِي'
             },
-            reference: 'Quran 22:27'
+            reference: 'Quran 20:14'
         },
         virtue: {
-            en: "The first of the 10 blessed days of Dhul Hijjah — the days Allah swore by in Surah Al-Fajr: 'By the dawn, and by the ten nights' (89:1–2).",
-            ar: "اليوم الأول من العشر المباركة من ذي الحجة — الأيام التي أقسم بها الله في سورة الفجر: 'وَالْفَجْرِ وَلَيَالٍ عَشْرٍ' (89:1–2)."
+            en: 'Prayer is the pillar of the religion. The Prophet ﷺ said: "The first deed for which a servant of Allah will be held accountable on the Day of Resurrection is prayer." (Abu Dawud, Tirmidhi)',
+            ar: 'الصلاة عمود الدين. قال النبي ﷺ: «أول ما يُحاسَب به العبد يوم القيامة الصلاة». (أبو داود والترمذي)'
         },
         lesson: {
-            en: { title: 'The Significance of Dhul Hijjah', content: 'These ten days are the most sacred in the Islamic year. The Prophet ﷺ said: "There are no days in which righteous deeds are more beloved to Allah than these ten days." The Companions asked: "Not even jihad for the sake of Allah?" He said: "Not even jihad — except a man who goes out putting himself and his wealth at risk and returns with nothing." (Bukhari)\n\nHow to maximise these days:\n• Increase dhikr — Takbeer, Tahleel, Tahmeed\n• Fast as many days as you can (especially Day 9)\n• Give generously in charity\n• Pray every prayer on time\n• Begin with sincere repentance (Tawbah)\n\nMake today the start of your best ten days ever.' },
-            ar: { title: 'أهمية أيام ذي الحجة', content: 'هذه الأيام العشرة هي أقدس أيام السنة الإسلامية. قال النبي ﷺ: "ما من أيام العمل الصالح فيهن أحب إلى الله من هذه الأيام العشر." فقالوا: ولا الجهاد في سبيل الله؟ قال: "ولا الجهاد، إلا رجل خرج بنفسه وماله فلم يرجع من ذلك بشيء." (البخاري)\n\nكيف تستثمر هذه الأيام:\n• أكثر من الذكر — التكبير والتهليل والتحميد\n• صم ما استطعت (خاصة اليوم التاسع)\n• أنفق بسخاء في الصدقات\n• صلِّ كل صلاة في وقتها\n• ابدأ بالتوبة الصادقة\n\nاجعل اليوم بداية أفضل عشرة أيام في حياتك.' }
+            en: [
+                { title: '🕌 Pray on time, every time', content: 'Establish all five prayers at their correct times. The Prophet ﷺ said the most beloved deed to Allah is prayer performed on time (Bukhari). Pray the Sunnah prayers before and after the obligatory ones to fill any gaps.\n\nIf you miss a prayer, make it up as soon as you remember. There is no expiry on a missed prayer — make it up and resolve never to miss again.' },
+                { title: '✅ Action: Guard your next prayer', content: 'Set a reminder for the next prayer right now. When the time comes, stop what you are doing, make wudu with care, and pray with full presence. Whisper to yourself before you begin: "This prayer may be my last — let it be my best."' }
+            ],
+            ar: [
+                { title: '🕌 صلِّ في وقتها كل مرة', content: 'حافظ على الصلوات الخمس في أوقاتها. قال النبي ﷺ: «أحب الأعمال إلى الله الصلاة على وقتها». (البخاري). صلِّ السنن القبلية والبعدية لتعويض أي نقص.\n\nإن فاتتك صلاة فاقضها فور تذكّرها — لا تنتهي مهلة القضاء، واعزم على عدم التفريط مستقبلاً.' },
+                { title: '✅ اعمل: احرص على صلاتك القادمة', content: 'اضبط تذكيراً للصلاة القادمة الآن. وحين يحين وقتها أوقف ما بيدك، توضأ بتأنٍّ، وصلِّ بحضور قلب. قل لنفسك قبل أن تكبّر: «ربما تكون هذه صلاتي الأخيرة — فلتكن أفضل صلاة».' }
+            ]
         }
     },
     {
-        day: 2, gregorianDate: 'May 19, 2026', hijriDate: '2 Dhul Hijjah 1447', icon: '✨', color: '#0ea5e9',
+        day: 2, hijriDate: 'Quran — Recitation', icon: '📖', color: '#0ea5e9',
         source: {
             type: 'hadith',
-            arabic: 'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهِنَّ أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ',
-            transliteration: "Mā min ayyāmin al-'amalu aṣ-ṣāliḥu fīhinna aḥabbu ilā Allāhi min hādhihi al-ayyāmi al-'ashr",
+            arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
+            transliteration: 'Khayrukum man taʿallama l-Qurʾāna wa ʿallamah',
             translation: {
-                en: 'There are no days on which righteous deeds are more beloved to Allah than these ten days.',
-                ar: 'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهِنَّ أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ'
+                en: 'The best of you are those who learn the Quran and teach it.',
+                ar: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ'
             },
-            reference: 'Sahih Bukhari 969'
+            reference: 'Sahih Bukhari 5027'
         },
         virtue: {
-            en: 'Every good deed — no matter how small — carries extraordinary weight during these days. A smile, a kind word, a prayer on time: all are multiplied in ways we cannot imagine.',
-            ar: 'كل عمل صالح — مهما كان صغيراً — يحمل ثقلاً استثنائياً في هذه الأيام. الابتسامة، والكلمة الطيبة، والصلاة في وقتها: كلها تتضاعف بصورة لا يمكننا تخيّلها.'
+            en: 'The Quran is light, healing, and guidance. The Prophet ﷺ said: "Whoever reads a letter of the Quran, for him is one good deed, and a good deed is multiplied ten times." (Tirmidhi)',
+            ar: 'القرآن نور وشفاء وهدى. قال النبي ﷺ: «من قرأ حرفاً من كتاب الله فله به حسنة، والحسنة بعشر أمثالها». (الترمذي)'
         },
         lesson: {
-            en: { title: 'Every Deed Counts', content: 'The scholars explain that deeds are "more beloved" here because Allah looks upon them with special pleasure during these days. When Allah loves an act, He gives it His fullest barakah.\n\nFocus on consistency over volume:\n• Pray every Sunnah prayer, not just Fardh\n• Read even one page of Quran with full attention\n• Make dhikr during idle moments (commute, waiting, walking)\n• Call a relative you have neglected\n• Give a small amount in charity every day\n\nThe Prophet ﷺ said: "The most beloved deeds to Allah are the most consistent, even if they are small." (Bukhari & Muslim)' },
-            ar: { title: 'كل عمل له قيمة', content: 'يوضح العلماء أن الأعمال هنا "أحب" لأن الله ينظر إليها بمسرة خاصة في هذه الأيام. وحين يحب الله عملاً، يمنحه أتم بركاته.\n\nركّز على الاستمرارية لا على الكم:\n• صلِّ كل سنة، وليس الفرض فحسب\n• اقرأ ولو صفحة واحدة من القرآن بتأمل كامل\n• أكثر من الذكر في أوقات الفراغ\n• تواصل مع قريب أهملته\n• تصدّق بمبلغ صغير كل يوم\n\nقال النبي ﷺ: "أحب الأعمال إلى الله أدومها وإن قل." (البخاري ومسلم)' }
+            en: [
+                { title: '📖 Read daily — even a little', content: 'Commit to reading at least a few verses or one page every day. Consistency is more valuable than quantity. The Prophet ﷺ said: "The most beloved deeds to Allah are those done regularly, even if they are few." (Bukhari, Muslim)\n\nKeep a copy of the Quran accessible — on your phone, your bedside, your desk. The easier it is to reach, the more likely you are to read.' },
+                { title: '✅ Action: Open the Quran now', content: "Open the Quran to wherever you last left off, or begin with Surah Al-Mulk (67). Read slowly, reflect on the meaning, and let your heart absorb what Allah is saying to you." }
+            ],
+            ar: [
+                { title: '📖 اقرأ يومياً ولو قليلاً', content: 'التزم بقراءة ولو آيات أو صفحة كل يوم. الاستمرار أثمن من الكثرة. قال النبي ﷺ: «أحب الأعمال إلى الله أدومها وإن قل». (البخاري ومسلم)\n\nاحتفظ بنسخة من القرآن في متناول يدك. كلما كان في المتناول كان الإقبال عليه أيسر.' },
+                { title: '✅ اعمل: افتح القرآن الآن', content: 'افتح القرآن من حيث توقفت، أو ابدأ بسورة الملك (67). اقرأ بتأنٍّ وتدبّر المعنى، ودع قلبك يستوعب ما يخاطبك به الله.' }
+            ]
         }
     },
     {
-        day: 3, gregorianDate: 'May 20, 2026', hijriDate: '3 Dhul Hijjah 1447', icon: '🌿', color: '#059669',
-        source: {
-            type: 'hadith',
-            arabic: 'مَنْ صَامَ يَوْمًا فِي سَبِيلِ اللَّهِ بَعَّدَ اللَّهُ وَجْهَهُ عَنِ النَّارِ سَبْعِينَ خَرِيفًا',
-            transliteration: "Man ṣāma yawman fī sabīli Allāhi ba''ada Allāhu wajhahu 'an al-nāri sab'īna kharīfā",
-            translation: {
-                en: 'Whoever fasts one day for the sake of Allah, Allah will keep his face away from the Fire by a distance of seventy years.',
-                ar: 'مَنْ صَامَ يَوْمًا فِي سَبِيلِ اللَّهِ بَعَّدَ اللَّهُ وَجْهَهُ عَنِ النَّارِ سَبْعِينَ خَرِيفًا'
-            },
-            reference: 'Sahih Muslim 1153'
-        },
-        virtue: {
-            en: 'Fasting during Dhul Hijjah is one of the greatest acts of worship. The Prophet ﷺ used to fast the first nine days of Dhul Hijjah.',
-            ar: 'الصيام في ذي الحجة من أعظم العبادات. وكان النبي ﷺ يصوم التسعة الأيام الأولى من ذي الحجة.'
-        },
-        lesson: {
-            en: { title: 'The Power of Fasting', content: 'Fasting is described in a divine hadith (Hadith Qudsi): "Every deed of the son of Adam is for himself, except fasting — it is for Me and I will reward it." (Bukhari & Muslim) Fasting uniquely belongs to Allah because it is a hidden act that only He can verify.\n\nTips for fasting these days:\n• Make niyyah (intention) before Fajr each day\n• Eat a light, nutritious suhoor\n• Use hunger as a reminder to make dhikr\n• Break fast with dua — this is a moment of acceptance\n• Avoid wasting the fast with idle speech\n\nAim to fast at least Day 9 (Arafah) if you cannot fast all nine days.' },
-            ar: { title: 'قوة الصيام', content: 'وصف الله الصيام في حديث قدسي: "كل عمل ابن آدم له إلا الصيام، فإنه لي وأنا أجزي به." (البخاري ومسلم) الصيام ينتسب لله وحده لأنه عبادة خفية لا يعلمها إلا هو.\n\nنصائح للصيام في هذه الأيام:\n• انوِ نية الصيام قبل الفجر كل يوم\n• تناول سحوراً خفيفاً ومغذياً\n• استخدم الجوع تذكيراً بالذكر\n• أفطر بدعاء — هذه لحظة قبول\n• تجنب إضاعة الصيام بالكلام الفارغ\n\nاحرص على صيام يوم عرفة (اليوم التاسع) على الأقل.' }
-        }
-    },
-    {
-        day: 4, gregorianDate: 'May 21, 2026', hijriDate: '4 Dhul Hijjah 1447', icon: '📿', color: '#7c3aed',
-        source: {
-            type: 'hadith',
-            arabic: 'مَا مِنْ يَوْمٍ أَعْظَمُ عِنْدَ اللَّهِ وَلَا أَحَبُّ إِلَيْهِ الْعَمَلُ فِيهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ، فَأَكْثِرُوا فِيهَا مِنَ التَّهْلِيلِ وَالتَّكْبِيرِ وَالتَّحْمِيدِ',
-            transliteration: "Mā min yawmin a'ẓamu 'inda Allāhi wa lā aḥabbu ilayhi al-'amalu fīhi min hādhihi al-ayyāmi al-'ashr, fa-akthirū fīhā min at-tahlīli wa at-takbīri wa at-taḥmīd",
-            translation: {
-                en: 'There are no days more magnificent in the sight of Allah, nor in which good deeds are more beloved to Him, than these ten days. So increase in Tahleel, Takbeer, and Tahmeed.',
-                ar: 'مَا مِنْ يَوْمٍ أَعْظَمُ عِنْدَ اللَّهِ وَلَا أَحَبُّ إِلَيْهِ الْعَمَلُ فِيهِ مِنْ هَذِهِ الأَيَّامِ الْعَشْرِ، فَأَكْثِرُوا فِيهَا مِنَ التَّهْلِيلِ وَالتَّكْبِيرِ وَالتَّحْمِيدِ'
-            },
-            reference: 'Ahmad, authenticated by Ibn Hajar'
-        },
-        virtue: {
-            en: 'The tongue remembering Allah is among the lightest acts of worship yet the most rewarded. Dhikr costs nothing and can be done anywhere — walking, driving, working.',
-            ar: 'ذكر اللسان لله من أخف العبادات وأعظمها أجراً. الذكر لا يكلف شيئاً ويمكن ممارسته في أي مكان — سيراً أو قيادةً أو عملاً.'
-        },
-        lesson: {
-            en: { title: 'The Language of Dhikr', content: 'The four phrases especially recommended during Dhul Hijjah:\n\n• لَا إِلَهَ إِلَّا اللَّه — Lā ilāha illallāh\n• اللَّهُ أَكْبَر — Allāhu Akbar\n• الْحَمْدُ لِلَّهِ — Alḥamdulillāh\n• سُبْحَانَ اللَّه — Subḥānallāh\n\nThe Takbeer formula for these days: "Allāhu Akbar, Allāhu Akbar, lā ilāha illallāh, Allāhu Akbar, Allāhu Akbar, wa lillāhil ḥamd."\n\nMake dhikr your background music. Say it during every pause in your day. These phrases are treasures heavier than mountains on your scale of good deeds.' },
-            ar: { title: 'لغة الذكر', content: 'العبارات الأربع الموصى بها بشكل خاص في ذي الحجة:\n\n• لَا إِلَهَ إِلَّا اللَّه\n• اللَّهُ أَكْبَر\n• الْحَمْدُ لِلَّهِ\n• سُبْحَانَ اللَّه\n\nصيغة التكبير في هذه الأيام: "الله أكبر، الله أكبر، لا إله إلا الله، الله أكبر، الله أكبر، ولله الحمد."\n\nاجعل الذكر موسيقى خلفيتك. قله في كل توقف في يومك. هذه العبارات كنوز أثقل من الجبال في ميزان حسناتك.' }
-        }
-    },
-    {
-        day: 5, gregorianDate: 'May 22, 2026', hijriDate: '5 Dhul Hijjah 1447', icon: '💛', color: '#d97706',
+        day: 3, hijriDate: 'Dhikr — Remembrance', icon: '📿', color: '#059669',
         source: {
             type: 'verse',
-            arabic: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ',
-            transliteration: "Mathalu alladhīna yunfiqūna amwālahum fī sabīli Allāhi kamathali ḥabbatin anbatat sab'a sanābila fī kulli sunbulatin mi'atu ḥabbah, wallāhu yuḍā'ifu liman yashā'",
+            arabic: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',
+            transliteration: 'Alā bi-dhikri Llāhi taṭmaʾinnu l-qulūb',
             translation: {
-                en: 'The example of those who spend their wealth in the way of Allah is like a seed of grain which grows seven spikes; in each spike is a hundred grains. And Allah multiplies for whom He wills.',
-                ar: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ'
+                en: 'Verily, in the remembrance of Allah do hearts find rest.',
+                ar: 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ'
+            },
+            reference: 'Quran 13:28'
+        },
+        virtue: {
+            en: 'Dhikr is the easiest deed with the greatest reward. The Prophet ﷺ said SubhanAllah, Alhamdulillah, La ilaha illallah, Allahu Akbar are more beloved to him than all that the sun rises upon. (Muslim)',
+            ar: 'الذكر أيسر عبادة وأعظم أجراً. قال النبي ﷺ عن «سبحان الله، الحمد لله، لا إله إلا الله، الله أكبر»: «لَهُنَّ أَحَبُّ إِلَيَّ مِمَّا طَلَعَتْ عَلَيْهِ الشَّمْسُ». (مسلم)'
+        },
+        lesson: {
+            en: [
+                { title: '📿 Make dhikr a habit', content: 'Say SubhanAllah 33 times, Alhamdulillah 33 times, Allahu Akbar 34 times after every prayer — this takes under two minutes. The Prophet ﷺ said whoever does it will have all sins forgiven even if they are like the foam of the sea. (Muslim)\n\nAlso recite the morning and evening adhkar — these are your spiritual armour for the day and night.' },
+                { title: '✅ Action: Say the tasbih now', content: 'Before you move on — say SubhanAllah 33 times, Alhamdulillah 33 times, and Allahu Akbar 34 times. It takes 90 seconds. Open the Tasbeeh tab in this app to count.' }
+            ],
+            ar: [
+                { title: '📿 اجعل الذكر عادةً', content: 'قل سبحان الله 33 مرة والحمد لله 33 مرة والله أكبر 34 مرة بعد كل صلاة — لا تستغرق دقيقتين. قال النبي ﷺ إن من يفعلها تُغفر له ذنوبه ولو كانت كزبد البحر. (مسلم)\n\nكذلك احرص على أذكار الصباح والمساء — فهي درعك الروحي لنهارك وليلك.' },
+                { title: '✅ اعمل: قل التسبيح الآن', content: 'قبل أن تنتقل — قل سبحان الله 33 مرة والحمد لله 33 مرة والله أكبر 34 مرة. لا تستغرق 90 ثانية. افتح تبويب السبحة في هذا التطبيق للعدّ.' }
+            ]
+        }
+    },
+    {
+        day: 4, hijriDate: 'Sadaqah — Charity', icon: '💚', color: '#7c3aed',
+        source: {
+            type: 'verse',
+            arabic: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ',
+            transliteration: 'Mathalu lladhīna yunfiqūna amwālahum fī sabīli Llāhi ka-mathali ḥabbatin anbatat sabʿa sanābil',
+            translation: {
+                en: 'The example of those who spend their wealth in the way of Allah is like a grain which grows seven spikes; in each spike is a hundred grains.',
+                ar: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ'
             },
             reference: 'Quran 2:261'
         },
         virtue: {
-            en: 'Charity during these blessed days is multiplied beyond measure. Even the smallest act of giving — a meal, a smile, a kind word — carries immense weight.',
-            ar: 'الصدقة في هذه الأيام المباركة تتضاعف بصورة لا تُحصى. حتى أصغر أعمال العطاء — وجبة طعام، أو ابتسامة، أو كلمة طيبة — تحمل ثقلاً عظيماً.'
+            en: 'The Prophet ﷺ said: "Charity extinguishes sin as water extinguishes fire." (Tirmidhi). Every day two angels descend — one prays for the one who spends and the other curses the one who withholds. (Bukhari, Muslim)',
+            ar: 'قال النبي ﷺ: «الصدقة تطفئ الخطيئة كما يطفئ الماء النار». (الترمذي). وقال ﷺ: «ما من يوم يصبح العباد فيه إلا ملكان ينزلان: اللهم أعطِ منفقاً خَلَفاً، واللهم أعطِ ممسكاً تلفاً». (البخاري ومسلم)'
         },
         lesson: {
-            en: { title: 'Unlocking Generosity', content: '"Charity does not decrease wealth." (Muslim) This is a divine promise. When you give sincerely, Allah opens doors of provision you cannot foresee.\n\nWays to give during Dhul Hijjah:\n• Donate to a cause you believe in today\n• Feed someone who cannot afford a meal\n• Sponsor a share of Udhiyyah (Qurbani)\n• Share knowledge — even one useful tip counts\n• Make dua for others — this is free sadaqah\n\nThe best charity combines the material (money, food) with the immaterial (time, attention, kindness). Give from what you love most, and trust Allah to replace it with something better.' },
-            ar: { title: 'فتح باب الكرم', content: '"الصدقة لا تنقص من مال." (مسلم) هذا وعد إلهي. حين تعطي بإخلاص، يفتح الله أبواب رزق لا تراها.\n\nطرق العطاء في ذي الحجة:\n• تبرّع لقضية تؤمن بها اليوم\n• أطعم شخصاً لا يستطيع تحمّل تكاليف وجبة\n• اشترك في حصة أضحية\n• شارك علماً — حتى نصيحة مفيدة واحدة تحتسب\n• ادعُ للآخرين — هذه صدقة مجانية\n\nأعطِ مما تحب، وثق بأن الله سيعوضك بما هو أفضل.' }
+            en: [
+                { title: '💚 Give something every day', content: 'The Prophet ﷺ said charity does not decrease wealth (Muslim). Even a small amount given daily adds up — and the habit of generosity is more precious than the amount.\n\nSadaqah is not only money: a smile is charity, removing harm from the path is charity, a kind word is charity. (Bukhari)' },
+                { title: '✅ Action: Give sadaqah today', content: 'Give something to someone who needs it today — whether money, food, your time, your expertise, or a kind message. Anything given sincerely for the sake of Allah counts.' }
+            ],
+            ar: [
+                { title: '💚 أعطِ شيئاً كل يوم', content: 'قال النبي ﷺ: «ما نقصت صدقة من مال». (مسلم). حتى المبلغ الصغير المُعطى يومياً يتراكم — وعادة الكرم أثمن من المقدار.\n\nالصدقة ليست المال وحده: الابتسامة صدقة، وإماطة الأذى عن الطريق صدقة، والكلمة الطيبة صدقة. (البخاري)' },
+                { title: '✅ اعمل: تصدّق اليوم', content: 'أعطِ شيئاً لمن يحتاجه اليوم — سواء أكان مالاً أم طعاماً أم وقتك أم خبرتك أم كلمة طيبة. كل ما أُعطي ابتغاءَ وجه الله يُحتسب.' }
+            ]
         }
     },
     {
-        day: 6, gregorianDate: 'May 23, 2026', hijriDate: '6 Dhul Hijjah 1447', icon: '📖', color: '#0891b2',
+        day: 5, hijriDate: 'Sawm — Fasting', icon: '🌙', color: '#d97706',
         source: {
             type: 'hadith',
-            arabic: 'اقْرَؤُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لِأَصْحَابِهِ',
-            transliteration: "Iqra'ū al-Qur'āna fa-innahu ya'tī yawma al-qiyāmati shafī'an li-aṣḥābih",
+            arabic: 'الصِّيَامُ لِي وَأَنَا أَجْزِي بِهِ',
+            transliteration: 'Aṣ-ṣiyāmu lī wa anā ajzī bih',
             translation: {
-                en: 'Recite the Quran, for it will come on the Day of Resurrection as an intercessor for its companions.',
-                ar: 'اقْرَؤُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لِأَصْحَابِهِ'
+                en: 'Fasting is for Me, and I shall reward it Myself.',
+                ar: 'الصِّيَامُ لِي وَأَنَا أَجْزِي بِهِ'
             },
-            reference: 'Sahih Muslim 804'
+            reference: 'Hadith Qudsi — Bukhari 1904, Muslim 1151'
         },
         virtue: {
-            en: 'The Quran is a living guide, a healing, and a light. Every letter recited earns ten good deeds. During these blessed days, recitation carries even greater blessing.',
-            ar: 'القرآن دليل حيّ وشفاء ونور. كل حرف يُتلى يكسب عشر حسنات. وفي هذه الأيام المباركة، تحمل التلاوة بركة أعظم.'
+            en: 'The Prophet ﷺ fasted every Monday and Thursday and said: "Deeds are presented on Monday and Thursday and I love that my deeds be presented while I am fasting." (Tirmidhi)',
+            ar: 'كان النبي ﷺ يصوم الاثنين والخميس ويقول: «إن الأعمال تُعرض كل اثنين وخميس فأحب أن يُعرض عملي وأنا صائم». (الترمذي)'
         },
         lesson: {
-            en: { title: 'Living with the Quran', content: 'The Prophet ﷺ said: "The best of you are those who learn the Quran and teach it." (Bukhari) Engaging with the Quran transforms the heart.\n\nPractical steps for today:\n• Set a daily Quran goal — even 5 minutes of focused reading\n• Choose one verse to reflect on deeply\n• Listen to a Quran recitation during your commute\n• Memorise one short surah or ayah\n• Read the tafseer of a verse you find difficult\n\nThe Quran was revealed as a mercy and guidance. Come to it with an open heart, and it will show you what you need to hear today.' },
-            ar: { title: 'العيش مع القرآن', content: 'قال النبي ﷺ: "خيركم من تعلم القرآن وعلّمه." (البخاري) التفاعل مع القرآن يُحوّل القلب.\n\nخطوات عملية لليوم:\n• ضع هدفاً يومياً للقرآن — حتى 5 دقائق من القراءة المركّزة\n• اختر آية واحدة لتتأملها في العمق\n• استمع لتلاوة قرآنية أثناء تنقلك\n• احفظ سورة قصيرة أو آية\n• اقرأ تفسير آية تجدها صعبة\n\nأقبل على القرآن بقلب منفتح، وسيريك ما تحتاج أن تسمعه اليوم.' }
+            en: [
+                { title: '🌙 Fast on Mondays and Thursdays', content: 'The Sunnah fasts of Monday and Thursday are among the most consistent habits of the Prophet ﷺ. They purify the soul, discipline the body, and cause deeds to be presented to Allah while you are in a state of worship.\n\nIf full fasting is difficult, begin with just one day a week. Consistency is the key.' },
+                { title: '✅ Action: Intend to fast next Monday', content: 'Make the intention now to fast next Monday or Thursday. Mark it in your calendar. Prepare by eating a light suhoor and making sincere intention the night before.' }
+            ],
+            ar: [
+                { title: '🌙 صُم الاثنين والخميس', content: 'صيام الاثنين والخميس من أثبت عادات النبي ﷺ. يُزكّي النفس ويُروّض البدن ويجعل الأعمال تُعرض على الله وأنت في حالة عبادة.\n\nإن عسُر عليك الصيام يومين فابدأ بيوم واحد في الأسبوع — الاستمرار هو المفتاح.' },
+                { title: '✅ اعمل: انوِ الصيام الاثنين القادم', content: 'انوِ الآن أن تصوم الاثنين القادم أو الخميس. سجّله في مفكرتك. استعدّ بتناول سحور خفيف وبيّت النية ليلةً.' }
+            ]
         }
     },
     {
-        day: 7, gregorianDate: 'May 24, 2026', hijriDate: '7 Dhul Hijjah 1447', icon: '🔆', color: '#be185d',
+        day: 6, hijriDate: "Du'a — Supplication", icon: '🤲', color: '#0891b2',
         source: {
             type: 'verse',
-            arabic: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ',
-            transliteration: "Qul yā 'ibādiya alladhīna asrafū 'alā anfusihim lā taqnaṭū min raḥmati Allāh, inna Allāha yaghfiru adh-dhunūba jamī'ā, innahu huwa al-Ghafūru ar-Raḥīm",
+            arabic: 'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',
+            transliteration: 'Wa qāla rabbukumu dʿūnī astajib lakum',
             translation: {
-                en: 'Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.',
-                ar: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ'
+                en: 'And your Lord said: Call upon Me; I will respond to you.',
+                ar: 'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ'
             },
-            reference: 'Quran 39:53'
+            reference: 'Quran 40:60'
         },
         virtue: {
-            en: 'Sincere repentance (Tawbah) wipes the slate clean. No matter how far you have drifted, Allah is always closer to you than you think — and these days are the perfect time to return.',
-            ar: 'التوبة الصادقة تمحو كل شيء. بغض النظر عن مدى ابتعادك، الله أقرب إليك مما تظن — وهذه الأيام هي الوقت المثالي للعودة.'
+            en: "The Prophet ﷺ said: 'Du'a is the essence of worship.' (Tirmidhi). There is no plea too small and no request too large — Allah loves to hear His servant asking.",
+            ar: 'قال النبي ﷺ: «الدعاء هو العبادة». (الترمذي). لا طلبَ أصغر من أن يُسمع ولا أكبر من أن يُستجاب — الله يحب أن يسمع عبده يسأله.'
         },
         lesson: {
-            en: { title: 'The Door of Tawbah', content: 'The Prophet ﷺ said: "Allah stretches out His hand during the night so that those who sinned by day may repent, and He stretches out His hand during the day so that those who sinned by night may repent — until the sun rises from the west." (Muslim)\n\nSteps for a sincere Tawbah:\n• Acknowledge the sin honestly — no minimising or excusing\n• Feel genuine remorse in your heart\n• Firmly resolve not to return to it\n• Make amends where possible (return what was taken, apologise)\n• Replace bad habits with good ones immediately\n\nAllah loves those who return to Him repeatedly. Tawbah is not a one-time act — it is a daily practice of turning back to your Lord.' },
-            ar: { title: 'باب التوبة', content: 'قال النبي ﷺ: "إن الله يبسط يده بالليل ليتوب مسيء النهار، ويبسط يده بالنهار ليتوب مسيء الليل، حتى تطلع الشمس من مغربها." (مسلم)\n\nخطوات التوبة الصادقة:\n• اعترف بالذنب بصدق — دون تهوين أو تبرير\n• اشعر بالندم الحقيقي في قلبك\n• اعقد عزماً راسخاً على عدم العودة\n• أصلح ما أمكن (أعد ما أُخذ، واعتذر)\n• استبدل العادات السيئة بأخرى حسنة فوراً\n\nالتوبة ليست فعلاً واحداً — هي ممارسة يومية للعودة إلى ربك.' }
+            en: [
+                { title: '🤲 Ask Allah — for everything', content: "The best times for du'a: the last third of the night, between the adhan and iqamah, during sujood, after the obligatory prayers, and on Fridays (especially the last hour before Maghrib).\n\nDo not limit your du'a to big matters. Ask Allah for everything — your daily bread, your health, your family, your community and the whole Ummah." },
+                { title: "✅ Action: Make a personal du'a now", content: "Open the Du'as tab in this app, choose one dua, read it slowly, then add your own personal supplication in your own words. Allah understands every language and every unspoken longing of the heart." }
+            ],
+            ar: [
+                { title: '🤲 اسأل الله — في كل شيء', content: 'أفضل أوقات الدعاء: الثلث الأخير من الليل، وبين الأذان والإقامة، وفي السجود، وعقب الصلوات المفروضة، ويوم الجمعة (خاصة آخر ساعة قبل المغرب).\n\nلا تقتصر دعواتك على الأمور الكبيرة. اسأل الله كل شيء — رزقك وصحتك وأسرتك وأمتك.' },
+                { title: '✅ اعمل: ادعُ الله الآن', content: 'افتح تبويب الأدعية في هذا التطبيق، اختر دعاءً واقرأه بتأنٍّ، ثم أضف دعاءك الخاص بكلماتك. الله يفهم كل لغة وكل شوق في القلب.' }
+            ]
         }
     },
     {
-        day: 8, gregorianDate: 'May 25, 2026', hijriDate: '8 Dhul Hijjah 1447 — Yawm al-Tarwiyah', icon: '🕋', color: '#ea580c',
-        source: {
-            type: 'hadith',
-            arabic: 'إِذَا كَانَ يَوْمُ التَّرْوِيَةِ أَهَلُّوا بِالْحَجِّ',
-            transliteration: "Idhā kāna Yawmu al-Tarwiyati ahallū bil-ḥajj",
-            translation: {
-                en: 'On the Day of Tarwiyah (8th Dhul Hijjah), the pilgrims enter the state of ihram for Hajj.',
-                ar: 'إِذَا كَانَ يَوْمُ التَّرْوِيَةِ أَهَلُّوا بِالْحَجِّ'
-            },
-            reference: 'Sahih Bukhari 1666'
-        },
-        virtue: {
-            en: 'The Day of Tarwiyah is when pilgrims begin their Hajj journey. For non-pilgrims, it is a day to prepare the soul — purify intentions, settle disputes, and enter the final stretch with full commitment.',
-            ar: 'يوم التروية هو اليوم الذي يبدأ فيه الحجاج رحلة الحج. لغير الحجاج، هو يوم لإعداد الروح — تنقية النوايا، وتسوية الخلافات، والدخول في المرحلة الأخيرة بالتزام كامل.'
-        },
-        lesson: {
-            en: { title: 'Yawm al-Tarwiyah — Day of Preparation', content: 'As pilgrims depart for Mina today, the rest of the Ummah should also enter a state of heightened worship. Great stations require preparation.\n\nUse today to:\n• Resolve any outstanding debts or wrongs with others\n• Make a sincere intention to maximise tomorrow (Arafah)\n• Increase in Istighfar (seeking forgiveness)\n• Cut off distractions — social media, entertainment, idle talk\n• Plan and write your dua list for Arafah Day\n\nThe pilgrim who reaches Arafah is changed forever. Even from afar, we can share in that spiritual transformation by preparing our hearts today.' },
-            ar: { title: 'يوم التروية — يوم الاستعداد', content: 'بينما يتوجه الحجاج إلى منى اليوم، يجب على بقية الأمة أيضاً الدخول في حالة من العبادة المتصاعدة.\n\nاستخدم اليوم لـ:\n• تسوية أي ديون أو مظالم مع الآخرين\n• النية الصادقة لتعظيم الغد (يوم عرفة)\n• الإكثار من الاستغفار\n• قطع المشتتات — وسائل التواصل والترفيه والحديث الفارغ\n• تخطيط وكتابة قائمة أدعيتك ليوم عرفة\n\nحتى من بعيد، يمكننا المشاركة في التحول الروحي بإعداد قلوبنا اليوم.' }
-        }
-    },
-    {
-        day: 9, gregorianDate: 'May 26, 2026', hijriDate: '9 Dhul Hijjah 1447 — Yawm Arafah', icon: '⭐', color: '#b45309',
-        source: {
-            type: 'hadith',
-            arabic: 'مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ وَإِنَّهُ لَيَدْنُو ثُمَّ يُبَاهِي بِهِمُ الْمَلَائِكَةَ',
-            transliteration: "Mā min yawmin akthara min an yu'tiqa Allāhu fīhi 'abdan min al-nāri min Yawmi 'Arafah, wa-innahu la-yadnū thumma yubāhī bihimu al-malā'ikah",
-            translation: {
-                en: 'There is no day on which Allah frees more people from the Fire than the Day of Arafah. He draws close, then boasts about them to the angels.',
-                ar: 'مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ وَإِنَّهُ لَيَدْنُو ثُمَّ يُبَاهِي بِهِمُ الْمَلَائِكَةَ'
-            },
-            reference: 'Sahih Muslim 1348'
-        },
-        virtue: {
-            en: 'Arafah is the heart of Hajj and the greatest day of the year. Fasting on this day expiates the sins of the previous and coming year. Allah boasts to His angels about those who stand in worship.',
-            ar: 'عرفة هي قلب الحج وأعظم يوم في السنة. صيام هذا اليوم يكفّر ذنوب السنة الماضية والقادمة. يباهي الله ملائكته بالذين يقفون في العبادة.'
-        },
-        lesson: {
-            en: { title: '⭐ Arafah — The Greatest Day', content: 'The Prophet ﷺ said about fasting Arafah: "It expiates the sins of the previous year and the year to come." (Muslim) This is a divine gift — a chance to wipe the slate clean.\n\nMake the most of Arafah:\n• Fast the entire day (from Fajr to Maghrib)\n• Spend time in dua — especially the last hour before Maghrib\n• Best dua of Arafah: "Lā ilāha illallāhu waḥdahu lā sharīka lah, lahu al-mulku wa lahu al-ḥamdu wa huwa \'alā kulli shay\'in qadīr"\n• Make dua for your parents, family, and the entire Ummah\n• Cry if you can — tears on Arafah are among the most precious\n\nAllah is closer to you today than on any other day. Pour your heart out — He is listening.' },
-            ar: { title: '⭐ عرفة — أعظم يوم', content: 'قال النبي ﷺ عن صيام عرفة: "يكفر السنة الماضية والسنة القادمة." (مسلم) هذه هبة إلهية — فرصة لمحو كل شيء.\n\nاستثمر يوم عرفة:\n• صم اليوم كله (من الفجر إلى المغرب)\n• أمضِ وقتاً في الدعاء — خاصة الساعة الأخيرة قبل المغرب\n• أفضل دعاء في عرفة: "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير"\n• ادعُ لوالديك وأسرتك والأمة وجميع المسلمين\n• ابكِ إن استطعت — الدموع في عرفة من أثمن ما يكون\n\nالله أقرب إليك اليوم من أي يوم آخر. أفضِ بما في قلبك — هو يسمع.' }
-        }
-    },
-    {
-        day: 10, gregorianDate: 'May 27, 2026', hijriDate: '10 Dhul Hijjah 1447 — Eid al-Adha', icon: '🎉', color: '#15803d',
+        day: 7, hijriDate: 'Shukr — Gratitude', icon: '💛', color: '#be185d',
         source: {
             type: 'verse',
-            arabic: 'فَصَلِّ لِرَبِّكَ وَانْحَرْ',
-            transliteration: "Faṣalli li-rabbika wa-anḥar",
+            arabic: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ',
+            transliteration: 'La-in shakartum la-azīdannakum',
             translation: {
-                en: 'So pray to your Lord and sacrifice.',
-                ar: 'فَصَلِّ لِرَبِّكَ وَانْحَرْ'
+                en: 'If you are grateful, I will surely increase you.',
+                ar: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ'
             },
-            reference: 'Quran 108:2'
+            reference: 'Quran 14:7'
         },
         virtue: {
-            en: "Eid al-Adha commemorates Ibrahim's ﷺ willingness to sacrifice everything for Allah's sake. The Udhiyyah is a symbol of complete submission — giving your most beloved for Allah's pleasure.",
-            ar: 'يُحيي عيد الأضحى استعداد إبراهيم ﷺ للتضحية بكل شيء في سبيل الله. الأضحية رمز للاستسلام الكامل — تقديم ما تحب أكثر لرضا الله.'
+            en: 'The Prophet ﷺ would stand in night prayer until his feet were swollen. When asked why, he said: "Should I not be a grateful servant?" (Bukhari, Muslim). Gratitude is not a feeling to wait for — it is a practice to cultivate.',
+            ar: 'كان النبي ﷺ يقوم من الليل حتى تتورم قدماه. فلما قيل له لماذا؟ قال: «أفلا أكون عبداً شكوراً؟» (البخاري ومسلم). الشكر ليس شعوراً ننتظره — بل هو ممارسة نُنمّيها.'
         },
         lesson: {
-            en: { title: '🎉 Eid al-Adha Mubarak!', content: 'Eid al-Adha is the greatest celebration in Islam — a day of gratitude, sacrifice, and community. The Prophet ﷺ said: "The first thing we do on this day of ours is to pray, then return and slaughter. Whoever does that has followed our Sunnah." (Bukhari)\n\nHow to celebrate Eid the Prophetic way:\n• Wake early and make ghusl (full ritual bath)\n• Wear your best clothes\n• Eat nothing before the Eid prayer\n• Walk to the Eid prayer if possible\n• Exchange greetings: "Taqabbal Allāhu minnā wa minkum"\n• Give Udhiyyah — share the meat with family, neighbours, and the poor\n• Spend time with loved ones — Eid is for connection\n\nMay Allah accept your worship over these ten blessed days. Eid Mubarak! 🌙' },
-            ar: { title: '🎉 عيد الأضحى مبارك!', content: 'عيد الأضحى هو أعظم احتفال في الإسلام — يوم شكر وتضحية وتجمع. قال النبي ﷺ: "إن أول ما نبدأ به في يومنا هذا أن نصلي، ثم نرجع فننحر. من فعل ذلك فقد أصاب سنتنا." (البخاري)\n\nكيف تحتفل بالعيد على الطريقة النبوية:\n• استيقظ مبكراً واغتسل\n• البس أجمل ثيابك\n• لا تأكل قبل صلاة العيد\n• امشِ إلى صلاة العيد إن أمكن\n• تبادل التهاني: "تقبل الله منا ومنكم"\n• قدّم الأضحية وشارك اللحم مع الأسرة والجيران والفقراء\n• أمضِ وقتاً مع أحبائك\n\nتقبل الله منكم ومنا هذه الأيام المباركة العشر. عيد مبارك! 🌙' }
+            en: [
+                { title: '💛 Count your blessings — literally', content: 'Begin each morning by naming three specific blessings. Not "health" in the abstract, but "I can see, hear, and breathe without pain today." The Prophet ﷺ taught us to say Alhamdulillah for everything — at the start of the day, after eating, after drinking, after waking.\n\nThe more you notice, the more Allah increases you.' },
+                { title: '✅ Action: Say Alhamdulillah 100 times today', content: 'Set a simple intention: say Alhamdulillah mindfully throughout today — not as a reflex, but as a conscious acknowledgement of a specific blessing each time. If you reach 100 by the end of the day, that is 100 moments of genuine connection with your Creator.' }
+            ],
+            ar: [
+                { title: '💛 عدِّد نعم الله عليك — حرفياً', content: 'ابدأ كل صباح بذكر ثلاث نعم بعينها. ليس «الصحة» بشكل مجرد، بل «أستطيع اليوم أن أرى وأسمع وأتنفس دون ألم». علّمنا النبي ﷺ أن نقول الحمد لله على كل شيء.\n\nكلما لاحظتَ أكثر، زادك الله أكثر.' },
+                { title: '✅ اعمل: قل الحمد لله 100 مرة اليوم', content: 'ضع نية بسيطة: قل الحمد لله بوعي طوال اليوم — ليس عادةً لا شعورية، بل اعترافاً واعياً بنعمة بعينها في كل مرة.' }
+            ]
+        }
+    },
+    {
+        day: 8, hijriDate: 'Tawbah — Repentance', icon: '🔄', color: '#ea580c',
+        source: {
+            type: 'verse',
+            arabic: 'يَا أَيُّهَا الَّذِينَ آمَنُوا تُوبُوا إِلَى اللَّهِ تَوْبَةً نَّصُوحًا',
+            transliteration: 'Yā ayyuhā lladhīna āmanū tūbū ilā Llāhi tawbatan naṣūḥā',
+            translation: {
+                en: 'O you who believe, repent to Allah with sincere repentance.',
+                ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا تُوبُوا إِلَى اللَّهِ تَوْبَةً نَّصُوحًا'
+            },
+            reference: 'Quran 66:8'
+        },
+        virtue: {
+            en: 'The Prophet ﷺ said: "Every son of Adam sins, and the best of those who sin are those who repent." (Tirmidhi). He also said: "Allah spreads out His hand at night to accept the repentance of those who sin by day." (Muslim). The door of tawbah is always open.',
+            ar: 'قال النبي ﷺ: «كل ابن آدم خطّاء، وخير الخطّائين التوابون». (الترمذي). وقال ﷺ: «يبسط الله يده بالليل ليتوب مسيء النهار». (مسلم). باب التوبة مفتوح دائماً.'
+        },
+        lesson: {
+            en: [
+                { title: '🔄 Repent sincerely and often', content: 'Sincere repentance has three conditions: leaving the sin, regretting it, and resolving not to return to it. If the sin involved another person, a fourth condition is added: making amends.\n\nThe Prophet ﷺ said he sought forgiveness more than 70 times a day (Bukhari). Istighfar is not a sign of weakness — it is the mark of a heart that knows its Lord.' },
+                { title: '✅ Action: Seek forgiveness now', content: 'Say slowly, with your heart present:\n«أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه»\nAstaghfiru Llāha l-ʿaẓīm alladhī lā ilāha illā huwa l-ḥayyu l-qayyūmu wa atūbu ilaih.\nThe Prophet ﷺ said whoever says this will be forgiven, even if they fled from the battlefield.' }
+            ],
+            ar: [
+                { title: '🔄 تُب إلى الله توبةً صادقةً وأكثر منها', content: 'للتوبة الصادقة ثلاثة شروط: الإقلاع عن الذنب، والندم عليه، والعزم على عدم العودة إليه. فإن كان الذنب متعلقاً بحق الغير، زِيد شرط رابع: ردّ الحقوق.\n\nقال النبي ﷺ إنه يستغفر الله أكثر من سبعين مرة في اليوم. (البخاري). الاستغفار دليل قلب يعرف ربه.' },
+                { title: '✅ اعمل: استغفر الآن', content: 'قل بتأنٍّ وبحضور قلب:\n«أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه».\nقال النبي ﷺ إن من قالها غُفر له ولو كان فرّ من الزحف.' }
+            ]
+        }
+    },
+    {
+        day: 9, hijriDate: 'Ilm — Knowledge', icon: '📚', color: '#b45309',
+        source: {
+            type: 'verse',
+            arabic: 'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ',
+            transliteration: 'Iqraʾ bi-smi rabbika lladhī khalaq',
+            translation: {
+                en: 'Read! In the name of your Lord who created.',
+                ar: 'اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ'
+            },
+            reference: 'Quran 96:1 — the first verse revealed'
+        },
+        virtue: {
+            en: 'The Prophet ﷺ said: "Seeking knowledge is an obligation upon every Muslim." (Ibn Majah). Allah raises the ranks of those who believe and those who have been given knowledge. (Quran 58:11)',
+            ar: 'قال النبي ﷺ: «طلب العلم فريضة على كل مسلم». (ابن ماجه). ويرفع الله الذين آمنوا والذين أوتوا العلم درجات. (القرآن 58:11)'
+        },
+        lesson: {
+            en: [
+                { title: '📚 Learn something about your religion daily', content: 'You do not need to enrol in a course to be a student of knowledge. Read one hadith from Riyadh al-Salihin. Listen to a short lecture. Learn one name of Allah and its meaning. Read a tafsir explanation of one verse.\n\nThe Prophet ﷺ said: "When Allah wishes good for someone, He gives them understanding of the religion." (Bukhari, Muslim).' },
+                { title: '✅ Action: Learn one thing today', content: 'Open a reliable Islamic resource — a hadith collection, a tafsir website, or a short lecture from a trusted scholar. Spend 10 minutes. Write down one thing you learned. Share it with someone — and gain the reward of teaching too.' }
+            ],
+            ar: [
+                { title: '📚 تعلّم شيئاً عن دينك كل يوم', content: 'لا تحتاج إلى دورة لتكون طالب علم. اقرأ حديثاً من رياض الصالحين. استمع إلى محاضرة قصيرة. تعلّم اسماً من أسماء الله ومعناه. اقرأ تفسير آية واحدة.\n\nقال النبي ﷺ: «من يرد الله به خيراً يُفقّهه في الدين». (البخاري ومسلم).' },
+                { title: '✅ اعمل: تعلّم شيئاً واحداً اليوم', content: 'افتح مصدراً إسلامياً موثوقاً. أمضِ 10 دقائق. اكتب ما تعلّمته. شاركه أحداً — واكسب أجر التعليم أيضاً.' }
+            ]
+        }
+    },
+    {
+        day: 10, hijriDate: 'Silat al-Rahim — Family Ties', icon: '🤝', color: '#15803d',
+        source: {
+            type: 'hadith',
+            arabic: 'مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ وَيُنْسَأَ لَهُ فِي أَثَرِهِ فَلْيَصِلْ رَحِمَهُ',
+            transliteration: "Man aḥabba an yubsaṭa lahu fī rizqihi wa yunsa'a lahu fī atharih, falyaṣil raḥimah",
+            translation: {
+                en: 'Whoever wishes to have his provision expanded and his lifespan extended, let him maintain ties of kinship.',
+                ar: 'مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ وَيُنْسَأَ لَهُ فِي أَثَرِهِ فَلْيَصِلْ رَحِمَهُ'
+            },
+            reference: 'Sahih Bukhari 2067, Muslim 2557'
+        },
+        virtue: {
+            en: 'The Prophet ﷺ said: "The one who maintains ties of kinship is not the one who reciprocates — rather, the one who maintains ties is the one who, when his relatives cut him off, reconnects." (Bukhari)',
+            ar: 'قال النبي ﷺ: «ليس الواصل بالمكافئ، ولكن الواصل الذي إذا قُطعت رحمه وصلها». (البخاري)'
+        },
+        lesson: {
+            en: [
+                { title: '🤝 Reach out to family and community', content: "When did you last call your parents, your siblings, your aunts and uncles? The Prophet ﷺ said the greatest sin after shirk is to cut ties of kinship. (Abu Dawud)\n\nMaintaining ties does not require perfection in the relationship — it requires effort. A call, a message, a visit, remembering them in your du'a — all of these count." },
+                { title: '✅ Action: Contact one family member today', content: "Think of a family member you have not spoken to recently. Call them, or send a warm message. Say their name in your du'a tonight. One small act of silah plants seeds of blessing that grow beyond what you can see." }
+            ],
+            ar: [
+                { title: '🤝 تواصل مع أسرتك ومجتمعك', content: 'متى آخر مرة اتصلتَ بوالديك أو إخوتك أو أعمامك؟ قال النبي ﷺ إن أكبر الكبائر بعد الشرك قطيعة الرحم. (أبو داود)\n\nالوصل لا يشترط كمال العلاقة — بل يشترط المحاولة. مكالمة، رسالة، زيارة، ذكرهم في الدعاء.' },
+                { title: '✅ اعمل: تواصل مع أحد أقاربك اليوم', content: 'فكّر في قريب لم تتحدث إليه منذ فترة. اتصل به أو أرسل له رسالة دافئة. اذكره في دعائك الليلة. كل عمل صغير من الصلة يزرع بذور بركة لا تستطيع أن ترى نهايتها.' }
+            ]
         }
     }
 ];
@@ -2362,8 +2422,8 @@ class VirtueCards {
         const card = VC_DATA[idx];
         const src = card.source;
         const badge = lang === 'ar'
-            ? `${card.icon} اليوم ${this._toArabicNum(card.day)} — ${this._hijriAr(card.hijriDate)}`
-            : `${card.icon} Day ${card.day} of Dhul Hijjah — ${card.hijriDate}`;
+            ? `${card.icon} ${this._hijriAr(card.hijriDate)}`
+            : `${card.icon} ${card.hijriDate}`;
 
         const btn = document.querySelector('[data-vc-share]');
         if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
@@ -2434,9 +2494,9 @@ const DC_CATEGORIES = [
 ];
 
 const DC_CAT_DESCRIPTIONS = {
-    arafah:      { en: 'The best dua is the dua of Arafah. Recite these on the Day of Arafah for maximum reward.', ar: 'أفضل الدعاء دعاء يوم عرفة. رددها يوم عرفة لأعظم الأجر.' },
-    takbeer:     { en: 'Glorify Allah abundantly during the first ten days. The Takbeer is among the greatest deeds.', ar: 'أكثر من التكبير في العشر الأوائل. التكبير من أفضل الأعمال.' },
-    forgiveness: { en: 'Seek forgiveness sincerely. Allah loves to forgive and these days are the best time to ask.', ar: 'استغفر الله بصدق. الله يحب أن يغفر وهذه أفضل الأيام للسؤال.' },
+    arafah:      { en: 'The best dua is the dua of Arafah. These supplications are powerful at any time of year.', ar: 'أفضل الدعاء دعاء يوم عرفة. هذه الأدعية قوية في أي وقت من السنة.' },
+    takbeer:     { en: 'Glorify Allah abundantly — the Takbeer is among the greatest deeds at all times.', ar: 'أكثر من التكبير — التكبير من أفضل الأعمال في كل وقت.' },
+    forgiveness: { en: 'Seek forgiveness sincerely. Allah loves to forgive — ask Him every day.', ar: 'استغفر الله بصدق. الله يحب أن يغفر — اسأله كل يوم.' },
     family:      { en: 'Pray for your family and loved ones. The dua of a person for their family is answered.', ar: 'ادعُ لعائلتك وأحبائك. دعاء الشخص لأهله مستجاب.' },
     eid:         { en: 'Celebrate Eid with gratitude and dua. Ask Allah to accept your worship this season.', ar: 'احتفل بالعيد بشكر ودعاء. سل الله أن يتقبل عبادتك في هذا الموسم.' },
     ummah:       { en: 'Remember the whole Ummah in your duas. The Prophet ﷺ said the dua for your brother is answered.', ar: 'اذكر الأمة كلها في دعائك. قال النبي ﷺ: دعاؤك لأخيك مستجاب.' },
@@ -2452,7 +2512,7 @@ const DC_DUAS = {
         { id:'ar6', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
     ],
     takbeer: [
-        { id:'tk1', ar:'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ', tr:'Allah is the Greatest, Allah is the Greatest. There is no god but Allah. Allah is the Greatest, Allah is the Greatest, and all praise belongs to Allah.', ref:'Bukhari (muʿallaq) — Takbeer of Dhul Hijjah' },
+        { id:'tk1', ar:'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ', tr:'Allah is the Greatest, Allah is the Greatest. There is no god but Allah. Allah is the Greatest, Allah is the Greatest, and all praise belongs to Allah.', ref:'Bukhari (muʿallaq)' },
         { id:'tk2', ar:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ', tr:'Glory be to Allah and His is the praise. Glory be to Allah the Magnificent.', ref:'Bukhari & Muslim — two words light on the tongue, heavy in the scales' },
         { id:'tk3', ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', tr:'None has the right to be worshipped except Allah alone, with no partner. To Him belongs dominion and praise, and He is over all things capable.', ref:'Tirmidhi' },
         { id:'tk4', ar:'سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ', tr:'Glory be to Allah. Praise be to Allah. There is no god but Allah. Allah is the Greatest.', ref:'Muslim — most beloved words to Allah' },
@@ -3525,10 +3585,10 @@ function _updateNotifyBtnState(btn, subscribed) {
 function shareApp() {
     const isAr = currentLang === 'ar';
     const shareData = {
-        title: isAr ? 'نور الليالي — تطبيق العشر الأوائل' : 'Noor Nights — Dhul Hijjah App',
+        title: isAr ? 'ليالي النور — رفيقك في العبادة اليومية' : 'Noor Nights — Daily Worship Companion',
         text: isAr
-            ? 'اغتنم أفضل أيام السنة — تطبيق يساعدك على تتبع عباداتك في العشر الأوائل من ذي الحجة'
-            : 'Make the most of the best days of the year — track your worship during the blessed 10 days of Dhul Hijjah',
+            ? 'حافظ على عباداتك كل يوم — تذكيرات الصلاة والذكر والأدعية في مكان واحد'
+            : 'Stay consistent in your worship every day — prayer reminders, dhikr, and duas all in one place',
         url: window.location.origin + window.location.pathname,
     };
     if (navigator.share) {

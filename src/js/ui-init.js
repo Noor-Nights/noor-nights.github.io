@@ -23,7 +23,7 @@ function createOnboardingModal() {
         '<div class="ob-wordmark-en">NOOR NIGHTS</div>' +
         '<div class="ob-wordmark-divider"></div>' +
         '<div class="ob-wordmark-ar">ليالي النور</div>' +
-        '<div class="ob-tagline" data-i18n="onboardingTitle">Ten blessed days · Dhul Hijjah</div>' +
+        '<div class="ob-tagline" data-i18n="onboardingTitle">Daily Worship Companion</div>' +
         '</div>' +
         '<p class="ob-hadith" data-i18n="onboardingBody">The Prophet ﷺ said: "There are no days on which righteous deeds are more beloved to Allah than these ten days."</p>' +
         '<div class="onboarding-steps">' +
