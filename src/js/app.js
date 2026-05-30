@@ -4106,14 +4106,41 @@ function renderHijriDate() {
     if (!el) return;
     const isAr = currentLang === 'ar';
     el.dir = isAr ? 'rtl' : 'ltr';
+
+    // Use formatToParts with numeric month so we can reconstruct the display
+    // string with our own month names and an explicit "AH"/"هـ" suffix.
+    // This prevents mobile Safari/WebKit from injecting "BC" — which happens
+    // when the browser formats the Hijri year (1447) as a historical Gregorian
+    // year and appends an era string via the `year: 'numeric'` option.
     try {
-        el.textContent = new Intl.DateTimeFormat(isAr ? 'ar-SA-u-ca-islamic-umalqura' : 'en-u-ca-islamic-umalqura', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).format(new Date());
-    } catch (_) {
-        console.warn('renderHijriDate: Intl islamic-umalqura not supported, hiding element');
+        const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
+            day: 'numeric', month: 'numeric', year: 'numeric',
+        }).formatToParts(new Date());
+
+        let hy = 0, hm = 0, hd = 0;
+        for (const p of parts) {
+            if (p.type === 'year')  hy = +p.value;
+            if (p.type === 'month') hm = +p.value;
+            if (p.type === 'day')   hd = +p.value;
+        }
+        // Sanity-check: Hijri year for 2020–2050 is 1441–1472
+        if (hy < 1400 || hy > 1600 || hm < 1 || hm > 12 || hd < 1 || hd > 30) {
+            throw new Error('unexpected values: ' + hy + '/' + hm + '/' + hd);
+        }
+
+        const monthsEn = ['','Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
+                          "Jumada al-Awwal","Jumada al-Thani",'Rajab',"Sha'ban",
+                          'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+        const monthsAr = ['','محرم','صفر','ربيع الأول','ربيع الثاني',
+                          'جمادى الأولى','جمادى الآخرة','رجب','شعبان',
+                          'رمضان','شوال','ذو القعدة','ذو الحجة'];
+        const toAr = n => String(n).replace(/\d/g, c => '٠١٢٣٤٥٦٧٨٩'[c]);
+
+        el.textContent = isAr
+            ? `${toAr(hd)} ${monthsAr[hm]} ${toAr(hy)} هـ`
+            : `${hd} ${monthsEn[hm]} ${hy} AH`;
+    } catch (e) {
+        console.warn('renderHijriDate failed:', e.message, '— hiding element');
         el.style.display = 'none';
     }
 }
