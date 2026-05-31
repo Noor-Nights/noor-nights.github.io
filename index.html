@@ -128,6 +128,42 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
         </div>
     </div>
 
+    <!-- ── Onboarding Modal (first-time users only; hidden via localStorage flag) ── -->
+    <div id="onboarding-modal" class="ob-modal" role="dialog" aria-modal="true" aria-label="Welcome to Noor Nights" aria-hidden="true">
+        <div class="ob-inner">
+            <!-- Slide 1: Welcome -->
+            <div class="ob-slide ob-slide-active" data-slide="0">
+                <div class="ob-icon">🌙</div>
+                <h2 class="ob-title">Welcome to Noor Nights</h2>
+                <p class="ob-body">Your spiritual companion.</p>
+            </div>
+            <!-- Slide 2: Features -->
+            <div class="ob-slide" data-slide="1">
+                <div class="ob-icon">🤲</div>
+                <h2 class="ob-title">Track your prayers,<br>make dhikr, and read duas.</h2>
+                <p class="ob-body">Stay spiritually consistent — every single day.</p>
+            </div>
+            <!-- Slide 3: Language pick -->
+            <div class="ob-slide" data-slide="2">
+                <div class="ob-icon">🌍</div>
+                <h2 class="ob-title">Choose your language</h2>
+                <div class="ob-lang-row">
+                    <button class="ob-lang-btn" onclick="obSelectLang('en')">English</button>
+                    <button class="ob-lang-btn ob-lang-btn-ar" onclick="obSelectLang('ar')">العربية</button>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <div class="ob-nav">
+                <div class="ob-dots" aria-hidden="true">
+                    <span class="ob-dot ob-dot-active"></span>
+                    <span class="ob-dot"></span>
+                    <span class="ob-dot"></span>
+                </div>
+                <button class="ob-next-btn" id="ob-next-btn" onclick="obNextSlide()" aria-label="Continue">Continue →</button>
+            </div>
+        </div>
+    </div>
+
     <div id="stars-bg" aria-hidden="true">
         <div class="sl sl1"></div>
         <div class="sl sl2"></div>
