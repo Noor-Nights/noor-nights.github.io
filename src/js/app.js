@@ -1315,9 +1315,21 @@ class WorshipTracker {
     _load() {
         try {
             const saved = localStorage.getItem(this.STORAGE_KEY);
-            if (saved) this.data = JSON.parse(saved);
+            if (saved) {
+                this.data = JSON.parse(saved);
+                Object.values(this.data.days || {}).forEach(d => this._migrateDay(d));
+            }
         } catch (e) { console.warn('WorshipTracker: failed to parse saved data', e); }
         this._calcStreaks();
+    }
+
+    _migrateDay(d) {
+        if (!d.prayers) {
+            const all = !!d.allPrayers;
+            d.prayers = { fajr: all, dhuhr: all, asr: all, maghrib: all, isha: all };
+            delete d.allPrayers;
+        }
+        if (d.tahajjud === undefined) d.tahajjud = false;
     }
 
     _save() {
@@ -1339,7 +1351,12 @@ class WorshipTracker {
 
     _initDay(key) {
         if (!this.data.days[key]) {
-            this.data.days[key] = { sunnahPrayers: false, quranJuz: 0, charity: false, fasting: false, tasbeeh: false, adhkar: false, allPrayers: false, completed: false };
+            this.data.days[key] = {
+                prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
+                sunnahPrayers: false, tahajjud: false,
+                quranJuz: 0, charity: false, fasting: false, tasbeeh: false, adhkar: false,
+                completed: false
+            };
         }
     }
 
@@ -1347,7 +1364,13 @@ class WorshipTracker {
         this._initDay(key);
         const wasComplete = !!this.data.days[key].completed;
         const prevPct = this._dayPct(key);
-        this.data.days[key][field] = value;
+        if (field.startsWith('prayer_')) {
+            const prayerName = field.slice(7);
+            if (!this.data.days[key].prayers) this.data.days[key].prayers = {};
+            this.data.days[key].prayers[prayerName] = value;
+        } else {
+            this.data.days[key][field] = value;
+        }
         this._checkCompletion(key);
         const nowComplete = !!this.data.days[key].completed;
         const newPct = this._dayPct(key);
@@ -1364,7 +1387,8 @@ class WorshipTracker {
     _dayPct(key) {
         const d = this.data.days[key];
         if (!d) return 0;
-        const tasks = [d.sunnahPrayers, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar, d.allPrayers];
+        const p = d.prayers || {};
+        const tasks = [p.fajr, p.dhuhr, p.asr, p.maghrib, p.isha, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar];
         const done = tasks.filter(Boolean).length;
         return Math.round((done / tasks.length) * 100);
     }
@@ -1455,7 +1479,9 @@ class WorshipTracker {
     _checkCompletion(key) {
         const d = this.data.days[key];
         if (!d) return;
-        d.completed = d.sunnahPrayers && d.quranJuz > 0 && d.charity && d.tasbeeh && d.adhkar && d.allPrayers;
+        const p = d.prayers || {};
+        d.completed = p.fajr && p.dhuhr && p.asr && p.maghrib && p.isha &&
+                      d.quranJuz > 0 && d.charity && d.tasbeeh && d.adhkar;
     }
 
     _calcStreaks() {
@@ -1552,23 +1578,37 @@ class WorshipTracker {
             ? `<span class="wt-goals-streak">🔥 ${isAr ? `${numFmt(cur)} متواصل` : `${cur}-day streak`}</span>`
             : '';
 
-        const pts = (d.sunnahPrayers ? 10 : 0) + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
-                    (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) +
-                    (d.adhkar ? 10 : 0) + (d.charity ? 10 : 0) + (d.allPrayers ? 15 : 0);
+        const p = d.prayers || {};
+        const PRAYERS = [
+            { key: 'fajr',    en: 'Fajr',    ar: 'الفجر',   icon: '🌅' },
+            { key: 'dhuhr',   en: 'Dhuhr',   ar: 'الظهر',   icon: '☀️' },
+            { key: 'asr',     en: 'Asr',     ar: 'العصر',   icon: '🌤️' },
+            { key: 'maghrib', en: 'Maghrib', ar: 'المغرب',  icon: '🌆' },
+            { key: 'isha',    en: 'Isha',    ar: 'العشاء',  icon: '🌙' },
+        ];
+        const prayersDone = PRAYERS.filter(pr => !!p[pr.key]).length;
+        const checkSvg = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        const prayerCards = PRAYERS.map(pr => {
+            const done = !!p[pr.key];
+            return `
+            <label class="wt-prayer-card${done ? ' done' : ''}" data-wt-field="prayer_${pr.key}" data-wt-day="${key}">
+                <input type="checkbox" class="wt-prayer-cb" data-prayer="${pr.key}" data-wt-day="${key}" ${done ? 'checked' : ''} style="display:none">
+                <span class="wt-prayer-icon">${pr.icon}</span>
+                <span class="wt-prayer-name">${isAr ? pr.ar : pr.en}</span>
+                <span class="wt-prayer-check">${done ? '✓' : ''}</span>
+            </label>`;
+        }).join('');
+
+        const salahLabel = isAr ? 'الصلوات المفروضة' : 'FARD PRAYERS';
+        const salahCount = isAr ? `${this._toAr(prayersDone)}/٥` : `${prayersDone}/5`;
+        const prayerPts = prayersDone * 3;
 
         const tasks = [
-            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 10,
-              en: 'Fajr prayer on time', ar: 'صلاة الفجر في وقتها' },
-            { field: 'fasting', checked: !!d.fasting, pts: 15,
-              en: 'Fasting today', ar: 'الصيام اليوم' },
-            { field: 'allPrayers', checked: !!d.allPrayers, pts: 15,
-              en: 'All 5 prayers on time', ar: 'الصلوات الخمس في أوقاتها' },
-            { field: 'adhkar', checked: !!d.adhkar, pts: 10,
-              en: 'Morning & evening adhkar', ar: 'أذكار الصباح والمساء' },
-            { field: 'tasbeeh', checked: !!d.tasbeeh, pts: 5,
-              en: '100 Tasbeeh', ar: '١٠٠ تسبيحة' },
-            { field: 'charity', checked: !!d.charity, pts: 10,
-              en: 'Sadaqah today', ar: 'الصدقة اليوم' },
+            { field: 'fasting',  checked: !!d.fasting,  pts: 15, en: 'Fasting today',             ar: 'الصيام اليوم' },
+            { field: 'adhkar',   checked: !!d.adhkar,   pts: 10, en: 'Morning & evening adhkar',  ar: 'أذكار الصباح والمساء' },
+            { field: 'tasbeeh',  checked: !!d.tasbeeh,  pts: 5,  en: '100 Tasbeeh',               ar: '١٠٠ تسبيحة' },
+            { field: 'charity',  checked: !!d.charity,  pts: 10, en: 'Sadaqah today',             ar: 'الصدقة اليوم' },
         ];
 
         const quranPts = (d.quranJuz || 0) * 15;
@@ -1577,14 +1617,14 @@ class WorshipTracker {
         const taskRows = tasks.map(task => `
             <label class="wt-task-row${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <span class="wt-task-circle">${task.checked ? '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>
+                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
                 <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
                 <span class="wt-task-pts">+${task.pts}</span>
             </label>`).join('');
 
         const quranRow = `
             <div class="wt-task-row wt-task-quran${quz > 0 ? ' wt-task-done' : ''}">
-                <span class="wt-task-circle">${quz > 0 ? '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>
+                <span class="wt-task-circle">${quz > 0 ? checkSvg : ''}</span>
                 <div class="wt-task-quran-inner">
                     <span class="wt-task-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
                     <div class="wt-quran-ctrl">
@@ -1596,6 +1636,23 @@ class WorshipTracker {
                 <span class="wt-task-pts">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
             </div>`;
 
+        const optionalLabel = isAr ? 'اختياري' : 'OPTIONAL';
+        const optionalTasks = [
+            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 5, en: 'Sunnah prayers', ar: 'صلاة السنن' },
+            { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5, en: 'Tahajjud',       ar: 'صلاة التهجد' },
+        ];
+        const optionalRows = optionalTasks.map(task => `
+            <label class="wt-task-row wt-task-optional${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+                <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
+                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
+                <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-task-pts">+${task.pts}</span>
+            </label>`).join('');
+
+        const pts = prayerPts + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
+                    (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+                    (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
+
         const headerLabel = isAr ? 'أهداف اليوم' : "TODAY'S GOALS";
 
         return `
@@ -1604,9 +1661,24 @@ class WorshipTracker {
             <span class="wt-goals-label">${headerLabel}</span>
             ${streakHtml}
         </div>
+        <div class="wt-salah-section">
+            <div class="wt-salah-header">
+                <span class="wt-salah-label">🕌 ${salahLabel}</span>
+                <span class="wt-salah-count${prayersDone === 5 ? ' done' : ''}">${salahCount}</span>
+            </div>
+            <div class="wt-prayer-grid">
+                ${prayerCards}
+            </div>
+        </div>
         <div class="wt-task-list">
             ${taskRows}
             ${quranRow}
+        </div>
+        <div class="wt-optional-section">
+            <div class="wt-optional-label">${optionalLabel}</div>
+            <div class="wt-task-list">
+                ${optionalRows}
+            </div>
         </div>
         ${pts > 0 ? `<div class="wt-pts-total">${isAr ? `${numFmt(pts)} نقطة اليوم` : `${pts} pts today`}</div>` : ''}
     </div>`;
@@ -1617,6 +1689,12 @@ class WorshipTracker {
         document.querySelectorAll('[data-wt-field][type="checkbox"]').forEach(cb => {
             cb.addEventListener('change', (e) => {
                 this.updateActivity(e.target.dataset.wtDay, e.target.dataset.wtField, e.target.checked);
+                this.renderSection();
+            });
+        });
+        document.querySelectorAll('.wt-prayer-cb').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                this.updateActivity(e.target.dataset.wtDay, `prayer_${e.target.dataset.prayer}`, e.target.checked);
                 this.renderSection();
             });
         });
