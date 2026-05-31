@@ -3811,3 +3811,98 @@ h2 {
 .settings-icon.si-share { background: rgba(91,158,245,.12); }
 .settings-icon.si-calendar { background: rgba(56,185,166,.12); }
 .settings-icon.si-info { background: rgba(196,164,74,.08); }
+
+/* ═══════════════════════════════════════════════════
+   ONBOARDING MODAL (GH-137)
+   Single-card first-run overlay — pure CSS/JS, no library.
+   Shown once; localStorage flag `noor-onboarded` prevents re-show.
+   ═══════════════════════════════════════════════════ */
+.ob-modal {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(10, 17, 40, .82);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .35s ease, visibility .35s ease;
+}
+.ob-modal.ob-visible {
+    opacity: 1; visibility: visible; pointer-events: auto;
+}
+.ob-modal.ob-exit {
+    opacity: 0; visibility: hidden; pointer-events: none;
+}
+/* Card */
+.ob-card {
+    width: 100%; max-width: 360px;
+    background: var(--bg);
+    border: .5px solid var(--goldborder);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; text-align: center;
+    animation: ob-appear .35s ease;
+}
+@keyframes ob-appear {
+    from { opacity: 0; transform: scale(.96) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+/* Icon */
+.ob-icon-wrap { font-size: 48px; line-height: 1; margin-bottom: 16px; }
+/* Title + subtitle */
+.ob-title {
+    font-family: var(--fs);
+    font-size: 20px; font-weight: 500;
+    color: #fff; margin: 0 0 8px;
+    line-height: 1.3;
+}
+.ob-subtitle {
+    font-family: var(--fn);
+    font-size: 14px; color: var(--text-muted);
+    line-height: 1.6; margin: 0 0 24px;
+}
+/* Feature rows */
+.ob-features {
+    width: 100%; display: flex; flex-direction: column;
+    gap: 10px; margin-bottom: 24px; text-align: left;
+}
+.ob-feature {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg2);
+    border-radius: 10px; padding: 12px;
+}
+.ob-feature span {
+    font-family: var(--fn);
+    font-size: 14px; color: var(--cream2);
+}
+.ob-feat-chip {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+}
+.ob-feat-chip-teal    { background: rgba(56,185,159,.15); color: var(--teal); }
+.ob-feat-chip-gold    { background: rgba(197,163,82,.15); color: var(--gold2); }
+.ob-feat-chip-emerald { background: rgba(56,185,159,.12); color: var(--teal); font-size: 14px; }
+/* Language buttons */
+.ob-lang-row {
+    width: 100%; display: flex; gap: 8px; margin-bottom: 16px;
+}
+.ob-lang-btn {
+    flex: 1;
+    border-radius: 10px;
+    font-family: var(--fn); font-size: 14px; font-weight: 500;
+    padding: 14px 12px; cursor: pointer;
+    transition: opacity .18s;
+}
+.ob-lang-btn:hover { opacity: .88; }
+.ob-lang-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.ob-lang-primary {
+    background: var(--gold); border: none;
+    color: var(--bg);
+}
+.ob-lang-secondary {
+    background: var(--bg2);
+    border: 1px solid var(--goldborder);
+    color: var(--gold2);
+}
+.ob-lang-btn-ar { font-family: var(--fa); font-size: 16px; }

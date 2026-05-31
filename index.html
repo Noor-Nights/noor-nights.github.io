@@ -128,6 +128,37 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
         </div>
     </div>
 
+    <!-- ── Onboarding Modal (first-time users only; hidden via localStorage flag) ── -->
+    <div id="onboarding-modal" class="ob-modal" role="dialog" aria-modal="true" aria-label="Welcome to Noor Nights" aria-hidden="true">
+        <div class="ob-card">
+            <!-- Icon -->
+            <div class="ob-icon-wrap" aria-hidden="true">🌙</div>
+            <!-- Title -->
+            <h2 class="ob-title">Welcome to Noor Nights</h2>
+            <p class="ob-subtitle">Your companion for Islam's most sacred seasons</p>
+            <!-- Feature rows -->
+            <div class="ob-features" role="list">
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-teal" aria-hidden="true">✓</div>
+                    <span>Track your 5 daily prayers</span>
+                </div>
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-gold" aria-hidden="true">★</div>
+                    <span>Earn worship badges and streaks</span>
+                </div>
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-emerald" aria-hidden="true">📿</div>
+                    <span>Duas, dhikr, and daily lessons</span>
+                </div>
+            </div>
+            <!-- Language selection -->
+            <div class="ob-lang-row">
+                <button class="ob-lang-btn ob-lang-primary" data-lang="en" onclick="obSelectLang('en')">English</button>
+                <button class="ob-lang-btn ob-lang-secondary ob-lang-btn-ar" data-lang="ar" onclick="obSelectLang('ar')">العربية</button>
+            </div>
+        </div>
+    </div>
+
     <div id="stars-bg" aria-hidden="true">
         <div class="sl sl1"></div>
         <div class="sl sl2"></div>

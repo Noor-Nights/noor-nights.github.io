@@ -4285,6 +4285,34 @@ function renderHijriDate() {
     }
 }
 
+// ── Onboarding (GH-137) — 3-screen first-run overlay ──────────────────────
+const OB_KEY = 'noor-onboarded';
+
+function showOnboarding() {
+    if (localStorage.getItem(OB_KEY)) return;
+    const modal = document.getElementById('onboarding-modal');
+    if (!modal) return;
+    // Highlight the auto-detected language as the primary button
+    const primaryBtn   = modal.querySelector(`[data-lang="${currentLang}"]`);
+    const secondaryBtn = modal.querySelector(`[data-lang="${currentLang === 'ar' ? 'en' : 'ar'}"]`);
+    if (primaryBtn)   { primaryBtn.classList.add('ob-lang-primary');   primaryBtn.classList.remove('ob-lang-secondary'); }
+    if (secondaryBtn) { secondaryBtn.classList.add('ob-lang-secondary'); secondaryBtn.classList.remove('ob-lang-primary'); }
+    modal.setAttribute('aria-hidden', 'false');
+    modal.classList.add('ob-visible');
+    modal.querySelector('.ob-lang-btn')?.focus();
+}
+
+function obSelectLang(lang) {
+    applyLanguage(lang);
+    localStorage.setItem(OB_KEY, '1');
+    const modal = document.getElementById('onboarding-modal');
+    if (!modal) return;
+    modal.classList.add('ob-exit');
+    modal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => modal.remove(), 380);
+}
+// ───────────────────────────────────────────────────────────────────────────
+
 // Global Initialization — two phases for faster LCP:
 //   Phase 1 (rAF): language + DH countdown — lets skeleton text paint first
 //   Phase 2 (setTimeout 0): everything else, yielded after first paint
@@ -4369,10 +4397,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Dismiss launch splash once app is ready
+        // Dismiss launch splash once app is ready; show onboarding for first-time users
         const splash = document.getElementById('launch-splash');
         if (splash) {
-            setTimeout(() => splash.classList.add('ls-hidden'), 400);
+            setTimeout(() => {
+                splash.classList.add('ls-hidden');
+                setTimeout(showOnboarding, 300);
+            }, 400);
         }
     }, 0);
 });
