@@ -1585,9 +1585,6 @@ class WorshipTracker {
             { key: 'maghrib', en: 'Maghrib', ar: 'المغرب' },
             { key: 'isha',    en: 'Isha',    ar: 'العشاء' },
         ];
-        const PRAYER_ORDER = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-        const currentIdx = currentPrayer ? PRAYER_ORDER.indexOf(currentPrayer) : -1;
-
         const prayersDone = PRAYERS.filter(pr => !!p[pr.key]).length;
         const checkSvg = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
@@ -1600,10 +1597,20 @@ class WorshipTracker {
             return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
         };
 
-        const prayerRows = PRAYERS.map((pr, idx) => {
+        // Current wall-clock minutes — used to decide if a prayer time has started yet
+        const nowMins = times ? (() => {
+            const n = new Date(getCurrentTime());
+            return n.getHours() * 60 + n.getMinutes();
+        })() : -1;
+
+        const prayerRows = PRAYERS.map((pr) => {
             const done = !!p[pr.key];
-            const isCurrent = !done && currentIdx !== -1 && idx === currentIdx;
-            const isFuture  = !done && currentIdx !== -1 && idx > currentIdx;
+            // Lock only prayers whose clock time hasn't arrived yet (not based on index position)
+            const isFuture = !done && times != null && (() => {
+                const [h, m] = times[pr.key].split(':').map(Number);
+                return nowMins < h * 60 + m;
+            })();
+            const isCurrent = !done && !isFuture && currentPrayer === pr.key;
             const timeStr   = times ? fmtTime(times[pr.key]) : '';
             const timeLabel = isCurrent && timeStr ? `${timeStr} · ${isAr ? 'الآن' : 'now'}` : timeStr;
 
