@@ -1628,79 +1628,84 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
     border: none;
 }
 
-/* Salah / Prayer grid */
-.wt-salah-section {
-    margin-bottom: 0.75rem;
+/* ── Salah section header (GH-139) ── */
+.wt-salah-section { margin-bottom: 0.75rem; }
+.wt-salah-header { margin-bottom: 14px; }
+.wt-salah-title {
+    display: block;
+    font-size: 18px; font-weight: 500;
+    color: var(--text); margin: 0 0 2px;
 }
-.wt-salah-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.55rem;
+.wt-salah-subtitle {
+    display: block;
+    font-size: 13px; color: var(--text-muted);
 }
-.wt-salah-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: .07em;
-    color: var(--gold2);
-    text-transform: uppercase;
+
+/* ── Prayer list rows (GH-139) ── */
+.wt-prayer-list {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 20px;
 }
-.wt-salah-count {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    min-width: 2.2rem;
-    text-align: right;
-}
-.wt-salah-count.done { color: var(--gold); }
-.wt-prayer-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.4rem;
-}
-.wt-prayer-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.22rem;
-    padding: 0.6rem 0.2rem 0.55rem;
-    background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
+.wt-pr-row {
+    display: flex; align-items: center;
+    background: var(--bg2);
+    border-left: 3px solid var(--bg3);
+    padding: 12px 16px;
     cursor: pointer;
-    transition: border-color 0.18s, background 0.18s;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
-.wt-prayer-card:hover { border-color: var(--goldborder); background: rgba(255,255,255,0.1); }
-.wt-prayer-card.done { border-color: var(--goldborder); background: rgba(197,163,82,0.12); }
-.wt-prayer-icon { font-size: 1.1rem; line-height: 1; }
-.wt-prayer-name {
-    font-size: 0.69rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    font-family: var(--fn);
-    white-space: nowrap;
+.wt-pr-row.wt-pr-prayed  { border-left-color: var(--teal); }
+.wt-pr-row.wt-pr-current { border-left-color: var(--gold2); }
+.wt-pr-row.wt-pr-future  { border-left-color: var(--bg3); opacity: .5; pointer-events: none; }
+.wt-pr-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.wt-pr-name {
+    font-size: 15px; font-weight: 500;
+    color: var(--text); line-height: 1;
 }
-.wt-prayer-card.done .wt-prayer-name { color: var(--gold2); }
-.wt-prayer-check {
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(242,237,230,0.22);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    color: transparent;
-    transition: background 0.15s, border-color 0.15s;
+.wt-pr-name-current { color: var(--gold2); }
+.wt-pr-time { font-size: 12px; color: var(--text-muted); }
+.wt-pr-time-current { color: var(--gold); }
+.wt-pr-circle {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s;
 }
-.wt-prayer-card.done .wt-prayer-check {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: #1a1008;
-    font-weight: 900;
+.wt-pr-circle-prayed  { background: var(--teal); }
+.wt-pr-circle-empty   { border: 2px solid rgba(242,237,230,.22); }
+.wt-pr-circle-future  { border: 2px solid var(--bg3); color: var(--bg4); }
+
+/* ── Weekly bar view (GH-139) ── */
+.wt-week {
+    background: var(--bg2); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 20px;
 }
+.wt-week-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+}
+.wt-week-title { font-size: 14px; font-weight: 500; color: var(--text); }
+.wt-week-streak { font-size: 13px; color: var(--gold2); }
+.wt-week-cols { display: flex; gap: 6px; }
+.wt-week-col { flex: 1; text-align: center; }
+.wt-week-day { font-size: 11px; color: var(--text-muted); margin: 0 0 4px; }
+.wt-week-day-today { color: var(--gold2); font-weight: 600; }
+.wt-week-bar {
+    height: 40px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+}
+.wt-week-bar span { font-size: 11px; font-weight: 500; }
+.wt-wb-full    { background: var(--teal); }
+.wt-wb-full span { color: #fff; }
+.wt-wb-partial { background: var(--gold); }
+.wt-wb-partial span { color: var(--bg); }
+.wt-wb-low     { background: rgba(197,163,82,.35); }
+.wt-wb-low span { color: var(--gold2); }
+.wt-wb-zero    { background: var(--bg3); }
+.wt-wb-zero span, .wt-wb-empty span { color: var(--text-muted); }
+.wt-wb-empty   { background: var(--bg3); }
+.wt-wb-today   { outline: 1.5px solid var(--gold); outline-offset: 2px; }
 
 /* Optional tasks section */
 .wt-optional-section {
