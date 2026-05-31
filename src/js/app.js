@@ -4285,28 +4285,19 @@ function renderHijriDate() {
 
 // ── Onboarding (GH-137) — 3-screen first-run overlay ──────────────────────
 const OB_KEY = 'noor-onboarded';
-let _obSlide = 0;
 
 function showOnboarding() {
     if (localStorage.getItem(OB_KEY)) return;
     const modal = document.getElementById('onboarding-modal');
     if (!modal) return;
+    // Highlight the auto-detected language as the primary button
+    const primaryBtn   = modal.querySelector(`[data-lang="${currentLang}"]`);
+    const secondaryBtn = modal.querySelector(`[data-lang="${currentLang === 'ar' ? 'en' : 'ar'}"]`);
+    if (primaryBtn)   { primaryBtn.classList.add('ob-lang-primary');   primaryBtn.classList.remove('ob-lang-secondary'); }
+    if (secondaryBtn) { secondaryBtn.classList.add('ob-lang-secondary'); secondaryBtn.classList.remove('ob-lang-primary'); }
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('ob-visible');
-}
-
-function obNextSlide() {
-    const slides = document.querySelectorAll('.ob-slide');
-    const dots   = document.querySelectorAll('.ob-dot');
-    if (_obSlide >= slides.length - 1) return;
-    slides[_obSlide].classList.remove('ob-slide-active');
-    dots[_obSlide].classList.remove('ob-dot-active');
-    _obSlide++;
-    slides[_obSlide].classList.add('ob-slide-active');
-    dots[_obSlide].classList.add('ob-dot-active');
-    if (_obSlide === slides.length - 1) {
-        document.getElementById('ob-next-btn').classList.add('ob-next-hidden');
-    }
+    modal.querySelector('.ob-lang-btn')?.focus();
 }
 
 function obSelectLang(lang) {

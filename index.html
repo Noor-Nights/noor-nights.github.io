@@ -130,36 +130,37 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
 
     <!-- ── Onboarding Modal (first-time users only; hidden via localStorage flag) ── -->
     <div id="onboarding-modal" class="ob-modal" role="dialog" aria-modal="true" aria-label="Welcome to Noor Nights" aria-hidden="true">
-        <div class="ob-inner">
-            <!-- Slide 1: Welcome -->
-            <div class="ob-slide ob-slide-active" data-slide="0">
-                <div class="ob-icon">🌙</div>
-                <h2 class="ob-title">Welcome to Noor Nights</h2>
-                <p class="ob-body">Your spiritual companion.</p>
-            </div>
-            <!-- Slide 2: Features -->
-            <div class="ob-slide" data-slide="1">
-                <div class="ob-icon">🤲</div>
-                <h2 class="ob-title">Track your prayers,<br>make dhikr, and read duas.</h2>
-                <p class="ob-body">Stay spiritually consistent — every single day.</p>
-            </div>
-            <!-- Slide 3: Language pick -->
-            <div class="ob-slide" data-slide="2">
-                <div class="ob-icon">🌍</div>
-                <h2 class="ob-title">Choose your language</h2>
-                <div class="ob-lang-row">
-                    <button class="ob-lang-btn" onclick="obSelectLang('en')">English</button>
-                    <button class="ob-lang-btn ob-lang-btn-ar" onclick="obSelectLang('ar')">العربية</button>
+        <div class="ob-card">
+            <!-- Icon -->
+            <div class="ob-icon-wrap" aria-hidden="true">🌙</div>
+            <!-- Title -->
+            <h2 class="ob-title">Welcome to Noor Nights</h2>
+            <p class="ob-subtitle">Your companion for Islam's most sacred seasons</p>
+            <!-- Feature rows -->
+            <div class="ob-features" role="list">
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-teal" aria-hidden="true">✓</div>
+                    <span>Track your 5 daily prayers</span>
+                </div>
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-gold" aria-hidden="true">★</div>
+                    <span>Earn worship badges and streaks</span>
+                </div>
+                <div class="ob-feature" role="listitem">
+                    <div class="ob-feat-chip ob-feat-chip-emerald" aria-hidden="true">📿</div>
+                    <span>Duas, dhikr, and daily lessons</span>
                 </div>
             </div>
-            <!-- Navigation -->
-            <div class="ob-nav">
-                <div class="ob-dots" aria-hidden="true">
-                    <span class="ob-dot ob-dot-active"></span>
-                    <span class="ob-dot"></span>
-                    <span class="ob-dot"></span>
-                </div>
-                <button class="ob-next-btn" id="ob-next-btn" onclick="obNextSlide()" aria-label="Continue">Continue →</button>
+            <!-- Language selection -->
+            <div class="ob-lang-row">
+                <button class="ob-lang-btn ob-lang-primary" data-lang="en" onclick="obSelectLang('en')">English</button>
+                <button class="ob-lang-btn ob-lang-secondary ob-lang-btn-ar" data-lang="ar" onclick="obSelectLang('ar')">العربية</button>
+            </div>
+            <!-- Dots -->
+            <div class="ob-dots" aria-hidden="true">
+                <span class="ob-dot ob-dot-active"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
             </div>
         </div>
     </div>
