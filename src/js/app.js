@@ -55,6 +55,10 @@ const TRANSLATIONS = {
         ptReminderSetMsg: (name) => `You'll be notified at ${name} time — keep the app open in your browser.`,
         ptReminderOffTitle: '🔕 Reminder Removed',
         ptReminderOffMsg: (name) => `Reminder for ${name} turned off.`,
+        dhikrMorningTitle: '🌅 Morning Adhkar',
+        dhikrMorningBody: 'Start your day with remembrance — سبحان الله وبحمده، سبحان الله العظيم',
+        dhikrEveningTitle: '🌙 Evening Adhkar',
+        dhikrEveningBody: 'Close your day with remembrance — اللهم بك أمسينا وبك أصبحنا',
         onboardingTitle: 'Daily Worship Companion',
         onboardingBody: 'The Prophet ﷺ said: "The most beloved deeds to Allah are those done regularly, even if they are few." Noor Nights helps you build that consistency — every single day.',
         onboardingF1: 'Get prayer time reminders for all 5 daily prayers',
@@ -273,6 +277,10 @@ const TRANSLATIONS = {
         ptReminderSetMsg: (name) => `ستُنبَّه عند وقت ${name} — ابقِ التطبيق مفتوحًا في المتصفح.`,
         ptReminderOffTitle: '🔕 تم إيقاف التذكير',
         ptReminderOffMsg: (name) => `تم إيقاف تذكير صلاة ${name}.`,
+        dhikrMorningTitle: '🌅 أذكار الصباح',
+        dhikrMorningBody: 'ابدأ يومك بذكر الله — سبحان الله وبحمده، سبحان الله العظيم',
+        dhikrEveningTitle: '🌙 أذكار المساء',
+        dhikrEveningBody: 'اختم يومك بذكر الله — اللهم بك أمسينا وبك أصبحنا',
         onboardingTitle: 'رفيقك اليومي في العبادة',
         onboardingBody: 'قال النبي ﷺ: «أحب الأعمال إلى الله أدومها وإن قل». ليالي النور يساعدك على بناء هذا الاستمرار — كل يوم.',
         onboardingF1: 'احصل على تذكيرات أوقات الصلوات الخمس',
@@ -3737,6 +3745,7 @@ function renderHomeExtras() {
     }
 }
 let prayerReminders;
+let dhikrReminders;
 
 // ═══════════════════════════════════════════════════
 // PRAYER REMINDERS
@@ -3847,6 +3856,62 @@ class PrayerReminders {
     }
 }
 
+// Schedules morning adhkar (30 min after Fajr) and evening adhkar (30 min after Maghrib)
+// when the tab is open and notification permission is granted.
+class DhikrReminders {
+    constructor() {
+        this._timers = {};
+    }
+
+    scheduleAll(times) {
+        this.cancelAll();
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        if (times && times.fajr)    this._schedule('morning', times.fajr,    30);
+        if (times && times.maghrib) this._schedule('evening', times.maghrib, 30);
+    }
+
+    cancelAll() {
+        Object.values(this._timers).forEach(id => clearTimeout(id));
+        this._timers = {};
+    }
+
+    _schedule(key, baseTime, offsetMinutes) {
+        if (this._timers[key]) clearTimeout(this._timers[key]);
+        const [h, m] = baseTime.split(':').map(Number);
+        const now = new Date(getCurrentTime());
+        const target = new Date(now);
+        target.setHours(h, m + offsetMinutes, 0, 0);
+        if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 1);
+        const ms = target.getTime() - now.getTime();
+        this._timers[key] = setTimeout(() => this._fire(key, baseTime, offsetMinutes), ms);
+    }
+
+    _fire(key, baseTime, offsetMinutes) {
+        delete this._timers[key];
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        const isEvening = key === 'evening';
+        const title   = t(isEvening ? 'dhikrEveningTitle' : 'dhikrMorningTitle');
+        const body    = t(isEvening ? 'dhikrEveningBody'  : 'dhikrMorningBody');
+        const _base   = window.location.origin;
+        const options = {
+            body,
+            icon:   `${_base}/assets/icons/icon-512.png`,
+            badge:  `${_base}/assets/icons/icon-96-mono.png`,
+            tag:    `noor-dhikr-${key}`,
+            silent: false,
+            renotify: true,
+            vibrate: [200, 100, 200],
+        };
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options)).catch(() => new Notification(title, options));
+        } else {
+            new Notification(title, options);
+        }
+        // Reschedule for the next day
+        this._schedule(key, baseTime, offsetMinutes);
+    }
+}
+
 function _ensureNotificationPermission(callback) {
     if (!('Notification' in window)) { showMessage(t('notSuppTitle'), t('notSuppMsg')); return; }
     if (Notification.permission === 'granted') { callback(); return; }
@@ -3873,6 +3938,7 @@ async function ptSelectCity(name, lat, lng) {
     if (prayerAPI._cache) { delete prayerAPI._cache[key]; prayerAPI._saveCache(); }
     await prayerWidget.init();
     if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+    if (dhikrReminders  && prayerWidget._times) dhikrReminders.scheduleAll(prayerWidget._times);
 }
 
 function ptFilterCities(q) {
@@ -3901,6 +3967,7 @@ async function detectPrayerLocation() {
         const loc = await prayerAPI.detectLocation();
         await prayerWidget.init();
         if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+    if (dhikrReminders  && prayerWidget._times) dhikrReminders.scheduleAll(prayerWidget._times);
         showMessage(t('ptLocationUpdated'), loc.name);
     } catch (e) {
         // On denial or error, fall back to city picker so user isn't stuck
@@ -4898,9 +4965,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         prayerAPI = new PrayerTimesAPI();
         prayerReminders = new PrayerReminders(prayerAPI);
+        dhikrReminders  = new DhikrReminders();
         prayerWidget = new PrayerTimesWidget(prayerAPI);
         prayerWidget.init().then(() => {
-            if (prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+            if (prayerWidget._times) {
+                prayerReminders.scheduleAll(prayerWidget._times);
+                dhikrReminders.scheduleAll(prayerWidget._times);
+            }
         });
         _updateSettingsCard();
         initDhikrSections();
