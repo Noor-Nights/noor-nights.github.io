@@ -3319,7 +3319,9 @@ class PrayerTimesWidget {
         const curMins = (() => { const [h,m] = this._times[current].split(':').map(Number); return h*60+m; })();
         let nxtMins = (() => { const [h,m] = this._times[next.name].split(':').map(Number); return h*60+m; })();
         if (nxtMins <= curMins) nxtMins += 1440;
-        const pct = Math.min(100, Math.max(0, Math.round((nowMins - curMins) / (nxtMins - curMins) * 100)));
+        // Fix 4: after midnight, nowMins < curMins → adjust forward to get correct fill
+        const nowMinsAdj = nowMins < curMins ? nowMins + 1440 : nowMins;
+        const pct = Math.min(100, Math.max(0, Math.round((nowMinsAdj - curMins) / (nxtMins - curMins) * 100)));
 
         // Progress labels: prev | current | next
         const curIdx = _PT_PRAYERS_LIST.indexOf(current);
@@ -3344,8 +3346,9 @@ class PrayerTimesWidget {
 
         // Compact prayer grid cols
         const gridCols = _PT_PRAYERS_LIST.map(p => {
-            const done = !!todayPrayers[p];
-            const isCur = p === current;
+            // Fix 1: never show green checkmark for a prayer whose time hasn't arrived yet
+            const pMins = this._times[p] ? (() => { const [h,m] = this._times[p].split(':').map(Number); return h*60+m; })() : -1;
+            const done = pMins >= 0 && nowMins >= pMins && !!todayPrayers[p];
             const isCurNext = p === next.name;
             let topColor = 'var(--bg4)';
             let nameColor = 'var(--text-muted)';
@@ -3355,7 +3358,7 @@ class PrayerTimesWidget {
                 topColor = 'var(--teal)';
                 nameColor = 'var(--teal)';
                 statusHtml = `<div class="hpt-done-dot"><svg viewBox="0 0 10 10" fill="none" width="10" height="10"><path d="M2 5l2.5 2.5 3.5-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
-            } else if (isCurNext && !isCur) {
+            } else if (isCurNext) {
                 topColor = 'var(--gold)';
                 nameColor = 'var(--gold2)';
                 timeColor = 'var(--gold2)';
@@ -3371,11 +3374,7 @@ class PrayerTimesWidget {
         }).join('');
 
         const nextLabel = isAr ? 'الصلاة القادمة' : 'Next prayer';
-        const changeBtn = t('ptDetectBtn');
-        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-        const reminderHint = !isStandalone
-            ? `<div class="pt-reminder-hint" onclick="switchTab('more')"><span>⚠️</span><span>${isAr ? 'التذكيرات تعمل فقط عند فتح التطبيق — <u>ثبّت التطبيق</u> للتذكيرات في الخلفية' : 'Reminders only work while the app is open — <u>Install the app</u> for background alerts'}</span></div>`
-            : '';
+        const allPrayersLabel = isAr ? `أوقات الصلاة · 📍 ${_escape(locName)}` : `All prayer times · 📍 ${_escape(locName)}`;
 
         el.innerHTML = `
         <div class="home-pt-wrap" dir="${isAr ? 'rtl' : 'ltr'}">
@@ -3394,12 +3393,8 @@ class PrayerTimesWidget {
                     <span>${(isAr ? SHORT_AR : SHORT)[next.name]} ${this._times[next.name]}</span>
                 </div>
             </div>
-            <div class="home-pt-loc">
-                <span>📍 ${_escape(locName)}</span>
-                <button class="pt-detect-btn" id="pt-detect-btn" onclick="detectPrayerLocation()">${changeBtn}</button>
-            </div>
+            <p class="home-pt-loc-label">${allPrayersLabel}</p>
             <div class="hpt-grid">${gridCols}</div>
-            ${reminderHint}
         </div>`;
 
         renderHomeExtras();
@@ -3454,19 +3449,21 @@ function renderHomeExtras() {
     const d = worshipTracker.data.days[todayKey] || {};
     const p = d.prayers || {};
 
-    // ── Stats row ────────────────────────────────────────────
+    // ── Stats row (Fix 2: streak=0 → encouraging, not demoralising) ──
     const statsEl = document.getElementById('home-stats');
     if (statsEl) {
         const streak = worshipTracker.data.streaks?.current || 0;
         const totalPts = worshipTracker._totalPts();
         const badgesUnlocked = badgeSystem ? Object.values(badgeSystem.state).filter(b => b.unlocked).length : 0;
         const badgesTotal = badgeSystem ? Object.keys(badgeSystem.DEFS).length : 3;
+        const streakVal = streak > 0 ? (isAr ? worshipTracker._toAr(streak) : String(streak)) : '—';
+        const streakLbl = streak > 0 ? (isAr ? 'يوم' : 'streak') : (isAr ? 'ابدأ الآن' : 'start!');
         statsEl.innerHTML = `
         <div class="home-stats">
-            <div class="home-stat">
+            <div class="home-stat${streak === 0 ? ' home-stat-dim' : ''}">
                 <span class="home-stat-icon">🔥</span>
-                <span class="home-stat-val">${isAr ? worshipTracker._toAr(streak) : streak}</span>
-                <span class="home-stat-lbl">${isAr ? 'يوم' : 'streak'}</span>
+                <span class="home-stat-val">${streakVal}</span>
+                <span class="home-stat-lbl">${streakLbl}</span>
             </div>
             <div class="home-stat">
                 <span class="home-stat-icon">⭐</span>
@@ -3497,11 +3494,21 @@ function renderHomeExtras() {
             { cond: !d.charity,        icon: '💚', text: 'Give sadaqah today', sub: 'Charity extinguishes sin' },
             { cond: !(d.quranJuz > 0), icon: '📖', text: 'Read some Quran today', sub: 'Even a single page counts' },
         ];
-        const sug = suggestions.find(s => s.cond) || {
-            icon: '✅',
-            text: isAr ? 'يوم رائع! استمر' : 'Great day so far — keep it up',
-            sub: isAr ? 'جزاك الله خيراً' : 'JazakAllah Khayran',
-        };
+        // Fix 6: contextual fallback — optional goals → daily focus → dua, never generic praise
+        const nowH = new Date(getCurrentTime()).getHours();
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        let fallback;
+        if (!d.sunnahPrayers) {
+            fallback = { icon: '🕌', text: isAr ? 'صلِّ سننك' : 'Pray your Sunnah prayers', sub: isAr ? 'أفضل النوافل بعد الفريضة' : 'Best voluntary act after obligatory prayer' };
+        } else if (!d.tahajjud && nowH >= 21) {
+            fallback = { icon: '🌙', text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
+        } else if (dhDay >= 1 && dhDay <= 10 && DAILY_FOCUS[dhDay - 1]) {
+            const focus = DAILY_FOCUS[dhDay - 1][isAr ? 'ar' : 'en'];
+            fallback = { icon: '🕋', text: focus.theme, sub: focus.focus.slice(0, 60) + (focus.focus.length > 60 ? '…' : '') };
+        } else {
+            fallback = { icon: '🤲', text: isAr ? 'ادعُ من قلبك' : 'Make dua from your heart', sub: isAr ? 'الدعاء سلاح المؤمن' : 'Dua is the weapon of the believer' };
+        }
+        const sug = suggestions.find(s => s.cond) || fallback;
         sugEl.innerHTML = `
         <div class="home-sug card">
             <div class="home-sug-icon">${sug.icon}</div>
