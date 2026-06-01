@@ -494,7 +494,7 @@ function applyLanguage(lang) {
         }
     });
     const langBtn = document.getElementById('lang-toggle');
-    if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
+    if (langBtn) langBtn.textContent = lang === 'en' ? 'AR' : 'EN';
     updateCountdown();
     loadChecklist();
     const notifyBtn = document.getElementById('notify-btn');
@@ -1382,6 +1382,7 @@ class WorshipTracker {
             this._checkMilestone(prevPct, newPct);
         }
         if (badgeSystem) badgeSystem.update();
+        if (typeof renderHomeExtras === 'function') renderHomeExtras();
     }
 
     _dayPct(key) {
@@ -1391,6 +1392,46 @@ class WorshipTracker {
         const tasks = [p.fajr, p.dhuhr, p.asr, p.maghrib, p.isha, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar];
         const done = tasks.filter(Boolean).length;
         return Math.round((done / tasks.length) * 100);
+    }
+
+    _totalPts() {
+        return Object.keys(this.data.days).reduce((sum, k) => sum + this._dayPtsRaw(k), 0);
+    }
+
+    _dayPtsRaw(key) {
+        const d = this.data.days[key];
+        if (!d) return 0;
+        const p = d.prayers || {};
+        const prayerPts = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length * 3;
+        return prayerPts +
+            ((d.quranJuz || 0) > 0 ? d.quranJuz * 15 : 0) +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
+    }
+
+    _hijriStr(isAr) {
+        try {
+            const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
+                day: 'numeric', month: 'numeric', year: 'numeric',
+            }).formatToParts(new Date(getCurrentTime()));
+            let hy = 0, hm = 0, hd = 0;
+            for (const p of parts) {
+                if (p.type === 'year')  hy = +p.value;
+                if (p.type === 'month') hm = +p.value;
+                if (p.type === 'day')   hd = +p.value;
+            }
+            if (hy < 1400 || hy > 1600 || hm < 1 || hm > 12 || hd < 1 || hd > 30) return '';
+            const monthsEn = ['','Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
+                              "Jumada al-Awwal","Jumada al-Thani",'Rajab',"Sha'ban",
+                              'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+            const monthsAr = ['','محرم','صفر','ربيع الأول','ربيع الثاني',
+                              'جمادى الأولى','جمادى الآخرة','رجب','شعبان',
+                              'رمضان','شوال','ذو القعدة','ذو الحجة'];
+            const toAr = n => String(n).replace(/\d/g, c => '٠١٢٣٤٥٦٧٨٩'[c]);
+            return isAr
+                ? `${toAr(hd)} ${monthsAr[hm]} ${toAr(hy)} هـ`
+                : `${hd} ${monthsEn[hm]} ${hy} AH`;
+        } catch { return ''; }
     }
 
     _checkMilestone(prev, next) {
@@ -1548,7 +1589,9 @@ class WorshipTracker {
         const lang = localStorage.getItem('noor-lang') || 'en';
         const key = this.getTodayKey();
         const { current: cur } = this.data.streaks;
-        container.innerHTML = this._renderEntry(key, lang, cur);
+        const times = (typeof prayerWidget !== 'undefined' && prayerWidget?._times) ? prayerWidget._times : null;
+        const currentPrayer = (times && typeof prayerAPI !== 'undefined') ? prayerAPI.getCurrentPrayer(times) : null;
+        container.innerHTML = this._renderEntry(key, lang, cur, times, currentPrayer);
         this._attachListeners(lang);
     }
 
@@ -1570,118 +1613,230 @@ class WorshipTracker {
         </div>`;
     }
 
-    _renderEntry(key, lang, streak) {
+    _renderEntry(key, lang, streak, times, currentPrayer) {
         const d = this.data.days[key] || {};
         const isAr = lang === 'ar';
         const cur = streak || 0;
-        const streakHtml = cur > 0
-            ? `<span class="wt-goals-streak">🔥 ${isAr ? `${numFmt(cur)} متواصل` : `${cur}-day streak`}</span>`
-            : '';
 
         const p = d.prayers || {};
         const PRAYERS = [
-            { key: 'fajr',    en: 'Fajr',    ar: 'الفجر',   icon: '🌅' },
-            { key: 'dhuhr',   en: 'Dhuhr',   ar: 'الظهر',   icon: '☀️' },
-            { key: 'asr',     en: 'Asr',     ar: 'العصر',   icon: '🌤️' },
-            { key: 'maghrib', en: 'Maghrib', ar: 'المغرب',  icon: '🌆' },
-            { key: 'isha',    en: 'Isha',    ar: 'العشاء',  icon: '🌙' },
+            { key: 'fajr',    en: 'Fajr',  ar: 'الفجر'  },
+            { key: 'dhuhr',   en: 'Dhuhr', ar: 'الظهر'  },
+            { key: 'asr',     en: 'Asr',   ar: 'العصر'  },
+            { key: 'maghrib', en: 'Mghb',  ar: 'مغرب'   },
+            { key: 'isha',    en: 'Isha',  ar: 'العشاء' },
         ];
         const prayersDone = PRAYERS.filter(pr => !!p[pr.key]).length;
-        const checkSvg = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-        const prayerCards = PRAYERS.map(pr => {
+        const fmtTime = (t) => {
+            if (!t) return '';
+            const [h, m] = t.split(':').map(Number);
+            const h12 = h % 12 || 12;
+            return `${h12}:${String(m).padStart(2, '0')}`;
+        };
+
+        const nowMins = times ? (() => {
+            const n = new Date(getCurrentTime());
+            return n.getHours() * 60 + n.getMinutes();
+        })() : -1;
+
+        // SVG icons used in prayer buttons and goal circles
+        const checkPathSvg = `<svg viewBox="0 0 16 16" fill="none" width="18" height="18" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const clockSvg = `<svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const goalCheckSvg = `<svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+        // Prayer button grid
+        const prayerBtns = PRAYERS.map((pr) => {
             const done = !!p[pr.key];
+            const isFuture = !done && times != null && !!times[pr.key] && (() => {
+                const [h, m] = times[pr.key].split(':').map(Number);
+                return nowMins < h * 60 + m;
+            })();
+            const isCurrent = !done && !isFuture && currentPrayer === pr.key;
+            const timeStr = (times && times[pr.key]) ? fmtTime(times[pr.key]) : '';
+
+            let btnClass = 'wt-pb';
+            let iconHtml = '';
+            if (done) {
+                btnClass += ' wt-pb-done';
+                iconHtml = checkPathSvg;
+            } else if (isCurrent) {
+                btnClass += ' wt-pb-current';
+                iconHtml = clockSvg;
+            } else if (isFuture) {
+                btnClass += ' wt-pb-future';
+                iconHtml = timeStr ? `<span class="wt-pb-time">${timeStr}</span>` : '';
+            } else {
+                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${timeStr}</span>` : '';
+            }
+
             return `
-            <label class="wt-prayer-card${done ? ' done' : ''}" data-wt-field="prayer_${pr.key}" data-wt-day="${key}">
-                <input type="checkbox" class="wt-prayer-cb" data-prayer="${pr.key}" data-wt-day="${key}" ${done ? 'checked' : ''} style="display:none">
-                <span class="wt-prayer-icon">${pr.icon}</span>
-                <span class="wt-prayer-name">${isAr ? pr.ar : pr.en}</span>
-                <span class="wt-prayer-check">${done ? '✓' : ''}</span>
+            <label class="${btnClass}" data-wt-field="prayer_${pr.key}" data-wt-day="${key}">
+                <input type="checkbox" class="wt-prayer-cb" data-prayer="${pr.key}" data-wt-day="${key}" ${done ? 'checked' : ''} style="display:none" aria-label="${isAr ? pr.ar : pr.en}">
+                <div class="wt-pb-icon">${iconHtml}</div>
+                <span class="wt-pb-name">${isAr ? pr.ar : pr.en}</span>
             </label>`;
         }).join('');
 
-        const salahLabel = isAr ? 'الصلوات المفروضة' : 'FARD PRAYERS';
-        const salahCount = isAr ? `${this._toAr(prayersDone)}/٥` : `${prayersDone}/5`;
+        // Points
         const prayerPts = prayersDone * 3;
-
-        const tasks = [
-            { field: 'fasting',  checked: !!d.fasting,  pts: 15, en: 'Fasting today',             ar: 'الصيام اليوم' },
-            { field: 'adhkar',   checked: !!d.adhkar,   pts: 10, en: 'Morning & evening adhkar',  ar: 'أذكار الصباح والمساء' },
-            { field: 'tasbeeh',  checked: !!d.tasbeeh,  pts: 5,  en: '100 Tasbeeh',               ar: '١٠٠ تسبيحة' },
-            { field: 'charity',  checked: !!d.charity,  pts: 10, en: 'Sadaqah today',             ar: 'الصدقة اليوم' },
-        ];
-
         const quranPts = (d.quranJuz || 0) * 15;
         const quz = d.quranJuz || 0;
+        const pts = prayerPts + quranPts +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
 
-        const taskRows = tasks.map(task => `
-            <label class="wt-task-row${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+        // Progress ring (100 pts = full ring, circumference ≈ 170)
+        const ringOffset = Math.round(170 * (1 - Math.min(pts, 100) / 100));
+
+        // Goals
+        const tasks = [
+            { field: 'fasting', checked: !!d.fasting, pts: 15, en: 'Fasting today',            ar: 'الصيام اليوم' },
+            { field: 'adhkar',  checked: !!d.adhkar,  pts: 10, en: 'Morning & evening adhkar', ar: 'أذكار الصباح والمساء' },
+            { field: 'tasbeeh', checked: !!d.tasbeeh, pts: 5,  en: '100 Tasbeeh',              ar: '١٠٠ تسبيحة' },
+            { field: 'charity', checked: !!d.charity, pts: 10, en: 'Sadaqah today',            ar: 'الصدقة اليوم' },
+        ];
+
+        const goalRows = tasks.map(task => `
+            <label class="wt-goal-row${task.checked ? ' wt-goal-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
-                <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-task-pts">+${task.pts}</span>
+                <div class="wt-goal-circle${task.checked ? ' wt-goal-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
+                <span class="wt-goal-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${task.pts}</span>
             </label>`).join('');
 
         const quranRow = `
-            <div class="wt-task-row wt-task-quran${quz > 0 ? ' wt-task-done' : ''}">
-                <span class="wt-task-circle">${quz > 0 ? checkSvg : ''}</span>
-                <div class="wt-task-quran-inner">
-                    <span class="wt-task-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
+            <div class="wt-goal-row wt-goal-quran${quz > 0 ? ' wt-goal-done' : ''}">
+                <div class="wt-goal-circle${quz > 0 ? ' wt-goal-circle-done' : ''}">${quz > 0 ? goalCheckSvg : ''}</div>
+                <div class="wt-goal-quran-inner">
+                    <span class="wt-goal-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
                     <div class="wt-quran-ctrl">
                         <input type="range" min="0" max="30" step="1" value="${quz}"
                             data-wt-field="quranJuz" data-wt-day="${key}" class="wt-slider">
                         <span class="wt-quran-val" id="wt-quran-val">${isAr ? this._toAr(quz) : quz} ${isAr ? 'جزء' : 'Juz'}</span>
                     </div>
                 </div>
-                <span class="wt-task-pts">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
+                <span class="wt-goal-pts${quz > 0 ? ' wt-goal-pts-done' : ''}">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
             </div>`;
 
-        const optionalLabel = isAr ? 'اختياري' : 'OPTIONAL';
+        // Bonus (optional)
         const optionalTasks = [
-            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 5, en: 'Sunnah prayers', ar: 'صلاة السنن' },
-            { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5, en: 'Tahajjud',       ar: 'صلاة التهجد' },
+            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 5, en: 'Sunnah', ar: 'السنن' },
+            { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5, en: 'Tahajjud', ar: 'التهجد' },
         ];
-        const optionalRows = optionalTasks.map(task => `
-            <label class="wt-task-row wt-task-optional${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+        const bonusCards = optionalTasks.map(task => `
+            <label class="wt-bonus-card${task.checked ? ' wt-bonus-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
-                <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-task-pts">+${task.pts}</span>
+                <div class="wt-bonus-circle${task.checked ? ' wt-bonus-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
+                <span class="wt-bonus-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-bonus-pts">+${task.pts}</span>
             </label>`).join('');
 
-        const pts = prayerPts + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
-                    (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
-                    (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
-
-        const headerLabel = isAr ? 'أهداف اليوم' : "TODAY'S GOALS";
+        const salahLabel = isAr ? 'صلوات اليوم' : "Today's prayers";
+        const goalsLabel = isAr ? 'الأهداف اليومية' : 'Daily goals';
+        const bonusLabel = isAr ? 'إضافي' : 'Bonus';
 
         return `
     <div class="wt-entry-card">
-        <div class="wt-goals-header">
-            <span class="wt-goals-label">${headerLabel}</span>
-            ${streakHtml}
+        <div class="wt-header">
+            <div class="wt-ring-wrap" aria-label="${isAr ? `${this._toAr(pts)} نقطة` : `${pts} pts`}">
+                <svg viewBox="0 0 64 64" style="width:64px;height:64px;transform:rotate(-90deg)" aria-hidden="true">
+                    <circle cx="32" cy="32" r="27" fill="none" stroke="var(--bg3)" stroke-width="5"/>
+                    <circle cx="32" cy="32" r="27" fill="none" stroke="var(--gold)" stroke-width="5"
+                        stroke-dasharray="170" stroke-dashoffset="${ringOffset}"
+                        stroke-linecap="round"/>
+                </svg>
+                <div class="wt-ring-text">
+                    <span class="wt-ring-pts">${isAr ? this._toAr(pts) : pts}</span>
+                    <span class="wt-ring-sub">${isAr ? 'نقطة' : 'pts'}</span>
+                </div>
+            </div>
+            <div class="wt-header-info"></div>
+            ${cur > 0 ? `
+            <div class="wt-streak-badge" aria-label="${isAr ? `${this._toAr(cur)} يوم متواصل` : `${cur} day streak`}">
+                <span class="wt-streak-badge-icon" aria-hidden="true">🔥</span>
+                <span class="wt-streak-badge-num">${isAr ? this._toAr(cur) : cur}</span>
+                <span class="wt-streak-badge-sub">${isAr ? 'يوم' : 'streak'}</span>
+            </div>` : ''}
         </div>
         <div class="wt-salah-section">
-            <div class="wt-salah-header">
-                <span class="wt-salah-label">🕌 ${salahLabel}</span>
-                <span class="wt-salah-count${prayersDone === 5 ? ' done' : ''}">${salahCount}</span>
-            </div>
+            <p class="wt-section-title">${salahLabel}</p>
             <div class="wt-prayer-grid">
-                ${prayerCards}
+                ${prayerBtns}
             </div>
         </div>
-        <div class="wt-task-list">
-            ${taskRows}
-            ${quranRow}
-        </div>
-        <div class="wt-optional-section">
-            <div class="wt-optional-label">${optionalLabel}</div>
-            <div class="wt-task-list">
-                ${optionalRows}
+        ${this._renderWeeklyView(lang, cur)}
+        <div class="wt-goals-section">
+            <p class="wt-section-title">${goalsLabel}</p>
+            <div class="wt-goal-list">
+                ${goalRows}
+                ${quranRow}
             </div>
         </div>
-        ${pts > 0 ? `<div class="wt-pts-total">${isAr ? `${numFmt(pts)} نقطة اليوم` : `${pts} pts today`}</div>` : ''}
+        <div class="wt-bonus-section">
+            <p class="wt-section-title wt-bonus-title">${bonusLabel}</p>
+            <div class="wt-bonus-grid">
+                ${bonusCards}
+            </div>
+        </div>
     </div>`;
+    }
+
+    _renderWeeklyView(lang, currentStreak) {
+        const isAr = lang === 'ar';
+        const DAY_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const DAY_AR = ['أحد', 'اثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت'];
+
+        const today = new Date(getCurrentTime());
+        const todayKey = this.getTodayKey();
+
+        const cols = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const dayKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const dayData = this.data.days[dayKey];
+            const isFuture = dayKey > todayKey;
+            const isToday  = dayKey === todayKey;
+            const dayLabel = isAr ? DAY_AR[d.getDay()] : DAY_EN[d.getDay()];
+
+            let barClass = 'wt-wb-empty';
+            let barText = '--';
+
+            if (!isFuture && dayData) {
+                const dayPts = this._dayPtsRaw(dayKey);
+                barText = String(dayPts);
+                if (dayPts >= 60)      barClass = 'wt-wb-full';
+                else if (dayPts >= 30) barClass = 'wt-wb-partial';
+                else if (dayPts > 0)   barClass = 'wt-wb-low';
+                else                   barClass = 'wt-wb-zero';
+            } else if (!isFuture) {
+                barText = '0';
+                barClass = 'wt-wb-zero';
+            }
+
+            const todayMark = isToday ? ' wt-wb-today' : '';
+            cols.push(`
+            <div class="wt-week-col">
+                <p class="wt-week-day${isToday ? ' wt-week-day-today' : ''}">${dayLabel}</p>
+                <div class="wt-week-bar ${barClass}${todayMark}">
+                    <span>${isFuture ? '--' : barText}</span>
+                </div>
+            </div>`);
+        }
+
+        const streakLabel = currentStreak > 0
+            ? `🔥 ${isAr ? `${numFmt(currentStreak)} يوم` : `${currentStreak} day streak`}`
+            : (isAr ? 'هذا الأسبوع' : 'This week');
+
+        return `
+        <div class="wt-week">
+            <div class="wt-week-header">
+                <span class="wt-week-title">${isAr ? 'هذا الأسبوع' : 'This week'}</span>
+                <span class="wt-week-streak">${streakLabel}</span>
+            </div>
+            <div class="wt-week-cols">${cols.join('')}</div>
+        </div>`;
     }
 
     _attachListeners(lang) {
@@ -2970,6 +3125,34 @@ const _PT_LOC_KEY   = 'noor_pt_location';
 const _PR_KEY       = 'noor_pr_prefs';
 const _PT_PRAYERS_LIST = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const _PT_FALLBACK = { fajr: '04:18', dhuhr: '12:52', asr: '16:28', maghrib: '19:45', isha: '21:14' };
+
+const _POPULAR_CITIES = [
+    { name: 'Cairo',         country: 'Egypt',       lat: 30.0444,  lng: 31.2357  },
+    { name: 'Istanbul',      country: 'Turkey',      lat: 41.0082,  lng: 28.9784  },
+    { name: 'Riyadh',        country: 'Saudi Arabia',lat: 24.6877,  lng: 46.7219  },
+    { name: 'Dubai',         country: 'UAE',         lat: 25.2048,  lng: 55.2708  },
+    { name: 'Jakarta',       country: 'Indonesia',   lat: -6.2088,  lng: 106.8456 },
+    { name: 'London',        country: 'UK',          lat: 51.5074,  lng: -0.1278  },
+    { name: 'Karachi',       country: 'Pakistan',    lat: 24.8607,  lng: 67.0011  },
+    { name: 'Dhaka',         country: 'Bangladesh',  lat: 23.8103,  lng: 90.4125  },
+    { name: 'Kuala Lumpur',  country: 'Malaysia',    lat: 3.1390,   lng: 101.6869 },
+    { name: 'Lagos',         country: 'Nigeria',     lat: 6.5244,   lng: 3.3792   },
+    { name: 'Casablanca',    country: 'Morocco',     lat: 33.5731,  lng: -7.5898  },
+    { name: 'Amman',         country: 'Jordan',      lat: 31.9454,  lng: 35.9284  },
+    { name: 'Beirut',        country: 'Lebanon',     lat: 33.8938,  lng: 35.5018  },
+    { name: 'Baghdad',       country: 'Iraq',        lat: 33.3152,  lng: 44.3661  },
+    { name: 'Tehran',        country: 'Iran',        lat: 35.6892,  lng: 51.3890  },
+    { name: 'Algiers',       country: 'Algeria',     lat: 36.7372,  lng: 3.0865   },
+    { name: 'Tunis',         country: 'Tunisia',     lat: 36.8065,  lng: 10.1815  },
+    { name: 'Nairobi',       country: 'Kenya',       lat: -1.2921,  lng: 36.8219  },
+    { name: 'Paris',         country: 'France',      lat: 48.8566,  lng: 2.3522   },
+    { name: 'Birmingham',    country: 'UK',          lat: 52.4862,  lng: -1.8904  },
+    { name: 'Toronto',       country: 'Canada',      lat: 43.6532,  lng: -79.3832 },
+    { name: 'New York',      country: 'USA',         lat: 40.7128,  lng: -74.0060 },
+    { name: 'Sydney',        country: 'Australia',   lat: -33.8688, lng: 151.2093 },
+    { name: 'Berlin',        country: 'Germany',     lat: 52.5200,  lng: 13.4050  },
+    { name: 'Islamabad',     country: 'Pakistan',    lat: 33.6844,  lng: 73.0479  },
+];
 function _getBakedFallback(dateStr) {
     if (typeof CAIRO_BAKED_TIMES !== 'undefined' && CAIRO_BAKED_TIMES[dateStr]) return CAIRO_BAKED_TIMES[dateStr];
     return _PT_FALLBACK;
@@ -3131,20 +3314,63 @@ class PrayerTimesWidget {
 
     async init() {
         this._locTimeout = setTimeout(() => { this._api.upgradeLocationName(); }, 2000);
-        // Render immediately with cached or fallback times so user never sees perpetual "Loading…"
         const today = this._api._todayStr();
         const instant = this._api.getCachedTimesForDate(today);
-        this._times = instant || _getBakedFallback(today);
-        this.render();
+        const hasSavedLoc = !!this._api.getSavedLocation();
+
+        if (!hasSavedLoc && !instant) {
+            // No location set and no cached times → show city picker; don't render generic times
+            this._pickerActive = true;
+            this._renderCityPicker();
+        } else {
+            this._pickerActive = false;
+            this._times = instant || _getBakedFallback(today);
+            this.render();
+        }
+
         if (!this._interval) {
             this._interval = setInterval(() => this._tick(), 60000);
         }
-        // Fetch fresh data in the background and re-render if different
         const fresh = await this._api.getTimesForDate(today);
-        if (fresh && fresh !== this._times) {
+        // Don't overwrite the picker with generic times — only update if user has a saved location
+        if (!this._pickerActive && fresh && fresh !== this._times) {
             this._times = fresh;
             this.render();
         }
+    }
+
+    _renderCityPicker() {
+        const el = document.getElementById('pt-container');
+        if (!el) return;
+        const isAr = currentLang === 'ar';
+        const title   = isAr ? '🕌 اضبط مدينتك لأوقات الصلاة' : '🕌 Set your city for prayer times';
+        const hint    = isAr ? 'اختر من القائمة أو ابحث عن مدينتك' : 'Choose from the list or search for your city';
+        const ph      = isAr ? 'ابحث عن مدينة…' : 'Search city…';
+        const gpsLbl  = isAr ? '📍 استخدم موقعي' : '📍 Use my location';
+
+        const cityBtns = _POPULAR_CITIES.map(c => `
+            <button class="pt-city-btn" onclick="ptSelectCity('${c.name}, ${c.country}',${c.lat},${c.lng})">
+                <span class="pt-city-name">${c.name}</span>
+                <span class="pt-city-country">${c.country}</span>
+            </button>`).join('');
+
+        el.innerHTML = `
+        <div class="pt-picker" dir="${isAr ? 'rtl' : 'ltr'}">
+            <p class="pt-picker-title">${title}</p>
+            <p class="pt-picker-hint">${hint}</p>
+            <div class="pt-picker-search-row">
+                <input type="search" class="pt-picker-search" id="pt-search-input"
+                    placeholder="${ph}" oninput="ptFilterCities(this.value)"
+                    autocomplete="off" autocorrect="off" spellcheck="false">
+                <button class="pt-picker-gps" onclick="detectPrayerLocation()" title="${gpsLbl}">
+                    <svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pt-city-list" id="pt-city-list">${cityBtns}</div>
+        </div>`;
     }
 
     render() {
@@ -3153,72 +3379,363 @@ class PrayerTimesWidget {
         if (!this._times) { el.innerHTML = `<p class="pt-loading">${currentLang === 'ar' ? 'جارٍ التحميل…' : 'Loading…'}</p>`; return; }
 
         const isAr = currentLang === 'ar';
-        const dir = isAr ? 'rtl' : 'ltr';
         const names = t('dhPrayers');
+        const SHORT = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Mghb', isha: 'Isha' };
+        const SHORT_AR = { fajr: 'فجر', dhuhr: 'ظهر', asr: 'عصر', maghrib: 'مغرب', isha: 'عشاء' };
         const current = this._api.getCurrentPrayer(this._times);
         const next = this._api.getNextPrayer(this._times);
-        const nextH = Math.floor(next.mins / 60);
-        const nextM = next.mins % 60;
-        const nextText = isAr
-            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
-            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
 
+        // Progress bar: % of time elapsed from current prayer to next
+        const nowMins = (() => { const n = new Date(getCurrentTime()); return n.getHours() * 60 + n.getMinutes(); })();
+        const curMins = (() => { const [h,m] = this._times[current].split(':').map(Number); return h*60+m; })();
+        let nxtMins = (() => { const [h,m] = this._times[next.name].split(':').map(Number); return h*60+m; })();
+        if (nxtMins <= curMins) nxtMins += 1440;
+        // Fix 4: after midnight, nowMins < curMins → adjust forward to get correct fill
+        const nowMinsAdj = nowMins < curMins ? nowMins + 1440 : nowMins;
+        const pct = Math.min(100, Math.max(0, Math.round((nowMinsAdj - curMins) / (nxtMins - curMins) * 100)));
+
+        // Progress labels: prev | current | next
+        const curIdx = _PT_PRAYERS_LIST.indexOf(current);
+        const prevKey = _PT_PRAYERS_LIST[(curIdx + 4) % 5];
+
+        // Countdown text
+        const _countdown = (mins, ar) => {
+            const h = Math.floor(mins / 60), m = mins % 60;
+            return ar ? (h > 0 ? `${numFmt(h)}س ${numFmt(m)}د` : `${numFmt(m)} دقيقة`)
+                      : (h > 0 ? `${h}h ${m}m` : `${m}m`);
+        };
+
+        // Location
         const savedLoc = this._api.getSavedLocation();
         const rawLocName = savedLoc ? savedLoc.name : (isAr ? 'القاهرة، مصر' : 'Cairo, Egypt');
-        const _coordPattern = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
-        const locName = _coordPattern.test(rawLocName) ? (isAr ? 'جارٍ تحديد المدينة…' : 'Detecting city…') : rawLocName;
+        const _coordPat = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+        const locName = _coordPat.test(rawLocName) ? (isAr ? 'جارٍ تحديد المدينة…' : 'Detecting city…') : rawLocName;
 
-        const rows = _PT_PRAYERS_LIST.map(p => {
-            const bellOn = prayerReminders && prayerReminders.isEnabled(p);
-            return `
-            <div class="pt-row${p === current ? ' pt-row-current' : ''}">
-                <span class="pt-name">${names[p]}</span>
-                <span class="pt-time">${numFmt(this._times[p])}</span>
-                <button class="pt-bell${bellOn ? ' pt-bell-on' : ''}" data-prayer="${p}" onclick="togglePrayerReminder('${p}')" title="Toggle reminder">🔔</button>
+        // Prayer done status from tracker
+        const todayKey = worshipTracker ? worshipTracker.getTodayKey() : null;
+        const todayPrayers = (worshipTracker && todayKey) ? (worshipTracker.data.days[todayKey]?.prayers || {}) : {};
+
+        // Compact prayer grid cols
+        const gridCols = _PT_PRAYERS_LIST.map(p => {
+            // Fix 1: never show green checkmark for a prayer whose time hasn't arrived yet
+            const pMins = this._times[p] ? (() => { const [h,m] = this._times[p].split(':').map(Number); return h*60+m; })() : -1;
+            const done = pMins >= 0 && nowMins >= pMins && !!todayPrayers[p];
+            const isCurNext = p === next.name;
+            let topColor = 'var(--bg4)';
+            let nameColor = 'var(--text-muted)';
+            let timeColor = 'var(--text)';
+            let statusHtml = '';
+            if (done) {
+                topColor = 'var(--teal)';
+                nameColor = 'var(--teal)';
+                statusHtml = `<div class="hpt-done-dot"><svg viewBox="0 0 10 10" fill="none" width="10" height="10"><path d="M2 5l2.5 2.5 3.5-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+            } else if (isCurNext) {
+                topColor = 'var(--gold)';
+                nameColor = 'var(--gold2)';
+                timeColor = 'var(--gold2)';
+                statusHtml = `<span class="hpt-countdown" id="hpt-countdown-${p}">${_countdown(next.mins, isAr)}</span>`;
+            }
+            const short = isAr ? SHORT_AR[p] : SHORT[p];
+            return `<div class="hpt-col">
+                <div class="hpt-top-bar" style="background:${topColor}"></div>
+                <span class="hpt-name" style="color:${nameColor}">${short}</span>
+                <span class="hpt-time" style="color:${timeColor}">${this._times[p]}</span>
+                ${statusHtml}
             </div>`;
         }).join('');
 
-        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-        const reminderHint = !isStandalone
-            ? `<div class="pt-reminder-hint" onclick="switchTab('more')">
-                 <span>⚠️</span>
-                 <span>${isAr ? 'التذكيرات تعمل فقط عند فتح التطبيق — <u>ثبّت التطبيق</u> للتذكيرات في الخلفية' : 'Reminders only work while the app is open — <u>Install the app</u> for background alerts'}</span>
-               </div>`
-            : '';
+        const nextLabel = isAr ? 'الصلاة القادمة' : 'Next prayer';
+        const allPrayersLabel = isAr
+            ? `أوقات الصلاة · <i class="ti ti-map-pin" aria-hidden="true"></i> ${_escape(locName)}`
+            : `All prayer times · <i class="ti ti-map-pin" aria-hidden="true"></i> ${_escape(locName)}`;
 
         el.innerHTML = `
-        <div class="pt-wrap" dir="${dir}">
-            <div class="pt-location-row">
-                <span class="pt-location">📍 ${_escape(locName)}</span>
-                <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
+        <div class="home-pt-wrap" dir="${isAr ? 'rtl' : 'ltr'}">
+            <div class="home-next">
+                <p class="home-next-label">${nextLabel}</p>
+                <div class="home-next-name">${names[next.name]}</div>
+                <div class="home-next-info">
+                    <span class="home-next-time">${this._times[next.name]}</span>
+                    <span class="home-next-sep">–</span>
+                    <span class="home-next-cd" id="home-next-cd">${isAr ? 'في ' : 'in '}${_countdown(next.mins, isAr)}</span>
+                </div>
+                <div class="home-progress-bar"><div class="home-progress-fill" id="home-progress-fill" style="width:${pct}%"></div></div>
+                <div class="home-progress-labels">
+                    <span>${(isAr ? SHORT_AR : SHORT)[prevKey]} ${this._times[prevKey]}</span>
+                    <span class="home-progress-cur">${(isAr ? SHORT_AR : SHORT)[current]} ${this._times[current]}</span>
+                    <span>${(isAr ? SHORT_AR : SHORT)[next.name]} ${this._times[next.name]}</span>
+                </div>
             </div>
-            <div class="pt-list">${rows}</div>
-            <div class="pt-next" id="pt-next">${nextText}</div>
-            ${reminderHint}
+            <p class="home-pt-loc-label">${allPrayersLabel}</p>
+            <div class="hpt-grid">${gridCols}</div>
         </div>`;
+
+        renderHomeExtras();
     }
 
     _tick() {
         if (!this._times) return;
         const isAr = currentLang === 'ar';
-        const names = t('dhPrayers');
-        const current = this._api.getCurrentPrayer(this._times);
         const next = this._api.getNextPrayer(this._times);
-        const nextH = Math.floor(next.mins / 60);
-        const nextM = next.mins % 60;
+        const h = Math.floor(next.mins / 60), m = next.mins % 60;
+        const cdText = isAr
+            ? `في ${h > 0 ? `${numFmt(h)}س ${numFmt(m)}د` : `${numFmt(m)} دقيقة`}`
+            : `in ${h > 0 ? `${h}h ${m}m` : `${m}m`}`;
 
-        document.querySelectorAll('.pt-row').forEach((row, i) => {
-            row.classList.toggle('pt-row-current', _PT_PRAYERS_LIST[i] === current);
+        const cdEl = document.getElementById('home-next-cd');
+        if (cdEl) cdEl.textContent = cdText;
+
+        // Update next countdown in compact grid
+        const current = this._api.getCurrentPrayer(this._times);
+        _PT_PRAYERS_LIST.forEach(p => {
+            const el = document.getElementById(`hpt-countdown-${p}`);
+            if (el && p === next.name) el.textContent = h > 0 ? (isAr ? `${numFmt(h)}س ${numFmt(m)}د` : `${h}h ${m}m`) : (isAr ? `${numFmt(m)}د` : `${m}m`);
         });
-        const nextEl = document.getElementById('pt-next');
-        if (nextEl) nextEl.textContent = isAr
-            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
-            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
+
+        // Update progress bar
+        const nowMins = (() => { const n = new Date(getCurrentTime()); return n.getHours() * 60 + n.getMinutes(); })();
+        const curMins = (() => { const [ch,cm] = this._times[current].split(':').map(Number); return ch*60+cm; })();
+        let nxtMins = (() => { const [nh,nm] = this._times[next.name].split(':').map(Number); return nh*60+nm; })();
+        if (nxtMins <= curMins) nxtMins += 1440;
+        const pct = Math.min(100, Math.max(0, Math.round((nowMins - curMins) / (nxtMins - curMins) * 100)));
+        const fillEl = document.getElementById('home-progress-fill');
+        if (fillEl) fillEl.style.width = `${pct}%`;
     }
 }
 
 let prayerAPI;
 let prayerWidget;
+
+// ── Daily verse copy + share ─────────────────────────────────
+function copyVerse(btn) {
+    const ar = btn.dataset.ar || '', meaning = btn.dataset.meaning || '',
+          en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const text = [ar, meaning, en, ref].filter(Boolean).join('\n\n');
+    navigator.clipboard?.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 8l3.5 3.5 6.5-7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }).catch(() => {});
+}
+
+async function shareVerseCard(btn) {
+    const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15"><circle cx="8" cy="8" r="6" stroke="var(--gold2)" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`;
+
+    let blob = null;
+    try {
+        const badge = `📖 ${ref}`;
+        blob = await generateCanvasBlob(ar, en, badge, false);
+    } catch {}
+
+    btn.disabled = false;
+    btn.innerHTML = orig;
+
+    const shareText = `${ar}\n\n${en}\n\n${ref}\n\n🌙 Noor Nights`;
+
+    if (blob && navigator.share) {
+        try {
+            const file = new File([blob], 'noor-nights-verse.jpg', { type: 'image/jpeg' });
+            if (navigator.canShare?.({ files: [file] })) {
+                await navigator.share({ files: [file], title: ref });
+                return;
+            }
+        } catch (e) { if (e.name === 'AbortError') return; }
+    }
+    if (navigator.share) {
+        try { await navigator.share({ title: ref, text: shareText, url: window.location.href }); return; }
+        catch (e) { if (e.name === 'AbortError') return; }
+    }
+    if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'noor-nights-verse.jpg'; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+}
+
+// ── Daily verse data for home card ──────────────────────────
+const _HOME_VERSES = [
+    {
+        ar: 'وَالْفَجْرِ ﴿١﴾ وَلَيَالٍ عَشْرٍ ﴿٢﴾ وَالشَّفْعِ وَالْوَتْرِ ﴿٣﴾',
+        ar_meaning: 'أقسم الله بصلاة الفجر وبعشر ليالٍ من ذي الحجة — أفضل أيام الدنيا — وبالأعداد الشفع والوتر تعظيماً لهذه الأوقات.',
+        en: 'By the dawn (1) and by ten nights (2) and by the even and the odd (3).',
+        surah_ar: 'سورة الفجر', surah_en: 'Al-Fajr', ref: '89:1–3',
+    },
+    {
+        ar: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا',
+        ar_meaning: 'لا يُلزم الله أحداً بما يعجز عنه؛ لكل نفس ثواب عملها وعليها وِزر ذنبها، ثم دعاء بالعفو عن النسيان والخطأ.',
+        en: 'Allah does not burden a soul beyond that it can bear. For it is what it has earned, and against it what it has accumulated. Our Lord, do not impose blame upon us if we have forgotten or erred.',
+        surah_ar: 'سورة البقرة', surah_en: 'Al-Baqarah', ref: '2:286',
+    },
+    {
+        ar: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ﴿٥﴾ إِنَّ مَعَ الْعُسْرِ يُسْرًا ﴿٦﴾ فَإِذَا فَرَغْتَ فَانصَبْ ﴿٧﴾ وَإِلَىٰ رَبِّكَ فَارْغَب ﴿٨﴾',
+        ar_meaning: 'بشارة مكررة بأن كل عسر يعقبه يسر، ثم أمر بالإقبال على العبادة فور الفراغ من الأعمال وصرف الرغبة كلها إلى الله.',
+        en: 'For indeed, with hardship will be ease (5). Indeed, with hardship will be ease (6). So when you have finished, then stand up (7). And to your Lord direct your longing (8).',
+        surah_ar: 'سورة الشرح', surah_en: 'Ash-Sharh', ref: '94:5–8',
+    },
+    {
+        ar: 'فَإِذَا قُضِيَتِ الصَّلَاةُ فَانتَشِرُوا فِي الْأَرْضِ وَابْتَغُوا مِن فَضْلِ اللَّهِ وَاذْكُرُوا اللَّهَ كَثِيرًا لَّعَلَّكُمْ تُفْلِحُونَ',
+        ar_meaning: 'بعد أداء الصلاة انتشروا في الأرض لطلب الرزق الحلال، مع الإكثار من ذكر الله في كل حال، لعلّ ذلك يكون سبباً للفلاح.',
+        en: 'And when the prayer has been concluded, disperse within the land and seek from the bounty of Allah, and remember Allah often that you may succeed.',
+        surah_ar: 'سورة الجمعة', surah_en: 'Al-Jumu\'ah', ref: '62:10',
+    },
+    {
+        ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ ﴿٢٠١﴾ أُولَٰئِكَ لَهُمْ نَصِيبٌ مِّمَّا كَسَبُوا ۗ وَاللَّهُ سَرِيعُ الْحِسَابِ ﴿٢٠٢﴾',
+        ar_meaning: 'من أجمع الأدعية القرآنية: طلب خير الدنيا والآخرة والنجاة من النار، ولمن دعا به نصيبٌ موفور من جهده وعمله الصالح.',
+        en: 'Our Lord, give us in this world good and in the Hereafter good and protect us from the punishment of the Fire (201). Those will have a share of what they have earned, and Allah is swift in account (202).',
+        surah_ar: 'سورة البقرة', surah_en: 'Al-Baqarah', ref: '2:201–202',
+    },
+    {
+        ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اصْبِرُوا وَصَابِرُوا وَرَابِطُوا وَاتَّقُوا اللَّهَ لَعَلَّكُمْ تُفْلِحُونَ',
+        ar_meaning: 'أمر المؤمنين بأربع صفات: الصبر على البلاء، والمصابرة أمام الأعداء، والمرابطة في سبيل الله، وتقوى الله؛ وجزاؤهم الفلاح.',
+        en: 'O you who have believed, persevere and endure and remain stationed and fear Allah that you may be successful.',
+        surah_ar: 'سورة آل عمران', surah_en: 'Ali \'Imran', ref: '3:200',
+    },
+    {
+        ar: 'وَقُل رَّبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَل لِّي مِن لَّدُنكَ سُلْطَانًا نَّصِيرًا',
+        ar_meaning: 'دعاء بالتوفيق في جميع المداخل والمخارج، وطلب نصر الله وتأييده في كل أمر من أمور الحياة.',
+        en: 'And say: My Lord, cause me to enter a sound entrance and to exit a sound exit and grant me from Yourself a supporting authority.',
+        surah_ar: 'سورة الإسراء', surah_en: 'Al-Isra\'', ref: '17:80',
+    },
+];
+
+function renderHomeExtras() {
+    if (typeof worshipTracker === 'undefined' || !worshipTracker) return;
+    const isAr = currentLang === 'ar';
+    const todayKey = worshipTracker.getTodayKey();
+    const d = worshipTracker.data.days[todayKey] || {};
+    const p = d.prayers || {};
+
+    // ── Stats row (Fix 2: streak=0 → encouraging, not demoralising) ──
+    const statsEl = document.getElementById('home-stats');
+    if (statsEl) {
+        const streak = worshipTracker.data.streaks?.current || 0;
+        const totalPts = worshipTracker._totalPts();
+        const badgesUnlocked = badgeSystem ? Object.values(badgeSystem.state).filter(b => b.unlocked).length : 0;
+        const badgesTotal = badgeSystem ? Object.keys(badgeSystem.DEFS).length : 3;
+        const streakVal = streak > 0 ? (isAr ? worshipTracker._toAr(streak) : String(streak)) : '—';
+        const streakLbl = streak > 0 ? (isAr ? 'يوم' : 'streak') : (isAr ? 'ابدأ الآن' : 'start!');
+        statsEl.innerHTML = `
+        <div class="home-stats">
+            <div class="home-stat${streak === 0 ? ' home-stat-dim' : ''}">
+                <i class="ti ti-flame home-stat-icon" aria-hidden="true"></i>
+                <span class="home-stat-val">${streakVal}</span>
+                <span class="home-stat-lbl">${streakLbl}</span>
+            </div>
+            <div class="home-stat">
+                <i class="ti ti-star home-stat-icon home-stat-icon-green" aria-hidden="true"></i>
+                <span class="home-stat-val home-stat-val-green">${isAr ? worshipTracker._toAr(totalPts) : totalPts}</span>
+                <span class="home-stat-lbl">${isAr ? 'نقطة' : 'points'}</span>
+            </div>
+            <div class="home-stat">
+                <i class="ti ti-award home-stat-icon home-stat-icon-teal" aria-hidden="true"></i>
+                <span class="home-stat-val home-stat-val-teal">${isAr ? worshipTracker._toAr(badgesUnlocked) : badgesUnlocked}/${isAr ? worshipTracker._toAr(badgesTotal) : badgesTotal}</span>
+                <span class="home-stat-lbl">${isAr ? 'شارة' : 'badges'}</span>
+            </div>
+        </div>`;
+    }
+
+    // ── Daily suggestion ─────────────────────────────────────
+    const sugEl = document.getElementById('home-suggestion');
+    if (sugEl) {
+        const suggestions = isAr ? [
+            { cond: !p.fajr,          icon: '🕌', text: 'صلِّ الفجر', sub: 'الصلاة عمود الدين' },
+            { cond: !d.adhkar,         icon: '📿', text: 'اقرأ أذكار الصباح', sub: 'لم تقرأها بعد اليوم' },
+            { cond: !d.tasbeeh,        icon: '🤲', text: 'قل ١٠٠ تسبيحة', sub: 'سبحان الله والحمد لله والله أكبر' },
+            { cond: !d.charity,        icon: '💚', text: 'تصدّق اليوم', sub: 'الصدقة تطفئ الخطيئة' },
+            { cond: !(d.quranJuz > 0), icon: '📖', text: 'اتلُ شيئاً من القرآن', sub: 'ولو صفحة واحدة' },
+        ] : [
+            { cond: !p.fajr,          icon: '🕌', text: "You haven't prayed Fajr yet", sub: 'Prayer is the pillar of faith' },
+            { cond: !d.adhkar,         icon: '📿', text: 'Read your morning adhkar', sub: "You haven't done them yet today" },
+            { cond: !d.tasbeeh,        icon: '🤲', text: 'Say your 100 tasbeeh', sub: 'Glorify Allah 100 times' },
+            { cond: !d.charity,        icon: '💚', text: 'Give sadaqah today', sub: 'Charity extinguishes sin' },
+            { cond: !(d.quranJuz > 0), icon: '📖', text: 'Read some Quran today', sub: 'Even a single page counts' },
+        ];
+        // Fix 6: contextual fallback — optional goals → daily focus → dua, never generic praise
+        const nowH = new Date(getCurrentTime()).getHours();
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        let fallback;
+        if (!d.sunnahPrayers) {
+            fallback = { icon: '🕌', text: isAr ? 'صلِّ سننك' : 'Pray your Sunnah prayers', sub: isAr ? 'أفضل النوافل بعد الفريضة' : 'Best voluntary act after obligatory prayer' };
+        } else if (!d.tahajjud && nowH >= 21) {
+            fallback = { icon: '🌙', text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
+        } else if (dhDay >= 1 && dhDay <= 10 && DAILY_FOCUS[dhDay - 1]) {
+            const focus = DAILY_FOCUS[dhDay - 1][isAr ? 'ar' : 'en'];
+            fallback = { icon: '🕋', text: focus.theme, sub: focus.focus.slice(0, 60) + (focus.focus.length > 60 ? '…' : '') };
+        } else {
+            fallback = { icon: '🤲', text: isAr ? 'ادعُ من قلبك' : 'Make dua from your heart', sub: isAr ? 'الدعاء سلاح المؤمن' : 'Dua is the weapon of the believer' };
+        }
+        const sug = suggestions.find(s => s.cond) || fallback;
+        sugEl.innerHTML = `
+        <div class="home-sug card" onclick="switchTab('tracker')">
+            <div class="home-sug-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
+            <div class="home-sug-body">
+                <p class="home-sug-text">${sug.text}</p>
+                <p class="home-sug-sub">${sug.sub}</p>
+            </div>
+            <i class="ti ti-chevron-right home-sug-arrow" aria-hidden="true"></i>
+        </div>`;
+    }
+
+    // ── Daily verse ──────────────────────────────────────────
+    const verseEl = document.getElementById('home-verse');
+    if (verseEl) {
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        const verse = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
+        const copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
+        const shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+        const safeAr  = verse.ar.replace(/"/g,'&quot;');
+        const safeEn  = verse.en.replace(/"/g,'&quot;');
+        const safeMeaning = (verse.ar_meaning || '').replace(/"/g,'&quot;');
+        const safeRef = verse.ref.replace(/"/g,'&quot;');
+        const surahChip = isAr
+            ? `${verse.surah_ar} · ${verse.ref}`
+            : `${verse.surah_en} · ${verse.ref}`;
+        verseEl.innerHTML = `
+        <div class="home-verse card">
+            <div class="home-verse-header">
+                <span class="home-verse-label"><i class="ti ti-book" aria-hidden="true"></i> ${isAr ? 'آية اليوم' : 'Daily verse'}</span>
+                <span class="home-verse-surah">${surahChip}</span>
+            </div>
+            <p class="home-verse-ar">${verse.ar}</p>
+            ${verse.ar_meaning ? `<p class="home-verse-meaning">${verse.ar_meaning}</p>` : ''}
+            ${!isAr ? `<p class="home-verse-en">${verse.en}</p>` : ''}
+            <div class="home-verse-footer">
+                <div class="home-verse-actions">
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                        onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                        onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ── Today's summary ──────────────────────────────────────
+    const summaryEl = document.getElementById('home-summary');
+    if (summaryEl) {
+        const goalFields = ['fasting', 'adhkar', 'tasbeeh', 'charity'];
+        const goalsDone = goalFields.filter(f => !!d[f]).length + (d.quranJuz > 0 ? 1 : 0);
+        const goalsTotal = goalFields.length + 1;
+        const prayersDone = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length;
+        summaryEl.innerHTML = `
+        <div class="home-summary">
+            <div class="home-sum-card" onclick="switchTab('tracker')">
+                <p class="home-sum-label">${isAr ? 'الأهداف اليومية' : "Today's goals"}</p>
+                <p class="home-sum-val home-sum-val-green">${isAr ? worshipTracker._toAr(goalsDone) : goalsDone}/${isAr ? worshipTracker._toAr(goalsTotal) : goalsTotal}</p>
+                <p class="home-sum-sub">${isAr ? 'مكتملة' : 'completed'}</p>
+            </div>
+            <div class="home-sum-card" onclick="switchTab('tracker')">
+                <p class="home-sum-label">${isAr ? 'صلوات اليوم' : 'Prayers today'}</p>
+                <p class="home-sum-val home-sum-val-gold">${isAr ? worshipTracker._toAr(prayersDone) : prayersDone}/5</p>
+                <p class="home-sum-sub">${isAr ? 'مؤداة' : 'prayed'}</p>
+            </div>
+        </div>`;
+    }
+}
 let prayerReminders;
 
 // ═══════════════════════════════════════════════════
@@ -3347,6 +3864,36 @@ function togglePrayerReminder(prayer) {
     });
 }
 
+async function ptSelectCity(name, lat, lng) {
+    if (prayerWidget) prayerWidget._pickerActive = false;
+    prayerAPI.saveLocation(lat, lng, name);
+    // Invalidate cached month so fresh times are fetched for new city
+    const d = new Date(getCurrentTime());
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (prayerAPI._cache) { delete prayerAPI._cache[key]; prayerAPI._saveCache(); }
+    await prayerWidget.init();
+    if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+}
+
+function ptFilterCities(q) {
+    const list = document.getElementById('pt-city-list');
+    if (!list) return;
+    const term = q.trim().toLowerCase();
+    const matches = term.length === 0
+        ? _POPULAR_CITIES
+        : _POPULAR_CITIES.filter(c =>
+            c.name.toLowerCase().includes(term) || c.country.toLowerCase().includes(term));
+    if (matches.length === 0) {
+        list.innerHTML = `<p class="pt-city-no-match">${currentLang === 'ar' ? 'لا نتائج' : 'No results'}</p>`;
+        return;
+    }
+    list.innerHTML = matches.map(c => `
+        <button class="pt-city-btn" onclick="ptSelectCity('${c.name}, ${c.country}',${c.lat},${c.lng})">
+            <span class="pt-city-name">${c.name}</span>
+            <span class="pt-city-country">${c.country}</span>
+        </button>`).join('');
+}
+
 async function detectPrayerLocation() {
     const btn = document.getElementById('pt-detect-btn');
     if (btn) { btn.disabled = true; btn.textContent = t('ptDetecting'); }
@@ -3356,8 +3903,13 @@ async function detectPrayerLocation() {
         if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
         showMessage(t('ptLocationUpdated'), loc.name);
     } catch (e) {
-        const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
-        showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);
+        // On denial or error, fall back to city picker so user isn't stuck
+        if (prayerWidget && !prayerAPI.getSavedLocation()) {
+            prayerWidget._renderCityPicker();
+        } else {
+            const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
+            showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);
+        }
     } finally {
         const btn2 = document.getElementById('pt-detect-btn');
         if (btn2) { btn2.disabled = false; btn2.textContent = t('ptDetectBtn'); }
@@ -4270,15 +4822,15 @@ function renderHijriDate() {
 
         const monthsEn = ['','Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
                           "Jumada al-Awwal","Jumada al-Thani",'Rajab',"Sha'ban",
-                          'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+                          'Ramadan','Shawwal','Dhul Qi\'dah','Dhul Hijjah'];
         const monthsAr = ['','محرم','صفر','ربيع الأول','ربيع الثاني',
                           'جمادى الأولى','جمادى الآخرة','رجب','شعبان',
                           'رمضان','شوال','ذو القعدة','ذو الحجة'];
         const toAr = n => String(n).replace(/\d/g, c => '٠١٢٣٤٥٦٧٨٩'[c]);
 
         el.textContent = isAr
-            ? `${toAr(hd)} ${monthsAr[hm]} ${toAr(hy)} هـ`
-            : `${hd} ${monthsEn[hm]} ${hy} AH`;
+            ? `${toAr(hd)} ${monthsAr[hm]}`
+            : `${hd} ${monthsEn[hm]}`;
     } catch (e) {
         console.warn('renderHijriDate failed:', e.message, '— hiding element');
         el.style.display = 'none';

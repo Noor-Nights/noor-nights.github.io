@@ -5,15 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://noor-nights.goatcounter.com https://gc.zgo.at https://api.aladhan.com https://nominatim.openstreetmap.org https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://noor-nights-subscribe.eman-mahmoudxd.workers.dev; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self';">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://noor-nights.goatcounter.com https://gc.zgo.at https://api.aladhan.com https://nominatim.openstreetmap.org https://fcmregistrations.googleapis.com https://firebaseinstallations.googleapis.com https://noor-nights-subscribe.eman-mahmoudxd.workers.dev; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <title>🌙 Noor Nights | Illuminate Your Worship</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://api.aladhan.com">
     <link rel="preconnect" href="https://gc.zgo.at">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" integrity="sha384-XAeMOW3g/ahgKWjRcH7Xp+LVEQ/hkKrV0zkAUTnFwlaWK1aXfd9vVufdwqr/836i" crossorigin="anonymous">
     <!-- Critical CSS inlined to eliminate render-blocking round-trip (GH-87).
          Contains only the styles needed for the initial above-the-fold paint:
          custom properties, body reset, layout shell, header, bottom nav, tab
@@ -24,11 +26,14 @@
 body{background:var(--bg);background-attachment:fixed;color:var(--text);font-family:var(--fn);margin:0;padding:0;line-height:1.6}
 #stars-bg{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
 .container{position:relative;max-width:430px;margin:0 auto;padding:0;padding-bottom:calc(var(--nav) + 16px)}
-header{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 18px 12px;flex-shrink:0;position:relative;z-index:5;margin-bottom:0;border-bottom:none;animation:none}
-.tb-icon-row{font-size:1.5rem;letter-spacing:6px;margin-bottom:4px}
-.tb-logo{font-family:var(--fs);font-size:22px;font-weight:400;letter-spacing:.12em;color:var(--gold2);margin:0;text-align:center}
-.tb-hijri-date{font-family:var(--fa);font-size:13px;color:var(--cream2);margin-top:4px;letter-spacing:.02em}
-.tb-btn{background:none;border:.5px solid var(--border2);border-radius:100px;padding:5px 13px;font-size:11px;color:var(--cream2);cursor:pointer;font-family:var(--fn)}
+header{display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:11px 16px;flex-shrink:0;position:relative;z-index:5;border-bottom:.5px solid rgba(242,237,230,.06)}
+.tb-left{display:flex;align-items:center;gap:9px}
+.tb-app-icon{width:28px;height:28px;border-radius:7px;flex-shrink:0}
+.tb-logo{font-family:var(--fs);font-size:18px;font-weight:500;letter-spacing:.06em;color:var(--gold2);margin:0}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-hijri-date{font-size:13px;color:var(--text-muted);letter-spacing:.01em}
+.tb-lang-btn{background:var(--bg3);border:none;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--cream2);cursor:pointer;font-family:var(--fn);letter-spacing:.04em;-webkit-tap-highlight-color:transparent}
+.tb-lang-btn:hover{background:var(--bg4);color:var(--gold2)}
 .bottom-nav{height:var(--nav);background:rgba(28,34,53,.96);border-top:.5px solid var(--goldborder);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-shrink:0;position:fixed;bottom:0;left:0;right:0;z-index:10}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--cream2);font-family:var(--fn);font-size:9.5px;letter-spacing:.04em;padding:6px 0 10px;-webkit-tap-highlight-color:transparent;position:relative}
 .nav-icon-img{width:24px;height:24px;display:block;opacity:.38}
@@ -139,15 +144,15 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
             <!-- Feature rows -->
             <div class="ob-features" role="list">
                 <div class="ob-feature" role="listitem">
-                    <div class="ob-feat-chip ob-feat-chip-teal" aria-hidden="true">✓</div>
+                    <div class="ob-feat-chip ob-feat-chip-teal" aria-hidden="true"><i class="ti ti-check"></i></div>
                     <span>Track your 5 daily prayers</span>
                 </div>
                 <div class="ob-feature" role="listitem">
-                    <div class="ob-feat-chip ob-feat-chip-gold" aria-hidden="true">★</div>
+                    <div class="ob-feat-chip ob-feat-chip-gold" aria-hidden="true"><i class="ti ti-star"></i></div>
                     <span>Earn worship badges and streaks</span>
                 </div>
                 <div class="ob-feature" role="listitem">
-                    <div class="ob-feat-chip ob-feat-chip-emerald" aria-hidden="true">📿</div>
+                    <div class="ob-feat-chip ob-feat-chip-emerald" aria-hidden="true"><i class="ti ti-sparkles"></i></div>
                     <span>Duas, dhikr, and daily lessons</span>
                 </div>
             </div>
@@ -169,9 +174,14 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
 
         <!-- ── Persistent Header (always visible) ── -->
         <header id="topbar">
-            <div class="tb-icon-row">✦ 🌙 ✦</div>
-            <h1 class="tb-logo" data-i18n="appName">Noor Nights</h1>
-            <div class="tb-hijri-date" id="hijri-date" aria-label="Today's Hijri date"></div>
+            <div class="tb-left">
+                <img src="assets/icons/apple-touch-icon.svg" class="tb-app-icon" alt="" aria-hidden="true" width="28" height="28">
+                <h1 class="tb-logo" data-i18n="appName">Noor Nights</h1>
+            </div>
+            <div class="tb-right">
+                <span class="tb-hijri-date" id="hijri-date" aria-label="Today's Hijri date"></span>
+                <button class="tb-lang-btn" id="lang-toggle" onclick="toggleLanguage()" aria-label="Switch language">AR</button>
+            </div>
         </header>
 
         <!-- ══════════════════════════════════════════ -->
@@ -179,21 +189,22 @@ header{display:flex;flex-direction:column;align-items:center;justify-content:cen
         <!-- ══════════════════════════════════════════ -->
         <div class="tab-content active" id="tab-home">
 
-            <!-- Badge Progress Strip -->
-            <div class="badge-strip" id="badge-strip">
-                <span class="badge-strip-label" data-i18n="badgeStripLabel">Badges</span>
-                <div class="badge-strip-icons" id="badge-strip-icons"></div>
-                <div id="badge-strip-active"></div>
-                <button class="badge-strip-cta" onclick="switchTab('tracker')" data-i18n="badgeStripCta">View all →</button>
-            </div>
-
-            <!-- Prayer Times Widget -->
+            <!-- Prayer Times (next hero + compact grid) -->
             <div class="card pt-card" id="pt-card">
-                <div class="pt-card-header">
-                    <h2 class="pt-heading" data-i18n="ptCardTitle">Prayer Times</h2>
-                </div>
                 <div id="pt-container"><p class="pt-loading">Loading…</p></div>
             </div>
+
+            <!-- Stats row: streak · points · badges -->
+            <div id="home-stats"></div>
+
+            <!-- Daily suggestion -->
+            <div id="home-suggestion"></div>
+
+            <!-- Daily verse -->
+            <div id="home-verse"></div>
+
+            <!-- Today's summary -->
+            <div id="home-summary"></div>
 
         </div><!-- /tab-home -->
 
