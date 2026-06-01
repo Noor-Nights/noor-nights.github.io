@@ -1666,13 +1666,13 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
     border-radius: 0 10px 10px 0;
     padding: 12px 14px;
     cursor: pointer;
-    border-left: 3px solid transparent;
+    border-inline-start: 3px solid transparent;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     transition: border-color 0.15s, background 0.15s;
 }
 .wt-goal-row:hover { background: rgba(255,255,255,0.1); }
-.wt-goal-done { border-left-color: var(--teal); }
+.wt-goal-done { border-inline-start-color: var(--teal); }
 .wt-goal-quran { cursor: default; align-items: flex-start; }
 .wt-goal-quran:hover { background: var(--bg3); }
 .wt-goal-quran.wt-goal-done:hover { background: var(--bg3); }

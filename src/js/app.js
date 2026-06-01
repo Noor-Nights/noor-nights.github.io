@@ -1643,12 +1643,12 @@ class WorshipTracker {
         // Prayer button grid
         const prayerBtns = PRAYERS.map((pr) => {
             const done = !!p[pr.key];
-            const isFuture = !done && times != null && (() => {
+            const isFuture = !done && times != null && !!times[pr.key] && (() => {
                 const [h, m] = times[pr.key].split(':').map(Number);
                 return nowMins < h * 60 + m;
             })();
             const isCurrent = !done && !isFuture && currentPrayer === pr.key;
-            const timeStr = times ? fmtTime(times[pr.key]) : '';
+            const timeStr = (times && times[pr.key]) ? fmtTime(times[pr.key]) : '';
 
             let btnClass = 'wt-pb';
             let iconHtml = '';
