@@ -4267,7 +4267,7 @@ h2 {
 }
 .ob-feat-chip-teal    { background: rgba(56,185,159,.15); color: var(--teal); }
 .ob-feat-chip-gold    { background: rgba(197,163,82,.15); color: var(--gold2); }
-.ob-feat-chip-emerald { background: rgba(56,185,159,.12); color: var(--teal); font-size: 14px; }
+.ob-feat-chip-emerald { background: rgba(56,185,159,.12); color: var(--teal); }
 /* Language buttons */
 .ob-lang-row {
     width: 100%; display: flex; gap: 8px; margin-bottom: 16px;
