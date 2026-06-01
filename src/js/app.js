@@ -1683,11 +1683,6 @@ class WorshipTracker {
 
         // Progress ring (100 pts = full ring, circumference ≈ 170)
         const ringOffset = Math.round(170 * (1 - Math.min(pts, 100) / 100));
-        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
-        const dayLabel = dhDay >= 1 && dhDay <= 10
-            ? (isAr ? `اليوم ${this._toAr(dhDay)} من ١٠` : `Day ${dhDay} of 10`)
-            : (isAr ? 'اليوم' : 'Today');
-        const hijriStr = this._hijriStr(isAr);
 
         // Goals
         const tasks = [
@@ -1751,10 +1746,7 @@ class WorshipTracker {
                     <span class="wt-ring-sub">${isAr ? 'نقطة' : 'pts'}</span>
                 </div>
             </div>
-            <div class="wt-header-info">
-                <p class="wt-header-day">${dayLabel}</p>
-                ${hijriStr ? `<p class="wt-header-date">${hijriStr}</p>` : ''}
-            </div>
+            <div class="wt-header-info"></div>
             ${cur > 0 ? `
             <div class="wt-streak-badge" aria-label="${isAr ? `${this._toAr(cur)} يوم متواصل` : `${cur} day streak`}">
                 <span class="wt-streak-badge-icon" aria-hidden="true">🔥</span>

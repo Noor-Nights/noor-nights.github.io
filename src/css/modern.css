@@ -1643,7 +1643,7 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
     color: var(--gold2);
 }
 .wt-pb-current .wt-pb-name { color: var(--gold2); }
-.wt-pb-future { opacity: .45; pointer-events: none; }
+.wt-pb-future { opacity: .5; }
 .wt-pb-time {
     font-size: 10px;
     color: var(--text-muted);
