@@ -1393,6 +1393,42 @@ class WorshipTracker {
         return Math.round((done / tasks.length) * 100);
     }
 
+    _dayPtsRaw(key) {
+        const d = this.data.days[key];
+        if (!d) return 0;
+        const p = d.prayers || {};
+        const prayerPts = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length * 3;
+        return prayerPts +
+            ((d.quranJuz || 0) > 0 ? d.quranJuz * 15 : 0) +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
+    }
+
+    _hijriStr(isAr) {
+        try {
+            const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
+                day: 'numeric', month: 'numeric', year: 'numeric',
+            }).formatToParts(new Date(getCurrentTime()));
+            let hy = 0, hm = 0, hd = 0;
+            for (const p of parts) {
+                if (p.type === 'year')  hy = +p.value;
+                if (p.type === 'month') hm = +p.value;
+                if (p.type === 'day')   hd = +p.value;
+            }
+            if (hy < 1400 || hy > 1600 || hm < 1 || hm > 12 || hd < 1 || hd > 30) return '';
+            const monthsEn = ['','Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
+                              "Jumada al-Awwal","Jumada al-Thani",'Rajab',"Sha'ban",
+                              'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+            const monthsAr = ['','محرم','صفر','ربيع الأول','ربيع الثاني',
+                              'جمادى الأولى','جمادى الآخرة','رجب','شعبان',
+                              'رمضان','شوال','ذو القعدة','ذو الحجة'];
+            const toAr = n => String(n).replace(/\d/g, c => '٠١٢٣٤٥٦٧٨٩'[c]);
+            return isAr
+                ? `${toAr(hd)} ${monthsAr[hm]} ${toAr(hy)} هـ`
+                : `${hd} ${monthsEn[hm]} ${hy} AH`;
+        } catch { return ''; }
+    }
+
     _checkMilestone(prev, next) {
         const lang = localStorage.getItem('noor-lang') || 'en';
         const isAr = lang === 'ar';
@@ -1579,150 +1615,173 @@ class WorshipTracker {
 
         const p = d.prayers || {};
         const PRAYERS = [
-            { key: 'fajr',    en: 'Fajr',    ar: 'الفجر'  },
-            { key: 'dhuhr',   en: 'Dhuhr',   ar: 'الظهر'  },
-            { key: 'asr',     en: 'Asr',     ar: 'العصر'  },
-            { key: 'maghrib', en: 'Maghrib', ar: 'المغرب' },
-            { key: 'isha',    en: 'Isha',    ar: 'العشاء' },
+            { key: 'fajr',    en: 'Fajr',  ar: 'الفجر'  },
+            { key: 'dhuhr',   en: 'Dhuhr', ar: 'الظهر'  },
+            { key: 'asr',     en: 'Asr',   ar: 'العصر'  },
+            { key: 'maghrib', en: 'Mghb',  ar: 'مغرب'   },
+            { key: 'isha',    en: 'Isha',  ar: 'العشاء' },
         ];
         const prayersDone = PRAYERS.filter(pr => !!p[pr.key]).length;
-        const checkSvg = '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#c5a352"/><path d="M6 10l3 3 5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-        // Format time string "HH:MM" to "12:34 AM/PM"
         const fmtTime = (t) => {
             if (!t) return '';
             const [h, m] = t.split(':').map(Number);
-            const ampm = h >= 12 ? 'PM' : 'AM';
             const h12 = h % 12 || 12;
-            return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+            return `${h12}:${String(m).padStart(2, '0')}`;
         };
 
-        // Current wall-clock minutes — used to decide if a prayer time has started yet
         const nowMins = times ? (() => {
             const n = new Date(getCurrentTime());
             return n.getHours() * 60 + n.getMinutes();
         })() : -1;
 
-        const prayerRows = PRAYERS.map((pr) => {
+        // SVG icons used in prayer buttons and goal circles
+        const checkPathSvg = `<svg viewBox="0 0 16 16" fill="none" width="18" height="18" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const clockSvg = `<svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        const goalCheckSvg = `<svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+        // Prayer button grid
+        const prayerBtns = PRAYERS.map((pr) => {
             const done = !!p[pr.key];
-            // Lock only prayers whose clock time hasn't arrived yet (not based on index position)
             const isFuture = !done && times != null && (() => {
                 const [h, m] = times[pr.key].split(':').map(Number);
                 return nowMins < h * 60 + m;
             })();
             const isCurrent = !done && !isFuture && currentPrayer === pr.key;
-            const timeStr   = times ? fmtTime(times[pr.key]) : '';
-            const timeLabel = isCurrent && timeStr ? `${timeStr} · ${isAr ? 'الآن' : 'now'}` : timeStr;
+            const timeStr = times ? fmtTime(times[pr.key]) : '';
 
-            let stateClass = '';
-            let circleHtml = '';
+            let btnClass = 'wt-pb';
+            let iconHtml = '';
             if (done) {
-                stateClass = 'wt-pr-prayed';
-                circleHtml = `<div class="wt-pr-circle wt-pr-circle-prayed" aria-label="${isAr ? 'صُليت' : 'Prayed'}">
-                    <svg viewBox="0 0 16 16" fill="none" width="14" height="14"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>`;
+                btnClass += ' wt-pb-done';
+                iconHtml = checkPathSvg;
+            } else if (isCurrent) {
+                btnClass += ' wt-pb-current';
+                iconHtml = clockSvg;
             } else if (isFuture) {
-                stateClass = 'wt-pr-future';
-                circleHtml = `<div class="wt-pr-circle wt-pr-circle-future" aria-label="${isAr ? 'مقفل' : 'Not yet'}">
-                    <svg viewBox="0 0 16 16" fill="none" width="11" height="11"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                </div>`;
+                btnClass += ' wt-pb-future';
+                iconHtml = timeStr ? `<span class="wt-pb-time">${timeStr}</span>` : '';
             } else {
-                stateClass = isCurrent ? 'wt-pr-current' : '';
-                circleHtml = `<div class="wt-pr-circle wt-pr-circle-empty" aria-label="${isAr ? 'لم تُصَلَّ' : 'Not prayed'}"></div>`;
+                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${timeStr}</span>` : '';
             }
 
             return `
-            <label class="wt-pr-row ${stateClass}" data-wt-field="prayer_${pr.key}" data-wt-day="${key}">
-                <input type="checkbox" class="wt-prayer-cb" data-prayer="${pr.key}" data-wt-day="${key}" ${done ? 'checked' : ''} style="display:none">
-                <div class="wt-pr-info">
-                    <span class="wt-pr-name ${isCurrent ? 'wt-pr-name-current' : ''}">${isAr ? pr.ar : pr.en}</span>
-                    ${timeLabel ? `<span class="wt-pr-time ${isCurrent ? 'wt-pr-time-current' : ''}">${timeLabel}</span>` : ''}
-                </div>
-                ${circleHtml}
+            <label class="${btnClass}" data-wt-field="prayer_${pr.key}" data-wt-day="${key}">
+                <input type="checkbox" class="wt-prayer-cb" data-prayer="${pr.key}" data-wt-day="${key}" ${done ? 'checked' : ''} style="display:none" aria-label="${isAr ? pr.ar : pr.en}">
+                <div class="wt-pb-icon">${iconHtml}</div>
+                <span class="wt-pb-name">${isAr ? pr.ar : pr.en}</span>
             </label>`;
         }).join('');
 
-        const salahLabel = isAr ? 'صلوات اليوم' : "Today's prayers";
-        const salahSubtitle = isAr ? 'اضغط لتسجيل الصلاة' : 'Tap to mark as prayed';
+        // Points
         const prayerPts = prayersDone * 3;
-
-        const tasks = [
-            { field: 'fasting',  checked: !!d.fasting,  pts: 15, en: 'Fasting today',             ar: 'الصيام اليوم' },
-            { field: 'adhkar',   checked: !!d.adhkar,   pts: 10, en: 'Morning & evening adhkar',  ar: 'أذكار الصباح والمساء' },
-            { field: 'tasbeeh',  checked: !!d.tasbeeh,  pts: 5,  en: '100 Tasbeeh',               ar: '١٠٠ تسبيحة' },
-            { field: 'charity',  checked: !!d.charity,  pts: 10, en: 'Sadaqah today',             ar: 'الصدقة اليوم' },
-        ];
-
         const quranPts = (d.quranJuz || 0) * 15;
         const quz = d.quranJuz || 0;
+        const pts = prayerPts + quranPts +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
 
-        const taskRows = tasks.map(task => `
-            <label class="wt-task-row${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+        // Progress ring (100 pts = full ring, circumference ≈ 170)
+        const ringOffset = Math.round(170 * (1 - Math.min(pts, 100) / 100));
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        const dayLabel = dhDay >= 1 && dhDay <= 10
+            ? (isAr ? `اليوم ${this._toAr(dhDay)} من ١٠` : `Day ${dhDay} of 10`)
+            : (isAr ? 'اليوم' : 'Today');
+        const hijriStr = this._hijriStr(isAr);
+
+        // Goals
+        const tasks = [
+            { field: 'fasting', checked: !!d.fasting, pts: 15, en: 'Fasting today',            ar: 'الصيام اليوم' },
+            { field: 'adhkar',  checked: !!d.adhkar,  pts: 10, en: 'Morning & evening adhkar', ar: 'أذكار الصباح والمساء' },
+            { field: 'tasbeeh', checked: !!d.tasbeeh, pts: 5,  en: '100 Tasbeeh',              ar: '١٠٠ تسبيحة' },
+            { field: 'charity', checked: !!d.charity, pts: 10, en: 'Sadaqah today',            ar: 'الصدقة اليوم' },
+        ];
+
+        const goalRows = tasks.map(task => `
+            <label class="wt-goal-row${task.checked ? ' wt-goal-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
-                <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-task-pts">+${task.pts}</span>
+                <div class="wt-goal-circle${task.checked ? ' wt-goal-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
+                <span class="wt-goal-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${task.pts}</span>
             </label>`).join('');
 
         const quranRow = `
-            <div class="wt-task-row wt-task-quran${quz > 0 ? ' wt-task-done' : ''}">
-                <span class="wt-task-circle">${quz > 0 ? checkSvg : ''}</span>
-                <div class="wt-task-quran-inner">
-                    <span class="wt-task-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
+            <div class="wt-goal-row wt-goal-quran${quz > 0 ? ' wt-goal-done' : ''}">
+                <div class="wt-goal-circle${quz > 0 ? ' wt-goal-circle-done' : ''}">${quz > 0 ? goalCheckSvg : ''}</div>
+                <div class="wt-goal-quran-inner">
+                    <span class="wt-goal-name">${isAr ? 'تلاوة القرآن' : 'Quran recitation'}</span>
                     <div class="wt-quran-ctrl">
                         <input type="range" min="0" max="30" step="1" value="${quz}"
                             data-wt-field="quranJuz" data-wt-day="${key}" class="wt-slider">
                         <span class="wt-quran-val" id="wt-quran-val">${isAr ? this._toAr(quz) : quz} ${isAr ? 'جزء' : 'Juz'}</span>
                     </div>
                 </div>
-                <span class="wt-task-pts">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
+                <span class="wt-goal-pts${quz > 0 ? ' wt-goal-pts-done' : ''}">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
             </div>`;
 
-        const optionalLabel = isAr ? 'اختياري' : 'OPTIONAL';
+        // Bonus (optional)
         const optionalTasks = [
-            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 5, en: 'Sunnah prayers', ar: 'صلاة السنن' },
-            { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5, en: 'Tahajjud',       ar: 'صلاة التهجد' },
+            { field: 'sunnahPrayers', checked: !!d.sunnahPrayers, pts: 5, en: 'Sunnah', ar: 'السنن' },
+            { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5, en: 'Tahajjud', ar: 'التهجد' },
         ];
-        const optionalRows = optionalTasks.map(task => `
-            <label class="wt-task-row wt-task-optional${task.checked ? ' wt-task-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+        const bonusCards = optionalTasks.map(task => `
+            <label class="wt-bonus-card${task.checked ? ' wt-bonus-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <span class="wt-task-circle">${task.checked ? checkSvg : ''}</span>
-                <span class="wt-task-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-task-pts">+${task.pts}</span>
+                <div class="wt-bonus-circle${task.checked ? ' wt-bonus-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
+                <span class="wt-bonus-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-bonus-pts">+${task.pts}</span>
             </label>`).join('');
 
-        const pts = prayerPts + (d.quranJuz > 0 ? d.quranJuz * 15 : 0) +
-                    (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
-                    (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
-
-        const headerLabel = isAr ? 'أهداف اليوم' : "TODAY'S GOALS";
+        const salahLabel = isAr ? 'صلوات اليوم' : "Today's prayers";
+        const goalsLabel = isAr ? 'الأهداف اليومية' : 'Daily goals';
+        const bonusLabel = isAr ? 'إضافي' : 'Bonus';
 
         return `
     <div class="wt-entry-card">
-        <div class="wt-salah-section">
-            <div class="wt-salah-header">
-                <span class="wt-salah-title">${salahLabel}</span>
-                <span class="wt-salah-subtitle">${salahSubtitle}</span>
+        <div class="wt-header">
+            <div class="wt-ring-wrap" aria-label="${isAr ? `${this._toAr(pts)} نقطة` : `${pts} pts`}">
+                <svg viewBox="0 0 64 64" style="width:64px;height:64px;transform:rotate(-90deg)" aria-hidden="true">
+                    <circle cx="32" cy="32" r="27" fill="none" stroke="var(--bg3)" stroke-width="5"/>
+                    <circle cx="32" cy="32" r="27" fill="none" stroke="var(--gold)" stroke-width="5"
+                        stroke-dasharray="170" stroke-dashoffset="${ringOffset}"
+                        stroke-linecap="round"/>
+                </svg>
+                <div class="wt-ring-text">
+                    <span class="wt-ring-pts">${isAr ? this._toAr(pts) : pts}</span>
+                    <span class="wt-ring-sub">${isAr ? 'نقطة' : 'pts'}</span>
+                </div>
             </div>
-            <div class="wt-prayer-list">
-                ${prayerRows}
+            <div class="wt-header-info">
+                <p class="wt-header-day">${dayLabel}</p>
+                ${hijriStr ? `<p class="wt-header-date">${hijriStr}</p>` : ''}
+            </div>
+            ${cur > 0 ? `
+            <div class="wt-streak-badge" aria-label="${isAr ? `${this._toAr(cur)} يوم متواصل` : `${cur} day streak`}">
+                <span class="wt-streak-badge-icon" aria-hidden="true">🔥</span>
+                <span class="wt-streak-badge-num">${isAr ? this._toAr(cur) : cur}</span>
+                <span class="wt-streak-badge-sub">${isAr ? 'يوم' : 'streak'}</span>
+            </div>` : ''}
+        </div>
+        <div class="wt-salah-section">
+            <p class="wt-section-title">${salahLabel}</p>
+            <div class="wt-prayer-grid">
+                ${prayerBtns}
             </div>
         </div>
         ${this._renderWeeklyView(lang, cur)}
-        <div class="wt-goals-header">
-            <span class="wt-goals-label">${headerLabel}</span>
-        </div>
-        <div class="wt-task-list">
-            ${taskRows}
-            ${quranRow}
-        </div>
-        <div class="wt-optional-section">
-            <div class="wt-optional-label">${optionalLabel}</div>
-            <div class="wt-task-list">
-                ${optionalRows}
+        <div class="wt-goals-section">
+            <p class="wt-section-title">${goalsLabel}</p>
+            <div class="wt-goal-list">
+                ${goalRows}
+                ${quranRow}
             </div>
         </div>
-        ${pts > 0 ? `<div class="wt-pts-total">${isAr ? `${numFmt(pts)} نقطة اليوم` : `${pts} pts today`}</div>` : ''}
+        <div class="wt-bonus-section">
+            <p class="wt-section-title wt-bonus-title">${bonusLabel}</p>
+            <div class="wt-bonus-grid">
+                ${bonusCards}
+            </div>
+        </div>
     </div>`;
     }
 
@@ -1744,20 +1803,18 @@ class WorshipTracker {
             const isToday  = dayKey === todayKey;
             const dayLabel = isAr ? DAY_AR[d.getDay()] : DAY_EN[d.getDay()];
 
-            let count = 0;
             let barClass = 'wt-wb-empty';
             let barText = '--';
 
             if (!isFuture && dayData) {
-                const p = dayData.prayers || {};
-                count = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length;
-                barText = `${count}/5`;
-                if (count === 5)          barClass = 'wt-wb-full';
-                else if (count >= 3)      barClass = 'wt-wb-partial';
-                else if (count > 0)       barClass = 'wt-wb-low';
-                else                      barClass = 'wt-wb-zero';
+                const dayPts = this._dayPtsRaw(dayKey);
+                barText = String(dayPts);
+                if (dayPts >= 60)      barClass = 'wt-wb-full';
+                else if (dayPts >= 30) barClass = 'wt-wb-partial';
+                else if (dayPts > 0)   barClass = 'wt-wb-low';
+                else                   barClass = 'wt-wb-zero';
             } else if (!isFuture) {
-                barText = '0/5';
+                barText = '0';
                 barClass = 'wt-wb-zero';
             }
 
