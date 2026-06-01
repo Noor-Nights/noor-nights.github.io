@@ -3433,6 +3433,55 @@ class PrayerTimesWidget {
 let prayerAPI;
 let prayerWidget;
 
+// ── Daily verse copy + share ─────────────────────────────────
+function copyVerse(btn) {
+    const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const text = [ar, en, ref].filter(Boolean).join('\n');
+    navigator.clipboard?.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 8l3.5 3.5 6.5-7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }).catch(() => {});
+}
+
+async function shareVerseCard(btn) {
+    const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15"><circle cx="8" cy="8" r="6" stroke="var(--gold2)" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`;
+
+    let blob = null;
+    try {
+        const badge = `📖 ${ref}`;
+        blob = await generateCanvasBlob(ar, en, badge, false);
+    } catch {}
+
+    btn.disabled = false;
+    btn.innerHTML = orig;
+
+    const shareText = `${ar}\n\n${en}\n\n${ref}\n\n🌙 Noor Nights`;
+
+    if (blob && navigator.share) {
+        try {
+            const file = new File([blob], 'noor-nights-verse.jpg', { type: 'image/jpeg' });
+            if (navigator.canShare?.({ files: [file] })) {
+                await navigator.share({ files: [file], title: ref });
+                return;
+            }
+        } catch (e) { if (e.name === 'AbortError') return; }
+    }
+    if (navigator.share) {
+        try { await navigator.share({ title: ref, text: shareText, url: window.location.href }); return; }
+        catch (e) { if (e.name === 'AbortError') return; }
+    }
+    if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'noor-nights-verse.jpg'; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+}
+
 // ── Daily verse data for home card ──────────────────────────
 const _HOME_VERSES = [
     { ar: 'وَالْفَجْرِ وَلَيَالٍ عَشْرٍ', en: 'By the dawn and the ten nights', ref: 'Quran 89:1-2' },
@@ -3525,15 +3574,24 @@ function renderHomeExtras() {
     if (verseEl) {
         const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
         const verse = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
-        const shareLabel = isAr ? 'شارك' : 'Share';
+        const copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
+        const shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+        const safeAr = verse.ar.replace(/"/g,'&quot;');
+        const safeEn = verse.en.replace(/"/g,'&quot;');
+        const safeRef = verse.ref.replace(/"/g,'&quot;');
         verseEl.innerHTML = `
         <div class="home-verse card">
             <p class="home-verse-label">${isAr ? '📖 آية اليوم' : '📖 Daily verse'}</p>
             <p class="home-verse-ar">${verse.ar}</p>
-            <p class="home-verse-en">${isAr ? '' : verse.en}</p>
+            ${!isAr ? `<p class="home-verse-en">${verse.en}</p>` : ''}
             <div class="home-verse-footer">
                 <span class="home-verse-ref">${verse.ref}</span>
-                <button class="home-verse-share" onclick="navigator.share && navigator.share({text:'${verse.ar}\\n${verse.en}\\n${verse.ref}'})" aria-label="${shareLabel}">↗</button>
+                <div class="home-verse-actions">
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-ref="${safeRef}"
+                        onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-ref="${safeRef}"
+                        onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
+                </div>
             </div>
         </div>`;
     }

@@ -3349,8 +3349,20 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 .home-verse-en { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-style: italic; margin: 0 0 10px; }
 .home-verse-footer { display: flex; align-items: center; justify-content: space-between; }
 .home-verse-ref { font-size: 11px; color: var(--text-muted); }
-.home-verse-share { background: none; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 0; }
-.home-verse-share:hover { color: var(--gold2); }
+.home-verse-actions { display: flex; align-items: center; gap: 6px; }
+.home-verse-btn {
+    background: var(--bg3);
+    border: none;
+    border-radius: 8px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+.home-verse-btn:hover { background: var(--bg4); color: var(--gold2); }
+.home-verse-btn:disabled { opacity: .5; cursor: default; }
 
 /* Today's summary */
 .home-summary { display: flex; gap: 8px; }
