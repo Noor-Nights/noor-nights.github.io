@@ -494,7 +494,7 @@ function applyLanguage(lang) {
         }
     });
     const langBtn = document.getElementById('lang-toggle');
-    if (langBtn) langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
+    if (langBtn) langBtn.textContent = lang === 'en' ? 'AR' : 'EN';
     updateCountdown();
     loadChecklist();
     const notifyBtn = document.getElementById('notify-btn');
@@ -4420,15 +4420,15 @@ function renderHijriDate() {
 
         const monthsEn = ['','Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
                           "Jumada al-Awwal","Jumada al-Thani",'Rajab',"Sha'ban",
-                          'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+                          'Ramadan','Shawwal','Dhul Qi\'dah','Dhul Hijjah'];
         const monthsAr = ['','محرم','صفر','ربيع الأول','ربيع الثاني',
                           'جمادى الأولى','جمادى الآخرة','رجب','شعبان',
                           'رمضان','شوال','ذو القعدة','ذو الحجة'];
         const toAr = n => String(n).replace(/\d/g, c => '٠١٢٣٤٥٦٧٨٩'[c]);
 
         el.textContent = isAr
-            ? `${toAr(hd)} ${monthsAr[hm]} ${toAr(hy)} هـ`
-            : `${hd} ${monthsEn[hm]} ${hy} AH`;
+            ? `${toAr(hd)} ${monthsAr[hm]}`
+            : `${hd} ${monthsEn[hm]}`;
     } catch (e) {
         console.warn('renderHijriDate failed:', e.message, '— hiding element');
         el.style.display = 'none';
