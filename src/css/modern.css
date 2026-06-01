@@ -3283,6 +3283,83 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 .pt-reminder-hint:hover { background: rgba(212,175,55,0.12); color: var(--cream); }
 .pt-reminder-hint u { color: var(--gold2); }
 
+/* ── Home page redesign ── */
+
+/* Prayer hero + compact grid wrapper */
+.home-pt-wrap { display: flex; flex-direction: column; gap: 14px; }
+
+/* Next prayer hero */
+.home-next {
+    background: var(--bg3);
+    border-radius: 14px;
+    padding: 18px 16px 14px;
+    text-align: center;
+}
+.home-next-label { font-size: 12px; color: var(--text-muted); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .06em; }
+.home-next-name { font-size: 28px; font-weight: 500; color: var(--gold2); margin: 0 0 6px; }
+.home-next-info { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.home-next-time { font-size: 16px; color: var(--text); }
+.home-next-sep { font-size: 14px; color: var(--text-muted); }
+.home-next-cd { font-size: 20px; font-weight: 500; color: var(--teal); }
+.home-progress-bar { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+.home-progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 1s linear; }
+.home-progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+.home-progress-cur { color: var(--gold2); font-weight: 500; }
+
+/* Location row */
+.home-pt-loc { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
+
+/* Compact 5-column prayer grid */
+.hpt-grid { display: flex; gap: 6px; }
+.hpt-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: var(--bg3); border-radius: 10px; padding: 8px 4px 10px; }
+.hpt-top-bar { width: 100%; height: 3px; border-radius: 1.5px; margin-bottom: 4px; }
+.hpt-name { font-size: 11px; }
+.hpt-time { font-size: 12px; font-weight: 500; color: var(--text); }
+.hpt-done-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.hpt-countdown { font-size: 10px; font-weight: 600; color: var(--gold2); margin-top: 2px; }
+
+/* Stats row */
+.home-stats { display: flex; gap: 8px; margin-bottom: 0; }
+.home-stat { flex: 1; background: var(--bg3); border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.home-stat-icon { font-size: 18px; line-height: 1; }
+.home-stat-val { font-size: 18px; font-weight: 500; color: var(--gold2); line-height: 1.1; }
+.home-stat-val-green { color: var(--teal); }
+.home-stat-val-teal { color: #5DCAA5; }
+.home-stat-lbl { font-size: 11px; color: var(--text-muted); }
+
+/* Daily suggestion card */
+.home-sug {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(212,175,55,.06);
+    border: 1px solid rgba(212,175,55,.15);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.home-sug-icon { font-size: 24px; flex-shrink: 0; width: 40px; height: 40px; background: rgba(212,175,55,.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.home-sug-body { flex: 1; }
+.home-sug-text { font-size: 14px; font-weight: 500; color: var(--text); margin: 0; }
+.home-sug-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; }
+.home-sug-arrow { font-size: 20px; color: var(--text-muted); line-height: 1; }
+
+/* Daily verse card */
+.home-verse { padding: 16px; }
+.home-verse-label { font-size: 12px; color: var(--gold2); margin: 0 0 10px; }
+.home-verse-ar { font-family: var(--fa, 'Amiri', serif); font-size: 18px; color: var(--text); line-height: 1.7; direction: rtl; text-align: right; margin: 0 0 8px; }
+.home-verse-en { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-style: italic; margin: 0 0 10px; }
+.home-verse-footer { display: flex; align-items: center; justify-content: space-between; }
+.home-verse-ref { font-size: 11px; color: var(--text-muted); }
+.home-verse-share { background: none; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 0; }
+.home-verse-share:hover { color: var(--gold2); }
+
+/* Today's summary */
+.home-summary { display: flex; gap: 8px; }
+.home-sum-card { flex: 1; background: var(--bg3); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.home-sum-label { font-size: 11px; color: var(--text-muted); margin: 0 0 4px; }
+.home-sum-val { font-size: 22px; font-weight: 500; margin: 2px 0; }
+.home-sum-val-green { color: var(--teal); }
+.home-sum-val-gold { color: var(--gold2); }
+.home-sum-sub { font-size: 11px; color: var(--text-muted); margin: 0; }
+
 /* ── About Card ── */
 .about-card { padding: 20px 18px; }
 .about-card-title {

@@ -195,13 +195,22 @@ header{display:flex;flex-direction:row;align-items:center;justify-content:space-
                 <button class="badge-strip-cta" onclick="switchTab('tracker')" data-i18n="badgeStripCta">View all →</button>
             </div>
 
-            <!-- Prayer Times Widget -->
+            <!-- Prayer Times (next hero + compact grid) -->
             <div class="card pt-card" id="pt-card">
-                <div class="pt-card-header">
-                    <h2 class="pt-heading" data-i18n="ptCardTitle">Prayer Times</h2>
-                </div>
                 <div id="pt-container"><p class="pt-loading">Loading…</p></div>
             </div>
+
+            <!-- Stats row: streak · points · badges -->
+            <div id="home-stats"></div>
+
+            <!-- Daily suggestion -->
+            <div id="home-suggestion"></div>
+
+            <!-- Daily verse -->
+            <div id="home-verse"></div>
+
+            <!-- Today's summary -->
+            <div id="home-summary"></div>
 
         </div><!-- /tab-home -->
 

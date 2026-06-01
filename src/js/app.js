@@ -1382,6 +1382,7 @@ class WorshipTracker {
             this._checkMilestone(prevPct, newPct);
         }
         if (badgeSystem) badgeSystem.update();
+        if (typeof renderHomeExtras === 'function') renderHomeExtras();
     }
 
     _dayPct(key) {
@@ -1391,6 +1392,10 @@ class WorshipTracker {
         const tasks = [p.fajr, p.dhuhr, p.asr, p.maghrib, p.isha, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar];
         const done = tasks.filter(Boolean).length;
         return Math.round((done / tasks.length) * 100);
+    }
+
+    _totalPts() {
+        return Object.keys(this.data.days).reduce((sum, k) => sum + this._dayPtsRaw(k), 0);
     }
 
     _dayPtsRaw(key) {
@@ -3303,72 +3308,251 @@ class PrayerTimesWidget {
         if (!this._times) { el.innerHTML = `<p class="pt-loading">${currentLang === 'ar' ? 'جارٍ التحميل…' : 'Loading…'}</p>`; return; }
 
         const isAr = currentLang === 'ar';
-        const dir = isAr ? 'rtl' : 'ltr';
         const names = t('dhPrayers');
+        const SHORT = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Mghb', isha: 'Isha' };
+        const SHORT_AR = { fajr: 'فجر', dhuhr: 'ظهر', asr: 'عصر', maghrib: 'مغرب', isha: 'عشاء' };
         const current = this._api.getCurrentPrayer(this._times);
         const next = this._api.getNextPrayer(this._times);
-        const nextH = Math.floor(next.mins / 60);
-        const nextM = next.mins % 60;
-        const nextText = isAr
-            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
-            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
 
+        // Progress bar: % of time elapsed from current prayer to next
+        const nowMins = (() => { const n = new Date(getCurrentTime()); return n.getHours() * 60 + n.getMinutes(); })();
+        const curMins = (() => { const [h,m] = this._times[current].split(':').map(Number); return h*60+m; })();
+        let nxtMins = (() => { const [h,m] = this._times[next.name].split(':').map(Number); return h*60+m; })();
+        if (nxtMins <= curMins) nxtMins += 1440;
+        const pct = Math.min(100, Math.max(0, Math.round((nowMins - curMins) / (nxtMins - curMins) * 100)));
+
+        // Progress labels: prev | current | next
+        const curIdx = _PT_PRAYERS_LIST.indexOf(current);
+        const prevKey = _PT_PRAYERS_LIST[(curIdx + 4) % 5];
+
+        // Countdown text
+        const _countdown = (mins, ar) => {
+            const h = Math.floor(mins / 60), m = mins % 60;
+            return ar ? (h > 0 ? `${numFmt(h)}س ${numFmt(m)}د` : `${numFmt(m)} دقيقة`)
+                      : (h > 0 ? `${h}h ${m}m` : `${m}m`);
+        };
+
+        // Location
         const savedLoc = this._api.getSavedLocation();
         const rawLocName = savedLoc ? savedLoc.name : (isAr ? 'القاهرة، مصر' : 'Cairo, Egypt');
-        const _coordPattern = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
-        const locName = _coordPattern.test(rawLocName) ? (isAr ? 'جارٍ تحديد المدينة…' : 'Detecting city…') : rawLocName;
+        const _coordPat = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+        const locName = _coordPat.test(rawLocName) ? (isAr ? 'جارٍ تحديد المدينة…' : 'Detecting city…') : rawLocName;
 
-        const rows = _PT_PRAYERS_LIST.map(p => {
-            const bellOn = prayerReminders && prayerReminders.isEnabled(p);
-            return `
-            <div class="pt-row${p === current ? ' pt-row-current' : ''}">
-                <span class="pt-name">${names[p]}</span>
-                <span class="pt-time">${numFmt(this._times[p])}</span>
-                <button class="pt-bell${bellOn ? ' pt-bell-on' : ''}" data-prayer="${p}" onclick="togglePrayerReminder('${p}')" title="Toggle reminder">🔔</button>
+        // Prayer done status from tracker
+        const todayKey = worshipTracker ? worshipTracker.getTodayKey() : null;
+        const todayPrayers = (worshipTracker && todayKey) ? (worshipTracker.data.days[todayKey]?.prayers || {}) : {};
+
+        // Compact prayer grid cols
+        const gridCols = _PT_PRAYERS_LIST.map(p => {
+            const done = !!todayPrayers[p];
+            const isCur = p === current;
+            const isCurNext = p === next.name;
+            let topColor = 'var(--bg4)';
+            let nameColor = 'var(--text-muted)';
+            let timeColor = 'var(--text)';
+            let statusHtml = '';
+            if (done) {
+                topColor = 'var(--teal)';
+                nameColor = 'var(--teal)';
+                statusHtml = `<div class="hpt-done-dot"><svg viewBox="0 0 10 10" fill="none" width="10" height="10"><path d="M2 5l2.5 2.5 3.5-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+            } else if (isCurNext && !isCur) {
+                topColor = 'var(--gold)';
+                nameColor = 'var(--gold2)';
+                timeColor = 'var(--gold2)';
+                statusHtml = `<span class="hpt-countdown" id="hpt-countdown-${p}">${_countdown(next.mins, isAr)}</span>`;
+            }
+            const short = isAr ? SHORT_AR[p] : SHORT[p];
+            return `<div class="hpt-col">
+                <div class="hpt-top-bar" style="background:${topColor}"></div>
+                <span class="hpt-name" style="color:${nameColor}">${short}</span>
+                <span class="hpt-time" style="color:${timeColor}">${this._times[p]}</span>
+                ${statusHtml}
             </div>`;
         }).join('');
 
+        const nextLabel = isAr ? 'الصلاة القادمة' : 'Next prayer';
+        const changeBtn = t('ptDetectBtn');
         const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
         const reminderHint = !isStandalone
-            ? `<div class="pt-reminder-hint" onclick="switchTab('more')">
-                 <span>⚠️</span>
-                 <span>${isAr ? 'التذكيرات تعمل فقط عند فتح التطبيق — <u>ثبّت التطبيق</u> للتذكيرات في الخلفية' : 'Reminders only work while the app is open — <u>Install the app</u> for background alerts'}</span>
-               </div>`
+            ? `<div class="pt-reminder-hint" onclick="switchTab('more')"><span>⚠️</span><span>${isAr ? 'التذكيرات تعمل فقط عند فتح التطبيق — <u>ثبّت التطبيق</u> للتذكيرات في الخلفية' : 'Reminders only work while the app is open — <u>Install the app</u> for background alerts'}</span></div>`
             : '';
 
         el.innerHTML = `
-        <div class="pt-wrap" dir="${dir}">
-            <div class="pt-location-row">
-                <span class="pt-location">📍 ${_escape(locName)}</span>
-                <button id="pt-detect-btn" class="pt-detect-btn" onclick="detectPrayerLocation()">${t('ptDetectBtn')}</button>
+        <div class="home-pt-wrap" dir="${isAr ? 'rtl' : 'ltr'}">
+            <div class="home-next">
+                <p class="home-next-label">${nextLabel}</p>
+                <div class="home-next-name">${names[next.name]}</div>
+                <div class="home-next-info">
+                    <span class="home-next-time">${this._times[next.name]}</span>
+                    <span class="home-next-sep">–</span>
+                    <span class="home-next-cd" id="home-next-cd">${isAr ? 'في ' : 'in '}${_countdown(next.mins, isAr)}</span>
+                </div>
+                <div class="home-progress-bar"><div class="home-progress-fill" id="home-progress-fill" style="width:${pct}%"></div></div>
+                <div class="home-progress-labels">
+                    <span>${(isAr ? SHORT_AR : SHORT)[prevKey]} ${this._times[prevKey]}</span>
+                    <span class="home-progress-cur">${(isAr ? SHORT_AR : SHORT)[current]} ${this._times[current]}</span>
+                    <span>${(isAr ? SHORT_AR : SHORT)[next.name]} ${this._times[next.name]}</span>
+                </div>
             </div>
-            <div class="pt-list">${rows}</div>
-            <div class="pt-next" id="pt-next">${nextText}</div>
+            <div class="home-pt-loc">
+                <span>📍 ${_escape(locName)}</span>
+                <button class="pt-detect-btn" id="pt-detect-btn" onclick="detectPrayerLocation()">${changeBtn}</button>
+            </div>
+            <div class="hpt-grid">${gridCols}</div>
             ${reminderHint}
         </div>`;
+
+        renderHomeExtras();
     }
 
     _tick() {
         if (!this._times) return;
         const isAr = currentLang === 'ar';
-        const names = t('dhPrayers');
-        const current = this._api.getCurrentPrayer(this._times);
         const next = this._api.getNextPrayer(this._times);
-        const nextH = Math.floor(next.mins / 60);
-        const nextM = next.mins % 60;
+        const h = Math.floor(next.mins / 60), m = next.mins % 60;
+        const cdText = isAr
+            ? `في ${h > 0 ? `${numFmt(h)}س ${numFmt(m)}د` : `${numFmt(m)} دقيقة`}`
+            : `in ${h > 0 ? `${h}h ${m}m` : `${m}m`}`;
 
-        document.querySelectorAll('.pt-row').forEach((row, i) => {
-            row.classList.toggle('pt-row-current', _PT_PRAYERS_LIST[i] === current);
+        const cdEl = document.getElementById('home-next-cd');
+        if (cdEl) cdEl.textContent = cdText;
+
+        // Update next countdown in compact grid
+        const current = this._api.getCurrentPrayer(this._times);
+        _PT_PRAYERS_LIST.forEach(p => {
+            const el = document.getElementById(`hpt-countdown-${p}`);
+            if (el && p === next.name) el.textContent = h > 0 ? (isAr ? `${numFmt(h)}س ${numFmt(m)}د` : `${h}h ${m}m`) : (isAr ? `${numFmt(m)}د` : `${m}m`);
         });
-        const nextEl = document.getElementById('pt-next');
-        if (nextEl) nextEl.textContent = isAr
-            ? `الصلاة القادمة: ${names[next.name]} — ${nextH > 0 ? `${numFmt(nextH)}س ${numFmt(nextM)}د` : `${numFmt(nextM)} دقيقة`}`
-            : `Next: ${names[next.name]} — ${nextH > 0 ? `${nextH}h ${nextM}m` : `${nextM}m`}`;
+
+        // Update progress bar
+        const nowMins = (() => { const n = new Date(getCurrentTime()); return n.getHours() * 60 + n.getMinutes(); })();
+        const curMins = (() => { const [ch,cm] = this._times[current].split(':').map(Number); return ch*60+cm; })();
+        let nxtMins = (() => { const [nh,nm] = this._times[next.name].split(':').map(Number); return nh*60+nm; })();
+        if (nxtMins <= curMins) nxtMins += 1440;
+        const pct = Math.min(100, Math.max(0, Math.round((nowMins - curMins) / (nxtMins - curMins) * 100)));
+        const fillEl = document.getElementById('home-progress-fill');
+        if (fillEl) fillEl.style.width = `${pct}%`;
     }
 }
 
 let prayerAPI;
 let prayerWidget;
+
+// ── Daily verse data for home card ──────────────────────────
+const _HOME_VERSES = [
+    { ar: 'وَالْفَجْرِ وَلَيَالٍ عَشْرٍ', en: 'By the dawn and the ten nights', ref: 'Quran 89:1-2' },
+    { ar: 'وَبَشِّرِ الصَّابِرِينَ', en: 'And give good tidings to the patient', ref: 'Quran 2:155' },
+    { ar: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', en: 'Indeed, with hardship comes ease', ref: 'Quran 94:6' },
+    { ar: 'وَاذْكُرُوا اللَّهَ كَثِيرًا', en: 'And remember Allah often', ref: 'Quran 62:10' },
+    { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً', en: 'Our Lord, give us good in this world', ref: 'Quran 2:201' },
+];
+
+function renderHomeExtras() {
+    if (typeof worshipTracker === 'undefined' || !worshipTracker) return;
+    const isAr = currentLang === 'ar';
+    const todayKey = worshipTracker.getTodayKey();
+    const d = worshipTracker.data.days[todayKey] || {};
+    const p = d.prayers || {};
+
+    // ── Stats row ────────────────────────────────────────────
+    const statsEl = document.getElementById('home-stats');
+    if (statsEl) {
+        const streak = worshipTracker.data.streaks?.current || 0;
+        const totalPts = worshipTracker._totalPts();
+        const badgesUnlocked = badgeSystem ? Object.values(badgeSystem.state).filter(b => b.unlocked).length : 0;
+        const badgesTotal = badgeSystem ? Object.keys(badgeSystem.DEFS).length : 3;
+        statsEl.innerHTML = `
+        <div class="home-stats">
+            <div class="home-stat">
+                <span class="home-stat-icon">🔥</span>
+                <span class="home-stat-val">${isAr ? worshipTracker._toAr(streak) : streak}</span>
+                <span class="home-stat-lbl">${isAr ? 'يوم' : 'streak'}</span>
+            </div>
+            <div class="home-stat">
+                <span class="home-stat-icon">⭐</span>
+                <span class="home-stat-val home-stat-val-green">${isAr ? worshipTracker._toAr(totalPts) : totalPts}</span>
+                <span class="home-stat-lbl">${isAr ? 'نقطة' : 'points'}</span>
+            </div>
+            <div class="home-stat">
+                <span class="home-stat-icon">🏆</span>
+                <span class="home-stat-val home-stat-val-teal">${isAr ? worshipTracker._toAr(badgesUnlocked) : badgesUnlocked}/${isAr ? worshipTracker._toAr(badgesTotal) : badgesTotal}</span>
+                <span class="home-stat-lbl">${isAr ? 'شارة' : 'badges'}</span>
+            </div>
+        </div>`;
+    }
+
+    // ── Daily suggestion ─────────────────────────────────────
+    const sugEl = document.getElementById('home-suggestion');
+    if (sugEl) {
+        const suggestions = isAr ? [
+            { cond: !p.fajr,          icon: '🕌', text: 'صلِّ الفجر', sub: 'الصلاة عمود الدين' },
+            { cond: !d.adhkar,         icon: '📿', text: 'اقرأ أذكار الصباح', sub: 'لم تقرأها بعد اليوم' },
+            { cond: !d.tasbeeh,        icon: '🤲', text: 'قل ١٠٠ تسبيحة', sub: 'سبحان الله والحمد لله والله أكبر' },
+            { cond: !d.charity,        icon: '💚', text: 'تصدّق اليوم', sub: 'الصدقة تطفئ الخطيئة' },
+            { cond: !(d.quranJuz > 0), icon: '📖', text: 'اتلُ شيئاً من القرآن', sub: 'ولو صفحة واحدة' },
+        ] : [
+            { cond: !p.fajr,          icon: '🕌', text: "You haven't prayed Fajr yet", sub: 'Prayer is the pillar of faith' },
+            { cond: !d.adhkar,         icon: '📿', text: 'Read your morning adhkar', sub: "You haven't done them yet today" },
+            { cond: !d.tasbeeh,        icon: '🤲', text: 'Say your 100 tasbeeh', sub: 'Glorify Allah 100 times' },
+            { cond: !d.charity,        icon: '💚', text: 'Give sadaqah today', sub: 'Charity extinguishes sin' },
+            { cond: !(d.quranJuz > 0), icon: '📖', text: 'Read some Quran today', sub: 'Even a single page counts' },
+        ];
+        const sug = suggestions.find(s => s.cond) || {
+            icon: '✅',
+            text: isAr ? 'يوم رائع! استمر' : 'Great day so far — keep it up',
+            sub: isAr ? 'جزاك الله خيراً' : 'JazakAllah Khayran',
+        };
+        sugEl.innerHTML = `
+        <div class="home-sug card">
+            <div class="home-sug-icon">${sug.icon}</div>
+            <div class="home-sug-body">
+                <p class="home-sug-text">${sug.text}</p>
+                <p class="home-sug-sub">${sug.sub}</p>
+            </div>
+            <span class="home-sug-arrow" aria-hidden="true">›</span>
+        </div>`;
+    }
+
+    // ── Daily verse ──────────────────────────────────────────
+    const verseEl = document.getElementById('home-verse');
+    if (verseEl) {
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        const verse = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
+        const shareLabel = isAr ? 'شارك' : 'Share';
+        verseEl.innerHTML = `
+        <div class="home-verse card">
+            <p class="home-verse-label">${isAr ? '📖 آية اليوم' : '📖 Daily verse'}</p>
+            <p class="home-verse-ar">${verse.ar}</p>
+            <p class="home-verse-en">${isAr ? '' : verse.en}</p>
+            <div class="home-verse-footer">
+                <span class="home-verse-ref">${verse.ref}</span>
+                <button class="home-verse-share" onclick="navigator.share && navigator.share({text:'${verse.ar}\\n${verse.en}\\n${verse.ref}'})" aria-label="${shareLabel}">↗</button>
+            </div>
+        </div>`;
+    }
+
+    // ── Today's summary ──────────────────────────────────────
+    const summaryEl = document.getElementById('home-summary');
+    if (summaryEl) {
+        const goalFields = ['fasting', 'adhkar', 'tasbeeh', 'charity'];
+        const goalsDone = goalFields.filter(f => !!d[f]).length + (d.quranJuz > 0 ? 1 : 0);
+        const goalsTotal = goalFields.length + 1;
+        const prayersDone = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length;
+        summaryEl.innerHTML = `
+        <div class="home-summary">
+            <div class="home-sum-card" onclick="switchTab('tracker')">
+                <p class="home-sum-label">${isAr ? 'الأهداف اليومية' : "Today's goals"}</p>
+                <p class="home-sum-val home-sum-val-green">${isAr ? worshipTracker._toAr(goalsDone) : goalsDone}/${isAr ? worshipTracker._toAr(goalsTotal) : goalsTotal}</p>
+                <p class="home-sum-sub">${isAr ? 'مكتملة' : 'completed'}</p>
+            </div>
+            <div class="home-sum-card" onclick="switchTab('tracker')">
+                <p class="home-sum-label">${isAr ? 'صلوات اليوم' : 'Prayers today'}</p>
+                <p class="home-sum-val home-sum-val-gold">${isAr ? worshipTracker._toAr(prayersDone) : prayersDone}/5</p>
+                <p class="home-sum-sub">${isAr ? 'مؤداة' : 'prayed'}</p>
+            </div>
+        </div>`;
+    }
+}
 let prayerReminders;
 
 // ═══════════════════════════════════════════════════
