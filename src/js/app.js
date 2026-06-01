@@ -3435,8 +3435,9 @@ let prayerWidget;
 
 // ── Daily verse copy + share ─────────────────────────────────
 function copyVerse(btn) {
-    const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
-    const text = [ar, en, ref].filter(Boolean).join('\n');
+    const ar = btn.dataset.ar || '', meaning = btn.dataset.meaning || '',
+          en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const text = [ar, meaning, en, ref].filter(Boolean).join('\n\n');
     navigator.clipboard?.writeText(text).then(() => {
         const orig = btn.innerHTML;
         btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 8l3.5 3.5 6.5-7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -3484,11 +3485,48 @@ async function shareVerseCard(btn) {
 
 // ── Daily verse data for home card ──────────────────────────
 const _HOME_VERSES = [
-    { ar: 'وَالْفَجْرِ وَلَيَالٍ عَشْرٍ', en: 'By the dawn and the ten nights', ref: 'Quran 89:1-2' },
-    { ar: 'وَبَشِّرِ الصَّابِرِينَ', en: 'And give good tidings to the patient', ref: 'Quran 2:155' },
-    { ar: 'إِنَّ مَعَ الْعُسْرِ يُسْرًا', en: 'Indeed, with hardship comes ease', ref: 'Quran 94:6' },
-    { ar: 'وَاذْكُرُوا اللَّهَ كَثِيرًا', en: 'And remember Allah often', ref: 'Quran 62:10' },
-    { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً', en: 'Our Lord, give us good in this world', ref: 'Quran 2:201' },
+    {
+        ar: 'وَالْفَجْرِ ﴿١﴾ وَلَيَالٍ عَشْرٍ ﴿٢﴾ وَالشَّفْعِ وَالْوَتْرِ ﴿٣﴾',
+        ar_meaning: 'أقسم الله بصلاة الفجر وبعشر ليالٍ من ذي الحجة — أفضل أيام الدنيا — وبالأعداد الشفع والوتر تعظيماً لهذه الأوقات.',
+        en: 'By the dawn (1) and by ten nights (2) and by the even and the odd (3).',
+        surah_ar: 'سورة الفجر', surah_en: 'Al-Fajr', ref: '89:1–3',
+    },
+    {
+        ar: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا',
+        ar_meaning: 'لا يُلزم الله أحداً بما يعجز عنه؛ لكل نفس ثواب عملها وعليها وِزر ذنبها، ثم دعاء بالعفو عن النسيان والخطأ.',
+        en: 'Allah does not burden a soul beyond that it can bear. For it is what it has earned, and against it what it has accumulated. Our Lord, do not impose blame upon us if we have forgotten or erred.',
+        surah_ar: 'سورة البقرة', surah_en: 'Al-Baqarah', ref: '2:286',
+    },
+    {
+        ar: 'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ﴿٥﴾ إِنَّ مَعَ الْعُسْرِ يُسْرًا ﴿٦﴾ فَإِذَا فَرَغْتَ فَانصَبْ ﴿٧﴾ وَإِلَىٰ رَبِّكَ فَارْغَب ﴿٨﴾',
+        ar_meaning: 'بشارة مكررة بأن كل عسر يعقبه يسر، ثم أمر بالإقبال على العبادة فور الفراغ من الأعمال وصرف الرغبة كلها إلى الله.',
+        en: 'For indeed, with hardship will be ease (5). Indeed, with hardship will be ease (6). So when you have finished, then stand up (7). And to your Lord direct your longing (8).',
+        surah_ar: 'سورة الشرح', surah_en: 'Ash-Sharh', ref: '94:5–8',
+    },
+    {
+        ar: 'فَإِذَا قُضِيَتِ الصَّلَاةُ فَانتَشِرُوا فِي الْأَرْضِ وَابْتَغُوا مِن فَضْلِ اللَّهِ وَاذْكُرُوا اللَّهَ كَثِيرًا لَّعَلَّكُمْ تُفْلِحُونَ',
+        ar_meaning: 'بعد أداء الصلاة انتشروا في الأرض لطلب الرزق الحلال، مع الإكثار من ذكر الله في كل حال، لعلّ ذلك يكون سبباً للفلاح.',
+        en: 'And when the prayer has been concluded, disperse within the land and seek from the bounty of Allah, and remember Allah often that you may succeed.',
+        surah_ar: 'سورة الجمعة', surah_en: 'Al-Jumu\'ah', ref: '62:10',
+    },
+    {
+        ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ ﴿٢٠١﴾ أُولَٰئِكَ لَهُمْ نَصِيبٌ مِّمَّا كَسَبُوا ۗ وَاللَّهُ سَرِيعُ الْحِسَابِ ﴿٢٠٢﴾',
+        ar_meaning: 'من أجمع الأدعية القرآنية: طلب خير الدنيا والآخرة والنجاة من النار، ولمن دعا به نصيبٌ موفور من جهده وعمله الصالح.',
+        en: 'Our Lord, give us in this world good and in the Hereafter good and protect us from the punishment of the Fire (201). Those will have a share of what they have earned, and Allah is swift in account (202).',
+        surah_ar: 'سورة البقرة', surah_en: 'Al-Baqarah', ref: '2:201–202',
+    },
+    {
+        ar: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اصْبِرُوا وَصَابِرُوا وَرَابِطُوا وَاتَّقُوا اللَّهَ لَعَلَّكُمْ تُفْلِحُونَ',
+        ar_meaning: 'أمر المؤمنين بأربع صفات: الصبر على البلاء، والمصابرة أمام الأعداء، والمرابطة في سبيل الله، وتقوى الله؛ وجزاؤهم الفلاح.',
+        en: 'O you who have believed, persevere and endure and remain stationed and fear Allah that you may be successful.',
+        surah_ar: 'سورة آل عمران', surah_en: 'Ali \'Imran', ref: '3:200',
+    },
+    {
+        ar: 'وَقُل رَّبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَل لِّي مِن لَّدُنكَ سُلْطَانًا نَّصِيرًا',
+        ar_meaning: 'دعاء بالتوفيق في جميع المداخل والمخارج، وطلب نصر الله وتأييده في كل أمر من أمور الحياة.',
+        en: 'And say: My Lord, cause me to enter a sound entrance and to exit a sound exit and grant me from Yourself a supporting authority.',
+        surah_ar: 'سورة الإسراء', surah_en: 'Al-Isra\'', ref: '17:80',
+    },
 ];
 
 function renderHomeExtras() {
@@ -3576,20 +3614,27 @@ function renderHomeExtras() {
         const verse = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
         const copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
         const shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-        const safeAr = verse.ar.replace(/"/g,'&quot;');
-        const safeEn = verse.en.replace(/"/g,'&quot;');
+        const safeAr  = verse.ar.replace(/"/g,'&quot;');
+        const safeEn  = verse.en.replace(/"/g,'&quot;');
+        const safeMeaning = (verse.ar_meaning || '').replace(/"/g,'&quot;');
         const safeRef = verse.ref.replace(/"/g,'&quot;');
+        const surahChip = isAr
+            ? `${verse.surah_ar} · ${verse.ref}`
+            : `${verse.surah_en} · ${verse.ref}`;
         verseEl.innerHTML = `
         <div class="home-verse card">
-            <p class="home-verse-label">${isAr ? '📖 آية اليوم' : '📖 Daily verse'}</p>
+            <div class="home-verse-header">
+                <span class="home-verse-label">${isAr ? '📖 آية اليوم' : '📖 Daily verse'}</span>
+                <span class="home-verse-surah">${surahChip}</span>
+            </div>
             <p class="home-verse-ar">${verse.ar}</p>
+            ${verse.ar_meaning ? `<p class="home-verse-meaning">${verse.ar_meaning}</p>` : ''}
             ${!isAr ? `<p class="home-verse-en">${verse.en}</p>` : ''}
             <div class="home-verse-footer">
-                <span class="home-verse-ref">${verse.ref}</span>
                 <div class="home-verse-actions">
-                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-ref="${safeRef}"
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
                         onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
-                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-ref="${safeRef}"
+                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
                         onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
                 </div>
             </div>

@@ -3344,11 +3344,13 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 
 /* Daily verse card */
 .home-verse { padding: 16px; }
-.home-verse-label { font-size: 12px; color: var(--gold2); margin: 0 0 10px; }
-.home-verse-ar { font-family: var(--fa, 'Amiri', serif); font-size: 18px; color: var(--text); line-height: 1.7; direction: rtl; text-align: right; margin: 0 0 8px; }
-.home-verse-en { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-style: italic; margin: 0 0 10px; }
-.home-verse-footer { display: flex; align-items: center; justify-content: space-between; }
-.home-verse-ref { font-size: 11px; color: var(--text-muted); }
+.home-verse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+.home-verse-label { font-size: 12px; color: var(--gold2); }
+.home-verse-surah { font-size: 11px; color: var(--text-muted); background: var(--bg3); border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+.home-verse-ar { font-family: var(--fa, 'Amiri', serif); font-size: 19px; color: var(--text); line-height: 1.9; direction: rtl; text-align: right; margin: 0 0 10px; }
+.home-verse-meaning { font-family: var(--fa, 'Amiri', serif); font-size: 13px; color: var(--text-muted); line-height: 1.7; direction: rtl; text-align: right; margin: 0 0 10px; border-right: 2px solid var(--goldborder); padding-right: 10px; }
+.home-verse-en { font-size: 13px; color: var(--text-muted); line-height: 1.6; font-style: italic; margin: 0 0 12px; }
+.home-verse-footer { display: flex; align-items: center; justify-content: flex-end; }
 .home-verse-actions { display: flex; align-items: center; gap: 6px; }
 .home-verse-btn {
     background: var(--bg3);
