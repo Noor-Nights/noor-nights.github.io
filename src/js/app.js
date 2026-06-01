@@ -3125,6 +3125,34 @@ const _PT_LOC_KEY   = 'noor_pt_location';
 const _PR_KEY       = 'noor_pr_prefs';
 const _PT_PRAYERS_LIST = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const _PT_FALLBACK = { fajr: '04:18', dhuhr: '12:52', asr: '16:28', maghrib: '19:45', isha: '21:14' };
+
+const _POPULAR_CITIES = [
+    { name: 'Cairo',         country: 'Egypt',       lat: 30.0444,  lng: 31.2357  },
+    { name: 'Istanbul',      country: 'Turkey',      lat: 41.0082,  lng: 28.9784  },
+    { name: 'Riyadh',        country: 'Saudi Arabia',lat: 24.6877,  lng: 46.7219  },
+    { name: 'Dubai',         country: 'UAE',         lat: 25.2048,  lng: 55.2708  },
+    { name: 'Jakarta',       country: 'Indonesia',   lat: -6.2088,  lng: 106.8456 },
+    { name: 'London',        country: 'UK',          lat: 51.5074,  lng: -0.1278  },
+    { name: 'Karachi',       country: 'Pakistan',    lat: 24.8607,  lng: 67.0011  },
+    { name: 'Dhaka',         country: 'Bangladesh',  lat: 23.8103,  lng: 90.4125  },
+    { name: 'Kuala Lumpur',  country: 'Malaysia',    lat: 3.1390,   lng: 101.6869 },
+    { name: 'Lagos',         country: 'Nigeria',     lat: 6.5244,   lng: 3.3792   },
+    { name: 'Casablanca',    country: 'Morocco',     lat: 33.5731,  lng: -7.5898  },
+    { name: 'Amman',         country: 'Jordan',      lat: 31.9454,  lng: 35.9284  },
+    { name: 'Beirut',        country: 'Lebanon',     lat: 33.8938,  lng: 35.5018  },
+    { name: 'Baghdad',       country: 'Iraq',        lat: 33.3152,  lng: 44.3661  },
+    { name: 'Tehran',        country: 'Iran',        lat: 35.6892,  lng: 51.3890  },
+    { name: 'Algiers',       country: 'Algeria',     lat: 36.7372,  lng: 3.0865   },
+    { name: 'Tunis',         country: 'Tunisia',     lat: 36.8065,  lng: 10.1815  },
+    { name: 'Nairobi',       country: 'Kenya',       lat: -1.2921,  lng: 36.8219  },
+    { name: 'Paris',         country: 'France',      lat: 48.8566,  lng: 2.3522   },
+    { name: 'Birmingham',    country: 'UK',          lat: 52.4862,  lng: -1.8904  },
+    { name: 'Toronto',       country: 'Canada',      lat: 43.6532,  lng: -79.3832 },
+    { name: 'New York',      country: 'USA',         lat: 40.7128,  lng: -74.0060 },
+    { name: 'Sydney',        country: 'Australia',   lat: -33.8688, lng: 151.2093 },
+    { name: 'Berlin',        country: 'Germany',     lat: 52.5200,  lng: 13.4050  },
+    { name: 'Islamabad',     country: 'Pakistan',    lat: 33.6844,  lng: 73.0479  },
+];
 function _getBakedFallback(dateStr) {
     if (typeof CAIRO_BAKED_TIMES !== 'undefined' && CAIRO_BAKED_TIMES[dateStr]) return CAIRO_BAKED_TIMES[dateStr];
     return _PT_FALLBACK;
@@ -3286,20 +3314,63 @@ class PrayerTimesWidget {
 
     async init() {
         this._locTimeout = setTimeout(() => { this._api.upgradeLocationName(); }, 2000);
-        // Render immediately with cached or fallback times so user never sees perpetual "Loading…"
         const today = this._api._todayStr();
         const instant = this._api.getCachedTimesForDate(today);
-        this._times = instant || _getBakedFallback(today);
-        this.render();
+        const hasSavedLoc = !!this._api.getSavedLocation();
+
+        if (!hasSavedLoc && !instant) {
+            // No location set and no cached times → show city picker; don't render generic times
+            this._pickerActive = true;
+            this._renderCityPicker();
+        } else {
+            this._pickerActive = false;
+            this._times = instant || _getBakedFallback(today);
+            this.render();
+        }
+
         if (!this._interval) {
             this._interval = setInterval(() => this._tick(), 60000);
         }
-        // Fetch fresh data in the background and re-render if different
         const fresh = await this._api.getTimesForDate(today);
-        if (fresh && fresh !== this._times) {
+        // Don't overwrite the picker with generic times — only update if user has a saved location
+        if (!this._pickerActive && fresh && fresh !== this._times) {
             this._times = fresh;
             this.render();
         }
+    }
+
+    _renderCityPicker() {
+        const el = document.getElementById('pt-container');
+        if (!el) return;
+        const isAr = currentLang === 'ar';
+        const title   = isAr ? '🕌 اضبط مدينتك لأوقات الصلاة' : '🕌 Set your city for prayer times';
+        const hint    = isAr ? 'اختر من القائمة أو ابحث عن مدينتك' : 'Choose from the list or search for your city';
+        const ph      = isAr ? 'ابحث عن مدينة…' : 'Search city…';
+        const gpsLbl  = isAr ? '📍 استخدم موقعي' : '📍 Use my location';
+
+        const cityBtns = _POPULAR_CITIES.map(c => `
+            <button class="pt-city-btn" onclick="ptSelectCity('${c.name}, ${c.country}',${c.lat},${c.lng})">
+                <span class="pt-city-name">${c.name}</span>
+                <span class="pt-city-country">${c.country}</span>
+            </button>`).join('');
+
+        el.innerHTML = `
+        <div class="pt-picker" dir="${isAr ? 'rtl' : 'ltr'}">
+            <p class="pt-picker-title">${title}</p>
+            <p class="pt-picker-hint">${hint}</p>
+            <div class="pt-picker-search-row">
+                <input type="search" class="pt-picker-search" id="pt-search-input"
+                    placeholder="${ph}" oninput="ptFilterCities(this.value)"
+                    autocomplete="off" autocorrect="off" spellcheck="false">
+                <button class="pt-picker-gps" onclick="detectPrayerLocation()" title="${gpsLbl}">
+                    <svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="pt-city-list" id="pt-city-list">${cityBtns}</div>
+        </div>`;
     }
 
     render() {
@@ -3791,6 +3862,36 @@ function togglePrayerReminder(prayer) {
     });
 }
 
+async function ptSelectCity(name, lat, lng) {
+    if (prayerWidget) prayerWidget._pickerActive = false;
+    prayerAPI.saveLocation(lat, lng, name);
+    // Invalidate cached month so fresh times are fetched for new city
+    const d = new Date(getCurrentTime());
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (prayerAPI._cache) { delete prayerAPI._cache[key]; prayerAPI._saveCache(); }
+    await prayerWidget.init();
+    if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
+}
+
+function ptFilterCities(q) {
+    const list = document.getElementById('pt-city-list');
+    if (!list) return;
+    const term = q.trim().toLowerCase();
+    const matches = term.length === 0
+        ? _POPULAR_CITIES
+        : _POPULAR_CITIES.filter(c =>
+            c.name.toLowerCase().includes(term) || c.country.toLowerCase().includes(term));
+    if (matches.length === 0) {
+        list.innerHTML = `<p class="pt-city-no-match">${currentLang === 'ar' ? 'لا نتائج' : 'No results'}</p>`;
+        return;
+    }
+    list.innerHTML = matches.map(c => `
+        <button class="pt-city-btn" onclick="ptSelectCity('${c.name}, ${c.country}',${c.lat},${c.lng})">
+            <span class="pt-city-name">${c.name}</span>
+            <span class="pt-city-country">${c.country}</span>
+        </button>`).join('');
+}
+
 async function detectPrayerLocation() {
     const btn = document.getElementById('pt-detect-btn');
     if (btn) { btn.disabled = true; btn.textContent = t('ptDetecting'); }
@@ -3800,8 +3901,13 @@ async function detectPrayerLocation() {
         if (prayerReminders && prayerWidget._times) prayerReminders.scheduleAll(prayerWidget._times);
         showMessage(t('ptLocationUpdated'), loc.name);
     } catch (e) {
-        const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
-        showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);
+        // On denial or error, fall back to city picker so user isn't stuck
+        if (prayerWidget && !prayerAPI.getSavedLocation()) {
+            prayerWidget._renderCityPicker();
+        } else {
+            const msg = e.code === 1 ? t('ptGeoDenied') : t('ptGeoError');
+            showMessage(currentLang === 'ar' ? 'خطأ' : 'Error', msg);
+        }
     } finally {
         const btn2 = document.getElementById('pt-detect-btn');
         if (btn2) { btn2.disabled = false; btn2.textContent = t('ptDetectBtn'); }
