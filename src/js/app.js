@@ -3445,7 +3445,9 @@ class PrayerTimesWidget {
         }).join('');
 
         const nextLabel = isAr ? 'الصلاة القادمة' : 'Next prayer';
-        const allPrayersLabel = isAr ? `أوقات الصلاة · 📍 ${_escape(locName)}` : `All prayer times · 📍 ${_escape(locName)}`;
+        const allPrayersLabel = isAr
+            ? `أوقات الصلاة · <i class="ti ti-map-pin" aria-hidden="true"></i> ${_escape(locName)}`
+            : `All prayer times · <i class="ti ti-map-pin" aria-hidden="true"></i> ${_escape(locName)}`;
 
         el.innerHTML = `
         <div class="home-pt-wrap" dir="${isAr ? 'rtl' : 'ltr'}">
@@ -3619,17 +3621,17 @@ function renderHomeExtras() {
         statsEl.innerHTML = `
         <div class="home-stats">
             <div class="home-stat${streak === 0 ? ' home-stat-dim' : ''}">
-                <span class="home-stat-icon">🔥</span>
+                <i class="ti ti-flame home-stat-icon" aria-hidden="true"></i>
                 <span class="home-stat-val">${streakVal}</span>
                 <span class="home-stat-lbl">${streakLbl}</span>
             </div>
             <div class="home-stat">
-                <span class="home-stat-icon">⭐</span>
+                <i class="ti ti-star home-stat-icon home-stat-icon-green" aria-hidden="true"></i>
                 <span class="home-stat-val home-stat-val-green">${isAr ? worshipTracker._toAr(totalPts) : totalPts}</span>
                 <span class="home-stat-lbl">${isAr ? 'نقطة' : 'points'}</span>
             </div>
             <div class="home-stat">
-                <span class="home-stat-icon">🏆</span>
+                <i class="ti ti-award home-stat-icon home-stat-icon-teal" aria-hidden="true"></i>
                 <span class="home-stat-val home-stat-val-teal">${isAr ? worshipTracker._toAr(badgesUnlocked) : badgesUnlocked}/${isAr ? worshipTracker._toAr(badgesTotal) : badgesTotal}</span>
                 <span class="home-stat-lbl">${isAr ? 'شارة' : 'badges'}</span>
             </div>
@@ -3668,13 +3670,13 @@ function renderHomeExtras() {
         }
         const sug = suggestions.find(s => s.cond) || fallback;
         sugEl.innerHTML = `
-        <div class="home-sug card">
-            <div class="home-sug-icon">${sug.icon}</div>
+        <div class="home-sug card" onclick="switchTab('tracker')">
+            <div class="home-sug-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
             <div class="home-sug-body">
                 <p class="home-sug-text">${sug.text}</p>
                 <p class="home-sug-sub">${sug.sub}</p>
             </div>
-            <span class="home-sug-arrow" aria-hidden="true">›</span>
+            <i class="ti ti-chevron-right home-sug-arrow" aria-hidden="true"></i>
         </div>`;
     }
 
@@ -3695,7 +3697,7 @@ function renderHomeExtras() {
         verseEl.innerHTML = `
         <div class="home-verse card">
             <div class="home-verse-header">
-                <span class="home-verse-label">${isAr ? '📖 آية اليوم' : '📖 Daily verse'}</span>
+                <span class="home-verse-label"><i class="ti ti-book" aria-hidden="true"></i> ${isAr ? 'آية اليوم' : 'Daily verse'}</span>
                 <span class="home-verse-surah">${surahChip}</span>
             </div>
             <p class="home-verse-ar">${verse.ar}</p>

@@ -3321,7 +3321,9 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 /* Stats row */
 .home-stats { display: flex; gap: 8px; margin-bottom: 0; }
 .home-stat { flex: 1; background: var(--bg3); border-radius: 12px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.home-stat-icon { font-size: 18px; line-height: 1; }
+.home-stat-icon { font-size: 20px; line-height: 1; color: var(--gold2); }
+.home-stat-icon-green { color: var(--teal); }
+.home-stat-icon-teal { color: #5DCAA5; }
 .home-stat-val { font-size: 18px; font-weight: 500; color: var(--gold2); line-height: 1.1; }
 .home-stat-dim { opacity: .55; }
 .home-stat-val-green { color: var(--teal); }
@@ -3336,16 +3338,17 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.home-sug-icon { font-size: 24px; flex-shrink: 0; width: 40px; height: 40px; background: rgba(212,175,55,.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.home-sug-icon { font-size: 18px; flex-shrink: 0; width: 40px; height: 40px; background: rgba(212,175,55,.12); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--gold2); }
 .home-sug-body { flex: 1; }
 .home-sug-text { font-size: 14px; font-weight: 500; color: var(--text); margin: 0; }
 .home-sug-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; }
-.home-sug-arrow { font-size: 20px; color: var(--text-muted); line-height: 1; }
+.home-sug-arrow { font-size: 16px; color: var(--text-muted); }
 
 /* Daily verse card */
 .home-verse { padding: 16px; }
 .home-verse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
-.home-verse-label { font-size: 12px; color: var(--gold2); }
+.home-verse-label { font-size: 12px; color: var(--gold2); display: flex; align-items: center; gap: 4px; }
+.home-verse-label .ti { font-size: 13px; }
 .home-verse-surah { font-size: 11px; color: var(--text-muted); background: var(--bg3); border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
 .home-verse-ar { font-family: var(--fa, 'Amiri', serif); font-size: 19px; color: var(--text); line-height: 1.9; direction: rtl; text-align: right; margin: 0 0 10px; }
 .home-verse-meaning { font-family: var(--fa, 'Amiri', serif); font-size: 13px; color: var(--text-muted); line-height: 1.7; direction: rtl; text-align: right; margin: 0 0 10px; border-right: 2px solid var(--goldborder); padding-right: 10px; }
