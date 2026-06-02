@@ -41,7 +41,7 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ── PWA Cache ────────────────────────────────────────────────
-const CACHE_NAME = 'noor-nights-v27';
+const CACHE_NAME = 'noor-nights-v28';
 const ASSETS = [
     '/',
     '/index.html',
@@ -91,6 +91,21 @@ self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
     const url = new URL(event.request.url);
+
+    // Network-First for daily-verse.json — always serves today's verse after the 6 PM deploy
+    if (url.pathname.endsWith('/daily-verse.json')) {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    if (response && response.ok) {
+                        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
 
     // Stale-While-Revalidate for JS and CSS
     if (url.pathname.match(/\.(js|css)$/)) {

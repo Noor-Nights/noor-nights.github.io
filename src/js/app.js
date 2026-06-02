@@ -3524,6 +3524,27 @@ class PrayerTimesWidget {
 let prayerAPI;
 let prayerWidget;
 
+// ── Daily verse fetch (AlQuran Cloud, baked nightly into daily-verse.json) ──
+const _VERSE_LS_KEY = 'noor-daily-verse';
+
+async function fetchDailyVerse() {
+    const todayKey = new Date().toISOString().slice(0, 10);
+    try {
+        const cached = JSON.parse(localStorage.getItem(_VERSE_LS_KEY) || 'null');
+        if (cached && cached.date === todayKey) return cached;
+    } catch {}
+    try {
+        const res = await fetch('/src/js/daily-verse.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const verse = await res.json();
+        if (verse && verse.ar) {
+            try { localStorage.setItem(_VERSE_LS_KEY, JSON.stringify(verse)); } catch {}
+            return verse;
+        }
+    } catch {}
+    return null;
+}
+
 // ── Daily verse copy + share ─────────────────────────────────
 function copyVerse(btn) {
     const ar = btn.dataset.ar || '', meaning = btn.dataset.meaning || '',
@@ -3744,35 +3765,43 @@ function renderHomeExtras() {
     // ── Daily verse ──────────────────────────────────────────
     const verseEl = document.getElementById('home-verse');
     if (verseEl) {
-        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
-        const verse = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
         const copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
         const shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-        const safeAr  = verse.ar.replace(/"/g,'&quot;');
-        const safeEn  = verse.en.replace(/"/g,'&quot;');
-        const safeMeaning = (verse.ar_meaning || '').replace(/"/g,'&quot;');
-        const safeRef = verse.ref.replace(/"/g,'&quot;');
-        const surahChip = isAr
-            ? `${verse.surah_ar} · ${verse.ref}`
-            : `${verse.surah_en} · ${verse.ref}`;
-        verseEl.innerHTML = `
-        <div class="home-verse card">
-            <div class="home-verse-header">
-                <span class="home-verse-label"><i class="ti ti-book" aria-hidden="true"></i> ${isAr ? 'آية اليوم' : 'Daily verse'}</span>
-                <span class="home-verse-surah">${surahChip}</span>
-            </div>
-            <p class="home-verse-ar">${verse.ar}</p>
-            ${verse.ar_meaning ? `<p class="home-verse-meaning">${verse.ar_meaning}</p>` : ''}
-            ${!isAr ? `<p class="home-verse-en">${verse.en}</p>` : ''}
-            <div class="home-verse-footer">
-                <div class="home-verse-actions">
-                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
-                        onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
-                    <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
-                        onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
+
+        const renderVerseCard = (verse) => {
+            const safeAr      = verse.ar.replace(/"/g, '&quot;');
+            const safeEn      = (verse.en || '').replace(/"/g, '&quot;');
+            const safeMeaning = (verse.ar_meaning || '').replace(/"/g, '&quot;');
+            const safeRef     = verse.ref.replace(/"/g, '&quot;');
+            const surahChip   = isAr
+                ? `${verse.surah_ar} · ${verse.ref}`
+                : `${verse.surah_en} · ${verse.ref}`;
+            verseEl.innerHTML = `
+            <div class="home-verse card">
+                <div class="home-verse-header">
+                    <span class="home-verse-label"><i class="ti ti-book" aria-hidden="true"></i> ${isAr ? 'آية اليوم' : 'Daily verse'}</span>
+                    <span class="home-verse-surah">${surahChip}</span>
                 </div>
-            </div>
-        </div>`;
+                <p class="home-verse-ar">${verse.ar}</p>
+                ${verse.ar_meaning ? `<p class="home-verse-meaning">${verse.ar_meaning}</p>` : ''}
+                ${!isAr && verse.en ? `<p class="home-verse-en">${verse.en}</p>` : ''}
+                <div class="home-verse-footer">
+                    <div class="home-verse-actions">
+                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                            onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
+                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                            onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
+                    </div>
+                </div>
+            </div>`;
+        };
+
+        // Render fallback immediately, then upgrade to live verse in background
+        const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
+        const fallback = _HOME_VERSES[(dhDay > 0 ? dhDay - 1 : new Date().getDate()) % _HOME_VERSES.length];
+        renderVerseCard(fallback);
+
+        fetchDailyVerse().then(verse => { if (verse) renderVerseCard(verse); });
     }
 
     // ── Today's summary ──────────────────────────────────────
