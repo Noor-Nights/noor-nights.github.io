@@ -18,6 +18,7 @@ const BASE_DELAY   = 2000; // ms — doubles on each retry (2s, 4s)
 
 const PROJECT_ID          = process.env.FIREBASE_PROJECT_ID;
 const SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+const IS_MANUAL           = process.env.MANUAL_DISPATCH === 'true';
 
 function dayOfYear(date) {
     const start = new Date(date.getFullYear(), 0, 0);
@@ -123,10 +124,14 @@ async function sendVersePush(verse) {
 async function main() {
     const now      = new Date();
     const dateStr  = now.toISOString().slice(0, 10);
-    const ayahNum  = (dayOfYear(now) % TOTAL_AYAHS) + 1;
+    // Manual dispatch: random verse so each test trigger delivers fresh content.
+    // Cron: deterministic day-of-year rotation so all users see the same verse.
+    const ayahNum  = IS_MANUAL
+        ? Math.floor(Math.random() * TOTAL_AYAHS) + 1
+        : (dayOfYear(now) % TOTAL_AYAHS) + 1;
     const url = `https://api.alquran.cloud/v1/ayah/${ayahNum}/editions/quran-simple,en.sahih,ar.muyassar`;
 
-    console.log(`Fetching ayah #${ayahNum} for ${dateStr}...`);
+    console.log(`Fetching ayah #${ayahNum} for ${dateStr}${IS_MANUAL ? ' (manual dispatch — random)' : ''}...`);
     const data = await fetchWithRetry(url);
 
     if (!data || data.code !== 200 || !Array.isArray(data.data) || data.data.length < 2) {
