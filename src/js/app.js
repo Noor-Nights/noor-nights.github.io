@@ -1338,6 +1338,13 @@ class WorshipTracker {
             delete d.allPrayers;
         }
         if (d.tahajjud === undefined) d.tahajjud = false;
+        if (d.adhkar !== undefined) {
+            if (d.morningAdhkar === undefined) d.morningAdhkar = !!d.adhkar;
+            if (d.eveningAdhkar === undefined) d.eveningAdhkar = !!d.adhkar;
+            delete d.adhkar;
+        }
+        if (d.morningAdhkar === undefined) d.morningAdhkar = false;
+        if (d.eveningAdhkar === undefined) d.eveningAdhkar = false;
     }
 
     _save() {
@@ -1362,7 +1369,8 @@ class WorshipTracker {
             this.data.days[key] = {
                 prayers: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
                 sunnahPrayers: false, tahajjud: false,
-                quranJuz: 0, charity: false, fasting: false, tasbeeh: false, adhkar: false,
+                quranJuz: 0, charity: false, fasting: false, tasbeeh: false,
+                morningAdhkar: false, eveningAdhkar: false,
                 completed: false
             };
         }
@@ -1397,7 +1405,7 @@ class WorshipTracker {
         const d = this.data.days[key];
         if (!d) return 0;
         const p = d.prayers || {};
-        const tasks = [p.fajr, p.dhuhr, p.asr, p.maghrib, p.isha, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.adhkar];
+        const tasks = [p.fajr, p.dhuhr, p.asr, p.maghrib, p.isha, d.quranJuz > 0, d.charity, d.fasting, d.tasbeeh, d.morningAdhkar, d.eveningAdhkar];
         const done = tasks.filter(Boolean).length;
         return Math.round((done / tasks.length) * 100);
     }
@@ -1413,7 +1421,7 @@ class WorshipTracker {
         const prayerPts = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length * 3;
         return prayerPts +
             ((d.quranJuz || 0) > 0 ? d.quranJuz * 15 : 0) +
-            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.morningAdhkar ? 5 : 0) + (d.eveningAdhkar ? 5 : 0) +
             (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
     }
 
@@ -1530,7 +1538,7 @@ class WorshipTracker {
         if (!d) return;
         const p = d.prayers || {};
         d.completed = p.fajr && p.dhuhr && p.asr && p.maghrib && p.isha &&
-                      d.quranJuz > 0 && d.charity && d.tasbeeh && d.adhkar;
+                      d.quranJuz > 0 && d.charity && d.tasbeeh && d.morningAdhkar && d.eveningAdhkar;
     }
 
     _calcStreaks() {
@@ -1691,7 +1699,7 @@ class WorshipTracker {
         const quranPts = (d.quranJuz || 0) * 15;
         const quz = d.quranJuz || 0;
         const pts = prayerPts + quranPts +
-            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.adhkar ? 10 : 0) +
+            (d.fasting ? 15 : 0) + (d.tasbeeh ? 5 : 0) + (d.morningAdhkar ? 5 : 0) + (d.eveningAdhkar ? 5 : 0) +
             (d.charity ? 10 : 0) + (d.sunnahPrayers ? 5 : 0) + (d.tahajjud ? 5 : 0);
 
         // Progress ring (100 pts = full ring, circumference ≈ 170)
@@ -1699,9 +1707,10 @@ class WorshipTracker {
 
         // Goals
         const tasks = [
-            { field: 'adhkar',  checked: !!d.adhkar,  pts: 10, en: 'Morning & evening adhkar', ar: 'أذكار الصباح والمساء' },
-            { field: 'tasbeeh', checked: !!d.tasbeeh, pts: 5,  en: '100 Tasbeeh',              ar: '١٠٠ تسبيحة' },
-            { field: 'charity', checked: !!d.charity, pts: 10, en: 'Sadaqah today',            ar: 'الصدقة اليوم' },
+            { field: 'morningAdhkar', checked: !!d.morningAdhkar, pts: 5,  en: 'Morning adhkar',  ar: 'أذكار الصباح' },
+            { field: 'eveningAdhkar', checked: !!d.eveningAdhkar, pts: 5,  en: 'Evening adhkar',  ar: 'أذكار المساء' },
+            { field: 'tasbeeh',       checked: !!d.tasbeeh,       pts: 5,  en: '100 Tasbeeh',     ar: '١٠٠ تسبيحة' },
+            { field: 'charity',       checked: !!d.charity,       pts: 10, en: 'Sadaqah today',   ar: 'الصدقة اليوم' },
         ];
 
         const goalRows = tasks.map(task => `
@@ -3679,8 +3688,8 @@ function renderHomeExtras() {
 
         const pendingItems = [];
         missedPrayers.forEach(pr => pendingItems.push({ key: pr.key, icon: '🕌', label: isAr ? pr.ar : pr.en }));
-        if (!d.adhkar && inMorning) pendingItems.push({ key: 'morning', icon: '📿', label: isAr ? 'أذكار الصباح' : 'Morning adhkar' });
-        if (!d.adhkar && inEvening) pendingItems.push({ key: 'evening', icon: '🌅', label: isAr ? 'أذكار المساء' : 'Evening adhkar' });
+        if (!d.morningAdhkar && inMorning) pendingItems.push({ key: 'morning', icon: '📿', label: isAr ? 'أذكار الصباح' : 'Morning adhkar' });
+        if (!d.eveningAdhkar && inEvening) pendingItems.push({ key: 'evening', icon: '🌅', label: isAr ? 'أذكار المساء' : 'Evening adhkar' });
         if (!d.tasbeeh) pendingItems.push({ key: 'tasbeeh', icon: '🤲', label: isAr ? '١٠٠ تسبيحة' : '100 Tasbeeh' });
         if (!d.charity) pendingItems.push({ key: 'charity', icon: '💚', label: isAr ? 'الصدقة' : 'Sadaqah' });
         if (!(d.quranJuz > 0)) pendingItems.push({ key: 'quran', icon: '📖', label: isAr ? 'تلاوة القرآن' : 'Quran' });
@@ -3768,7 +3777,7 @@ function renderHomeExtras() {
     // ── Today's summary ──────────────────────────────────────
     const summaryEl = document.getElementById('home-summary');
     if (summaryEl) {
-        const goalFields = ['adhkar', 'tasbeeh', 'charity'];
+        const goalFields = ['morningAdhkar', 'eveningAdhkar', 'tasbeeh', 'charity'];
         const goalsDone = goalFields.filter(f => !!d[f]).length + (d.quranJuz > 0 ? 1 : 0);
         const goalsTotal = goalFields.length + 1;
         const prayersDone = ['fajr','dhuhr','asr','maghrib','isha'].filter(k => !!p[k]).length;
