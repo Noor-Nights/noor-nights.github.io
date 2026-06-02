@@ -664,7 +664,7 @@ function renderDuaCarousel(list, containerId, prefix) {
     const countId = 'ccount-' + containerId;
     nav.innerHTML =
         '<button class="carousel-nav-btn" id="' + prevId + '" aria-label="Previous dua">&#8249;</button>' +
-        '<span class="carousel-counter" id="' + countId + '">1 / ' + list.length + '</span>' +
+        '<span class="carousel-counter" id="' + countId + '">' + numFmt(1) + ' / ' + numFmt(list.length) + '</span>' +
         '<button class="carousel-nav-btn" id="' + nextId + '" aria-label="Next dua">&#8250;</button>';
     carousel.appendChild(nav);
     body.appendChild(carousel);
@@ -678,7 +678,7 @@ function renderDuaCarousel(list, containerId, prefix) {
         const isRtl = document.documentElement.dir === 'rtl';
         const sign = isRtl ? 1 : -1;
         track.style.transform = `translateX(${sign * currentSlide * 100}%)`;
-        countEl.textContent = (currentSlide + 1) + ' / ' + list.length;
+        countEl.textContent = numFmt(currentSlide + 1) + ' / ' + numFmt(list.length);
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
 
@@ -1681,9 +1681,9 @@ class WorshipTracker {
                 iconHtml = clockSvg;
             } else if (isFuture) {
                 btnClass += ' wt-pb-future';
-                iconHtml = timeStr ? `<span class="wt-pb-time">${timeStr}</span>` : '';
+                iconHtml = timeStr ? `<span class="wt-pb-time">${numFmt(timeStr)}</span>` : '';
             } else {
-                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${timeStr}</span>` : '';
+                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${numFmt(timeStr)}</span>` : '';
             }
 
             return `
@@ -1718,7 +1718,7 @@ class WorshipTracker {
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
                 <div class="wt-goal-circle${task.checked ? ' wt-goal-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
                 <span class="wt-goal-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${task.pts}</span>
+                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${numFmt(task.pts)}</span>
             </label>`).join('');
 
         const quranRow = `
@@ -1732,7 +1732,7 @@ class WorshipTracker {
                         <span class="wt-quran-val" id="wt-quran-val">${isAr ? this._toAr(quz) : quz} ${isAr ? 'جزء' : 'Juz'}</span>
                     </div>
                 </div>
-                <span class="wt-goal-pts${quz > 0 ? ' wt-goal-pts-done' : ''}">${quz > 0 ? `+${quranPts}` : '+15/juz'}</span>
+                <span class="wt-goal-pts${quz > 0 ? ' wt-goal-pts-done' : ''}">${quz > 0 ? `+${numFmt(quranPts)}` : (isAr ? '+١٥/جزء' : '+15/juz')}</span>
             </div>`;
 
         // Bonus (optional)
@@ -1746,7 +1746,7 @@ class WorshipTracker {
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
                 <div class="wt-goal-circle${task.checked ? ' wt-goal-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
                 <span class="wt-goal-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${task.pts}</span>
+                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${numFmt(task.pts)}</span>
             </label>`).join('');
 
         const salahLabel = isAr ? 'صلوات اليوم' : "Today's prayers";
@@ -2195,7 +2195,7 @@ class BadgeSystem {
                 </div>
                 ${s.unlocked
                     ? `<p class="badge-modal-status badge-status-unlocked">✅ ${lang === 'ar' ? 'مفتوحة' : 'Unlocked'} · ${new Date(s.unlockedDate).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US')}</p>`
-                    : `<p class="badge-modal-status badge-status-locked">🔒 ${remaining} ${lang === 'ar' ? (remaining === 1 ? 'يوم متبقٍ' : 'أيام متبقية') : (remaining === 1 ? 'day remaining' : 'days remaining')}</p>`
+                    : `<p class="badge-modal-status badge-status-locked">🔒 ${numFmt(remaining)} ${lang === 'ar' ? (remaining === 1 ? 'يوم متبقٍ' : 'أيام متبقية') : (remaining === 1 ? 'day remaining' : 'days remaining')}</p>`
                 }
             </div>`;
         document.body.appendChild(modal);
@@ -2965,8 +2965,9 @@ class DuaCompanion {
         if (btnEl) {
             btnEl.classList.add('dc-ameen-done');
             const countEl = btnEl.querySelector('.dc-ameen-count');
-            const prev = parseInt(countEl ? countEl.textContent || '0' : '0', 10);
-            if (countEl) countEl.textContent = String(prev + 1);
+            const raw = countEl ? countEl.textContent.replace(/[٠-٩]/g, d => _AR_DIGITS.indexOf(d)) : '0';
+            const prev = parseInt(raw || '0', 10);
+            if (countEl) countEl.textContent = numFmt(prev + 1);
         }
         // Increment ameen_count in Supabase atomically via RPC
         if (this._isSupabaseConfigured()) {
@@ -3092,7 +3093,7 @@ class DuaCompanion {
             const elapsed = Date.now() - lastSubmit;
             if (elapsed < cooldownMs) {
                 const remaining = Math.ceil((cooldownMs - elapsed) / 1000);
-                this._toast(isAr ? `انتظر ${remaining} ثانية قبل المشاركة مجدداً` : `Please wait ${remaining} sec before sharing again`);
+                this._toast(isAr ? `انتظر ${numFmt(remaining)} ثانية قبل المشاركة مجدداً` : `Please wait ${remaining} sec before sharing again`);
                 return;
             }
             const btn = document.getElementById('dc-share-submit');
@@ -3456,7 +3457,7 @@ class PrayerTimesWidget {
             return `<div class="hpt-col">
                 <div class="hpt-top-bar" style="background:${topColor}"></div>
                 <span class="hpt-name" style="color:${nameColor}">${short}</span>
-                <span class="hpt-time" style="color:${timeColor}">${this._times[p]}</span>
+                <span class="hpt-time" style="color:${timeColor}">${numFmt(this._times[p])}</span>
                 ${statusHtml}
             </div>`;
         }).join('');
@@ -3472,15 +3473,15 @@ class PrayerTimesWidget {
                 <p class="home-next-label">${nextLabel}</p>
                 <div class="home-next-name">${names[next.name]}</div>
                 <div class="home-next-info">
-                    <span class="home-next-time">${this._times[next.name]}</span>
+                    <span class="home-next-time">${numFmt(this._times[next.name])}</span>
                     <span class="home-next-sep">–</span>
                     <span class="home-next-cd" id="home-next-cd">${isAr ? 'في ' : 'in '}${_countdown(next.mins, isAr)}</span>
                 </div>
                 <div class="home-progress-bar"><div class="home-progress-fill" id="home-progress-fill" style="width:${pct}%"></div></div>
                 <div class="home-progress-labels">
-                    <span>${(isAr ? SHORT_AR : SHORT)[prevKey]} ${this._times[prevKey]}</span>
-                    <span class="home-progress-cur">${(isAr ? SHORT_AR : SHORT)[current]} ${this._times[current]}</span>
-                    <span>${(isAr ? SHORT_AR : SHORT)[next.name]} ${this._times[next.name]}</span>
+                    <span>${(isAr ? SHORT_AR : SHORT)[prevKey]} ${numFmt(this._times[prevKey])}</span>
+                    <span class="home-progress-cur">${(isAr ? SHORT_AR : SHORT)[current]} ${numFmt(this._times[current])}</span>
+                    <span>${(isAr ? SHORT_AR : SHORT)[next.name]} ${numFmt(this._times[next.name])}</span>
                 </div>
             </div>
             <p class="home-pt-loc-label">${allPrayersLabel}</p>
@@ -3825,7 +3826,7 @@ function renderHomeExtras() {
             </div>
             <div class="home-sum-card" onclick="switchTab('tracker')">
                 <p class="home-sum-label">${isAr ? 'صلوات اليوم' : 'Prayers today'}</p>
-                <p class="home-sum-val home-sum-val-gold">${isAr ? worshipTracker._toAr(prayersDone) : prayersDone}/5</p>
+                <p class="home-sum-val home-sum-val-gold">${isAr ? worshipTracker._toAr(prayersDone) : prayersDone}/${numFmt(5)}</p>
                 <p class="home-sum-sub">${isAr ? 'مؤداة' : 'prayed'}</p>
             </div>
         </div>`;
