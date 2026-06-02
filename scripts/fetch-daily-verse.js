@@ -70,7 +70,8 @@ async function sendVersePush(verse) {
     }
 
     const title    = `📖 آية اليوم — ${verse.surah_ar}`;
-    const body     = verse.ar;
+    const tafsirExcerpt = verse.tafsir ? '\n\n' + verse.tafsir.slice(0, 120) + (verse.tafsir.length > 120 ? '…' : '') : '';
+    const body     = verse.ar + tafsirExcerpt;
     const collapseId = `daily-verse-${verse.date}`;
 
     try {
@@ -123,7 +124,7 @@ async function main() {
     const now      = new Date();
     const dateStr  = now.toISOString().slice(0, 10);
     const ayahNum  = (dayOfYear(now) % TOTAL_AYAHS) + 1;
-    const url      = `https://api.alquran.cloud/v1/ayah/${ayahNum}/editions/quran-simple,en.sahih`;
+    const url = `https://api.alquran.cloud/v1/ayah/${ayahNum}/editions/quran-simple,en.sahih,ar.muyassar`;
 
     console.log(`Fetching ayah #${ayahNum} for ${dateStr}...`);
     const data = await fetchWithRetry(url);
@@ -133,14 +134,16 @@ async function main() {
         process.exit(0);
     }
 
-    const arEdition = data.data[0];
-    const enEdition = data.data[1];
+    const arEdition     = data.data[0];
+    const enEdition     = data.data[1];
+    const tafsirEdition = data.data[2]; // ar.muyassar — may be absent on older ayahs
 
     const verse = {
         date:     dateStr,
         ayah:     ayahNum,
         ar:       arEdition.text,
         en:       enEdition.text,
+        tafsir:   tafsirEdition?.text || '',
         surah_ar: arEdition.surah.name,
         surah_en: arEdition.surah.englishName,
         ref:      `${arEdition.surah.number}:${arEdition.numberInSurah}`,
