@@ -53,6 +53,11 @@ jobs:
           # Remove it before the Pages upload so it is not served publicly.
           rm -f src/js/cairo-times.json
 
+      - name: Bake daily verse
+        run: node scripts/fetch-daily-verse.js
+        # Push notification is skipped here (no FIREBASE env vars) — daily-verse.yml handles that.
+        # This step only writes src/js/daily-verse.json so it is served fresh on every deploy.
+
       - name: Minify JS and CSS
         run: |
           npm install --no-save terser@5.48.0 clean-css-cli@5.6.3
