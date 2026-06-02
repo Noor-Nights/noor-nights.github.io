@@ -1660,7 +1660,6 @@ class WorshipTracker {
         const checkPathSvg = `<svg viewBox="0 0 16 16" fill="none" width="18" height="18" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const clockSvg = `<svg viewBox="0 0 16 16" fill="none" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         const goalCheckSvg = `<svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M3 8l3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-        const mosqueSvg = `<svg viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10.85A4 4 0 0 1 3 7c0-1 .6-2.4 2-3 .4 2 1.5 3 2.5 3S9.6 6 10 4c1.4.6 2 2 2 3a4 4 0 0 1-2 3.85V21M13 21V10.85A4 4 0 0 1 11 7c0-1 .6-2.4 2-3 .4 2 1.5 3 2.5 3s1.1-1 1.5-3c1.4.6 2 2 2 3a4 4 0 0 1-2 3.85V21M9 21v-4a2 2 0 0 1 4 0v4"/></svg>`;
 
         // Prayer button grid
         const prayerBtns = PRAYERS.map((pr) => {
@@ -1682,9 +1681,9 @@ class WorshipTracker {
                 iconHtml = clockSvg;
             } else if (isFuture) {
                 btnClass += ' wt-pb-future';
-                iconHtml = timeStr ? `<span class="wt-pb-time">${timeStr}</span>` : mosqueSvg;
+                iconHtml = timeStr ? `<span class="wt-pb-time">${timeStr}</span>` : '';
             } else {
-                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${timeStr}</span>` : mosqueSvg;
+                iconHtml = timeStr ? `<span class="wt-pb-time wt-pb-time-past">${timeStr}</span>` : '';
             }
 
             return `
@@ -3489,6 +3488,12 @@ class PrayerTimesWidget {
         </div>`;
 
         renderHomeExtras();
+        // Re-render worship tracker so prayer buttons pick up the now-available times.
+        if (typeof worshipTracker !== 'undefined' && !this._inRender) {
+            this._inRender = true;
+            worshipTracker.renderSection();
+            this._inRender = false;
+        }
     }
 
     _tick() {
