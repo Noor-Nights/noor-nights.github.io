@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: 📦 Install dependencies
+        run: npm ci
+
       - name: 📖 Fetch daily verse + send push
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}

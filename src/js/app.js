@@ -3777,7 +3777,8 @@ function renderHomeExtras() {
         const renderVerseCard = (verse) => {
             const safeAr      = verse.ar.replace(/"/g, '&quot;');
             const safeEn      = (verse.en || '').replace(/"/g, '&quot;');
-            const safeMeaning = (verse.ar_meaning || '').replace(/"/g, '&quot;');
+            const meaning     = verse.ar_meaning || verse.tafsir || '';
+            const safeMeaning = meaning.replace(/"/g, '&quot;');
             const safeRef     = verse.ref.replace(/"/g, '&quot;');
             const surahChip   = isAr
                 ? `${verse.surah_ar} · ${verse.ref}`
@@ -3789,7 +3790,7 @@ function renderHomeExtras() {
                     <span class="home-verse-surah">${surahChip}</span>
                 </div>
                 <p class="home-verse-ar">${verse.ar}</p>
-                ${verse.ar_meaning ? `<p class="home-verse-meaning">${verse.ar_meaning}</p>` : ''}
+                ${meaning ? `<p class="home-verse-meaning">${meaning}</p>` : ''}
                 ${!isAr && verse.en ? `<p class="home-verse-en">${verse.en}</p>` : ''}
                 <div class="home-verse-footer">
                     <div class="home-verse-actions">
