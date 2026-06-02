@@ -154,25 +154,28 @@ header {
     z-index: 5;
     border-bottom: .5px solid rgba(242,237,230,.06);
 }
-.tb-icon-row {
-    font-size: 1.5rem;
-    letter-spacing: 6px;
-    margin-bottom: 4px;
-    animation: tb-float 3s ease-in-out infinite;
+.tb-left { display: flex; align-items: center; gap: 9px; }
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-icon-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
-@keyframes tb-float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-3px); }
-}
+.tb-icon-badge .ti { font-size: 18px; color: var(--gold); }
 .tb-logo {
-    font-family: var(--fs);
-    font-size: 22px;
-    font-weight: 400;
-    letter-spacing: .12em;
-    color: var(--gold2);
+    font-family: var(--fn);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #fff;
     margin: 0;
-    text-align: center;
 }
+.tb-hijri-date { font-size: 13px; color: var(--text-muted); letter-spacing: .01em; }
 .tb-btn {
     background: none;
     border: .5px solid var(--border2);
