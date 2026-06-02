@@ -6,7 +6,7 @@ on:
   workflow_dispatch:         # Manual trigger for testing
 
 permissions:
-  contents: write
+  actions: write   # needed to trigger deploy.yml via gh workflow run
 
 jobs:
   update-daily-verse:
@@ -24,25 +24,14 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 📖 Fetch daily verse + send push
+      - name: 📖 Fetch verse + send push
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           MANUAL_DISPATCH: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
         run: node scripts/fetch-daily-verse.js
 
-      - name: 💾 Commit and push
+      - name: 🚀 Trigger Pages deploy
+        run: gh workflow run deploy.yml --repo ${{ github.repository }}
         env:
-          MANUAL_DISPATCH: ${{ github.event_name == 'workflow_dispatch' && 'true' || '' }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/js/daily-verse.json
-          # On manual dispatch always commit so the deploy fires and the card updates
-          if [ -n "$MANUAL_DISPATCH" ]; then
-            git diff --staged --quiet && git commit --allow-empty -m "chore: manual verse refresh $(date -u +%Y-%m-%dT%H:%M:%SZ)" || git commit -m "chore: manual verse refresh $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          else
-            git diff --staged --quiet && echo "No verse change — skipping commit" && exit 0
-            git commit -m "chore: daily verse $(date -u +%Y-%m-%d)"
-          fi
-          git push
+          GH_TOKEN: ${{ github.token }}
