@@ -522,7 +522,7 @@ function applyLanguage(lang) {
     if (badgeSystem) { badgeSystem.renderSection(); badgeSystem.renderStrip(); }
     if (virtueCards) virtueCards.renderSection();
     if (duaCompanion) duaCompanion.renderSection();
-    if (prayerWidget && !prayerWidget._inRender) prayerWidget.render();
+    if (prayerWidget) prayerWidget.render();
     renderHijriDate();
     _updateSettingsCard(lang);
 }
@@ -3489,10 +3489,9 @@ class PrayerTimesWidget {
 
         renderHomeExtras();
         // Re-render worship tracker so prayer buttons pick up the now-available times.
-        // Guard against recursion: worshipTracker.render() calls prayerWidget.render().
         if (typeof worshipTracker !== 'undefined' && !this._inRender) {
             this._inRender = true;
-            worshipTracker.render();
+            worshipTracker.renderSection();
             this._inRender = false;
         }
     }
