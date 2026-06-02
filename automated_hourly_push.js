@@ -281,35 +281,6 @@ async function sendPush(heading, body_text, collapseId) {
     }
 }
 
-async function sendOneSignalPush(heading, body_text, collapseId) {
-    const appId  = process.env.ONESIGNAL_APP_ID;
-    const apiKey = process.env.ONESIGNAL_REST_API_KEY;
-    if (!appId || !apiKey) {
-        console.warn('⚠️  OneSignal env vars not set — skipping OneSignal send');
-        return;
-    }
-    const res = await fetch('https://onesignal.com/api/v1/notifications', {
-        method:  'POST',
-        headers: {
-            'Content-Type':  'application/json',
-            'Authorization': `Basic ${apiKey}`,
-        },
-        body: JSON.stringify({
-            app_id:            appId,
-            included_segments: ['All'],
-            headings:          { en: heading },
-            contents:          { en: body_text },
-            collapse_id:       collapseId,
-        }),
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        console.warn(`⚠️  OneSignal HTTP ${res.status}: ${text}`);
-        return;
-    }
-    const data = await res.json();
-    console.log(`✅ OneSignal delivered — recipients: ${data.recipients ?? '?'}`);
-}
 
 const isManual = process.env.MANUAL_DISPATCH === 'true';
 
@@ -344,10 +315,7 @@ async function main() {
                 await sendPushWithRetry(heading, body, prayerCollapseId);
                 markPrayerSent(matchedPrayer);
             } catch (fcmErr) {
-                console.warn(`⚠️  Prayer FCM failed after retries — falling back to OneSignal: ${fcmErr.message}`);
-                await sendOneSignalPush(heading, body, prayerCollapseId)
-                    .then(() => markPrayerSent(matchedPrayer))
-                    .catch(osErr => console.error(`❌ Prayer OneSignal fallback error: ${osErr.message}`));
+                console.error(`❌ Prayer FCM failed after retries: ${fcmErr.message}`);
             }
         }
     }
@@ -378,9 +346,7 @@ async function main() {
     try {
         await sendPushWithRetry(heading, body_text, collapseId);
     } catch (fcmErr) {
-        console.warn(`⚠️  Dhikr FCM failed — falling back to OneSignal: ${fcmErr.message}`);
-        await sendOneSignalPush(heading, body_text, collapseId)
-            .catch(osErr => console.error(`❌ Dhikr OneSignal fallback error: ${osErr.message}`));
+        console.error(`❌ Dhikr FCM failed after retries: ${fcmErr.message}`);
     }
 }
 
