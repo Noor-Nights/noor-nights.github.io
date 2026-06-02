@@ -3880,7 +3880,8 @@ class DhikrReminders {
         const [h, m] = baseTime.split(':').map(Number);
         const now = new Date(getCurrentTime());
         const target = new Date(now);
-        target.setHours(h, m + offsetMinutes, 0, 0);
+        target.setHours(h, m, 0, 0);
+        target.setMinutes(target.getMinutes() + offsetMinutes);
         if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 1);
         const ms = target.getTime() - now.getTime();
         this._timers[key] = setTimeout(() => this._fire(key, baseTime, offsetMinutes), ms);
