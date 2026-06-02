@@ -1733,11 +1733,11 @@ class WorshipTracker {
             { field: 'tahajjud',      checked: !!d.tahajjud,      pts: 5,  en: 'Tahajjud',      ar: 'التهجد' },
         ];
         const bonusCards = optionalTasks.map(task => `
-            <label class="wt-bonus-card${task.checked ? ' wt-bonus-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
+            <label class="wt-goal-row${task.checked ? ' wt-goal-done' : ''}" data-wt-field="${task.field}" data-wt-day="${key}">
                 <input type="checkbox" data-wt-field="${task.field}" data-wt-day="${key}" ${task.checked ? 'checked' : ''} style="display:none">
-                <div class="wt-bonus-circle${task.checked ? ' wt-bonus-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
-                <span class="wt-bonus-name">${isAr ? task.ar : task.en}</span>
-                <span class="wt-bonus-pts">+${task.pts}</span>
+                <div class="wt-goal-circle${task.checked ? ' wt-goal-circle-done' : ''}">${task.checked ? goalCheckSvg : ''}</div>
+                <span class="wt-goal-name">${isAr ? task.ar : task.en}</span>
+                <span class="wt-goal-pts${task.checked ? ' wt-goal-pts-done' : ''}">+${task.pts}</span>
             </label>`).join('');
 
         const salahLabel = isAr ? 'صلوات اليوم' : "Today's prayers";
@@ -1783,7 +1783,7 @@ class WorshipTracker {
         </div>
         <div class="wt-bonus-section">
             <p class="wt-section-title wt-bonus-title">${bonusLabel}</p>
-            <div class="wt-bonus-grid">
+            <div class="wt-goal-list">
                 ${bonusCards}
             </div>
         </div>
@@ -3678,50 +3678,57 @@ function renderHomeExtras() {
         const inEvening = nowMins >= eveningStart && nowMins < eveningEnd;
 
         const pendingItems = [];
-        missedPrayers.forEach(pr => pendingItems.push({ icon: '🕌', label: isAr ? pr.ar : pr.en }));
-        if (!d.adhkar && inMorning) pendingItems.push({ icon: '📿', label: isAr ? 'أذكار الصباح' : 'Morning adhkar' });
-        if (!d.adhkar && inEvening) pendingItems.push({ icon: '🌅', label: isAr ? 'أذكار المساء' : 'Evening adhkar' });
-        if (!d.tasbeeh) pendingItems.push({ icon: '🤲', label: isAr ? '١٠٠ تسبيحة' : '100 Tasbeeh' });
-        if (!d.charity) pendingItems.push({ icon: '💚', label: isAr ? 'الصدقة' : 'Sadaqah' });
-        if (!(d.quranJuz > 0)) pendingItems.push({ icon: '📖', label: isAr ? 'تلاوة القرآن' : 'Quran' });
+        missedPrayers.forEach(pr => pendingItems.push({ key: pr.key, icon: '🕌', label: isAr ? pr.ar : pr.en }));
+        if (!d.adhkar && inMorning) pendingItems.push({ key: 'morning', icon: '📿', label: isAr ? 'أذكار الصباح' : 'Morning adhkar' });
+        if (!d.adhkar && inEvening) pendingItems.push({ key: 'evening', icon: '🌅', label: isAr ? 'أذكار المساء' : 'Evening adhkar' });
+        if (!d.tasbeeh) pendingItems.push({ key: 'tasbeeh', icon: '🤲', label: isAr ? '١٠٠ تسبيحة' : '100 Tasbeeh' });
+        if (!d.charity) pendingItems.push({ key: 'charity', icon: '💚', label: isAr ? 'الصدقة' : 'Sadaqah' });
+        if (!(d.quranJuz > 0)) pendingItems.push({ key: 'quran', icon: '📖', label: isAr ? 'تلاوة القرآن' : 'Quran' });
 
-        let sugHtml;
-        if (pendingItems.length === 0) {
+        const subMap = {
+            fajr:    { en: 'Prayer is the pillar of faith',           ar: 'الصلاة عمود الدين' },
+            dhuhr:   { en: "Don't let the time slip by",              ar: 'لا يفوتك وقتها' },
+            asr:     { en: 'Guard your prayers, especially the middle', ar: 'حافظ على الصلوات والصلاة الوسطى' },
+            maghrib: { en: 'The time is short — pray now',            ar: 'وقتها قصير، بادر' },
+            isha:    { en: 'Close your day with prayer',              ar: 'اختم يومك بالصلاة' },
+            morning: { en: 'Your spiritual armour for the day',       ar: 'درعك الروحي لهذا اليوم' },
+            evening: { en: 'Protect your evening with remembrance',   ar: 'احمِ مساءك بالذكر' },
+            tasbeeh: { en: 'Glorify Allah 100 times',                 ar: 'سبحان الله والحمد لله والله أكبر' },
+            charity: { en: 'Charity extinguishes sin',                ar: 'الصدقة تطفئ الخطيئة' },
+            quran:   { en: 'Even a single page counts',               ar: 'ولو صفحة واحدة' },
+        };
+
+        let sug;
+        if (pendingItems.length > 0) {
+            const first = pendingItems[0];
+            const sub = subMap[first.key] || { en: '', ar: '' };
+            sug = {
+                icon: 'ti-alert-circle',
+                text: `${first.icon} ${first.label}`,
+                sub: isAr ? sub.ar : sub.en,
+            };
+        } else {
             const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
-            let fallback;
             if (!d.sunnahPrayers) {
-                fallback = { text: isAr ? 'صلِّ سننك' : 'Pray your Sunnah prayers', sub: isAr ? 'أفضل النوافل بعد الفريضة' : 'Best voluntary act after obligatory prayer' };
+                sug = { icon: 'ti-sparkles', text: isAr ? 'صلِّ سننك' : 'Pray your Sunnah prayers', sub: isAr ? 'أفضل النوافل بعد الفريضة' : 'Best voluntary act after obligatory prayer' };
             } else if (!d.tahajjud && nowH >= 21) {
-                fallback = { text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
+                sug = { icon: 'ti-sparkles', text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
             } else if (dhDay >= 1 && dhDay <= 10 && DAILY_FOCUS[dhDay - 1]) {
                 const focus = DAILY_FOCUS[dhDay - 1][isAr ? 'ar' : 'en'];
-                fallback = { text: focus.theme, sub: focus.focus.slice(0, 60) + (focus.focus.length > 60 ? '…' : '') };
+                sug = { icon: 'ti-sparkles', text: focus.theme, sub: focus.focus.slice(0, 60) + (focus.focus.length > 60 ? '…' : '') };
             } else {
-                fallback = { text: isAr ? 'ادعُ من قلبك' : 'Make dua from your heart', sub: isAr ? 'الدعاء سلاح المؤمن' : 'Dua is the weapon of the believer' };
+                sug = { icon: 'ti-sparkles', text: isAr ? 'ادعُ من قلبك' : 'Make dua from your heart', sub: isAr ? 'الدعاء سلاح المؤمن' : 'Dua is the weapon of the believer' };
             }
-            sugHtml = `
-        <div class="home-sug card" onclick="switchTab('tracker')">
-            <div class="home-sug-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
-            <div class="home-sug-body">
-                <p class="home-sug-text">${fallback.text}</p>
-                <p class="home-sug-sub">${fallback.sub}</p>
-            </div>
-            <i class="ti ti-chevron-right home-sug-arrow" aria-hidden="true"></i>
-        </div>`;
-        } else {
-            const title = isAr ? 'لا تنسَ اليوم' : 'Still left today';
-            const chips = pendingItems.map(it => `<span class="home-sug-item">${it.icon} ${it.label}</span>`).join('');
-            sugHtml = `
-        <div class="home-sug card" onclick="switchTab('tracker')">
-            <div class="home-sug-icon"><i class="ti ti-alert-circle" aria-hidden="true"></i></div>
-            <div class="home-sug-body">
-                <p class="home-sug-text">${title}</p>
-                <div class="home-sug-items">${chips}</div>
-            </div>
-            <i class="ti ti-chevron-right home-sug-arrow" aria-hidden="true"></i>
-        </div>`;
         }
-        sugEl.innerHTML = sugHtml;
+        sugEl.innerHTML = `
+        <div class="home-sug card" onclick="switchTab('tracker')">
+            <div class="home-sug-icon"><i class="ti ${sug.icon}" aria-hidden="true"></i></div>
+            <div class="home-sug-body">
+                <p class="home-sug-text">${sug.text}</p>
+                <p class="home-sug-sub">${sug.sub}</p>
+            </div>
+            <i class="ti ti-chevron-right home-sug-arrow" aria-hidden="true"></i>
+        </div>`;
     }
 
     // ── Daily verse ──────────────────────────────────────────
