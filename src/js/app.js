@@ -1213,6 +1213,50 @@ async function shareImage(type, idx) {
 }
 
 
+async function shareDhikrCard(btn) {
+    const card = btn.closest('.dhikr-card');
+    if (!card) return;
+
+    const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
+    const translation = card.querySelector('.dhikr-translation')?.textContent?.trim() || '';
+    const section = card.closest('.dhikr-section');
+    const headerText = section?.querySelector('.dhikr-section-header')
+        ?.textContent?.replace(/\s*[▾▸►▼]+.*$/, '').trim() || '🌙 Noor Nights';
+
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳';
+
+    let blob = null;
+    try {
+        blob = await generateCanvasBlob(arabic, translation ? `"${translation}"` : '', headerText, false);
+    } catch (e) { console.error('Dhikr share canvas error:', e); }
+
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    if (!blob) return;
+
+    const file = new File([blob], 'dhikr-noor-nights.jpg', { type: 'image/jpeg' });
+    const shareText = `${arabic}\n\n${translation}\n\n🌙 Noor Nights`;
+
+    trackEvent('/share-dhikr-card', `Share dhikr: ${headerText}`);
+
+    if (navigator.share) {
+        try {
+            if (navigator.canShare?.({ files: [file] })) {
+                await navigator.share({ files: [file], title: headerText, text: '🌙 Noor Nights' });
+                return;
+            }
+            await navigator.share({ title: headerText, text: shareText, url: window.location.href });
+            return;
+        } catch (e) { if (e.name === 'AbortError') return; }
+    }
+
+    const url = URL.createObjectURL(blob);
+    triggerDownload(url, 'dhikr-noor-nights.jpg');
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
 async function shareYoussef() {
     let dua = youssefDuas[currentYoussefIdx];
     const blob = await generateCanvasBlob(dua.arabic.replace(/\n/g, '<br>'), `"${dua.english}"`, "", true);
