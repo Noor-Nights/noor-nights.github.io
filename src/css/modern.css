@@ -807,6 +807,7 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
     margin-top: 10px;
     display: flex;
     justify-content: flex-end;
+    gap: 6px;
 }
 .dhikr-share-btn {
     background: var(--bg3);

@@ -1003,7 +1003,7 @@ async function _drawAppIconFooter(ctx, W, sepY) {
     ctx.beginPath(); ctx.moveTo(60, sepY); ctx.lineTo(W - 60, sepY); ctx.stroke();
 
     const prevFont = ctx.font;
-    ctx.font = 'bold 38px "Mulish", sans-serif';
+    ctx.font = 'bold 28px "Mulish", sans-serif';
     const nameW = ctx.measureText('Noor Nights').width;
     const rowW = ICO + GAP + nameW;
     const rowX = (W - rowW) / 2;
@@ -1040,7 +1040,7 @@ async function _drawAppIconFooter(ctx, W, sepY) {
 
     // "Noor Nights" label
     ctx.textAlign = 'left';
-    ctx.font = 'bold 38px "Mulish", sans-serif';
+    ctx.font = 'bold 28px "Mulish", sans-serif';
     ctx.fillStyle = GOLD;
     ctx.fillText('Noor Nights', rowX + ICO + GAP, rowCY);
 
@@ -1303,6 +1303,19 @@ async function shareDhikrCard(btn) {
     const url = URL.createObjectURL(blob);
     triggerDownload(url, 'dhikr-noor-nights.jpg');
     setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function copyDhikrCard(btn) {
+    const card = btn.closest('.dhikr-card');
+    if (!card) return;
+    const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
+    const translation = card.querySelector('.dhikr-translation')?.textContent?.trim() || '';
+    const text = [arabic, translation].filter(Boolean).join('\n\n');
+    navigator.clipboard?.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 8l3.5 3.5 6.5-7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }).catch(() => {});
 }
 
 async function shareYoussef() {
