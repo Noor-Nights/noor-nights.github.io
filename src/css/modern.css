@@ -803,6 +803,25 @@ h2 {
 .dhikr-virtue-ar { display: none; }
 html[lang="ar"] .dhikr-virtue-en { display: none; }
 html[lang="ar"] .dhikr-virtue-ar { display: block; }
+.dhikr-share-row {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+.dhikr-share-btn {
+    background: var(--bg3);
+    border: none;
+    border-radius: 8px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+.dhikr-share-btn:hover { background: var(--bg4); color: var(--gold2); opacity: 1; }
 .dhikr-count-badge {
     display: inline-flex;
     align-items: center;
@@ -1323,9 +1342,7 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
     transform: translateY(-2px);
 }
 
-.slide-btn-icon {
-    font-size: 1.1rem;
-}
+.slide-btn svg { flex-shrink: 0; }
 
 .carousel-nav {
     display: flex;
