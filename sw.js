@@ -29,11 +29,13 @@ firebase.initializeApp(FIREBASE_CONFIG);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    const { title, body, icon } = payload.notification;
+    const { title, body, icon, tag } = payload.notification;
     self.registration.showNotification(title, {
         body,
         icon: icon || 'https://noor-nights.github.io/assets/icons/icon-512.png',
         badge: 'https://noor-nights.github.io/assets/icons/icon-96-mono.png',
+        tag: tag || undefined,
+        renotify: !!tag,
         silent: false,
         vibrate: [200, 100, 200],
         data: { url: 'https://noor-nights.github.io' },

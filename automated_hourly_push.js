@@ -309,7 +309,7 @@ async function main() {
             console.log(`⏭️  ${matchedPrayer} already sent today — skipping duplicate`);
         } else {
             const { heading, body } = prayerNotifications[matchedPrayer];
-            const prayerCollapseId  = `prayer-${matchedPrayer}-${dateKey}`;
+            const prayerCollapseId  = `noor-prayer-${matchedPrayer}`;
             console.log(`🕌 Prayer time matched: ${matchedPrayer} — sending prayer notification`);
             try {
                 await sendPushWithRetry(heading, body, prayerCollapseId);
