@@ -1756,7 +1756,7 @@ class WorshipTracker {
             { key: 'fajr',    en: 'Fajr',  ar: 'الفجر'  },
             { key: 'dhuhr',   en: 'Dhuhr', ar: 'الظهر'  },
             { key: 'asr',     en: 'Asr',   ar: 'العصر'  },
-            { key: 'maghrib', en: 'Mghb',  ar: 'مغرب'   },
+            { key: 'maghrib', en: 'Maghrib', ar: 'مغرب'   },
             { key: 'isha',    en: 'Isha',  ar: 'العشاء' },
         ];
         const prayersDone = PRAYERS.filter(pr => !!p[pr.key]).length;
@@ -3515,7 +3515,7 @@ class PrayerTimesWidget {
 
         const isAr = currentLang === 'ar';
         const names = t('dhPrayers');
-        const SHORT = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Mghb', isha: 'Isha' };
+        const SHORT = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
         const SHORT_AR = { fajr: 'فجر', dhuhr: 'ظهر', asr: 'عصر', maghrib: 'مغرب', isha: 'عشاء' };
         const current = this._api.getCurrentPrayer(this._times);
         const next = this._api.getNextPrayer(this._times);
@@ -3682,13 +3682,15 @@ function copyVerse(btn) {
 
 async function shareVerseCard(btn) {
     const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
+    const surahEn = btn.dataset.surahEn || '', surahAr = btn.dataset.surahAr || '';
     const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15"><circle cx="8" cy="8" r="6" stroke="var(--gold2)" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`;
 
     let blob = null;
     try {
-        const badge = `📖 ${ref}`;
+        const surahLabel = currentLang === 'ar' ? surahAr : surahEn;
+        const badge = surahLabel ? `📖 ${surahLabel} · ${ref}` : `📖 ${ref}`;
         blob = await generateCanvasBlob(ar, en, badge, false);
     } catch {}
 
@@ -3892,6 +3894,8 @@ function renderHomeExtras() {
             const meaning     = verse.ar_meaning || verse.tafsir || '';
             const safeMeaning = meaning.replace(/"/g, '&quot;');
             const safeRef     = verse.ref.replace(/"/g, '&quot;');
+            const safeSurahEn = (verse.surah_en || '').replace(/"/g, '&quot;');
+            const safeSurahAr = (verse.surah_ar || '').replace(/"/g, '&quot;');
             const surahChip   = isAr
                 ? `${verse.surah_ar} · ${verse.ref}`
                 : `${verse.surah_en} · ${verse.ref}`;
@@ -3906,9 +3910,9 @@ function renderHomeExtras() {
                 ${!isAr && verse.en ? `<p class="home-verse-en">${verse.en}</p>` : ''}
                 <div class="home-verse-footer">
                     <div class="home-verse-actions">
-                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}" data-surah-en="${safeSurahEn}" data-surah-ar="${safeSurahAr}"
                             onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${_copyIconSvg}</button>
-                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
+                        <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}" data-surah-en="${safeSurahEn}" data-surah-ar="${safeSurahAr}"
                             onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${_shareIconSvg}</button>
                     </div>
                 </div>
