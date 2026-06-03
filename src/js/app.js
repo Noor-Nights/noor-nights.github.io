@@ -913,7 +913,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     if (isYoussef) {
         topTitle = currentLang === 'ar' ? '🤲 دعاء خاص لروح يوسف عبد القادر' : '🤲 Special Dua for Youssef Abdelkader';
     }
-    if (isYoussef && currentLang === 'ar') {
+    if (/[؀-ۿ]/.test(topTitle)) {
         ctx.font = 'bold 34px "Amiri", serif';
         ctx.direction = 'rtl';
     } else {
@@ -1120,9 +1120,15 @@ async function generateVCBlob(card, lang) {
     const dayLbl = lang === 'ar'
         ? (card.hijriDate || `بطاقة ${card.day}`)
         : (card.hijriDate || `Card ${card.day}`);
-    ctx.font = 'bold 36px "Inter", sans-serif';
+    if (lang === 'ar') {
+        ctx.font = 'bold 36px "Amiri", serif';
+        ctx.direction = 'rtl';
+    } else {
+        ctx.font = 'bold 36px "Inter", sans-serif';
+    }
     ctx.fillStyle = '#e8d195';
     ctx.fillText(dayLbl, W / 2, 276);
+    ctx.direction = 'ltr';
 
     ctx.font = '24px "Amiri", serif';
     ctx.fillStyle = 'rgba(220,195,140,0.58)';
@@ -1185,7 +1191,7 @@ async function generateVCBlob(card, lang) {
     if (lang === 'ar') {
         ctx.direction = 'rtl';
         ctx.fillRect(W - 103, curY - 4, 3, vbH);
-        ctx.font = 'italic 26px "Inter", sans-serif';
+        ctx.font = 'italic 26px "Amiri", serif';
         ctx.fillStyle = 'rgba(210,188,148,0.66)';
         ctx.textAlign = 'right';
         vLines.forEach((line, i) => ctx.fillText(line, W - 122, curY + 15 + i * 38));
