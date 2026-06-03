@@ -10,6 +10,10 @@ const CONFIG = {
     SUPABASE_ANON_KEY: '__SUPABASE_ANON_KEY__',
 };
 
+// Shared inline SVG icons reused across daily verse, dhikr, and Duas sections
+const _copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
+const _shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+
 // ═══════════════════════════════════════════════════
 // INTERNATIONALIZATION (i18n) — EN / AR
 // ═══════════════════════════════════════════════════
@@ -638,11 +642,11 @@ function renderDuaCarousel(list, containerId, prefix) {
                 <div class="dua-badge-row"><span class="slide-badge"></span></div>
                 <div class="slide-actions">
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
-                        <span class="slide-btn-icon">📄</span>
+                        ${_shareIconSvg}
                         <span class="slide-btn-label">${t('actShareCard')}</span>
                     </button>
                     <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
-                        <span class="slide-btn-icon">📋</span>
+                        ${_copyIconSvg}
                         <span class="slide-btn-label">${t('actCopy')}</span>
                     </button>
                 </div>
@@ -745,8 +749,8 @@ function renderDuaList(list, containerId, prefix, cardColors, collapsible) {
                 <div class="arabic-text"></div>
                 ${dua.english ? `<div class="translation"></div>` : ''}
                 <div class="share-buttons">
-                    <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">📤 ${t('actShareCard')}</button>
-                    <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">📋 ${t('actCopy')}</button>
+                    <button class="btn btn-share" onclick="shareImage('${prefix}', ${idx})">${_shareIconSvg} ${t('actShareCard')}</button>
+                    <button class="btn btn-share" onclick="copyText('${prefix}', ${idx})">${_copyIconSvg} ${t('actCopy')}</button>
                 </div>
             </div>
         `;
@@ -950,7 +954,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     }
 
     // ── Footer ────────────────────────────────────────────
-    _drawAppIconFooter(ctx, W, H - 155);
+    await _drawAppIconFooter(ctx, W, H - 155);
 
     return new Promise(resolve => {
         try { canvas.toBlob(resolve, 'image/jpeg', 0.92); }
@@ -980,8 +984,17 @@ function _vcSep(ctx, cx, y, hw, color) {
     ctx.restore();
 }
 
-// Option A footer: app icon (rounded square + crescent) beside "Noor Nights", centered
-function _drawAppIconFooter(ctx, W, sepY) {
+function _loadSvgImage(svgStr) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+    });
+}
+
+// Option A footer: moon-stars app icon beside "Noor Nights", centered
+async function _drawAppIconFooter(ctx, W, sepY) {
     const GOLD = '#D4AF37';
     const ICO = 52, ICO_R = 12, GAP = 16;
 
@@ -1015,14 +1028,15 @@ function _drawAppIconFooter(ctx, W, sepY) {
     ctx.strokeStyle = 'rgba(212,175,55,0.3)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
-
-    // Crescent moon: gold disc cut by offset dark disc
-    const mcx = bx + ICO / 2, mcy = by + ICO / 2, mr = 14;
-    ctx.fillStyle = GOLD;
-    ctx.beginPath(); ctx.arc(mcx, mcy, mr, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#1c2235';
-    ctx.beginPath(); ctx.arc(mcx + 5, mcy - 3, mr * 0.8, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+
+    // moon-stars Tabler icon
+    const moonSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${GOLD}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1 -9 -9"/><path d="M17 4a2 2 0 0 0 2 2 2 2 0 0 0 -2 2 2 2 0 0 0 -2 -2 2 2 0 0 0 2 -2"/><path d="M19 11h2m-1 -1v2"/></svg>`;
+    const iconImg = await _loadSvgImage(moonSvg);
+    if (iconImg) {
+        const IS = 30;
+        ctx.drawImage(iconImg, bx + (ICO - IS) / 2, by + (ICO - IS) / 2, IS, IS);
+    }
 
     // "Noor Nights" label
     ctx.textAlign = 'left';
@@ -1181,7 +1195,7 @@ async function generateVCBlob(card, lang) {
     }
 
     // ── Footer ────────────────────────────────────────────
-    _drawAppIconFooter(ctx, W, H - 165);
+    await _drawAppIconFooter(ctx, W, H - 165);
 
     return new Promise(resolve => {
         try { cv.toBlob(resolve, 'image/jpeg', 0.92); }
@@ -3849,8 +3863,6 @@ function renderHomeExtras() {
     // ── Daily verse ──────────────────────────────────────────
     const verseEl = document.getElementById('home-verse');
     if (verseEl) {
-        const copyIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg>`;
-        const shareIconSvg = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 
         const renderVerseCard = (verse) => {
             const safeAr      = verse.ar.replace(/"/g, '&quot;');
@@ -3873,9 +3885,9 @@ function renderHomeExtras() {
                 <div class="home-verse-footer">
                     <div class="home-verse-actions">
                         <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
-                            onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${copyIconSvg}</button>
+                            onclick="copyVerse(this)" aria-label="${isAr ? 'نسخ' : 'Copy'}">${_copyIconSvg}</button>
                         <button class="home-verse-btn" data-ar="${safeAr}" data-en="${safeEn}" data-meaning="${safeMeaning}" data-ref="${safeRef}"
-                            onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${shareIconSvg}</button>
+                            onclick="shareVerseCard(this)" aria-label="${isAr ? 'مشاركة' : 'Share'}">${_shareIconSvg}</button>
                     </div>
                 </div>
             </div>`;
