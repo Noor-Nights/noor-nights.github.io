@@ -913,9 +913,15 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     if (isYoussef) {
         topTitle = currentLang === 'ar' ? '🤲 دعاء خاص لروح يوسف عبد القادر' : '🤲 Special Dua for Youssef Abdelkader';
     }
-    ctx.font = 'bold 34px "Mulish", sans-serif';
+    if (isYoussef && currentLang === 'ar') {
+        ctx.font = 'bold 34px "Amiri", serif';
+        ctx.direction = 'rtl';
+    } else {
+        ctx.font = 'bold 34px "Mulish", sans-serif';
+    }
     ctx.fillStyle = '#e8d195';
     ctx.fillText(topTitle, W / 2, 270);
+    ctx.direction = 'ltr';
 
     // ── Top separator ─────────────────────────────────────
     _vcSep(ctx, W / 2, 320, 320, GOLD);
