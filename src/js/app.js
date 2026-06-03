@@ -930,13 +930,13 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     const cleanAr = arabic.replace(/<br>/g, ' ').replace(/\n+/g, ' ');
     const tmpC = document.createElement('canvas').getContext('2d');
     let arFs = cleanAr.length > 200 ? 46 : cleanAr.length > 100 ? 52 : 58;
-    tmpC.font = `bold ${arFs}px "Amiri", serif`;
+    tmpC.font = `${arFs}px "Amiri", serif`;
     let arLines = getWrappedLines(tmpC, cleanAr, 920);
-    if (arLines.length > 5) { arFs = 42; tmpC.font = `bold ${arFs}px "Amiri", serif`; arLines = getWrappedLines(tmpC, cleanAr, 920); }
+    if (arLines.length > 5) { arFs = 42; tmpC.font = `${arFs}px "Amiri", serif`; arLines = getWrappedLines(tmpC, cleanAr, 920); }
     const arLH = Math.round(arFs * 1.8);
 
     ctx.direction = 'rtl';
-    ctx.font = `bold ${arFs}px "Amiri", serif`;
+    ctx.font = `${arFs}px "Amiri", serif`;
     ctx.fillStyle = '#f2ece0';
     const arStartY = 380;
     arLines.forEach((line, i) => ctx.fillText(line, W / 2, arStartY + i * arLH + arLH / 2));
@@ -951,9 +951,9 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     // ── English translation ───────────────────────────────
     if (english) {
         const enText = `"${english}"`;
-        tmpC.font = 'bold 30px "Mulish", sans-serif';
+        tmpC.font = '30px "Mulish", sans-serif';
         const enLines = getWrappedLines(tmpC, enText, 900);
-        ctx.font = 'bold 30px "Mulish", sans-serif';
+        ctx.font = '30px "Mulish", sans-serif';
         ctx.fillStyle = 'rgba(240,225,190,0.85)';
         enLines.forEach((line, i) => ctx.fillText(line, W / 2, curY + 20 + i * 46));
         curY += enLines.length * 46 + 30;
