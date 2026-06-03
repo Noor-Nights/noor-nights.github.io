@@ -3850,16 +3850,13 @@ function renderHomeExtras() {
                 sub: isAr ? sub.ar : sub.en,
             };
         } else {
-            const dhDay = typeof getDhulHijjahDay === 'function' ? getDhulHijjahDay() : 0;
             if (!d.sunnahPrayers) {
                 sug = { icon: 'ti-sparkles', text: isAr ? 'صلِّ سننك' : 'Pray your Sunnah prayers', sub: isAr ? 'أفضل النوافل بعد الفريضة' : 'Best voluntary act after obligatory prayer' };
             } else if (!d.tahajjud && nowH >= 21) {
                 sug = { icon: 'ti-sparkles', text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
-            } else if (dhDay >= 1 && dhDay <= 10 && DAILY_FOCUS[dhDay - 1]) {
-                const focus = DAILY_FOCUS[dhDay - 1][isAr ? 'ar' : 'en'];
-                sug = { icon: 'ti-sparkles', text: focus.theme, sub: focus.focus.slice(0, 60) + (focus.focus.length > 60 ? '…' : '') };
             } else {
-                sug = { icon: 'ti-sparkles', text: isAr ? 'ادعُ من قلبك' : 'Make dua from your heart', sub: isAr ? 'الدعاء سلاح المؤمن' : 'Dua is the weapon of the believer' };
+                sugEl.innerHTML = '';
+                return;
             }
         }
         sugEl.innerHTML = `
