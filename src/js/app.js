@@ -3685,15 +3685,16 @@ function copyVerse(btn) {
 
 async function shareVerseCard(btn) {
     const ar = btn.dataset.ar || '', en = btn.dataset.en || '', ref = btn.dataset.ref || '';
-    const surahEn = btn.dataset.surahEn || '', surahAr = btn.dataset.surahAr || '';
+    const surahEn = btn.dataset.surahEn || '';
     const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = `<svg viewBox="0 0 16 16" width="15" height="15"><circle cx="8" cy="8" r="6" stroke="var(--gold2)" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/></svg>`;
 
     let blob = null;
     try {
-        const surahLabel = currentLang === 'ar' ? surahAr : surahEn;
-        const badge = surahLabel ? `📖 ${surahLabel} · ${ref}` : `📖 ${ref}`;
+        // Always use English surah name in the badge so the card font stays
+        // Mulish (sans-serif). Arabic text belongs in the verse body, not the label.
+        const badge = surahEn ? `📖 ${surahEn} · ${ref}` : `📖 ${ref}`;
         blob = await generateCanvasBlob(ar, en, badge, false);
     } catch {}
 
