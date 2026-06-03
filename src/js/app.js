@@ -950,21 +950,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     }
 
     // ── Footer ────────────────────────────────────────────
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(60, H - 155); ctx.lineTo(W - 60, H - 155); ctx.stroke();
-
-    ctx.font = 'bold 34px "Mulish", sans-serif';
-    ctx.fillStyle = 'rgba(197,163,82,0.95)';
-    ctx.fillText('🌙 Noor Nights', W / 2, H - 112);
-
-    ctx.font = '22px "Mulish", sans-serif';
-    ctx.fillStyle = 'rgba(220,200,155,0.75)';
-    ctx.fillText('Noor Nights — Daily Worship Companion', W / 2, H - 72);
-
-    ctx.font = 'italic 19px "Mulish", sans-serif';
-    ctx.fillStyle = 'rgba(210,188,140,0.55)';
-    ctx.fillText('Sadaqah Jariyah for Youssef Abdelkader', W / 2, H - 40);
+    _drawAppIconFooter(ctx, W, H - 155);
 
     return new Promise(resolve => {
         try { canvas.toBlob(resolve, 'image/jpeg', 0.92); }
@@ -992,6 +978,68 @@ function _vcSep(ctx, cx, y, hw, color) {
     ctx.fillStyle = _hexRgba(color, 0.6);
     ctx.fillRect(-4.5, -4.5, 9, 9);
     ctx.restore();
+}
+
+// Option A footer: app icon (rounded square + crescent) beside "Noor Nights", centered
+function _drawAppIconFooter(ctx, W, sepY) {
+    const GOLD = '#D4AF37';
+    const ICO = 52, ICO_R = 12, GAP = 16;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(60, sepY); ctx.lineTo(W - 60, sepY); ctx.stroke();
+
+    const prevFont = ctx.font;
+    ctx.font = 'bold 38px "Mulish", sans-serif';
+    const nameW = ctx.measureText('Noor Nights').width;
+    const rowW = ICO + GAP + nameW;
+    const rowX = (W - rowW) / 2;
+    const rowCY = sepY + 43;
+
+    // Rounded-square icon box
+    const bx = rowX, by = rowCY - ICO / 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(bx + ICO_R, by);
+    ctx.lineTo(bx + ICO - ICO_R, by);
+    ctx.arcTo(bx + ICO, by,        bx + ICO, by + ICO_R,        ICO_R);
+    ctx.lineTo(bx + ICO, by + ICO - ICO_R);
+    ctx.arcTo(bx + ICO, by + ICO,  bx + ICO - ICO_R, by + ICO,  ICO_R);
+    ctx.lineTo(bx + ICO_R, by + ICO);
+    ctx.arcTo(bx,         by + ICO, bx,               by + ICO - ICO_R, ICO_R);
+    ctx.lineTo(bx, by + ICO_R);
+    ctx.arcTo(bx,         by,       bx + ICO_R,        by,        ICO_R);
+    ctx.closePath();
+    ctx.fillStyle = '#1c2235';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,175,55,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Crescent moon: gold disc cut by offset dark disc
+    const mcx = bx + ICO / 2, mcy = by + ICO / 2, mr = 14;
+    ctx.fillStyle = GOLD;
+    ctx.beginPath(); ctx.arc(mcx, mcy, mr, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1c2235';
+    ctx.beginPath(); ctx.arc(mcx + 5, mcy - 3, mr * 0.8, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    // "Noor Nights" label
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 38px "Mulish", sans-serif';
+    ctx.fillStyle = GOLD;
+    ctx.fillText('Noor Nights', rowX + ICO + GAP, rowCY);
+
+    ctx.textAlign = 'center';
+    ctx.font = '22px "Mulish", sans-serif';
+    ctx.fillStyle = 'rgba(220,200,155,0.75)';
+    ctx.fillText('Noor Nights — Daily Worship Companion', W / 2, sepY + 87);
+
+    ctx.font = 'italic 19px "Mulish", sans-serif';
+    ctx.fillStyle = 'rgba(210,188,140,0.55)';
+    ctx.fillText('Sadaqah Jariyah for Youssef Abdelkader', W / 2, sepY + 119);
+
+    ctx.font = prevFont;
 }
 
 async function generateVCBlob(card, lang) {
@@ -1133,21 +1181,7 @@ async function generateVCBlob(card, lang) {
     }
 
     // ── Footer ────────────────────────────────────────────
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(60, H - 165); ctx.lineTo(W - 60, H - 165); ctx.stroke();
-
-    ctx.font = 'bold 36px "Inter", sans-serif';
-    ctx.fillStyle = _hexRgba(c, 0.95);
-    ctx.fillText('🌙 Noor Nights', W / 2, H - 122);
-
-    ctx.font = '23px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(220,200,155,0.78)';
-    ctx.fillText('Noor Nights — Daily Worship Companion', W / 2, H - 80);
-
-    ctx.font = 'italic 20px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(210,188,140,0.58)';
-    ctx.fillText('Sadaqah Jariyah for Youssef Abdelkader', W / 2, H - 46);
+    _drawAppIconFooter(ctx, W, H - 165);
 
     return new Promise(resolve => {
         try { cv.toBlob(resolve, 'image/jpeg', 0.92); }
