@@ -3672,7 +3672,10 @@ async function fetchDailyVerse() {
 function copyVerse(btn) {
     const ar = btn.dataset.ar || '', meaning = btn.dataset.meaning || '',
           en = btn.dataset.en || '', ref = btn.dataset.ref || '';
-    const text = [ar, meaning, en, ref].filter(Boolean).join('\n\n');
+    const surahEn = btn.dataset.surahEn || '', surahAr = btn.dataset.surahAr || '';
+    const surahLabel = currentLang === 'ar' ? surahAr : surahEn;
+    const refLine = surahLabel ? `${surahLabel} · ${ref}` : ref;
+    const text = [ar, meaning, en, refLine].filter(Boolean).join('\n\n');
     navigator.clipboard?.writeText(text).then(() => {
         const orig = btn.innerHTML;
         btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M3 8l3.5 3.5 6.5-7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
