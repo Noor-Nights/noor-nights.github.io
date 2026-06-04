@@ -3347,7 +3347,10 @@ class DuaCompanion {
 
         // Mark all made
         document.getElementById('dc-mark-all')?.addEventListener('click', () => {
-            const duas = this._allDuas(this.cat);
+            // Mark only the duas currently visible — either the saved list or the active category
+            const duas = this._showingFavs
+                ? DC_CATEGORIES.flatMap(c => (DC_DUAS[c.id] || []).filter(d => this.favs.has(d.id)))
+                : this._allDuas(this.cat);
             duas.forEach(d => this.checked.add(d.id));
             this._save();
             this.renderSection();
