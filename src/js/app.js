@@ -693,18 +693,6 @@ function renderDuaCarousel(list, containerId, prefix) {
         '</div>' +
         '<button class="carousel-nav-btn" id="' + nextId + '" aria-label="Next dua">&#8250;</button>';
     carousel.appendChild(nav);
-
-    // Jump bar
-    const jumpBar = document.createElement('div');
-    jumpBar.className = 'jaw-jump-bar';
-    const jumpInputId = 'cjump-' + containerId;
-    jumpBar.innerHTML =
-        '<i class="ti ti-list-numbers" aria-hidden="true"></i>' +
-        `<input class="jaw-jump-input" id="${jumpInputId}" type="number" min="1" max="${list.length}" ` +
-        `placeholder="${isAr ? `انتقل إلى رقم (١–${numFmt(list.length)})` : `Jump to (1–${list.length})`}">` +
-        `<button class="jaw-jump-go">${isAr ? 'انتقل' : 'Go'}</button>`;
-    carousel.appendChild(jumpBar);
-
     body.appendChild(carousel);
 
     const prevBtn = document.getElementById(prevId);
@@ -790,15 +778,6 @@ function renderDuaCarousel(list, containerId, prefix) {
         });
     }
 
-    // Jump bar
-    const jumpInputEl = document.getElementById('cjump-' + containerId);
-    const jumpGoBtn = jumpBar.querySelector('.jaw-jump-go');
-    function handleJump() {
-        const n = parseInt(jumpInputEl?.value || '', 10);
-        if (n >= 1 && n <= list.length) { goToSlide(n - 1); if (jumpInputEl) jumpInputEl.value = ''; }
-    }
-    if (jumpGoBtn) jumpGoBtn.addEventListener('click', handleJump);
-    if (jumpInputEl) jumpInputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleJump(); });
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
