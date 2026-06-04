@@ -660,18 +660,14 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
-    // Toggle row (translation / transliteration / context)
+    // Translation toggle pill — single button, no transliteration/context (no data)
     let showTranslation = true;
-    const toggleRow = document.createElement('div');
-    toggleRow.className = 'jaw-toggle-row';
     const isAr = currentLang === 'ar';
+    const toggleRow = document.createElement('div');
+    toggleRow.className = 'jaw-toggle-row jaw-toggle-row--single';
     toggleRow.innerHTML =
-        `<button class="jaw-tog jaw-tog-on" id="jtog-trans-${containerId}">` +
-        `<i class="ti ti-eye" aria-hidden="true"></i>${isAr ? 'الترجمة' : 'Translation'}</button>` +
-        `<button class="jaw-tog jaw-tog-off" id="jtog-translit-${containerId}">` +
-        `<i class="ti ti-letter-a" aria-hidden="true"></i>${isAr ? 'النطق' : 'Transliteration'}</button>` +
-        `<button class="jaw-tog jaw-tog-off" id="jtog-context-${containerId}">` +
-        `<i class="ti ti-info-circle" aria-hidden="true"></i>${isAr ? 'السياق' : 'Context'}</button>`;
+        `<button class="jaw-tog jaw-tog-on jaw-tog--trans" id="jtog-trans-${containerId}">` +
+        `<i class="ti ti-eye" aria-hidden="true"></i>${isAr ? 'إخفاء الترجمة' : 'Hide translation'}</button>`;
     carousel.appendChild(toggleRow);
 
     // Navigation bar with dots
@@ -749,35 +745,22 @@ function renderDuaCarousel(list, containerId, prefix) {
         }
     }, { passive: true });
 
-    // Toggle row: translation visibility
+    // Translation toggle — show / hide English translation in all slides
     const transBtn = document.getElementById('jtog-trans-' + containerId);
     if (transBtn) {
         transBtn.addEventListener('click', () => {
             showTranslation = !showTranslation;
             transBtn.classList.toggle('jaw-tog-on', showTranslation);
             transBtn.classList.toggle('jaw-tog-off', !showTranslation);
+            const labelShow = isAr ? 'إخفاء الترجمة' : 'Hide translation';
+            const labelHide = isAr ? 'إظهار الترجمة' : 'Show translation';
+            transBtn.innerHTML =
+                `<i class="ti ti-eye${showTranslation ? '' : '-off'}" aria-hidden="true"></i>${showTranslation ? labelShow : labelHide}`;
             carousel.querySelectorAll('.dua-english-main').forEach(el => {
                 el.style.display = showTranslation ? '' : 'none';
             });
         });
     }
-    const translitBtn = document.getElementById('jtog-translit-' + containerId);
-    if (translitBtn) {
-        translitBtn.addEventListener('click', () => {
-            if (typeof duaCompanion !== 'undefined' && duaCompanion?._toast) {
-                duaCompanion._toast(currentLang === 'ar' ? 'النطق قريباً إن شاء الله' : 'Transliteration coming soon');
-            }
-        });
-    }
-    const contextBtn = document.getElementById('jtog-context-' + containerId);
-    if (contextBtn) {
-        contextBtn.addEventListener('click', () => {
-            if (typeof duaCompanion !== 'undefined' && duaCompanion?._toast) {
-                duaCompanion._toast(currentLang === 'ar' ? 'السياق قريباً إن شاء الله' : 'Context notes coming soon');
-            }
-        });
-    }
-
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
@@ -3076,12 +3059,22 @@ class DuaCompanion {
                 <span>${c.icon}</span> <span>${isAr ? c.ar : c.en}</span>
             </button>`).join('');
 
-        const duas = this._allDuas(this.cat);
-        const items = duas.length ? duas.map((d, idx) => {
+        // When showing saved view, collect all favourited duas across every category
+        let sourceList;
+        if (this._showingFavs) {
+            sourceList = [];
+            DC_CATEGORIES.forEach(c => {
+                (DC_DUAS[c.id] || []).forEach(d => { if (this.favs.has(d.id)) sourceList.push(d); });
+            });
+        } else {
+            sourceList = this._allDuas(this.cat);
+        }
+
+        const _duaItem = (d, idx) => {
             const chk = this.checked.has(d.id);
             const fav = this.favs.has(d.id);
             const sourceLabel = d.ref ? _escape(d.ref.split('—')[0].trim()) : '';
-            const featuredBadge = idx === 0
+            const badge = idx === 0 && !this._showingFavs
                 ? `<span class="dc-source-badge" style="background:rgba(197,163,82,0.1);color:var(--gold)"><i class="ti ti-star" aria-hidden="true"></i> ${isAr ? 'مميز' : 'Featured'}</span>`
                 : (sourceLabel ? `<span class="dc-source-badge">${sourceLabel}</span>` : '<span></span>');
             return `
@@ -3094,7 +3087,7 @@ class DuaCompanion {
                     <div class="dc-item-ar" dir="rtl">${d.ar}</div>
                     <div class="dc-item-tr">${_escape(d.tr)}</div>
                     <div class="dc-item-footer">
-                        ${featuredBadge}
+                        ${badge}
                         <div class="dc-item-actions">
                             <button class="dc-act-btn dc-act-share" data-dc-share="${_escape(d.id)}" aria-label="${isAr ? 'مشاركة' : 'Share'}">
                                 <i class="ti ti-share" aria-hidden="true"></i>
@@ -3106,7 +3099,12 @@ class DuaCompanion {
                     </div>
                 </div>
             </label>`;
-        }).join('') : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
+        };
+
+        const emptyMsg = this._showingFavs
+            ? `<p class="dc-empty">${isAr ? 'لا توجد أدعية محفوظة بعد — اضغط ♡ لحفظ دعاء' : 'No saved duas yet — tap ♡ on any dua to save one'}</p>`
+            : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
+        const items = sourceList.length ? sourceList.map(_duaItem).join('') : emptyMsg;
 
         const configured = this._isSupabaseConfigured();
         const feedHtml = this._buildFeedHtml(isAr, configured);
@@ -3292,6 +3290,8 @@ class DuaCompanion {
         document.querySelectorAll('[data-dc-cat]').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.cat = btn.dataset.dcCat;
+                this._showingFavs = false;  // exit saved filter when switching category
+                this._save();
                 this.renderSection();
             });
         });
@@ -3346,34 +3346,13 @@ class DuaCompanion {
             this.renderSection();
         });
 
-        // Saved button — toggles a "show only favourites" filter on the dua list
+        // Saved button — shows ALL favourited duas from every category (re-renders)
         document.getElementById('dc-saved')?.addEventListener('click', () => {
             this._showingFavs = !this._showingFavs;
-            const savedBtn = document.getElementById('dc-saved');
-            if (savedBtn) {
-                savedBtn.classList.toggle('dc-saved-active', this._showingFavs);
-                const icon = this._showingFavs ? 'ti-heart-filled' : 'ti-heart';
-                const label = this._showingFavs
-                    ? (isAr ? 'عرض الكل' : 'Show all')
-                    : (isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`);
-                savedBtn.innerHTML = `<i class="ti ${icon}" aria-hidden="true"></i>${label}`;
-            }
-            const list = document.getElementById('dc-list-inner');
-            if (!list) return;
-            if (this._showingFavs) {
-                let found = 0;
-                list.querySelectorAll('.dc-item').forEach(item => {
-                    const isFav = item.querySelector('.dc-fav-btn.dc-fav-on');
-                    item.style.display = isFav ? '' : 'none';
-                    if (isFav) found++;
-                });
-                if (found === 0) this._toast(isAr ? 'لا توجد أدعية محفوظة بعد — اضغط ♡ لحفظ دعاء' : 'No saved duas yet — tap ♡ to save one');
-            } else {
-                list.querySelectorAll('.dc-item').forEach(item => { item.style.display = ''; });
-            }
+            this.renderSection();
         });
 
-        // Fav (heart) buttons — save to favourites with toast feedback
+        // Fav (heart) button — save/unsave with red heart + toast + saved count update
         document.querySelectorAll('.dc-fav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -3381,13 +3360,23 @@ class DuaCompanion {
                 const adding = !this.favs.has(id);
                 if (adding) this.favs.add(id); else this.favs.delete(id);
                 this._save();
+                // Immediate visual feedback — no re-render needed
                 btn.classList.toggle('dc-fav-on', adding);
                 this._toast(adding
-                    ? (isAr ? '♡ تم الحفظ في المفضلة' : '♡ Saved to favourites')
+                    ? (isAr ? '♡ حُفظ في المفضلة' : '♡ Saved to favourites')
                     : (isAr ? 'تمت الإزالة من المفضلة' : 'Removed from favourites'));
+                // Update the Saved button count live
                 const savedBtn = document.getElementById('dc-saved');
                 if (savedBtn && !this._showingFavs) {
                     savedBtn.innerHTML = `<i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}`;
+                }
+                // If we're in saved view and the user un-saves a dua, hide it immediately
+                if (this._showingFavs && !adding) {
+                    const item = btn.closest('.dc-item');
+                    if (item) item.style.opacity = '0.3';
+                    setTimeout(() => {
+                        if (item) item.style.display = 'none';
+                    }, 300);
                 }
             });
         });
@@ -3397,8 +3386,14 @@ class DuaCompanion {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault(); e.stopPropagation();
                 const id = btn.dataset.dcShare;
-                const duas = this._allDuas(this.cat);
-                const d = duas.find(x => x.id === id);
+                // Search current list first, then all categories (covers saved view)
+                let d = this._allDuas(this.cat).find(x => x.id === id);
+                if (!d) {
+                    for (const c of DC_CATEGORIES) {
+                        d = (DC_DUAS[c.id] || []).find(x => x.id === id);
+                        if (d) break;
+                    }
+                }
                 if (!d) return;
                 const sourceLabel = d.ref ? d.ref.split('—')[0].trim() : 'Noor Nights';
                 try {

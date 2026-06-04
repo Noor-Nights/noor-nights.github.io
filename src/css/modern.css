@@ -3229,16 +3229,18 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
     padding: 0.7rem 0.5rem 0.75rem;
     margin: 0 0.25rem;
 }
+.jaw-toggle-row--single { justify-content: center; }
 .jaw-tog {
-    flex: 1; padding: 0.45rem 0.3rem; border-radius: 8px;
-    font-size: 0.73rem; text-align: center; cursor: pointer;
+    flex: 1; padding: 0.45rem 0.75rem; border-radius: 8px;
+    font-size: 0.78rem; text-align: center; cursor: pointer;
     border: none; font-family: var(--fn);
-    display: flex; align-items: center; justify-content: center; gap: 0.25rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.3rem;
     transition: all 0.18s;
 }
-.jaw-tog.jaw-tog-on { background: var(--goldfaint); color: var(--gold); }
-.jaw-tog.jaw-tog-off { background: rgba(255,255,255,0.04); color: var(--text-muted); }
-.jaw-tog .ti { font-size: 12px; }
+.jaw-tog--trans { flex: 0 0 auto; min-width: 160px; }
+.jaw-tog.jaw-tog-on { background: var(--goldfaint); color: var(--gold); border: 0.5px solid var(--goldborder); }
+.jaw-tog.jaw-tog-off { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 0.5px solid rgba(255,255,255,0.08); }
+.jaw-tog .ti { font-size: 13px; }
 
 /* ── Prophetic Duas: Nav Dots ── */
 .jaw-nav-dots {
