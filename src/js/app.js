@@ -615,6 +615,9 @@ function renderDuaCarousel(list, containerId, prefix) {
     const track = document.createElement('div');
     track.className = 'dua-carousel-track';
 
+    const isAr = currentLang === 'ar';
+    let showTranslation = true;
+
     list.forEach((dua, idx) => {
         const pal = WATERCOLOR_PALETTES[idx % WATERCOLOR_PALETTES.length];
         const night = getCurrentNight();
@@ -629,7 +632,6 @@ function renderDuaCarousel(list, containerId, prefix) {
 
         const englishDiv = dua.english ? `<div class="dua-english-main"></div>` : '';
         const duaTags = dua.id ? DUA_TAGS[dua.id] : null;
-        const isAr = currentLang === 'ar';
         const tagHtml = duaTags
             ? `<div class="dua-tags-row">${(isAr ? duaTags.ar : duaTags.en).map(tag => `<span class="dua-tag">${tag}</span>`).join('')}</div>`
             : '';
@@ -641,13 +643,17 @@ function renderDuaCarousel(list, containerId, prefix) {
                 ${tagHtml}
                 <div class="dua-badge-row"><span class="slide-badge"></span></div>
                 <div class="slide-actions">
+                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
+                        ${_copyIconSvg}
+                        <span class="slide-btn-label">${t('actCopy')}</span>
+                    </button>
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
                         ${_shareIconSvg}
                         <span class="slide-btn-label">${t('actShareCard')}</span>
                     </button>
-                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
-                        ${_copyIconSvg}
-                        <span class="slide-btn-label">${t('actCopy')}</span>
+                    <button class="slide-btn jaw-arabic-only-btn" aria-label="${isAr ? 'عربي فقط' : 'Arabic only'}">
+                        <i class="ti ti-eye-off" aria-hidden="true"></i>
+                        <span class="slide-btn-label">${isAr ? 'عربي فقط' : 'Arabic only'}</span>
                     </button>
                 </div>
             </div>`;
@@ -660,22 +666,26 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
-    const isAr = currentLang === 'ar';
-
-    // TODO: Translation toggle — hidden until the toggle actually works end-to-end.
-    // The toggle row and handler below are wired up; the root issue is that
-    // .dua-english-main elements are only populated after the carousel renders
-    // and the current slide may not exist in DOM yet when the button is clicked.
-    // Re-enable by removing the `display:none` on toggleRow once fixed.
-    // Also consider adding transliteration data to jawamiDuas before adding that pill back.
-    const toggleRow = document.createElement('div');
-    toggleRow.className = 'jaw-toggle-row jaw-toggle-row--single';
-    toggleRow.style.display = 'none';
-    toggleRow.innerHTML =
-        `<button class="jaw-tog jaw-tog-on jaw-tog--trans" id="jtog-trans-${containerId}">` +
-        `<i class="ti ti-eye" aria-hidden="true"></i>${isAr ? 'إخفاء الترجمة' : 'Hide translation'}</button>`;
-    carousel.appendChild(toggleRow);
-    let showTranslation = true;
+    // "Arabic only" toggle — delegate from carousel so all slides share one state
+    carousel.addEventListener('click', e => {
+        const btn = e.target.closest('.jaw-arabic-only-btn');
+        if (!btn) return;
+        showTranslation = !showTranslation;
+        carousel.querySelectorAll('.dua-english-main').forEach(el => {
+            el.style.display = showTranslation ? '' : 'none';
+        });
+        carousel.querySelectorAll('.jaw-arabic-only-btn').forEach(b => {
+            b.classList.toggle('jaw-arabic-only-active', !showTranslation);
+            const icon = b.querySelector('.ti');
+            if (icon) {
+                icon.className = showTranslation ? 'ti ti-eye-off' : 'ti ti-eye';
+            }
+            const label = b.querySelector('.slide-btn-label');
+            if (label) label.textContent = showTranslation
+                ? (isAr ? 'عربي فقط' : 'Arabic only')
+                : (isAr ? 'إظهار الترجمة' : 'Show translation');
+        });
+    });
 
     // Navigation bar with dots
     const nav = document.createElement('div');
@@ -752,22 +762,6 @@ function renderDuaCarousel(list, containerId, prefix) {
         }
     }, { passive: true });
 
-    // Translation toggle — show / hide English translation in all slides
-    const transBtn = document.getElementById('jtog-trans-' + containerId);
-    if (transBtn) {
-        transBtn.addEventListener('click', () => {
-            showTranslation = !showTranslation;
-            transBtn.classList.toggle('jaw-tog-on', showTranslation);
-            transBtn.classList.toggle('jaw-tog-off', !showTranslation);
-            const labelShow = isAr ? 'إخفاء الترجمة' : 'Hide translation';
-            const labelHide = isAr ? 'إظهار الترجمة' : 'Show translation';
-            transBtn.innerHTML =
-                `<i class="ti ti-eye${showTranslation ? '' : '-off'}" aria-hidden="true"></i>${showTranslation ? labelShow : labelHide}`;
-            carousel.querySelectorAll('.dua-english-main').forEach(el => {
-                el.style.display = showTranslation ? '' : 'none';
-            });
-        });
-    }
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
@@ -3080,7 +3074,9 @@ class DuaCompanion {
         const _duaItem = (d, idx) => {
             const chk = this.checked.has(d.id);
             const fav = this.favs.has(d.id);
-            const sourceLabel = d.ref ? _escape(d.ref.split('—')[0].trim()) : '';
+            const rawSrc = d.ref ? d.ref.split('—')[0].trim() : '';
+            // Skip generic "Du'a" — every card is a dua, it adds nothing
+            const sourceLabel = (rawSrc && rawSrc !== "Du'a" && rawSrc !== 'Dua') ? _escape(rawSrc) : '';
             const badge = idx === 0 && !this._showingFavs
                 ? `<span class="dc-source-badge" style="background:rgba(197,163,82,0.1);color:var(--gold)"><i class="ti ti-star" aria-hidden="true"></i> ${isAr ? 'مميز' : 'Featured'}</span>`
                 : (sourceLabel ? `<span class="dc-source-badge">${sourceLabel}</span>` : '<span></span>');

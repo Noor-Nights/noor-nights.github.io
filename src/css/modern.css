@@ -3051,16 +3051,23 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 
 /* Custom circle checkbox */
 .dc-check-circle {
-    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    border: 1.5px solid rgba(255,255,255,0.2);
-    background: transparent; margin-top: 0.25rem; transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: transparent; margin-top: 0.3rem; transition: all 0.2s;
     cursor: pointer;
 }
 .dc-check-circle.dc-check-on {
     background: var(--emerald-teal); border-color: var(--emerald-teal);
 }
-.dc-check-circle.dc-check-on .ti { color: #fff; font-size: 13px; }
+.dc-check-circle.dc-check-on .ti { color: #fff; font-size: 12px; }
+
+/* Prophetic Duas — "Arabic only" active state */
+.jaw-arabic-only-btn.jaw-arabic-only-active {
+    background: rgba(197,163,82,0.12);
+    color: var(--gold);
+    border: 1px solid var(--goldborder);
+}
 
 .dc-item-body { flex: 1; min-width: 0; }
 .dc-item-ar {
