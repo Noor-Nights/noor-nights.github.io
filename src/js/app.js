@@ -3144,7 +3144,7 @@ class DuaCompanion {
             <div class="dc-list" id="dc-list-inner">${items}</div>
             <div class="dc-quick-actions">
                 <button class="dc-quick-btn dc-mark-all-btn" id="dc-mark-all">
-                    <i class="ti ti-check-all" aria-hidden="true"></i>${isAr ? 'علّم الكل' : 'Mark all made'}
+                    <i class="ti ti-check-all" aria-hidden="true"></i>${isAr ? 'علّم الكل منجزاً' : 'Mark all done'}
                 </button>
                 <button class="dc-quick-btn dc-saved-btn${this._showingFavs ? ' dc-saved-active' : ''}" id="dc-saved">
                     <i class="ti ti-heart${this._showingFavs ? '-filled' : ''}" aria-hidden="true"></i>${this._showingFavs ? (isAr ? 'عرض الكل' : 'Show all') : (isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`)}

@@ -3037,8 +3037,12 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 }
 .dc-item:last-child { border-bottom: none; }
 .dc-item:hover { background: rgba(255,255,255,0.03); }
-.dc-item-done { opacity: 0.45; }
-.dc-item-done .dc-item-ar { text-decoration: line-through; }
+.dc-item-done {
+    background: rgba(29,158,117,0.06);
+    border-bottom-color: rgba(29,158,117,0.12);
+}
+.dc-item-done .dc-item-ar { text-decoration: line-through; opacity: 0.55; }
+.dc-item-done .dc-item-tr { opacity: 0.4; }
 
 /* Visually-hidden native checkbox keeps keyboard/pointer semantics */
 .dc-chk {
