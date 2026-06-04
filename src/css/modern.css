@@ -3111,6 +3111,10 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
     border: 0.5px solid var(--goldborder);
     color: var(--gold);
 }
+.dc-saved-active {
+    background: rgba(197,163,82,0.25);
+    border-color: var(--gold2);
+}
 
 .dc-empty { text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 1.5rem; }
 
@@ -3221,7 +3225,9 @@ html[lang="ar"] .dfc-day-label { font-family: 'Amiri', serif; }
 
 /* ── Prophetic Duas: Toggle Row ── */
 .jaw-toggle-row {
-    display: flex; gap: 0.35rem; padding: 0 0 0.75rem;
+    display: flex; gap: 0.35rem;
+    padding: 0.7rem 0.5rem 0.75rem;
+    margin: 0 0.25rem;
 }
 .jaw-tog {
     flex: 1; padding: 0.45rem 0.3rem; border-radius: 8px;

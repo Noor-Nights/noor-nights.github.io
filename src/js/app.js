@@ -2916,31 +2916,31 @@ let virtueCards;
 // ═══════════════════════════════════════════════════
 
 const DC_CATEGORIES = [
-    { id: 'arafah',      icon: '⛰️',  en: 'Day of Arafah', ar: 'يوم عرفة'   },
+    { id: 'general',     icon: '✨',  en: 'General',        ar: 'عام'        },
     { id: 'takbeer',     icon: '🔊',  en: 'Takbeer',        ar: 'التكبير'    },
     { id: 'forgiveness', icon: '🤲',  en: 'Forgiveness',    ar: 'المغفرة'    },
     { id: 'family',      icon: '👨‍👩‍👧', en: 'Family',         ar: 'العائلة'    },
-    { id: 'eid',         icon: '🌙',  en: 'Eid',            ar: 'العيد'      },
+    { id: 'protection',  icon: '🛡️',  en: 'Protection',     ar: 'الحماية'    },
     { id: 'ummah',       icon: '🌍',  en: 'Ummah',          ar: 'الأمة'      },
 ];
 
 const DC_CAT_DESCRIPTIONS = {
-    arafah:      { en: 'The best dua is the dua of Arafah. These supplications are powerful at any time of year.', ar: 'أفضل الدعاء دعاء يوم عرفة. هذه الأدعية قوية في أي وقت من السنة.' },
+    general:     { en: 'Everyday supplications — ask Allah for all good in this life and the next.', ar: 'أدعية يومية — اسأل الله كل خير في الدنيا والآخرة.' },
     takbeer:     { en: 'Glorify Allah abundantly — the Takbeer is among the greatest deeds at all times.', ar: 'أكثر من التكبير — التكبير من أفضل الأعمال في كل وقت.' },
     forgiveness: { en: 'Seek forgiveness sincerely. Allah loves to forgive — ask Him every day.', ar: 'استغفر الله بصدق. الله يحب أن يغفر — اسأله كل يوم.' },
     family:      { en: 'Pray for your family and loved ones. The dua of a person for their family is answered.', ar: 'ادعُ لعائلتك وأحبائك. دعاء الشخص لأهله مستجاب.' },
-    eid:         { en: 'Celebrate Eid with gratitude and dua. Ask Allah to accept your worship this season.', ar: 'احتفل بالعيد بشكر ودعاء. سل الله أن يتقبل عبادتك في هذا الموسم.' },
+    protection:  { en: 'Seek refuge with Allah from every harm. He is the Best Protector.', ar: 'استعذ بالله من كل أذى — هو نعم الوكيل.' },
     ummah:       { en: 'Remember the whole Ummah in your duas. The Prophet ﷺ said the dua for your brother is answered.', ar: 'اذكر الأمة كلها في دعائك. قال النبي ﷺ: دعاؤك لأخيك مستجاب.' },
 };
 
 const DC_DUAS = {
-    arafah: [
-        { id:'ar1', ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', tr:'There is no god but Allah, alone without partner. His is the dominion, His is all praise, and He has power over all things.', ref:'Tirmidhi — best dua on Arafah' },
-        { id:'ar2', ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي', tr:'O Allah, You are Pardoning and Generous. You love to pardon, so pardon me.', ref:'Ibn Majah — recommended on Arafah' },
-        { id:'ar3', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.', ref:'Quran 2:201 — most frequent dua of the Prophet ﷺ' },
-        { id:'ar4', ar:'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ دِقَّهُ وَجِلَّهُ وَأَوَّلَهُ وَآخِرَهُ وَعَلَانِيَتَهُ وَسِرَّهُ', tr:'O Allah, forgive all my sins — small and great, first and last, open and secret.', ref:'Muslim' },
-        { id:'ar5', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ', tr:'O Allah, I ask You for Paradise and I seek refuge in You from the Fire.', ref:'Abu Dawud' },
-        { id:'ar6', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
+    general: [
+        { id:'g1', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.', ref:'Quran 2:201 — most frequent dua of the Prophet ﷺ' },
+        { id:'g2', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
+        { id:'g3', ar:'اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاهْدِنِي وَعَافِنِي وَارْزُقْنِي', tr:'O Allah, forgive me, have mercy on me, guide me, grant me wellbeing, and provide for me.', ref:'Muslim — comprehensive dua' },
+        { id:'g4', ar:'رَبِّ زِدْنِي عِلْمًا', tr:'My Lord, increase me in knowledge.', ref:'Quran 20:114' },
+        { id:'g5', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ', tr:'O Allah, I ask You for Paradise and I seek refuge in You from the Fire.', ref:'Abu Dawud' },
+        { id:'g6', ar:'اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي وَأَصْلِحْ لِي آخِرَتِي الَّتِي فِيهَا مَعَادِي', tr:'O Allah, set right my religion which safeguards my affairs, my world in which is my livelihood, and my hereafter to which I will return.', ref:'Muslim' },
     ],
     takbeer: [
         { id:'tk1', ar:'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ', tr:'Allah is the Greatest, Allah is the Greatest. There is no god but Allah. Allah is the Greatest, Allah is the Greatest, and all praise belongs to Allah.', ref:'Bukhari (muʿallaq)' },
@@ -2963,12 +2963,12 @@ const DC_DUAS = {
         { id:'fam4', ar:'اللَّهُمَّ بَارِكْ لَنَا فِي أَهْلِنَا وَأَوْلَادِنَا', tr:'O Allah, bless us in our family and our children.', ref:'Du\'a' },
         { id:'fam5', ar:'اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي', tr:'O Allah, set right my religion which is the safeguard of my affairs, and set right my world where my livelihood is.', ref:'Muslim' },
     ],
-    eid: [
-        { id:'e1', ar:'اللَّهُمَّ تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ', tr:'O Allah, accept from us. Indeed, You are the All-Hearing, the All-Knowing.', ref:'Quran 2:127 — said at Eid and after worship' },
-        { id:'e2', ar:'تَقَبَّلَ اللَّهُ مِنَّا وَمِنكُمْ', tr:'May Allah accept from us and from you.', ref:'Ibn Hajar — greeting of the Companions on Eid' },
-        { id:'e3', ar:'اللَّهُمَّ اجْعَلْنَا مِمَّنْ تَقَبَّلْتَ عَمَلَهُ وَأَطَلْتَ عُمُرَهُ عَلَى طَاعَتِكَ', tr:'O Allah, make us among those whose deeds You accepted and whose lives You prolonged in obedience to You.', ref:'Du\'a' },
-        { id:'e4', ar:'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ التَّوَّابُ الرَّحِيمُ', tr:'Our Lord, accept from us. Indeed, You are the Accepting of repentance, the Merciful.', ref:'Quran 2:128' },
-        { id:'e5', ar:'اللَّهُمَّ بَلِّغْنَا رَمَضَانَ وَذَا الْحِجَّةَ وَأَعِنَّا عَلَى الصِّيَامِ وَالْقِيَامِ', tr:'O Allah, let us reach Ramadan and Dhul Hijjah, and help us in fasting and night prayer.', ref:'Du\'a' },
+    protection: [
+        { id:'p1', ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', tr:'I seek refuge in the perfect words of Allah from the evil of what He has created.', ref:'Muslim — to be said morning and evening' },
+        { id:'p2', ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', tr:'In the name of Allah with whose name nothing is harmed on earth or in the sky, and He is the All-Hearing, All-Knowing.', ref:'Abu Dawud — 3 times morning & evening' },
+        { id:'p3', ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', tr:'Allah is sufficient for us, and He is the best disposer of affairs.', ref:'Quran 3:173 — said by the companions when threatened' },
+        { id:'p4', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ وَالْبُخْلِ وَالْجُبْنِ وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ', tr:'O Allah, I seek refuge in You from worry, grief, incapacity, laziness, miserliness, cowardice, debt, and being overpowered by people.', ref:'Bukhari' },
+        { id:'p5', ar:'لَا إِلَهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ', tr:'There is no god but You — glory be to You. Indeed I have been of the wrongdoers.', ref:'Quran 21:87 — dua of Prophet Yunus' },
     ],
     ummah: [
         { id:'u1', ar:'اللَّهُمَّ انْصُرِ الْمُسْلِمِينَ وَأَعِزَّ الإِسْلَامَ', tr:'O Allah, grant victory to the Muslims and give honour to Islam.', ref:'Du\'a' },
@@ -2990,8 +2990,10 @@ class DuaCompanion {
         this.checked = new Set(saved.checked || []);
         this.favs = new Set(saved.favs || []);
         this.shared = saved.shared || [];
-        this.community = [];        // from Supabase (or null = not configured)
-        this.cat = 'arafah';
+        this.community = [];
+        const savedCat = saved.cat || 'general';
+        this.cat = DC_CATEGORIES.find(c => c.id === savedCat) ? savedCat : DC_CATEGORIES[0].id;
+        this._showingFavs = false;
         this._pollInterval = null;
         this._fetchCommunity();     // async — fires and updates feed when ready
     }
@@ -3046,6 +3048,7 @@ class DuaCompanion {
         localStorage.setItem('noor_duas_1447', JSON.stringify({
             checked: [...this.checked],
             favs: [...this.favs],
+            cat: this.cat,
             shared: this.shared,
         }));
     }
@@ -3130,7 +3133,6 @@ class DuaCompanion {
             <div class="dc-search-bar">
                 <i class="ti ti-search" aria-hidden="true"></i>
                 <input class="dc-search-input" id="dc-search-input" placeholder="${isAr ? 'ابحث في الأدعية...' : 'Search duas...'}" dir="${isAr ? 'rtl' : 'ltr'}" autocomplete="off">
-                <div class="dc-search-filter" aria-hidden="true"><i class="ti ti-adjustments-horizontal"></i></div>
             </div>
             <div class="dc-tabs">${tabs}</div>
             ${catDesc ? `<div class="dc-info-banner"><i class="ti ti-info-circle" aria-hidden="true"></i>${_escape(isAr ? catDesc.ar : catDesc.en)}</div>` : ''}
@@ -3139,8 +3141,8 @@ class DuaCompanion {
                 <button class="dc-quick-btn dc-mark-all-btn" id="dc-mark-all">
                     <i class="ti ti-check-all" aria-hidden="true"></i>${isAr ? 'علّم الكل' : 'Mark all made'}
                 </button>
-                <button class="dc-quick-btn dc-saved-btn" id="dc-saved">
-                    <i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظات (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}
+                <button class="dc-quick-btn dc-saved-btn${this._showingFavs ? ' dc-saved-active' : ''}" id="dc-saved">
+                    <i class="ti ti-heart${this._showingFavs ? '-filled' : ''}" aria-hidden="true"></i>${this._showingFavs ? (isAr ? 'عرض الكل' : 'Show all') : (isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`)}
                 </button>
             </div>
             <div class="dc-shared-section">
@@ -3344,40 +3346,82 @@ class DuaCompanion {
             this.renderSection();
         });
 
-        // Saved duas toggle — just scroll to wall for now (future: filter view)
+        // Saved button — toggles a "show only favourites" filter on the dua list
         document.getElementById('dc-saved')?.addEventListener('click', () => {
-            const feed = document.querySelector('.dc-shared-section');
-            if (feed) feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            this._showingFavs = !this._showingFavs;
+            const savedBtn = document.getElementById('dc-saved');
+            if (savedBtn) {
+                savedBtn.classList.toggle('dc-saved-active', this._showingFavs);
+                const icon = this._showingFavs ? 'ti-heart-filled' : 'ti-heart';
+                const label = this._showingFavs
+                    ? (isAr ? 'عرض الكل' : 'Show all')
+                    : (isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`);
+                savedBtn.innerHTML = `<i class="ti ${icon}" aria-hidden="true"></i>${label}`;
+            }
+            const list = document.getElementById('dc-list-inner');
+            if (!list) return;
+            if (this._showingFavs) {
+                let found = 0;
+                list.querySelectorAll('.dc-item').forEach(item => {
+                    const isFav = item.querySelector('.dc-fav-btn.dc-fav-on');
+                    item.style.display = isFav ? '' : 'none';
+                    if (isFav) found++;
+                });
+                if (found === 0) this._toast(isAr ? 'لا توجد أدعية محفوظة بعد — اضغط ♡ لحفظ دعاء' : 'No saved duas yet — tap ♡ to save one');
+            } else {
+                list.querySelectorAll('.dc-item').forEach(item => { item.style.display = ''; });
+            }
         });
 
-        // Fav buttons
+        // Fav (heart) buttons — save to favourites with toast feedback
         document.querySelectorAll('.dc-fav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault(); e.stopPropagation();
                 const id = btn.dataset.dcFav;
-                if (this.favs.has(id)) this.favs.delete(id); else this.favs.add(id);
+                const adding = !this.favs.has(id);
+                if (adding) this.favs.add(id); else this.favs.delete(id);
                 this._save();
-                btn.classList.toggle('dc-fav-on', this.favs.has(id));
+                btn.classList.toggle('dc-fav-on', adding);
+                this._toast(adding
+                    ? (isAr ? '♡ تم الحفظ في المفضلة' : '♡ Saved to favourites')
+                    : (isAr ? 'تمت الإزالة من المفضلة' : 'Removed from favourites'));
                 const savedBtn = document.getElementById('dc-saved');
-                if (savedBtn) {
-                    savedBtn.innerHTML = `<i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظات (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}`;
+                if (savedBtn && !this._showingFavs) {
+                    savedBtn.innerHTML = `<i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}`;
                 }
             });
         });
 
-        // Share buttons
+        // Share buttons — generate and share a visual card image
         document.querySelectorAll('.dc-act-share').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 e.preventDefault(); e.stopPropagation();
                 const id = btn.dataset.dcShare;
                 const duas = this._allDuas(this.cat);
                 const d = duas.find(x => x.id === id);
                 if (!d) return;
-                const text = `${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`;
-                if (navigator.share) {
-                    navigator.share({ title: 'Noor Nights 🌙', text, url: window.location.href }).catch(() => {});
-                } else {
-                    navigator.clipboard.writeText(text).then(() => showMessage(t('copiedTitle'), t('copiedMsg'))).catch(() => {});
+                const sourceLabel = d.ref ? d.ref.split('—')[0].trim() : 'Noor Nights';
+                try {
+                    btn.style.opacity = '0.5';
+                    const blob = await generateCanvasBlob(d.ar, d.tr ? `"${d.tr}"` : '', sourceLabel, false);
+                    btn.style.opacity = '';
+                    if (!blob) throw new Error('no blob');
+                    const file = new File([blob], 'dua-noor-nights.jpg', { type: 'image/jpeg' });
+                    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                        await navigator.share({ files: [file], title: sourceLabel, text: '🌙 Noor Nights' });
+                    } else if (navigator.share) {
+                        await navigator.share({ title: sourceLabel, text: `${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`, url: window.location.href });
+                    } else {
+                        const url = URL.createObjectURL(blob);
+                        triggerDownload(url, 'dua-noor-nights.jpg');
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                    }
+                } catch (err) {
+                    btn.style.opacity = '';
+                    if (err.name !== 'AbortError') {
+                        navigator.clipboard?.writeText(`${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`)
+                            .then(() => showMessage(t('copiedTitle'), t('copiedMsg'))).catch(() => {});
+                    }
                 }
             });
         });
