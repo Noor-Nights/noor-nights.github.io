@@ -660,22 +660,67 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
-    // Navigation bar
+    // Toggle row (translation / transliteration / context)
+    let showTranslation = true;
+    const toggleRow = document.createElement('div');
+    toggleRow.className = 'jaw-toggle-row';
+    const isAr = currentLang === 'ar';
+    toggleRow.innerHTML =
+        `<button class="jaw-tog jaw-tog-on" id="jtog-trans-${containerId}">` +
+        `<i class="ti ti-eye" aria-hidden="true"></i>${isAr ? 'الترجمة' : 'Translation'}</button>` +
+        `<button class="jaw-tog jaw-tog-off" id="jtog-translit-${containerId}">` +
+        `<i class="ti ti-letter-a" aria-hidden="true"></i>${isAr ? 'النطق' : 'Transliteration'}</button>` +
+        `<button class="jaw-tog jaw-tog-off" id="jtog-context-${containerId}">` +
+        `<i class="ti ti-info-circle" aria-hidden="true"></i>${isAr ? 'السياق' : 'Context'}</button>`;
+    carousel.appendChild(toggleRow);
+
+    // Navigation bar with dots
     const nav = document.createElement('div');
     nav.className = 'carousel-nav';
     const prevId = 'cprev-' + containerId;
     const nextId = 'cnext-' + containerId;
     const countId = 'ccount-' + containerId;
+    const dotsId = 'cdots-' + containerId;
+    const DOT_MAX = 5;
+    const dotsHtml = Array.from({ length: Math.min(list.length, DOT_MAX) }, (_, i) =>
+        `<div class="jaw-nav-dot${i === 0 ? ' jaw-dot-on' : ''}" data-dot="${i}"></div>`
+    ).join('');
     nav.innerHTML =
         '<button class="carousel-nav-btn" id="' + prevId + '" aria-label="Previous dua">&#8249;</button>' +
+        '<div style="flex:1;text-align:center">' +
+        '<div class="jaw-nav-dots" id="' + dotsId + '">' + dotsHtml + '</div>' +
         '<span class="carousel-counter" id="' + countId + '">' + numFmt(1) + ' / ' + numFmt(list.length) + '</span>' +
+        '</div>' +
         '<button class="carousel-nav-btn" id="' + nextId + '" aria-label="Next dua">&#8250;</button>';
     carousel.appendChild(nav);
+
+    // Jump bar
+    const jumpBar = document.createElement('div');
+    jumpBar.className = 'jaw-jump-bar';
+    const jumpInputId = 'cjump-' + containerId;
+    jumpBar.innerHTML =
+        '<i class="ti ti-list-numbers" aria-hidden="true"></i>' +
+        `<input class="jaw-jump-input" id="${jumpInputId}" type="number" min="1" max="${list.length}" ` +
+        `placeholder="${isAr ? `انتقل إلى رقم (١–${numFmt(list.length)})` : `Jump to (1–${list.length})`}">` +
+        `<button class="jaw-jump-go">${isAr ? 'انتقل' : 'Go'}</button>`;
+    carousel.appendChild(jumpBar);
+
     body.appendChild(carousel);
 
     const prevBtn = document.getElementById(prevId);
     const nextBtn = document.getElementById(nextId);
     const countEl = document.getElementById(countId);
+    const dotsEl = document.getElementById(dotsId);
+
+    function updateDots(idx) {
+        if (!dotsEl) return;
+        const total = list.length;
+        const dotCount = Math.min(total, DOT_MAX);
+        const activeDot = total <= DOT_MAX ? idx : Math.round(idx / (total - 1) * (dotCount - 1));
+        dotsEl.querySelectorAll('.jaw-nav-dot').forEach((dot, i) => {
+            dot.classList.toggle('jaw-dot-on', i === activeDot);
+        });
+    }
 
     function goToSlide(idx) {
         currentSlide = Math.max(0, Math.min(idx, list.length - 1));
@@ -685,8 +730,7 @@ function renderDuaCarousel(list, containerId, prefix) {
         countEl.textContent = numFmt(currentSlide + 1) + ' / ' + numFmt(list.length);
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
-
-
+        updateDots(currentSlide);
         trackEvent('/carousel-swipe', 'Carousel: dua ' + (currentSlide + 1));
     }
 
@@ -716,6 +760,45 @@ function renderDuaCarousel(list, containerId, prefix) {
             }
         }
     }, { passive: true });
+
+    // Toggle row: translation visibility
+    const transBtn = document.getElementById('jtog-trans-' + containerId);
+    if (transBtn) {
+        transBtn.addEventListener('click', () => {
+            showTranslation = !showTranslation;
+            transBtn.classList.toggle('jaw-tog-on', showTranslation);
+            transBtn.classList.toggle('jaw-tog-off', !showTranslation);
+            carousel.querySelectorAll('.dua-english-main').forEach(el => {
+                el.style.display = showTranslation ? '' : 'none';
+            });
+        });
+    }
+    const translitBtn = document.getElementById('jtog-translit-' + containerId);
+    if (translitBtn) {
+        translitBtn.addEventListener('click', () => {
+            if (typeof duaCompanion !== 'undefined' && duaCompanion?._toast) {
+                duaCompanion._toast(currentLang === 'ar' ? 'النطق قريباً إن شاء الله' : 'Transliteration coming soon');
+            }
+        });
+    }
+    const contextBtn = document.getElementById('jtog-context-' + containerId);
+    if (contextBtn) {
+        contextBtn.addEventListener('click', () => {
+            if (typeof duaCompanion !== 'undefined' && duaCompanion?._toast) {
+                duaCompanion._toast(currentLang === 'ar' ? 'السياق قريباً إن شاء الله' : 'Context notes coming soon');
+            }
+        });
+    }
+
+    // Jump bar
+    const jumpInputEl = document.getElementById('cjump-' + containerId);
+    const jumpGoBtn = jumpBar.querySelector('.jaw-jump-go');
+    function handleJump() {
+        const n = parseInt(jumpInputEl?.value || '', 10);
+        if (n >= 1 && n <= list.length) { goToSlide(n - 1); if (jumpInputEl) jumpInputEl.value = ''; }
+    }
+    if (jumpGoBtn) jumpGoBtn.addEventListener('click', handleJump);
+    if (jumpInputEl) jumpInputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleJump(); });
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
@@ -2926,6 +3009,7 @@ class DuaCompanion {
     constructor() {
         const saved = JSON.parse(localStorage.getItem('noor_duas_1447') || '{}');
         this.checked = new Set(saved.checked || []);
+        this.favs = new Set(saved.favs || []);
         this.shared = saved.shared || [];
         this.community = [];        // from Supabase (or null = not configured)
         this.cat = 'arafah';
@@ -2982,6 +3066,7 @@ class DuaCompanion {
     _save() {
         localStorage.setItem('noor_duas_1447', JSON.stringify({
             checked: [...this.checked],
+            favs: [...this.favs],
             shared: this.shared,
         }));
     }
@@ -3002,6 +3087,7 @@ class DuaCompanion {
         const total = this._totalCount();
         const done = this.checked.size;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const ringOffset = Math.round(113 * (1 - pct / 100));
 
         const tabs = DC_CATEGORIES.map(c => `
             <button class="dc-tab${c.id === this.cat ? ' dc-tab-active' : ''}" data-dc-cat="${c.id}">
@@ -3009,44 +3095,89 @@ class DuaCompanion {
             </button>`).join('');
 
         const duas = this._allDuas(this.cat);
-        const items = duas.length ? duas.map(d => {
+        const items = duas.length ? duas.map((d, idx) => {
             const chk = this.checked.has(d.id);
+            const fav = this.favs.has(d.id);
+            const sourceLabel = d.ref ? _escape(d.ref.split('—')[0].trim()) : '';
+            const featuredBadge = idx === 0
+                ? `<span class="dc-source-badge" style="background:rgba(197,163,82,0.1);color:var(--gold)"><i class="ti ti-star" aria-hidden="true"></i> ${isAr ? 'مميز' : 'Featured'}</span>`
+                : (sourceLabel ? `<span class="dc-source-badge">${sourceLabel}</span>` : '<span></span>');
             return `
-            <label class="dc-item${chk ? ' dc-item-done' : ''}" data-dc-id="${d.id}">
-                <input type="checkbox" class="dc-chk" data-dc-id="${d.id}"${chk ? ' checked' : ''}>
+            <label class="dc-item${chk ? ' dc-item-done' : ''}" data-dc-id="${_escape(d.id)}">
+                <input type="checkbox" class="dc-chk" data-dc-id="${_escape(d.id)}"${chk ? ' checked' : ''}>
+                <div class="dc-check-circle${chk ? ' dc-check-on' : ''}" aria-hidden="true">
+                    ${chk ? '<i class="ti ti-check"></i>' : ''}
+                </div>
                 <div class="dc-item-body">
                     <div class="dc-item-ar" dir="rtl">${d.ar}</div>
-                    <div class="dc-item-tr">${d.tr}</div>
-                    ${d.ref ? `<div class="dc-item-ref">${d.ref}</div>` : ''}
+                    <div class="dc-item-tr">${_escape(d.tr)}</div>
+                    <div class="dc-item-footer">
+                        ${featuredBadge}
+                        <div class="dc-item-actions">
+                            <button class="dc-act-btn dc-act-share" data-dc-share="${_escape(d.id)}" aria-label="${isAr ? 'مشاركة' : 'Share'}">
+                                <i class="ti ti-share" aria-hidden="true"></i>
+                            </button>
+                            <button class="dc-act-btn dc-fav-btn${fav ? ' dc-fav-on' : ''}" data-dc-fav="${_escape(d.id)}" aria-label="${isAr ? 'حفظ' : 'Save'}">
+                                <i class="ti ti-heart" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </label>`;
         }).join('') : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
 
         const configured = this._isSupabaseConfigured();
         const feedHtml = this._buildFeedHtml(isAr, configured);
-        const countLabel = configured
+        const wallCount = configured
             ? (this.community?.length > 0 ? (isAr ? `${numFmt(this.community.length)} دعاء` : `${this.community.length} duas`) : '')
             : (this.shared.length > 0 ? t('dcSharedCount', this.shared.length) : '');
+        const catDesc = DC_CAT_DESCRIPTIONS[this.cat];
 
         el.innerHTML = `
         <div class="dc-wrap" dir="${dir}">
-            <div class="dc-progress-row">
-                <div class="dc-progress-bar"><div class="dc-progress-fill" style="width:${pct}%"></div></div>
-                <span class="dc-progress-label">${t('dcProgress', done, total)}</span>
+            <div class="dc-header-row">
+                <div class="dc-ring-wrap" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${isAr ? 'التقدم' : 'Progress'}">
+                    <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
+                        <circle cx="26" cy="26" r="18" class="dc-ring-bg"/>
+                        <circle cx="26" cy="26" r="18" class="dc-ring-fg" style="stroke-dashoffset:${ringOffset}"/>
+                    </svg>
+                    <span class="dc-ring-pct">${pct}%</span>
+                </div>
+                <div class="dc-header-text">
+                    <span class="dc-header-title">${isAr ? 'رفيق الدعاء' : 'Dua Companion'}</span>
+                    <span class="dc-header-sub">${t('dcProgress', done, total)}</span>
+                </div>
+            </div>
+            <div class="dc-search-bar">
+                <i class="ti ti-search" aria-hidden="true"></i>
+                <input class="dc-search-input" id="dc-search-input" placeholder="${isAr ? 'ابحث في الأدعية...' : 'Search duas...'}" dir="${isAr ? 'rtl' : 'ltr'}" autocomplete="off">
+                <div class="dc-search-filter" aria-hidden="true"><i class="ti ti-adjustments-horizontal"></i></div>
             </div>
             <div class="dc-tabs">${tabs}</div>
-            ${DC_CAT_DESCRIPTIONS[this.cat] ? `<p class="dc-cat-desc">${isAr ? DC_CAT_DESCRIPTIONS[this.cat].ar : DC_CAT_DESCRIPTIONS[this.cat].en}</p>` : ''}
-            <div class="dc-list">${items}</div>
+            ${catDesc ? `<div class="dc-info-banner"><i class="ti ti-info-circle" aria-hidden="true"></i>${_escape(isAr ? catDesc.ar : catDesc.en)}</div>` : ''}
+            <div class="dc-list" id="dc-list-inner">${items}</div>
+            <div class="dc-quick-actions">
+                <button class="dc-quick-btn dc-mark-all-btn" id="dc-mark-all">
+                    <i class="ti ti-check-all" aria-hidden="true"></i>${isAr ? 'علّم الكل' : 'Mark all made'}
+                </button>
+                <button class="dc-quick-btn dc-saved-btn" id="dc-saved">
+                    <i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظات (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}
+                </button>
+            </div>
             <div class="dc-shared-section">
                 <div class="dc-shared-header">
-                    <span class="dc-shared-title">${t('dcSharedTitle')}</span>
-                    <span class="dc-shared-count">${countLabel}</span>
+                    <div style="display:flex;align-items:center;gap:0.4rem">
+                        <i class="ti ti-world" style="font-size:15px;color:var(--emerald-teal)" aria-hidden="true"></i>
+                        <span class="dc-shared-title">${isAr ? 'جدار الدعاء' : 'Community Dua Wall'}</span>
+                    </div>
+                    <span class="dc-shared-count">${wallCount}</span>
                 </div>
                 <div class="dc-wall-intro">
-                    ${isAr
-                        ? `<span class="dc-wall-intro-icon">🤲</span><span>اكتب دعاءً وشاركه مع إخوانك — كل من يقرأه سيقول <b>آمين</b>، وما دعوت به لغيرك دعا لك به ملَك بمثله.</span>`
-                        : `<span class="dc-wall-intro-icon">🤲</span><span>Share a dua — every brother & sister who reads it will say <b>Ameen</b>. The Prophet ﷺ said: "When you make dua for your brother, an angel says: And for you the same."</span>`
-                    }
+                    <span class="dc-wall-intro-icon">🤲</span>
+                    <span>${isAr
+                        ? `اكتب دعاءً وشاركه مع إخوانك — كل من يقرأه سيقول <b>آمين</b>، وما دعوت به لغيرك دعا لك به ملَك بمثله.`
+                        : `Share a dua — every brother &amp; sister who reads it will say <b>Ameen</b>. The Prophet ﷺ said: "When you make dua for your brother, an angel says: And for you the same."`
+                    }</span>
                 </div>
                 ${!configured ? `<div class="dc-community-notice">${isAr ? '💡 الجدار محلي حالياً. لمشاركة الأدعية مع جميع المستخدمين، قم بإعداد Supabase في CONFIG.' : '💡 Wall is local for now. To share with all users, configure Supabase in CONFIG.'}</div>` : ''}
                 <div class="dc-shared-feed" id="dc-shared-feed">${feedHtml}</div>
@@ -3061,6 +3192,21 @@ class DuaCompanion {
 
         this._listen(lang);
         this._startPoll();
+    }
+
+    _updateRing() {
+        const total = this._totalCount();
+        const done = this.checked.size;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const offset = Math.round(113 * (1 - pct / 100));
+        const ring = document.querySelector('.dc-ring-fg');
+        if (ring) ring.style.strokeDashoffset = offset;
+        const pctEl = document.querySelector('.dc-ring-pct');
+        if (pctEl) pctEl.textContent = pct + '%';
+        const subEl = document.querySelector('.dc-header-sub');
+        if (subEl) subEl.textContent = t('dcProgress', done, total);
+        const wrap = document.querySelector('.dc-ring-wrap');
+        if (wrap) wrap.setAttribute('aria-valuenow', pct);
     }
 
     _ameenKey() { return 'noor_ameen_1447'; }
@@ -3109,49 +3255,42 @@ class DuaCompanion {
     _buildFeedHtml(isAr, configured) {
         const ameens = this._loadAmeens();
         const ameenLabel = isAr ? 'آمين' : 'Ameen';
+        const saidLabel = isAr ? 'قالوا آمين' : 'said Ameen';
+        const anonLabel = isAr ? 'مجهول' : 'Anonymous';
+
+        const _itemHtml = (text, ts, aid, said, cnt) => `
+        <div class="dc-shared-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+                <span class="dc-shared-anon">${anonLabel}</span>
+                <span class="dc-shared-time">${this._timeAgo(ts, isAr)}</span>
+            </div>
+            <p class="dc-shared-text">${_escape(text)}</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+                ${cnt > 0 ? `<span class="dc-ameen-label"><i class="ti ti-check" aria-hidden="true"></i>${numFmt(cnt)} ${saidLabel}</span>` : '<span></span>'}
+                <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
+                    🤲 ${ameenLabel}${!said ? '' : ` <span class="dc-ameen-count"></span>`}
+                </button>
+            </div>
+        </div>`;
 
         if (configured) {
             if (!this.community || this.community.length === 0) {
                 return `<p class="dc-empty dc-loading-msg">${isAr ? 'جارٍ التحميل…' : 'Loading community duas…'}</p>`;
             }
             return this.community.map(s => {
-                const aid = this._ameenId(s.text, new Date(s.created_at).getTime());
+                const ts = new Date(s.created_at).getTime();
+                const aid = this._ameenId(s.text, ts);
                 const said = !!ameens[aid];
                 const cnt = s.ameen_count || 0;
-                return `
-                <div class="dc-shared-item">
-                    <span class="dc-shared-text">${_escape(s.text)}</span>
-                    <div class="dc-shared-footer">
-                        <span class="dc-shared-meta">
-                            <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
-                            <span class="dc-shared-time">${this._timeAgo(new Date(s.created_at).getTime(), isAr)}</span>
-                        </span>
-                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
-                            🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
-                        </button>
-                    </div>
-                </div>`;
+                return _itemHtml(s.text, ts, aid, said, cnt);
             }).join('');
         }
-        // localStorage fallback
         if (!this.shared.length) return `<p class="dc-empty">${t('dcSharedEmpty')}</p>`;
         return [...this.shared].reverse().slice(0, 20).map(s => {
             const aid = this._ameenId(s.text, s.ts);
             const said = !!ameens[aid];
             const cnt = parseInt(localStorage.getItem('noor_ameen_cnt_' + aid) || '0', 10);
-            return `
-            <div class="dc-shared-item">
-                <span class="dc-shared-text">${_escape(s.text)}</span>
-                <div class="dc-shared-footer">
-                    <span class="dc-shared-meta">
-                        <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
-                        <span class="dc-shared-time">${this._timeAgo(s.ts, isAr)}</span>
-                    </span>
-                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
-                        🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
-                    </button>
-                </div>
-            </div>`;
+            return _itemHtml(s.text, s.ts, aid, said, cnt);
         }).join('');
     }
 
@@ -3176,20 +3315,91 @@ class DuaCompanion {
             });
         });
 
+        // Native checkbox change drives state; circle syncs visually
         document.querySelectorAll('.dc-chk').forEach(chk => {
             chk.addEventListener('change', () => {
                 const id = chk.dataset.dcId;
                 if (chk.checked) this.checked.add(id); else this.checked.delete(id);
                 this._save();
                 const item = chk.closest('.dc-item');
-                if (item) item.classList.toggle('dc-item-done', chk.checked);
-                const total = this._totalCount();
-                const done = this.checked.size;
-                const pct = total > 0 ? Math.round(done / total * 100) : 0;
-                const fill = document.querySelector('.dc-progress-fill');
-                if (fill) fill.style.width = pct + '%';
-                const lbl = document.querySelector('.dc-progress-label');
-                if (lbl) lbl.textContent = t('dcProgress', done, total);
+                if (item) {
+                    item.classList.toggle('dc-item-done', chk.checked);
+                    const circle = item.querySelector('.dc-check-circle');
+                    if (circle) {
+                        circle.classList.toggle('dc-check-on', chk.checked);
+                        circle.innerHTML = chk.checked ? '<i class="ti ti-check"></i>' : '';
+                    }
+                }
+                this._updateRing();
+            });
+        });
+
+        // Circle click toggles the hidden native checkbox
+        document.querySelectorAll('.dc-check-circle').forEach(circle => {
+            circle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const item = circle.closest('.dc-item');
+                const chk = item && item.querySelector('.dc-chk');
+                if (chk) { chk.checked = !chk.checked; chk.dispatchEvent(new Event('change')); }
+            });
+        });
+
+        // Search filter
+        const searchInput = document.getElementById('dc-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.toLowerCase().trim();
+                document.querySelectorAll('#dc-list-inner .dc-item').forEach(item => {
+                    const ar = item.querySelector('.dc-item-ar')?.textContent || '';
+                    const tr = item.querySelector('.dc-item-tr')?.textContent || '';
+                    item.style.display = (!q || ar.includes(q) || tr.toLowerCase().includes(q)) ? '' : 'none';
+                });
+            });
+        }
+
+        // Mark all made
+        document.getElementById('dc-mark-all')?.addEventListener('click', () => {
+            const duas = this._allDuas(this.cat);
+            duas.forEach(d => this.checked.add(d.id));
+            this._save();
+            this.renderSection();
+        });
+
+        // Saved duas toggle — just scroll to wall for now (future: filter view)
+        document.getElementById('dc-saved')?.addEventListener('click', () => {
+            const feed = document.querySelector('.dc-shared-section');
+            if (feed) feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // Fav buttons
+        document.querySelectorAll('.dc-fav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                const id = btn.dataset.dcFav;
+                if (this.favs.has(id)) this.favs.delete(id); else this.favs.add(id);
+                this._save();
+                btn.classList.toggle('dc-fav-on', this.favs.has(id));
+                const savedBtn = document.getElementById('dc-saved');
+                if (savedBtn) {
+                    savedBtn.innerHTML = `<i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظات (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}`;
+                }
+            });
+        });
+
+        // Share buttons
+        document.querySelectorAll('.dc-act-share').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                const id = btn.dataset.dcShare;
+                const duas = this._allDuas(this.cat);
+                const d = duas.find(x => x.id === id);
+                if (!d) return;
+                const text = `${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`;
+                if (navigator.share) {
+                    navigator.share({ title: 'Noor Nights 🌙', text, url: window.location.href }).catch(() => {});
+                } else {
+                    navigator.clipboard.writeText(text).then(() => showMessage(t('copiedTitle'), t('copiedMsg'))).catch(() => {});
+                }
             });
         });
 
