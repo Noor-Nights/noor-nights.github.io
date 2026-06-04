@@ -660,15 +660,22 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
-    // Translation toggle pill — single button, no transliteration/context (no data)
-    let showTranslation = true;
     const isAr = currentLang === 'ar';
+
+    // TODO: Translation toggle — hidden until the toggle actually works end-to-end.
+    // The toggle row and handler below are wired up; the root issue is that
+    // .dua-english-main elements are only populated after the carousel renders
+    // and the current slide may not exist in DOM yet when the button is clicked.
+    // Re-enable by removing the `display:none` on toggleRow once fixed.
+    // Also consider adding transliteration data to jawamiDuas before adding that pill back.
     const toggleRow = document.createElement('div');
     toggleRow.className = 'jaw-toggle-row jaw-toggle-row--single';
+    toggleRow.style.display = 'none';
     toggleRow.innerHTML =
         `<button class="jaw-tog jaw-tog-on jaw-tog--trans" id="jtog-trans-${containerId}">` +
         `<i class="ti ti-eye" aria-hidden="true"></i>${isAr ? 'إخفاء الترجمة' : 'Hide translation'}</button>`;
     carousel.appendChild(toggleRow);
+    let showTranslation = true;
 
     // Navigation bar with dots
     const nav = document.createElement('div');
