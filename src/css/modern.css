@@ -769,15 +769,15 @@ h2 {
 }
 .dhikr-arabic {
     font-family: var(--fa);
-    font-size: 22px;
+    font-size: 1.05rem;
     color: var(--cream);
     direction: rtl;
-    line-height: 2.1;
+    line-height: 1.8;
     margin-bottom: 8px;
     text-align: right;
 }
 .dhikr-arabic-sm {
-    font-size: 18px;
+    font-size: 0.9rem;
 }
 .dhikr-transliteration {
     font-size: 12px;
