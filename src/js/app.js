@@ -4517,7 +4517,7 @@ const DAILY_FOCUS = [
 const _ADHKAR_STATE_KEY = 'noor_adhkar_v1';
 const _ADHKAR_PANE_KEY  = 'noor_dhikr_pane';
 const _ADHKAR_COUNT = 12;
-const _SLEEP_COUNT  = 7;
+const _SLEEP_COUNT  = 13;
 const _ADHKAR_SECTION_COUNT = { morning: _ADHKAR_COUNT, evening: _ADHKAR_COUNT, sleep: _SLEEP_COUNT };
 
 function switchDhikrPane(name) {
@@ -5290,7 +5290,9 @@ function updateTasbeehUI() {
         toggleBtn.id = 'tb-view-toggle';
         toggleBtn.className = 'tb-view-toggle';
         toggleBtn.onclick = () => { _tbExpandedView = !_tbExpandedView; updateTasbeehUI(); };
-        grid.parentElement.insertBefore(toggleBtn, grid);
+        const actions = document.querySelector('.tasbeeh-actions');
+        if (actions) actions.insertBefore(toggleBtn, actions.firstChild);
+        else grid.parentElement.insertBefore(toggleBtn, grid);
     }
     toggleBtn.textContent = _tbExpandedView
         ? (isAr ? '◾ عرض مضغوط' : '◾ Compact view')
