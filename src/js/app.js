@@ -666,6 +666,11 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
+    // Apply initial translation visibility explicitly so it's consistent across all locales
+    carousel.querySelectorAll('.dua-english-main').forEach(el => {
+        el.style.display = showTranslation ? '' : 'none';
+    });
+
     // "Arabic only" toggle — delegate from carousel so all slides share one state
     carousel.addEventListener('click', e => {
         const btn = e.target.closest('.jaw-arabic-only-btn');
