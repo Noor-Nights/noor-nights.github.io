@@ -1326,7 +1326,7 @@ async function shareImage(type, idx) {
 
 
 async function shareDhikrCard(btn) {
-    const card = btn.closest('.dhikr-card');
+    const card = btn.closest('.dhikr-card, .adhkar-card');
     if (!card) return;
 
     const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
@@ -1370,7 +1370,7 @@ async function shareDhikrCard(btn) {
 }
 
 function copyDhikrCard(btn) {
-    const card = btn.closest('.dhikr-card');
+    const card = btn.closest('.dhikr-card, .adhkar-card');
     if (!card) return;
     const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
     const translation = card.querySelector('.dhikr-translation')?.textContent?.trim() || '';
@@ -4515,9 +4515,11 @@ const DAILY_FOCUS = [
 // ── Dhikr Inner Panes (GH-196) ────────────────────────
 const _ADHKAR_STATE_KEY = 'noor_adhkar_v1';
 const _ADHKAR_PANE_KEY  = 'noor_dhikr_pane';
-const _ADHKAR_COUNT = 6;
+const _ADHKAR_COUNT = 12;
 
 function switchDhikrPane(name) {
+    const VALID = ['counter','morning','evening','special'];
+    if (!VALID.includes(name)) return;
     document.querySelectorAll('.dhikr-pane').forEach(p => p.classList.add('dhikr-pane-hidden'));
     document.querySelectorAll('.dhikr-itab').forEach(t => {
         t.classList.remove('dhikr-itab-active');
@@ -4527,6 +4529,8 @@ function switchDhikrPane(name) {
     if (pane) pane.classList.remove('dhikr-pane-hidden');
     const tab = document.querySelector('.dhikr-itab[data-pane="' + name + '"]');
     if (tab) { tab.classList.add('dhikr-itab-active'); tab.setAttribute('aria-selected', 'true'); }
+    const tabsEl = document.querySelector('.dhikr-inner-tabs');
+    if (tabsEl) tabsEl.dataset.activepane = name;
     try { localStorage.setItem(_ADHKAR_PANE_KEY, name); } catch(e) {}
 }
 

@@ -4432,6 +4432,18 @@ h2 {
     color: #fff;
     font-weight: 600;
 }
+.dhikr-inner-tabs[data-activepane="morning"] .dhikr-itab[data-pane="morning"] {
+    background: var(--gold);
+    color: var(--bg2);
+}
+.dhikr-inner-tabs[data-activepane="evening"] .dhikr-itab[data-pane="evening"] {
+    background: #7fa8d8;
+    color: var(--bg2);
+}
+.dhikr-inner-tabs[data-activepane="special"] .dhikr-itab[data-pane="special"] {
+    background: #9B59B6;
+    color: #fff;
+}
 .dhikr-pane { padding-bottom: 8px; }
 .dhikr-pane-hidden { display: none; }
 
