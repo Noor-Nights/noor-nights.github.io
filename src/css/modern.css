@@ -4444,6 +4444,10 @@ h2 {
     background: #9B59B6;
     color: #fff;
 }
+.dhikr-inner-tabs[data-activepane="sleep"] .dhikr-itab[data-pane="sleep"] {
+    background: #3B5998;
+    color: #fff;
+}
 .dhikr-pane { padding-bottom: 8px; }
 .dhikr-pane-hidden { display: none; }
 
@@ -4470,6 +4474,15 @@ h2 {
     padding: 0;
     text-align: right;
     font-size: 12px;
+}
+
+/* ── Counter Surface Card (GH-201) ── */
+#tasbeeh-container {
+    background: var(--bg2);
+    border-radius: 14px;
+    border: 0.5px solid var(--border);
+    padding: 4px 12px 12px;
+    margin: 8px 16px 10px;
 }
 
 /* ── Adhkar Counter Shortcut Cards ── */
@@ -4540,6 +4553,10 @@ h2 {
     background: rgba(127,168,216,.06);
     border-color: rgba(127,168,216,.2);
 }
+.adhkar-sleep-hdr {
+    background: rgba(59,89,152,.08);
+    border-color: rgba(59,89,152,.25);
+}
 .adhkar-prog-title {
     font-size: 15px;
     font-weight: 600;
@@ -4547,6 +4564,7 @@ h2 {
 }
 .adhkar-morning-hdr .adhkar-prog-title { color: var(--gold2); }
 .adhkar-evening-hdr .adhkar-prog-title { color: #7fa8d8; }
+.adhkar-sleep-hdr .adhkar-prog-title { color: #7a9fd6; }
 .adhkar-prog-sub {
     font-size: 11.5px;
     color: var(--cream2);
@@ -4559,6 +4577,7 @@ h2 {
 }
 .adhkar-morning-hdr .adhkar-prog-count { color: var(--gold2); }
 .adhkar-evening-hdr .adhkar-prog-count { color: #7fa8d8; }
+.adhkar-sleep-hdr .adhkar-prog-count { color: #7a9fd6; }
 .adhkar-prog-bar-wrap {
     height: 3px;
     background: var(--bg3);
@@ -4573,6 +4592,7 @@ h2 {
 }
 #morning-prog-bar { background: var(--gold); }
 #evening-prog-bar { background: #7fa8d8; }
+#sleep-prog-bar { background: #3B5998; }
 
 /* ── Adhkar Checklist Cards ── */
 .adhkar-card {
