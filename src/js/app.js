@@ -615,6 +615,9 @@ function renderDuaCarousel(list, containerId, prefix) {
     const track = document.createElement('div');
     track.className = 'dua-carousel-track';
 
+    const isAr = currentLang === 'ar';
+    let showTranslation = false;
+
     list.forEach((dua, idx) => {
         const pal = WATERCOLOR_PALETTES[idx % WATERCOLOR_PALETTES.length];
         const night = getCurrentNight();
@@ -629,10 +632,10 @@ function renderDuaCarousel(list, containerId, prefix) {
 
         const englishDiv = dua.english ? `<div class="dua-english-main"></div>` : '';
         const duaTags = dua.id ? DUA_TAGS[dua.id] : null;
-        const isAr = currentLang === 'ar';
         const tagHtml = duaTags
             ? `<div class="dua-tags-row">${(isAr ? duaTags.ar : duaTags.en).map(tag => `<span class="dua-tag">${tag}</span>`).join('')}</div>`
             : '';
+        const showTranslationLabel = isAr ? 'إظهار الترجمة' : 'Show translation';
         slide.innerHTML = `
             <div class="dua-slide-inner">
                 ${nightHTML}
@@ -641,13 +644,17 @@ function renderDuaCarousel(list, containerId, prefix) {
                 ${tagHtml}
                 <div class="dua-badge-row"><span class="slide-badge"></span></div>
                 <div class="slide-actions">
+                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
+                        ${_copyIconSvg}
+                        <span class="slide-btn-label">${t('actCopy')}</span>
+                    </button>
                     <button class="slide-btn" onclick="shareImage('${prefix}', ${idx})" aria-label="Share card image">
                         ${_shareIconSvg}
                         <span class="slide-btn-label">${t('actShareCard')}</span>
                     </button>
-                    <button class="slide-btn" onclick="copyText('${prefix}', ${idx})" aria-label="${t('actCopy')} dua text">
-                        ${_copyIconSvg}
-                        <span class="slide-btn-label">${t('actCopy')}</span>
+                    <button class="slide-btn jaw-arabic-only-btn jaw-arabic-only-active" aria-label="${showTranslationLabel}">
+                        <i class="ti ti-eye" aria-hidden="true"></i>
+                        <span class="slide-btn-label">${showTranslationLabel}</span>
                     </button>
                 </div>
             </div>`;
@@ -660,15 +667,49 @@ function renderDuaCarousel(list, containerId, prefix) {
 
     carousel.appendChild(track);
 
-    // Navigation bar
+    // Apply initial translation visibility explicitly so it's consistent across all locales
+    carousel.querySelectorAll('.dua-english-main').forEach(el => {
+        el.style.display = showTranslation ? '' : 'none';
+    });
+
+    // "Arabic only" toggle — delegate from carousel so all slides share one state
+    carousel.addEventListener('click', e => {
+        const btn = e.target.closest('.jaw-arabic-only-btn');
+        if (!btn) return;
+        showTranslation = !showTranslation;
+        carousel.querySelectorAll('.dua-english-main').forEach(el => {
+            el.style.display = showTranslation ? '' : 'none';
+        });
+        carousel.querySelectorAll('.jaw-arabic-only-btn').forEach(b => {
+            b.classList.toggle('jaw-arabic-only-active', !showTranslation);
+            const icon = b.querySelector('.ti');
+            if (icon) {
+                icon.className = showTranslation ? 'ti ti-eye-off' : 'ti ti-eye';
+            }
+            const label = b.querySelector('.slide-btn-label');
+            if (label) label.textContent = showTranslation
+                ? (isAr ? 'عربي فقط' : 'Arabic only')
+                : (isAr ? 'إظهار الترجمة' : 'Show translation');
+        });
+    });
+
+    // Navigation bar with dots
     const nav = document.createElement('div');
     nav.className = 'carousel-nav';
     const prevId = 'cprev-' + containerId;
     const nextId = 'cnext-' + containerId;
     const countId = 'ccount-' + containerId;
+    const dotsId = 'cdots-' + containerId;
+    const DOT_MAX = 5;
+    const dotsHtml = Array.from({ length: Math.min(list.length, DOT_MAX) }, (_, i) =>
+        `<div class="jaw-nav-dot${i === 0 ? ' jaw-dot-on' : ''}" data-dot="${i}"></div>`
+    ).join('');
     nav.innerHTML =
         '<button class="carousel-nav-btn" id="' + prevId + '" aria-label="Previous dua">&#8249;</button>' +
+        '<div style="flex:1;text-align:center">' +
+        '<div class="jaw-nav-dots" id="' + dotsId + '">' + dotsHtml + '</div>' +
         '<span class="carousel-counter" id="' + countId + '">' + numFmt(1) + ' / ' + numFmt(list.length) + '</span>' +
+        '</div>' +
         '<button class="carousel-nav-btn" id="' + nextId + '" aria-label="Next dua">&#8250;</button>';
     carousel.appendChild(nav);
     body.appendChild(carousel);
@@ -676,6 +717,17 @@ function renderDuaCarousel(list, containerId, prefix) {
     const prevBtn = document.getElementById(prevId);
     const nextBtn = document.getElementById(nextId);
     const countEl = document.getElementById(countId);
+    const dotsEl = document.getElementById(dotsId);
+
+    function updateDots(idx) {
+        if (!dotsEl) return;
+        const total = list.length;
+        const dotCount = Math.min(total, DOT_MAX);
+        const activeDot = total <= DOT_MAX ? idx : Math.round(idx / (total - 1) * (dotCount - 1));
+        dotsEl.querySelectorAll('.jaw-nav-dot').forEach((dot, i) => {
+            dot.classList.toggle('jaw-dot-on', i === activeDot);
+        });
+    }
 
     function goToSlide(idx) {
         currentSlide = Math.max(0, Math.min(idx, list.length - 1));
@@ -685,8 +737,7 @@ function renderDuaCarousel(list, containerId, prefix) {
         countEl.textContent = numFmt(currentSlide + 1) + ' / ' + numFmt(list.length);
         prevBtn.disabled = currentSlide === 0;
         nextBtn.disabled = currentSlide === list.length - 1;
-
-
+        updateDots(currentSlide);
         trackEvent('/carousel-swipe', 'Carousel: dua ' + (currentSlide + 1));
     }
 
@@ -716,6 +767,7 @@ function renderDuaCarousel(list, containerId, prefix) {
             }
         }
     }, { passive: true });
+
 }
 
 const JAWAMI_PREVIEW = 3; // cards visible before "Show more"
@@ -2854,31 +2906,31 @@ let virtueCards;
 // ═══════════════════════════════════════════════════
 
 const DC_CATEGORIES = [
-    { id: 'arafah',      icon: '⛰️',  en: 'Day of Arafah', ar: 'يوم عرفة'   },
+    { id: 'general',     icon: '✨',  en: 'General',        ar: 'عام'        },
     { id: 'takbeer',     icon: '🔊',  en: 'Takbeer',        ar: 'التكبير'    },
     { id: 'forgiveness', icon: '🤲',  en: 'Forgiveness',    ar: 'المغفرة'    },
     { id: 'family',      icon: '👨‍👩‍👧', en: 'Family',         ar: 'العائلة'    },
-    { id: 'eid',         icon: '🌙',  en: 'Eid',            ar: 'العيد'      },
+    { id: 'protection',  icon: '🛡️',  en: 'Protection',     ar: 'الحماية'    },
     { id: 'ummah',       icon: '🌍',  en: 'Ummah',          ar: 'الأمة'      },
 ];
 
 const DC_CAT_DESCRIPTIONS = {
-    arafah:      { en: 'The best dua is the dua of Arafah. These supplications are powerful at any time of year.', ar: 'أفضل الدعاء دعاء يوم عرفة. هذه الأدعية قوية في أي وقت من السنة.' },
+    general:     { en: 'Everyday supplications — ask Allah for all good in this life and the next.', ar: 'أدعية يومية — اسأل الله كل خير في الدنيا والآخرة.' },
     takbeer:     { en: 'Glorify Allah abundantly — the Takbeer is among the greatest deeds at all times.', ar: 'أكثر من التكبير — التكبير من أفضل الأعمال في كل وقت.' },
     forgiveness: { en: 'Seek forgiveness sincerely. Allah loves to forgive — ask Him every day.', ar: 'استغفر الله بصدق. الله يحب أن يغفر — اسأله كل يوم.' },
     family:      { en: 'Pray for your family and loved ones. The dua of a person for their family is answered.', ar: 'ادعُ لعائلتك وأحبائك. دعاء الشخص لأهله مستجاب.' },
-    eid:         { en: 'Celebrate Eid with gratitude and dua. Ask Allah to accept your worship this season.', ar: 'احتفل بالعيد بشكر ودعاء. سل الله أن يتقبل عبادتك في هذا الموسم.' },
+    protection:  { en: 'Seek refuge with Allah from every harm. He is the Best Protector.', ar: 'استعذ بالله من كل أذى — هو نعم الوكيل.' },
     ummah:       { en: 'Remember the whole Ummah in your duas. The Prophet ﷺ said the dua for your brother is answered.', ar: 'اذكر الأمة كلها في دعائك. قال النبي ﷺ: دعاؤك لأخيك مستجاب.' },
 };
 
 const DC_DUAS = {
-    arafah: [
-        { id:'ar1', ar:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', tr:'There is no god but Allah, alone without partner. His is the dominion, His is all praise, and He has power over all things.', ref:'Tirmidhi — best dua on Arafah' },
-        { id:'ar2', ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي', tr:'O Allah, You are Pardoning and Generous. You love to pardon, so pardon me.', ref:'Ibn Majah — recommended on Arafah' },
-        { id:'ar3', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.', ref:'Quran 2:201 — most frequent dua of the Prophet ﷺ' },
-        { id:'ar4', ar:'اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ دِقَّهُ وَجِلَّهُ وَأَوَّلَهُ وَآخِرَهُ وَعَلَانِيَتَهُ وَسِرَّهُ', tr:'O Allah, forgive all my sins — small and great, first and last, open and secret.', ref:'Muslim' },
-        { id:'ar5', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ', tr:'O Allah, I ask You for Paradise and I seek refuge in You from the Fire.', ref:'Abu Dawud' },
-        { id:'ar6', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
+    general: [
+        { id:'g1', ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', tr:'Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.', ref:'Quran 2:201 — most frequent dua of the Prophet ﷺ' },
+        { id:'g2', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى', tr:'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.', ref:'Muslim' },
+        { id:'g3', ar:'اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاهْدِنِي وَعَافِنِي وَارْزُقْنِي', tr:'O Allah, forgive me, have mercy on me, guide me, grant me wellbeing, and provide for me.', ref:'Muslim — comprehensive dua' },
+        { id:'g4', ar:'رَبِّ زِدْنِي عِلْمًا', tr:'My Lord, increase me in knowledge.', ref:'Quran 20:114' },
+        { id:'g5', ar:'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ', tr:'O Allah, I ask You for Paradise and I seek refuge in You from the Fire.', ref:'Abu Dawud' },
+        { id:'g6', ar:'اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي وَأَصْلِحْ لِي آخِرَتِي الَّتِي فِيهَا مَعَادِي', tr:'O Allah, set right my religion which safeguards my affairs, my world in which is my livelihood, and my hereafter to which I will return.', ref:'Muslim' },
     ],
     takbeer: [
         { id:'tk1', ar:'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ وَلِلَّهِ الْحَمْدُ', tr:'Allah is the Greatest, Allah is the Greatest. There is no god but Allah. Allah is the Greatest, Allah is the Greatest, and all praise belongs to Allah.', ref:'Bukhari (muʿallaq)' },
@@ -2901,12 +2953,12 @@ const DC_DUAS = {
         { id:'fam4', ar:'اللَّهُمَّ بَارِكْ لَنَا فِي أَهْلِنَا وَأَوْلَادِنَا', tr:'O Allah, bless us in our family and our children.', ref:'Du\'a' },
         { id:'fam5', ar:'اللَّهُمَّ أَصْلِحْ لِي دِينِي الَّذِي هُوَ عِصْمَةُ أَمْرِي وَأَصْلِحْ لِي دُنْيَايَ الَّتِي فِيهَا مَعَاشِي', tr:'O Allah, set right my religion which is the safeguard of my affairs, and set right my world where my livelihood is.', ref:'Muslim' },
     ],
-    eid: [
-        { id:'e1', ar:'اللَّهُمَّ تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ', tr:'O Allah, accept from us. Indeed, You are the All-Hearing, the All-Knowing.', ref:'Quran 2:127 — said at Eid and after worship' },
-        { id:'e2', ar:'تَقَبَّلَ اللَّهُ مِنَّا وَمِنكُمْ', tr:'May Allah accept from us and from you.', ref:'Ibn Hajar — greeting of the Companions on Eid' },
-        { id:'e3', ar:'اللَّهُمَّ اجْعَلْنَا مِمَّنْ تَقَبَّلْتَ عَمَلَهُ وَأَطَلْتَ عُمُرَهُ عَلَى طَاعَتِكَ', tr:'O Allah, make us among those whose deeds You accepted and whose lives You prolonged in obedience to You.', ref:'Du\'a' },
-        { id:'e4', ar:'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ التَّوَّابُ الرَّحِيمُ', tr:'Our Lord, accept from us. Indeed, You are the Accepting of repentance, the Merciful.', ref:'Quran 2:128' },
-        { id:'e5', ar:'اللَّهُمَّ بَلِّغْنَا رَمَضَانَ وَذَا الْحِجَّةَ وَأَعِنَّا عَلَى الصِّيَامِ وَالْقِيَامِ', tr:'O Allah, let us reach Ramadan and Dhul Hijjah, and help us in fasting and night prayer.', ref:'Du\'a' },
+    protection: [
+        { id:'p1', ar:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', tr:'I seek refuge in the perfect words of Allah from the evil of what He has created.', ref:'Muslim — to be said morning and evening' },
+        { id:'p2', ar:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', tr:'In the name of Allah with whose name nothing is harmed on earth or in the sky, and He is the All-Hearing, All-Knowing.', ref:'Abu Dawud — 3 times morning & evening' },
+        { id:'p3', ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', tr:'Allah is sufficient for us, and He is the best disposer of affairs.', ref:'Quran 3:173 — said by the companions when threatened' },
+        { id:'p4', ar:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ وَالْبُخْلِ وَالْجُبْنِ وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ', tr:'O Allah, I seek refuge in You from worry, grief, incapacity, laziness, miserliness, cowardice, debt, and being overpowered by people.', ref:'Bukhari' },
+        { id:'p5', ar:'لَا إِلَهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ', tr:'There is no god but You — glory be to You. Indeed I have been of the wrongdoers.', ref:'Quran 21:87 — dua of Prophet Yunus' },
     ],
     ummah: [
         { id:'u1', ar:'اللَّهُمَّ انْصُرِ الْمُسْلِمِينَ وَأَعِزَّ الإِسْلَامَ', tr:'O Allah, grant victory to the Muslims and give honour to Islam.', ref:'Du\'a' },
@@ -2926,9 +2978,12 @@ class DuaCompanion {
     constructor() {
         const saved = JSON.parse(localStorage.getItem('noor_duas_1447') || '{}');
         this.checked = new Set(saved.checked || []);
+        this.favs = new Set(saved.favs || []);
         this.shared = saved.shared || [];
-        this.community = [];        // from Supabase (or null = not configured)
-        this.cat = 'arafah';
+        this.community = [];
+        const savedCat = saved.cat || 'general';
+        this.cat = DC_CATEGORIES.find(c => c.id === savedCat) ? savedCat : DC_CATEGORIES[0].id;
+        this._showingFavs = false;
         this._pollInterval = null;
         this._fetchCommunity();     // async — fires and updates feed when ready
     }
@@ -2982,6 +3037,8 @@ class DuaCompanion {
     _save() {
         localStorage.setItem('noor_duas_1447', JSON.stringify({
             checked: [...this.checked],
+            favs: [...this.favs],
+            cat: this.cat,
             shared: this.shared,
         }));
     }
@@ -3002,51 +3059,113 @@ class DuaCompanion {
         const total = this._totalCount();
         const done = this.checked.size;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const ringOffset = Math.round(113 * (1 - pct / 100));
 
         const tabs = DC_CATEGORIES.map(c => `
             <button class="dc-tab${c.id === this.cat ? ' dc-tab-active' : ''}" data-dc-cat="${c.id}">
                 <span>${c.icon}</span> <span>${isAr ? c.ar : c.en}</span>
             </button>`).join('');
 
-        const duas = this._allDuas(this.cat);
-        const items = duas.length ? duas.map(d => {
+        // When showing saved view, collect all favourited duas across every category
+        let sourceList;
+        if (this._showingFavs) {
+            sourceList = [];
+            DC_CATEGORIES.forEach(c => {
+                (DC_DUAS[c.id] || []).forEach(d => { if (this.favs.has(d.id)) sourceList.push(d); });
+            });
+        } else {
+            sourceList = this._allDuas(this.cat);
+        }
+
+        const _duaItem = (d, idx) => {
             const chk = this.checked.has(d.id);
+            const fav = this.favs.has(d.id);
+            const rawSrc = d.ref ? d.ref.split('—')[0].trim() : '';
+            // Skip generic "Du'a" — every card is a dua, it adds nothing
+            const sourceLabel = (rawSrc && rawSrc !== "Du'a" && rawSrc !== 'Dua') ? _escape(rawSrc) : '';
+            const badge = idx === 0 && !this._showingFavs
+                ? `<span class="dc-source-badge" style="background:rgba(197,163,82,0.1);color:var(--gold)"><i class="ti ti-star" aria-hidden="true"></i> ${isAr ? 'مميز' : 'Featured'}</span>`
+                : (sourceLabel ? `<span class="dc-source-badge">${sourceLabel}</span>` : '<span></span>');
             return `
-            <label class="dc-item${chk ? ' dc-item-done' : ''}" data-dc-id="${d.id}">
-                <input type="checkbox" class="dc-chk" data-dc-id="${d.id}"${chk ? ' checked' : ''}>
+            <label class="dc-item${chk ? ' dc-item-done' : ''}" data-dc-id="${_escape(d.id)}">
+                <input type="checkbox" class="dc-chk" data-dc-id="${_escape(d.id)}"${chk ? ' checked' : ''}>
+                <div class="dc-check-circle${chk ? ' dc-check-on' : ''}" aria-hidden="true">
+                    ${chk ? '<i class="ti ti-check"></i>' : ''}
+                </div>
                 <div class="dc-item-body">
                     <div class="dc-item-ar" dir="rtl">${d.ar}</div>
-                    <div class="dc-item-tr">${d.tr}</div>
-                    ${d.ref ? `<div class="dc-item-ref">${d.ref}</div>` : ''}
+                    <div class="dc-item-tr">${_escape(d.tr)}</div>
+                    <div class="dc-item-footer">
+                        ${badge}
+                        <div class="dc-item-actions">
+                            <button class="dc-act-btn dc-act-share" data-dc-share="${_escape(d.id)}" aria-label="${isAr ? 'مشاركة' : 'Share'}">
+                                <i class="ti ti-share" aria-hidden="true"></i>
+                            </button>
+                            <button class="dc-act-btn dc-fav-btn${fav ? ' dc-fav-on' : ''}" data-dc-fav="${_escape(d.id)}" aria-label="${isAr ? 'حفظ' : 'Save'}">
+                                <i class="ti ti-heart" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </label>`;
-        }).join('') : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
+        };
+
+        const emptyMsg = this._showingFavs
+            ? `<p class="dc-empty">${isAr ? 'لا توجد أدعية محفوظة بعد — اضغط ♡ لحفظ دعاء' : 'No saved duas yet — tap ♡ on any dua to save one'}</p>`
+            : `<p class="dc-empty">${isAr ? 'لا توجد أدعية' : 'No duas yet'}</p>`;
+        const items = sourceList.length ? sourceList.map(_duaItem).join('') : emptyMsg;
 
         const configured = this._isSupabaseConfigured();
         const feedHtml = this._buildFeedHtml(isAr, configured);
-        const countLabel = configured
+        const wallCount = configured
             ? (this.community?.length > 0 ? (isAr ? `${numFmt(this.community.length)} دعاء` : `${this.community.length} duas`) : '')
             : (this.shared.length > 0 ? t('dcSharedCount', this.shared.length) : '');
+        const catDesc = DC_CAT_DESCRIPTIONS[this.cat];
 
         el.innerHTML = `
         <div class="dc-wrap" dir="${dir}">
-            <div class="dc-progress-row">
-                <div class="dc-progress-bar"><div class="dc-progress-fill" style="width:${pct}%"></div></div>
-                <span class="dc-progress-label">${t('dcProgress', done, total)}</span>
+            <div class="dc-header-row">
+                <div class="dc-ring-wrap" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${isAr ? 'التقدم' : 'Progress'}">
+                    <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
+                        <circle cx="26" cy="26" r="18" class="dc-ring-bg"/>
+                        <circle cx="26" cy="26" r="18" class="dc-ring-fg" style="stroke-dashoffset:${ringOffset}"/>
+                    </svg>
+                    <span class="dc-ring-pct">${pct}%</span>
+                </div>
+                <div class="dc-header-text">
+                    <span class="dc-header-title">${isAr ? 'رفيق الدعاء' : 'Dua Companion'}</span>
+                    <span class="dc-header-sub">${t('dcProgress', done, total)}</span>
+                </div>
+            </div>
+            <div class="dc-search-bar">
+                <i class="ti ti-search" aria-hidden="true"></i>
+                <input class="dc-search-input" id="dc-search-input" placeholder="${isAr ? 'ابحث في الأدعية...' : 'Search duas...'}" dir="${isAr ? 'rtl' : 'ltr'}" autocomplete="off">
             </div>
             <div class="dc-tabs">${tabs}</div>
-            ${DC_CAT_DESCRIPTIONS[this.cat] ? `<p class="dc-cat-desc">${isAr ? DC_CAT_DESCRIPTIONS[this.cat].ar : DC_CAT_DESCRIPTIONS[this.cat].en}</p>` : ''}
-            <div class="dc-list">${items}</div>
+            ${catDesc ? `<div class="dc-info-banner"><i class="ti ti-info-circle" aria-hidden="true"></i>${_escape(isAr ? catDesc.ar : catDesc.en)}</div>` : ''}
+            <div class="dc-list" id="dc-list-inner">${items}</div>
+            <div class="dc-quick-actions">
+                <button class="dc-quick-btn dc-mark-all-btn" id="dc-mark-all">
+                    <i class="ti ti-check-all" aria-hidden="true"></i>${isAr ? 'علّم الكل منجزاً' : 'Mark all done'}
+                </button>
+                <button class="dc-quick-btn dc-saved-btn${this._showingFavs ? ' dc-saved-active' : ''}" id="dc-saved">
+                    <i class="ti ti-heart${this._showingFavs ? '-filled' : ''}" aria-hidden="true"></i>${this._showingFavs ? (isAr ? 'عرض الكل' : 'Show all') : (isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`)}
+                </button>
+            </div>
             <div class="dc-shared-section">
                 <div class="dc-shared-header">
-                    <span class="dc-shared-title">${t('dcSharedTitle')}</span>
-                    <span class="dc-shared-count">${countLabel}</span>
+                    <div style="display:flex;align-items:center;gap:0.4rem">
+                        <i class="ti ti-world" style="font-size:15px;color:var(--emerald-teal)" aria-hidden="true"></i>
+                        <span class="dc-shared-title">${isAr ? 'جدار الدعاء' : 'Community Dua Wall'}</span>
+                    </div>
+                    <span class="dc-shared-count">${wallCount}</span>
                 </div>
                 <div class="dc-wall-intro">
-                    ${isAr
-                        ? `<span class="dc-wall-intro-icon">🤲</span><span>اكتب دعاءً وشاركه مع إخوانك — كل من يقرأه سيقول <b>آمين</b>، وما دعوت به لغيرك دعا لك به ملَك بمثله.</span>`
-                        : `<span class="dc-wall-intro-icon">🤲</span><span>Share a dua — every brother & sister who reads it will say <b>Ameen</b>. The Prophet ﷺ said: "When you make dua for your brother, an angel says: And for you the same."</span>`
-                    }
+                    <span class="dc-wall-intro-icon">🤲</span>
+                    <span>${isAr
+                        ? `اكتب دعاءً وشاركه مع إخوانك — كل من يقرأه سيقول <b>آمين</b>، وما دعوت به لغيرك دعا لك به ملَك بمثله.`
+                        : `Share a dua — every brother &amp; sister who reads it will say <b>Ameen</b>. The Prophet ﷺ said: "When you make dua for your brother, an angel says: And for you the same."`
+                    }</span>
                 </div>
                 ${!configured ? `<div class="dc-community-notice">${isAr ? '💡 الجدار محلي حالياً. لمشاركة الأدعية مع جميع المستخدمين، قم بإعداد Supabase في CONFIG.' : '💡 Wall is local for now. To share with all users, configure Supabase in CONFIG.'}</div>` : ''}
                 <div class="dc-shared-feed" id="dc-shared-feed">${feedHtml}</div>
@@ -3061,6 +3180,21 @@ class DuaCompanion {
 
         this._listen(lang);
         this._startPoll();
+    }
+
+    _updateRing() {
+        const total = this._totalCount();
+        const done = this.checked.size;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const offset = Math.round(113 * (1 - pct / 100));
+        const ring = document.querySelector('.dc-ring-fg');
+        if (ring) ring.style.strokeDashoffset = offset;
+        const pctEl = document.querySelector('.dc-ring-pct');
+        if (pctEl) pctEl.textContent = pct + '%';
+        const subEl = document.querySelector('.dc-header-sub');
+        if (subEl) subEl.textContent = t('dcProgress', done, total);
+        const wrap = document.querySelector('.dc-ring-wrap');
+        if (wrap) wrap.setAttribute('aria-valuenow', pct);
     }
 
     _ameenKey() { return 'noor_ameen_1447'; }
@@ -3109,49 +3243,42 @@ class DuaCompanion {
     _buildFeedHtml(isAr, configured) {
         const ameens = this._loadAmeens();
         const ameenLabel = isAr ? 'آمين' : 'Ameen';
+        const saidLabel = isAr ? 'قالوا آمين' : 'said Ameen';
+        const anonLabel = isAr ? 'مجهول' : 'Anonymous';
+
+        const _itemHtml = (text, ts, aid, said, cnt) => `
+        <div class="dc-shared-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+                <span class="dc-shared-anon">${anonLabel}</span>
+                <span class="dc-shared-time">${this._timeAgo(ts, isAr)}</span>
+            </div>
+            <p class="dc-shared-text">${_escape(text)}</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+                ${cnt > 0 ? `<span class="dc-ameen-label"><i class="ti ti-check" aria-hidden="true"></i>${numFmt(cnt)} ${saidLabel}</span>` : '<span></span>'}
+                <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
+                    🤲 ${ameenLabel}${!said ? '' : ` <span class="dc-ameen-count"></span>`}
+                </button>
+            </div>
+        </div>`;
 
         if (configured) {
             if (!this.community || this.community.length === 0) {
                 return `<p class="dc-empty dc-loading-msg">${isAr ? 'جارٍ التحميل…' : 'Loading community duas…'}</p>`;
             }
             return this.community.map(s => {
-                const aid = this._ameenId(s.text, new Date(s.created_at).getTime());
+                const ts = new Date(s.created_at).getTime();
+                const aid = this._ameenId(s.text, ts);
                 const said = !!ameens[aid];
                 const cnt = s.ameen_count || 0;
-                return `
-                <div class="dc-shared-item">
-                    <span class="dc-shared-text">${_escape(s.text)}</span>
-                    <div class="dc-shared-footer">
-                        <span class="dc-shared-meta">
-                            <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
-                            <span class="dc-shared-time">${this._timeAgo(new Date(s.created_at).getTime(), isAr)}</span>
-                        </span>
-                        <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
-                            🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
-                        </button>
-                    </div>
-                </div>`;
+                return _itemHtml(s.text, ts, aid, said, cnt);
             }).join('');
         }
-        // localStorage fallback
         if (!this.shared.length) return `<p class="dc-empty">${t('dcSharedEmpty')}</p>`;
         return [...this.shared].reverse().slice(0, 20).map(s => {
             const aid = this._ameenId(s.text, s.ts);
             const said = !!ameens[aid];
             const cnt = parseInt(localStorage.getItem('noor_ameen_cnt_' + aid) || '0', 10);
-            return `
-            <div class="dc-shared-item">
-                <span class="dc-shared-text">${_escape(s.text)}</span>
-                <div class="dc-shared-footer">
-                    <span class="dc-shared-meta">
-                        <span class="dc-shared-anon">${isAr ? 'مجهول' : 'Anonymous'}</span>
-                        <span class="dc-shared-time">${this._timeAgo(s.ts, isAr)}</span>
-                    </span>
-                    <button class="dc-ameen-btn${said ? ' dc-ameen-done' : ''}" data-ameen-id="${_escape(aid)}">
-                        🤲 ${ameenLabel} <span class="dc-ameen-count">${cnt > 0 ? cnt : ''}</span>
-                    </button>
-                </div>
-            </div>`;
+            return _itemHtml(s.text, s.ts, aid, said, cnt);
         }).join('');
     }
 
@@ -3172,24 +3299,137 @@ class DuaCompanion {
         document.querySelectorAll('[data-dc-cat]').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.cat = btn.dataset.dcCat;
+                this._showingFavs = false;  // exit saved filter when switching category
+                this._save();
                 this.renderSection();
             });
         });
 
+        // Native checkbox change drives state; circle syncs visually
         document.querySelectorAll('.dc-chk').forEach(chk => {
             chk.addEventListener('change', () => {
                 const id = chk.dataset.dcId;
                 if (chk.checked) this.checked.add(id); else this.checked.delete(id);
                 this._save();
                 const item = chk.closest('.dc-item');
-                if (item) item.classList.toggle('dc-item-done', chk.checked);
-                const total = this._totalCount();
-                const done = this.checked.size;
-                const pct = total > 0 ? Math.round(done / total * 100) : 0;
-                const fill = document.querySelector('.dc-progress-fill');
-                if (fill) fill.style.width = pct + '%';
-                const lbl = document.querySelector('.dc-progress-label');
-                if (lbl) lbl.textContent = t('dcProgress', done, total);
+                if (item) {
+                    item.classList.toggle('dc-item-done', chk.checked);
+                    const circle = item.querySelector('.dc-check-circle');
+                    if (circle) {
+                        circle.classList.toggle('dc-check-on', chk.checked);
+                        circle.innerHTML = chk.checked ? '<i class="ti ti-check"></i>' : '';
+                    }
+                }
+                this._updateRing();
+            });
+        });
+
+        // Circle click toggles the hidden native checkbox
+        document.querySelectorAll('.dc-check-circle').forEach(circle => {
+            circle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const item = circle.closest('.dc-item');
+                const chk = item && item.querySelector('.dc-chk');
+                if (chk) { chk.checked = !chk.checked; chk.dispatchEvent(new Event('change')); }
+            });
+        });
+
+        // Search filter
+        const searchInput = document.getElementById('dc-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.toLowerCase().trim();
+                document.querySelectorAll('#dc-list-inner .dc-item').forEach(item => {
+                    const ar = item.querySelector('.dc-item-ar')?.textContent || '';
+                    const tr = item.querySelector('.dc-item-tr')?.textContent || '';
+                    item.style.display = (!q || ar.includes(q) || tr.toLowerCase().includes(q)) ? '' : 'none';
+                });
+            });
+        }
+
+        // Mark all made
+        document.getElementById('dc-mark-all')?.addEventListener('click', () => {
+            // Mark only the duas currently visible — either the saved list or the active category
+            const duas = this._showingFavs
+                ? DC_CATEGORIES.flatMap(c => (DC_DUAS[c.id] || []).filter(d => this.favs.has(d.id)))
+                : this._allDuas(this.cat);
+            duas.forEach(d => this.checked.add(d.id));
+            this._save();
+            this.renderSection();
+        });
+
+        // Saved button — shows ALL favourited duas from every category (re-renders)
+        document.getElementById('dc-saved')?.addEventListener('click', () => {
+            this._showingFavs = !this._showingFavs;
+            this.renderSection();
+        });
+
+        // Fav (heart) button — save/unsave with red heart + toast + saved count update
+        document.querySelectorAll('.dc-fav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                const id = btn.dataset.dcFav;
+                const adding = !this.favs.has(id);
+                if (adding) this.favs.add(id); else this.favs.delete(id);
+                this._save();
+                // Immediate visual feedback — no re-render needed
+                btn.classList.toggle('dc-fav-on', adding);
+                this._toast(adding
+                    ? (isAr ? '♡ حُفظ في المفضلة' : '♡ Saved to favourites')
+                    : (isAr ? 'تمت الإزالة من المفضلة' : 'Removed from favourites'));
+                // Update the Saved button count live
+                const savedBtn = document.getElementById('dc-saved');
+                if (savedBtn && !this._showingFavs) {
+                    savedBtn.innerHTML = `<i class="ti ti-heart" aria-hidden="true"></i>${isAr ? `المحفوظة (${numFmt(this.favs.size)})` : `Saved (${numFmt(this.favs.size)})`}`;
+                }
+                // If we're in saved view and the user un-saves a dua, hide it immediately
+                if (this._showingFavs && !adding) {
+                    const item = btn.closest('.dc-item');
+                    if (item) item.style.opacity = '0.3';
+                    setTimeout(() => {
+                        if (item) item.style.display = 'none';
+                    }, 300);
+                }
+            });
+        });
+
+        // Share buttons — generate and share a visual card image
+        document.querySelectorAll('.dc-act-share').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault(); e.stopPropagation();
+                const id = btn.dataset.dcShare;
+                // Search current list first, then all categories (covers saved view)
+                let d = this._allDuas(this.cat).find(x => x.id === id);
+                if (!d) {
+                    for (const c of DC_CATEGORIES) {
+                        d = (DC_DUAS[c.id] || []).find(x => x.id === id);
+                        if (d) break;
+                    }
+                }
+                if (!d) return;
+                const sourceLabel = d.ref ? d.ref.split('—')[0].trim() : 'Noor Nights';
+                try {
+                    btn.style.opacity = '0.5';
+                    const blob = await generateCanvasBlob(d.ar, d.tr ? `"${d.tr}"` : '', sourceLabel, false);
+                    btn.style.opacity = '';
+                    if (!blob) throw new Error('no blob');
+                    const file = new File([blob], 'dua-noor-nights.jpg', { type: 'image/jpeg' });
+                    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                        await navigator.share({ files: [file], title: sourceLabel, text: '🌙 Noor Nights' });
+                    } else if (navigator.share) {
+                        await navigator.share({ title: sourceLabel, text: `${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`, url: window.location.href });
+                    } else {
+                        const url = URL.createObjectURL(blob);
+                        triggerDownload(url, 'dua-noor-nights.jpg');
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                    }
+                } catch (err) {
+                    btn.style.opacity = '';
+                    if (err.name !== 'AbortError') {
+                        navigator.clipboard?.writeText(`${d.ar}\n\n"${d.tr}"\n\n🌙 Noor Nights`)
+                            .then(() => showMessage(t('copiedTitle'), t('copiedMsg'))).catch(() => {});
+                    }
+                }
             });
         });
 

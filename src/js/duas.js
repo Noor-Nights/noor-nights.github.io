@@ -32,7 +32,7 @@ const essentialDuas = [
     {
         "id": "jannah",
         "badge": "Jannah & Protection",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ",
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ",
         "english": "O Allah, I ask You for Paradise and seek refuge in You from the Fire"
     },
     {
@@ -44,7 +44,7 @@ const essentialDuas = [
     {
         "id": "gratitude",
         "badge": "Gratitude & Worship",
-        "arabic": "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
+        "arabic": "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ",
         "english": "O Allah, help me to remember You, to thank You, and to worship You in the best manner."
     }
 ];
@@ -53,458 +53,458 @@ const jawamiDuas = [
     {
         "id": "j_4",
         "badge": "Jawami' Dua 4",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِاسْمِكَ الأَعْظَمِ ، الَّذِي إِذَا دُعِيتَ بِهِ أَجَبْتَ ، وَإِذَا سُئِلْتَ بِهِ أَعْطَـيْتَ ، أَسْأَلُكَ بِأَنِّي أَشُهَدُ أَنَّكَ أَنْتَ اللهُ لا إِلَهَ إِلاَّ أَنْتَ ، الأَحَدُ الصَّمَدُ ، الَّذِي لَمْ يَلِدْ، وَلَمْ يَولَدْ ، وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ ؛ أَنْ تَغْفِرَ لِي ذُنُوبِي ، إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِاسْمِكَ الأَعْظَمِ ، الَّذِي إِذَا دُعِيتَ بِهِ أَجَبْتَ ، وَإِذَا سُئِلْتَ بِهِ أَعْطَـيْتَ ، أَسْأَلُكَ بِأَنِّي أَشُهَدُ أَنَّكَ أَنْتَ اللهُ لا إِلَهَ إِلاَّ أَنْتَ ، الأَحَدُ الصَّمَدُ ، الَّذِي لَمْ يَلِدْ، وَلَمْ يَولَدْ ، وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ ؛ أَنْ تَغْفِرَ لِي ذُنُوبِي ، إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
+        "english": "O Allah, I ask You by Your Greatest Name — the one by which, when You are called upon, You answer, and when You are asked, You give — I ask You, bearing witness that You are Allah, there is no deity but You, the One, the Self-Sufficient, Who did not beget and was not begotten, and to Whom none is equal; that You forgive me my sins, for You are the All-Forgiving, the Most Merciful."
     },
     {
         "id": "j_5",
         "badge": "Jawami' Dua 5",
-        "arabic": "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ العّفْوَ فَاعْفُ عَنِّي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنَّكَ عَفُوٌّ كَرِيمٌ تُحِبُّ العّفْوَ فَاعْفُ عَنِّي.",
+        "english": "O Allah, You are Pardoning, Generous, and You love to pardon, so pardon me."
     },
     {
         "id": "j_6",
         "badge": "Jawami' Dua 6",
-        "arabic": "اللَّهُمَّ رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَنْ دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالمُؤْمِنَاتِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَنْ دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالمُؤْمِنَاتِ.",
+        "english": "O Allah, my Lord, forgive me and my parents and whoever enters my house as a believer, and all the believing men and women."
     },
     {
         "id": "j_7",
         "badge": "Jawami' Dua 7",
-        "arabic": "اللَّهُمَّ اغْفِرْ لِي خَطِيئَتِي وَجَهْلِي ، وَإِسْرَافِي فِي أَمْرِي ، وَمَا أَنْتَ أَعْـلَمُ بِهِ مِنّـِي ، اللَّهُمَّ اغْفِرْ لِي هَزْلِي وَجِدِّي ، وَخَطَئِي وَعَمْدِي ، وَكُلُّ ذَلِكَ عِنْدِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْفِرْ لِي خَطِيئَتِي وَجَهْلِي ، وَإِسْرَافِي فِي أَمْرِي ، وَمَا أَنْتَ أَعْـلَمُ بِهِ مِنّـِي ، اللَّهُمَّ اغْفِرْ لِي هَزْلِي وَجِدِّي ، وَخَطَئِي وَعَمْدِي ، وَكُلُّ ذَلِكَ عِنْدِي.",
+        "english": "O Allah, forgive me my sins and my ignorance, my transgression in my affairs, and whatever You know better than I. O Allah, forgive me my jesting and my seriousness, my mistakes and my intentional acts — and all of that is within me."
     },
     {
         "id": "j_8",
         "badge": "Jawami' Dua 8",
-        "arabic": "اللَّهُمَّ رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي.",
+        "english": "O Allah, my Lord, I have wronged myself, so forgive me."
     },
     {
         "id": "j_9",
         "badge": "Jawami' Dua 9",
-        "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لا إِلَهَ إِلاَّ أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَااسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإنَّهُ لا يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لا إِلَهَ إِلاَّ أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَااسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإنَّهُ لا يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.",
+        "english": "O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant, and I hold to Your covenant and Your promise as much as I am able. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me and I acknowledge my sins, so forgive me — for none forgives sins but You."
     },
     {
         "id": "j_10",
         "badge": "Jawami' Dua 10",
-        "arabic": "اللَّهُمَّ اغْفِرْ لِي ، وَارْحَمْنِي وَاهْدِنِي ، وَعَافِنِي وَارْزُقْنِي ، وَاجْبُرْنِي ، وَارْفَعْنِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْفِرْ لِي ، وَارْحَمْنِي وَاهْدِنِي ، وَعَافِنِي وَارْزُقْنِي ، وَاجْبُرْنِي ، وَارْفَعْنِي.",
+        "english": "O Allah, forgive me, have mercy on me, guide me, grant me well-being, provide for me, mend my affairs, and elevate me."
     },
     {
         "id": "j_11",
         "badge": "Jawami' Dua 11",
-        "arabic": "اللَّهُمَّ يَا مَنْ لا تَضُرُّهُ الذُّنُوبُ ، وَلا تُنْقِصُهُ المَغْفِرَةُ ، اغْفِرْ لَنَا مَا لا يَضُرُّكَ ، وَهَبْ لَنَا مَالا يُنْقِصُكَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ يَا مَنْ لا تَضُرُّهُ الذُّنُوبُ ، وَلا تُنْقِصُهُ المَغْفِرَةُ ، اغْفِرْ لَنَا مَا لا يَضُرُّكَ ، وَهَبْ لَنَا مَالا يُنْقِصُكَ.",
+        "english": "O Allah, O You Whom sins do not harm and Whom forgiveness does not diminish — forgive us what harms You not, and grant us what does not diminish You."
     },
     {
         "id": "j_12",
         "badge": "Jawami' Dua 12",
-        "arabic": "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلّهُ ، دِقَّهُ وَجُلَّهُ ، وَأَوَّلَهُ وَآخِرَهَ ، وَعَلاَنِيَتَهَ وَسِرَّهُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلّهُ ، دِقَّهُ وَجُلَّهُ ، وَأَوَّلَهُ وَآخِرَهَ ، وَعَلاَنِيَتَهَ وَسِرَّهُ.",
+        "english": "O Allah, forgive me all of my sins — the small and the great, the first and the last, the open and the secret."
     },
     {
         "id": "j_13",
         "badge": "Jawami' Dua 13",
-        "arabic": "اللَّهُمَّ إِنَّ ذُنُوبِي عِظَامٌ وَهِي صِغَارٌ فِي جَنْبِ عَفْوِكَ يَا كَرِيمُ ، فَاغْفِرْهَا لِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنَّ ذُنُوبِي عِظَامٌ وَهِي صِغَارٌ فِي جَنْبِ عَفْوِكَ يَا كَرِيمُ ، فَاغْفِرْهَا لِي.",
+        "english": "O Allah, my sins are great, yet they are small beside Your pardoning, O Most Generous — so forgive them for me."
     },
     {
         "id": "j_14",
         "badge": "Jawami' Dua 14",
-        "arabic": "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي ، وَوَسِّعْ لِي فِي دَارِي ، وَبَارِكْ لِي فِي رِزْقِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْفِرْ لِي ذَنْبِي ، وَوَسِّعْ لِي فِي دَارِي ، وَبَارِكْ لِي فِي رِزْقِي.",
+        "english": "O Allah, forgive me my sin, expand my home for me, and bless my provision."
     },
     {
         "id": "j_15",
         "badge": "Jawami' Dua 15",
-        "arabic": "اللَّهُمَّ رَبَّنَا لا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا ، رَبَّنَا وَلا تَحْمِلْ عَلَينَا إِصْرَاً كَمَا حَمَلْتَهَ عَلَى الَّذِينَ مِنْ قَبْلِنَا ، رَبَّنَا وَلا تُحَمِّلْنَا مَا لا طَاقَةَ لَنَا بِهِ ، وَاعْفُ عَنَّا وّاغْفِرْ لَنَا وَارْحَمْنَا أَنْتَ مَوْلانَا فَانْصُرْنَا عَلَى القَوْمِ الكَافِرِينَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا لا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا ، رَبَّنَا وَلا تَحْمِلْ عَلَينَا إِصْرَاً كَمَا حَمَلْتَهَ عَلَى الَّذِينَ مِنْ قَبْلِنَا ، رَبَّنَا وَلا تُحَمِّلْنَا مَا لا طَاقَةَ لَنَا بِهِ ، وَاعْفُ عَنَّا وّاغْفِرْ لَنَا وَارْحَمْنَا أَنْتَ مَوْلانَا فَانْصُرْنَا عَلَى القَوْمِ الكَافِرِينَ.",
+        "english": "O Allah, our Lord, do not take us to task if we forget or make a mistake. Our Lord, lay not upon us a burden such as You laid upon those before us. Our Lord, burden us not with what we have no strength to bear. Pardon us, forgive us, and have mercy on us. You are our Protector, so grant us victory over the disbelieving people."
     },
     {
         "id": "j_18",
         "badge": "Jawami' Dua 18",
-        "arabic": "اللَّهُمَّ اغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ ، وَمَا أَعْلَنْتُ وَمَا أَسْرَرْتُ ، وما أنت أعلم به مني ، أَنْتَ المُقَدِّمُ وَأَنْتَ المُؤَخِّرُ لا إِلَهَ إِلاَّ أَنْـتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْفِرْ لِي مَا قَدَّمْتُ وَمَا أَخَّرْتُ ، وَمَا أَعْلَنْتُ وَمَا أَسْرَرْتُ ، وما أنت أعلم به مني ، أَنْتَ المُقَدِّمُ وَأَنْتَ المُؤَخِّرُ لا إِلَهَ إِلاَّ أَنْـتَ.",
+        "english": "O Allah, forgive me what I have put forward and what I have left behind, what I have declared and what I have concealed, and what You know better than I. You are the Advancer and You are the Deferrer; there is no deity but You."
     },
     {
         "id": "j_19",
         "badge": "Jawami' Dua 19",
-        "arabic": "اللَّهُمَّ رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الأَبْرَارِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَكَفِّرْ عَنَّا سَيِّئَاتِنَا وَتَوَفَّنَا مَعَ الأَبْرَارِ.",
+        "english": "O Allah, our Lord, forgive us our sins, expiate our evil deeds, and let us die in the company of the righteous."
     },
     {
         "id": "j_20",
         "badge": "Jawami' Dua 20",
-        "arabic": "اللَّهُمَّ رَبَّنَا اغْفِرْ لَنَا وَلإخْوَانِنَا الَّذِينَ سَبَقُونَا بِالإِيْمَانِ ، رَبَّنَا وَسِعْتَ كُلّ شَيءٍ رَحْمَةً وَعِلْماً فَاغْفِرْ لِلَّذِينَ تَابُوا وَاتَّبَعُوا سَبِيلَكَ وَقِهِمْ عَذَاب الجَحِيمِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا اغْفِرْ لَنَا وَلإخْوَانِنَا الَّذِينَ سَبَقُونَا بِالإِيْمَانِ ، رَبَّنَا وَسِعْتَ كُلّ شَيءٍ رَحْمَةً وَعِلْماً فَاغْفِرْ لِلَّذِينَ تَابُوا وَاتَّبَعُوا سَبِيلَكَ وَقِهِمْ عَذَاب الجَحِيمِ.",
+        "english": "O Allah, our Lord, forgive us and our brothers who preceded us in faith. Our Lord, You encompass all things in mercy and knowledge, so forgive those who repent and follow Your path, and protect them from the punishment of Hellfire."
     },
     {
         "id": "j_21",
         "badge": "Jawami' Dua 21",
-        "arabic": "اللَّهُمَّ أَقِلْ عَثَرَاتِنَا ، وَاغْفِرْ زَلاَّتِنَا ، وَكَفِّرْ عَنَّا سَيِّئَاتِنَا ، وَتَوَفَّنَا مَعَ الأَبْرَارِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَقِلْ عَثَرَاتِنَا ، وَاغْفِرْ زَلاَّتِنَا ، وَكَفِّرْ عَنَّا سَيِّئَاتِنَا ، وَتَوَفَّنَا مَعَ الأَبْرَارِ.",
+        "english": "O Allah, pardon our stumbles, forgive our slips, expiate our evil deeds, and let us die in the company of the righteous."
     },
     {
         "id": "j_24",
         "badge": "Jawami' Dua 24",
-        "arabic": "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظلْماً كَثِيراً ، وَلا يَغْفِرُ الذُّنُوب إِلاَّ أَنْتَ. فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدَكَ ، وَارْحَمْنِي إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظلْماً كَثِيراً ، وَلا يَغْفِرُ الذُّنُوب إِلاَّ أَنْتَ. فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدَكَ ، وَارْحَمْنِي إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
+        "english": "O Allah, I have greatly wronged myself, and none forgives sins but You. So grant me forgiveness from Yourself and have mercy on me — indeed, You are the All-Forgiving, the Most Merciful."
     },
     {
         "id": "j_25",
         "badge": "Jawami' Dua 25",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ يَا اللهُ بِأَنَّكَ الوَاحِدُ الأَحَدُ ، الصَّمَدُ ، الَّذِي لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُواً أَحَدٌ ، أَنْ تَغْفِرَ لِي ذُنُـوبِي ، إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ يَا اللهُ بِأَنَّكَ الوَاحِدُ الأَحَدُ ، الصَّمَدُ ، الَّذِي لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُواً أَحَدٌ ، أَنْ تَغْفِرَ لِي ذُنُـوبِي ، إِنَّكَ أَنْتَ الغَفُورُ الرَّحِيمُ.",
+        "english": "O Allah, I ask You — O Allah — for You are the One, the Unique, the Self-Sufficient, Who did not beget and was not begotten, and to Whom none is equal — to forgive me my sins, for You are the All-Forgiving, the Most Merciful."
     },
     {
         "id": "j_26",
         "badge": "Jawami' Dua 26",
-        "arabic": "اللَّهُمَّ إِلَهِي : حُجَّتِي حَاجَتِي ، وَعُدَّتِي فَاقَتِي ، فَارْحَمْنِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِلَهِي : حُجَّتِي حَاجَتِي ، وَعُدَّتِي فَاقَتِي ، فَارْحَمْنِي.",
+        "english": "O Allah, my God: my argument is my need, and my provision is my poverty — so have mercy on me."
     },
     {
         "id": "j_27",
         "badge": "Jawami' Dua 27",
-        "arabic": "اللَّهُمَّ إِلَهِي : كَيْفَ أمْتَنِعُ بِالذَّنْبِ مِنَ الدُّعَاءِ ، وَلا أَرَاكَ تَمْنَعُ مَعَ الذَّنْبِ مِنَ العَطَاءِ ، فَإِنْ غَفَرْتَ فَخَيرُ رَاحِمٍ أَنْتَ ، وَإِنْ عَذَّبْتَ فَغَيْرُ ظَالِمٍ أَنْتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِلَهِي : كَيْفَ أمْتَنِعُ بِالذَّنْبِ مِنَ الدُّعَاءِ ، وَلا أَرَاكَ تَمْنَعُ مَعَ الذَّنْبِ مِنَ العَطَاءِ ، فَإِنْ غَفَرْتَ فَخَيرُ رَاحِمٍ أَنْتَ ، وَإِنْ عَذَّبْتَ فَغَيْرُ ظَالِمٍ أَنْتَ.",
+        "english": "O Allah, my God: how can I let sin hold me back from supplication, when I do not see You letting sin hold back Your giving? If You forgive, You are the Best of those who show mercy; and if You punish, You are not unjust."
     },
     {
         "id": "j_28",
         "badge": "Jawami' Dua 28",
-        "arabic": "اللَّهُمَّ إِلَهِي: أَسْأَلُكَ تَذَلُّلاً فَأَعْطِنِي تَفَضُّلاً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِلَهِي: أَسْأَلُكَ تَذَلُّلاً فَأَعْطِنِي تَفَضُّلاً.",
+        "english": "O Allah, my God: I ask You in humility, so give me out of Your grace."
     },
     {
         "id": "j_29",
         "badge": "Jawami' Dua 29",
-        "arabic": "اللَّهُمَّ يَامَنْ عَلَى العَرْشِ اسْتَوَى ، يَامَنْ خَلَقَ فَسَوَّى وَقدَّرَ فَهَدَى ، وَأَعْطَى كُلّ شَيءٍ خَلْقَهُ ثُمَّ هَدَى ، يَامَنْ أَضْحَكَ وَأَبْكَى، وَأَمَاتَ وَأَحْيَا ، وَأَسْعَدَ وَأَشْقَى ، وَأَوْجَدَ وَأَبْلَى ، وَرَفَعَ وَخَفَضَ ، وَأَعَزَّ وَأَذَلَّ، وَأَعْطَى وَمَنَعَ ، وَرَفَعَ وَوَضَعَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ يَامَنْ عَلَى العَرْشِ اسْتَوَى ، يَامَنْ خَلَقَ فَسَوَّى وَقدَّرَ فَهَدَى ، وَأَعْطَى كُلّ شَيءٍ خَلْقَهُ ثُمَّ هَدَى ، يَامَنْ أَضْحَكَ وَأَبْكَى، وَأَمَاتَ وَأَحْيَا ، وَأَسْعَدَ وَأَشْقَى ، وَأَوْجَدَ وَأَبْلَى ، وَرَفَعَ وَخَفَضَ ، وَأَعَزَّ وَأَذَلَّ، وَأَعْطَى وَمَنَعَ ، وَرَفَعَ وَوَضَعَ.",
+        "english": "O Allah, O You Who rose over the Throne, O You Who created and shaped, decreed and guided, and gave to every thing its nature then guided it, O You Who caused laughter and weeping, death and life, happiness and misery, existence and decay, elevation and lowering, honor and humiliation, giving and withholding, and raising and placing."
     },
     {
         "id": "j_32",
         "badge": "Jawami' Dua 32",
-        "arabic": "اللَّهُمَّ اهْدِنَا فِيمَنْ هَدَيْتَ ، وَعَافِنَا فِيمَنْ عَافَيتَ ، وَتَوَلَّنَا فِيمَنْ تَوَلَّيْتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اهْدِنَا فِيمَنْ هَدَيْتَ ، وَعَافِنَا فِيمَنْ عَافَيتَ ، وَتَوَلَّنَا فِيمَنْ تَوَلَّيْتَ.",
+        "english": "O Allah, guide us among those You have guided, grant us well-being among those You have granted well-being, and take us under Your care among those You have taken under Your care."
     },
     {
         "id": "j_33",
         "badge": "Jawami' Dua 33",
-        "arabic": "اللَّهُمَّ اهْدِنَا الصِّرَاطَ المُسْتَقِيمَ ، صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيهِم مِنَ النَّبِيِّينَ وَالصِّدِّيقِينَ وَالشُّهَدَاءِ وَالصَّالِحِينَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اهْدِنَا الصِّرَاطَ المُسْتَقِيمَ ، صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيهِم مِنَ النَّبِيِّينَ وَالصِّدِّيقِينَ وَالشُّهَدَاءِ وَالصَّالِحِينَ.",
+        "english": "O Allah, guide us to the straight path — the path of those You have blessed, from among the Prophets, the truthful, the martyrs, and the righteous."
     },
     {
         "id": "j_34",
         "badge": "Jawami' Dua 34",
-        "arabic": "اللَّهُمَّ وَفِّقْنَا لِهُدَاكَ وَاجْعَلْ عَمَلَنَا فِي رِضَاكَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ وَفِّقْنَا لِهُدَاكَ وَاجْعَلْ عَمَلَنَا فِي رِضَاكَ.",
+        "english": "O Allah, grant us the ability to follow Your guidance and make our deeds pleasing to You."
     },
     {
         "id": "j_35",
         "badge": "Jawami' Dua 35",
-        "arabic": "اللَّهُمَّ أَرِنَا الحَقَّ حقَّاً وَارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا البَاطِلَ بَاطِلاً وَارْزُقْنَا اجْتِنَابَهُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَرِنَا الحَقَّ حقَّاً وَارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا البَاطِلَ بَاطِلاً وَارْزُقْنَا اجْتِنَابَهُ.",
+        "english": "O Allah, show us truth as truth and grant us the ability to follow it, and show us falsehood as falsehood and grant us the ability to avoid it."
     },
     {
         "id": "j_36",
         "badge": "Jawami' Dua 36",
-        "arabic": "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا ، وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا، أَنْتَ وَلِيُّهَا وَمَوْلاهَا.",
-        "english": ""
+        "arabic": "اللَّهُمَّ آتِ نَفْسِي تَقْوَاهَا ، وَزَكِّهَا أَنْتَ خَيْرُ مَنْ زَكَّاهَا، أَنْتَ وَلِيُّهَا وَمَوْلاهَا.",
+        "english": "O Allah, grant my soul its piety and purify it — You are the best of those who purify it; You are its Guardian and its Master."
     },
     {
         "id": "j_37",
         "badge": "Jawami' Dua 37",
-        "arabic": "اللَّهُمَّ رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا إِنَّكَ عَلَى كُلّ شَيءٍ قَدِيرٌ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا إِنَّكَ عَلَى كُلّ شَيءٍ قَدِيرٌ.",
+        "english": "O Allah, our Lord, perfect our light for us and forgive us — indeed, You have power over all things."
     },
     {
         "id": "j_38",
         "badge": "Jawami' Dua 38",
-        "arabic": "اللَّهُمَّ حَبِّبْ إلَينَا الإيمَانَ وَزَيِّنْهُ فِي قُلُوبِنَا ، وَكَرِّهِ إلَينَا الكُفْرَ وَالفُسُوقَ وَالعِصْيَانِ ، وَاجْعَلْنَا مِنَ الرَّاشِدِينَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ حَبِّبْ إلَينَا الإيمَانَ وَزَيِّنْهُ فِي قُلُوبِنَا ، وَكَرِّهِ إلَينَا الكُفْرَ وَالفُسُوقَ وَالعِصْيَانِ ، وَاجْعَلْنَا مِنَ الرَّاشِدِينَ.",
+        "english": "O Allah, make faith beloved to us and beautify it in our hearts, and make disbelief, wickedness, and disobedience hateful to us, and make us among the rightly guided."
     },
     {
         "id": "j_39",
         "badge": "Jawami' Dua 39",
-        "arabic": "اللَّهُمَّ مُصَرِّفَ القُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ مُصَرِّفَ القُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ.",
+        "english": "O Allah, Turner of hearts, turn our hearts toward Your obedience."
     },
     {
         "id": "j_40",
         "badge": "Jawami' Dua 40",
-        "arabic": "اللَّهُمَّ خُذْ بِنَوَاصِينَا لِِلْبِرِّ وَالتَّقْوَى ، وَلِمَا تُحِبُّ مِنَ العَمَلِ وَتَرْضَى.",
-        "english": ""
+        "arabic": "اللَّهُمَّ خُذْ بِنَوَاصِينَا لِِلْبِرِّ وَالتَّقْوَى ، وَلِمَا تُحِبُّ مِنَ العَمَلِ وَتَرْضَى.",
+        "english": "O Allah, lead us by our forelocks to righteousness and piety, and to such deeds as You love and are pleased with."
     },
     {
         "id": "j_41",
         "badge": "Jawami' Dua 41",
-        "arabic": "اللَّهُمَّ رَبِّ جِبْرَائِيلَ وَمِيكَائِيلَ ، وَإسْرَافِيلَ ، فَاطِرَ السَّمَاوَاتِ وَالأَرْضَ ، عَالِمَ الغَيْبِ وَالشَّهَادَةِ ، أَنْتَ تَحْكُمُ بَيْنَ عِبَادِكَ فِيمَا كَانُوا فِيْهِ يَخْتَلِفُونَ ، اهْدِنَا لِمَا اخْتُلِفَ فِيْهِ مِنَ الحَقِّ بِإذْنِكَ ، إِنَّكَ تَهْدِي مَنْ تَشَاءُ إِلَى صِرَاطٍ مُسْتَقِيمٍ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ جِبْرَائِيلَ وَمِيكَائِيلَ ، وَإسْرَافِيلَ ، فَاطِرَ السَّمَاوَاتِ وَالأَرْضَ ، عَالِمَ الغَيْبِ وَالشَّهَادَةِ ، أَنْتَ تَحْكُمُ بَيْنَ عِبَادِكَ فِيمَا كَانُوا فِيْهِ يَخْتَلِفُونَ ، اهْدِنَا لِمَا اخْتُلِفَ فِيْهِ مِنَ الحَقِّ بِإذْنِكَ ، إِنَّكَ تَهْدِي مَنْ تَشَاءُ إِلَى صِرَاطٍ مُسْتَقِيمٍ.",
+        "english": "O Allah, Lord of Jibra'il, Mika'il, and Israfil, Creator of the heavens and the earth, Knower of the unseen and the seen — You judge between Your servants in what they used to differ about. Guide us to the truth in what has been differed about, by Your leave. Indeed, You guide whom You will to a straight path."
     },
     {
         "id": "j_42",
         "badge": "Jawami' Dua 42",
-        "arabic": "اللَّهُمَّ إِنِّي عَبْدُكَ ابْنُ عَبْدِكَ ابْنُ أَمَتِكَ ، نَاصِيَتِي بِيَدِكَ ، مَاضٍ فِيَّ حُكْمُكَ ، عَدْلٌ فِيَّ قَضَاؤكَ ، أَسْأَلُكَ بِكلِّ اسْمٍ هُوَ لَكَ ، سَمَّيتَ بِهِ نَفْسَكَ ، أَوْ أَنْزَلْتَهُ فِي كِتَابِكَ ، أَوْ عَلَّمْتَهُ أَحَداً مِنْ خَلْقِكَ ، أَوْ اسْتَأْثَرْتَ بِهِ فِي عِلْمِ الغَيبِ عِنْدَكَ ، أَنْ تَجْعَلَ القُرْآنَ رَبِيعَ قَلْبِي ، وَنُورَ صَدْرِي ، وَجَلاءَ حَزَنِي ، وَذَهَابَ هَمِّي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي عَبْدُكَ ابْنُ عَبْدِكَ ابْنُ أَمَتِكَ ، نَاصِيَتِي بِيَدِكَ ، مَاضٍ فِيَّ حُكْمُكَ ، عَدْلٌ فِيَّ قَضَاؤكَ ، أَسْأَلُكَ بِكلِّ اسْمٍ هُوَ لَكَ ، سَمَّيتَ بِهِ نَفْسَكَ ، أَوْ أَنْزَلْتَهُ فِي كِتَابِكَ ، أَوْ عَلَّمْتَهُ أَحَداً مِنْ خَلْقِكَ ، أَوْ اسْتَأْثَرْتَ بِهِ فِي عِلْمِ الغَيبِ عِنْدَكَ ، أَنْ تَجْعَلَ القُرْآنَ رَبِيعَ قَلْبِي ، وَنُورَ صَدْرِي ، وَجَلاءَ حَزَنِي ، وَذَهَابَ هَمِّي.",
+        "english": "O Allah, I am Your servant, son of Your servant, son of Your female servant. My forelock is in Your hand, Your judgment upon me is executed, and Your decree concerning me is just. I ask You by every name that is Yours — by which You called Yourself, or revealed in Your Book, or taught to any of Your creation, or kept to Yourself in the knowledge of the unseen — to make the Quran the spring of my heart, the light of my chest, the banisher of my grief, and the remover of my distress."
     },
     {
         "id": "j_43",
         "badge": "Jawami' Dua 43",
-        "arabic": "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُوراً ، وَفِي سَمْعِي نُوراً ، وَفِي بَصَرِي نُوراً ، وَعَنْ يَمِينِي نُوراً ، وَعَنْ شِمَالِي نُوراً ، وَمِنْ بَيْنَ يَدَيَّ نُوراً ، وَمِنْ خَلْفِي نُوراً ، وَمِنْ فَوقِي نُوراً ، وَمِنْ تَحْتِي نُوراً ، وَاجْعَلْ لِي نُوراً ، وَأَعْظِمْ لِي نُوراً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُوراً ، وَفِي سَمْعِي نُوراً ، وَفِي بَصَرِي نُوراً ، وَعَنْ يَمِينِي نُوراً ، وَعَنْ شِمَالِي نُوراً ، وَمِنْ بَيْنَ يَدَيَّ نُوراً ، وَمِنْ خَلْفِي نُوراً ، وَمِنْ فَوقِي نُوراً ، وَمِنْ تَحْتِي نُوراً ، وَاجْعَلْ لِي نُوراً ، وَأَعْظِمْ لِي نُوراً.",
+        "english": "O Allah, place light in my heart, light in my hearing, light in my sight, light to my right, light to my left, light before me, light behind me, light above me, light below me — and grant me light, and make my light great."
     },
     {
         "id": "j_44",
         "badge": "Jawami' Dua 44",
-        "arabic": "اللَّهُمَّ أَغْنِنِي بِالعِلْمِ ، وَزَيِّنِّي بِالحِلْمِ ، وَأَكْرِمْنِي بِالتَّقْوَى ، وَجَمِّلْنِي بِالعَافِيَةِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَغْنِنِي بِالعِلْمِ ، وَزَيِّنِّي بِالحِلْمِ ، وَأَكْرِمْنِي بِالتَّقْوَى ، وَجَمِّلْنِي بِالعَافِيَةِ.",
+        "english": "O Allah, enrich me with knowledge, adorn me with forbearance, honor me with piety, and beautify me with well-being."
     },
     {
         "id": "j_45",
         "badge": "Jawami' Dua 45",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمَ الخَائِفِينَ مِنْكَ ، وَخَوفَ العَالِمِينَ بِكَ ، وَيَقِينَ المُتَوَكِّلِينَ عَلَـيْكَ ، وَتَوَكُّلَ المُوقِنِينَ بِكَ ، وَإِنَابَةَ المُخْبِتِينَ إِلَيْكَ ، وَإِخْبَاتَ المُنِيبينَ إِلَيْكَ ، وَشُكْرَ الصَّابِرِينَ لَكَ ، وَصَبْرَ الشَّاكِـرِينَ لَكَ ، وَللحَاقاً بِالأَحْيَاءِ المَرْزُوقِينَ عِنْدَكَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمَ الخَائِفِينَ مِنْكَ ، وَخَوفَ العَالِمِينَ بِكَ ، وَيَقِينَ المُتَوَكِّلِينَ عَلَـيْكَ ، وَتَوَكُّلَ المُوقِنِينَ بِكَ ، وَإِنَابَةَ المُخْبِتِينَ إِلَيْكَ ، وَإِخْبَاتَ المُنِيبينَ إِلَيْكَ ، وَشُكْرَ الصَّابِرِينَ لَكَ ، وَصَبْرَ الشَّاكِـرِينَ لَكَ ، وَللحَاقاً بِالأَحْيَاءِ المَرْزُوقِينَ عِنْدَكَ.",
+        "english": "O Allah, I ask You for the knowledge of those who fear You, the fear of those who know You, the certainty of those who trust in You, the reliance of those who are certain of You, the turning to You of those who are humble before You, the humility of those who return to You, the gratitude of those who are patient for Your sake, the patience of those who are grateful to You, and to be joined with the living who are sustained near You."
     },
     {
         "id": "j_46",
         "badge": "Jawami' Dua 46",
-        "arabic": "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى وَالسَّدَادَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اهْدِنِي وَسَدِّدْنِي ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الهُدَى وَالسَّدَادَ.",
+        "english": "O Allah, guide me and make me upright. O Allah, I ask You for guidance and uprightness."
     },
     {
         "id": "j_47",
         "badge": "Jawami' Dua 47",
-        "arabic": "اللَّهُمَّ أَلْهِمْنِي رُشْدِي ، وَأَعِذْنِي مِنْ شَرِّ نَفْسِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَلْهِمْنِي رُشْدِي ، وَأَعِذْنِي مِنْ شَرِّ نَفْسِي.",
+        "english": "O Allah, inspire me with right guidance and protect me from the evil of my own soul."
     },
     {
         "id": "j_48",
         "badge": "Jawami' Dua 48",
-        "arabic": "اللَّهُمَّ انْفَعْنِي بِمَا عَلَّمْتَنِي ، وَعَلِّمْنِي مَا يَنْفَعُنِي ، وَزِدْنِي عِلْماً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ انْفَعْنِي بِمَا عَلَّمْتَنِي ، وَعَلِّمْنِي مَا يَنْفَعُنِي ، وَزِدْنِي عِلْماً.",
+        "english": "O Allah, benefit me with what You have taught me, teach me what will benefit me, and increase me in knowledge."
     },
     {
         "id": "j_49",
         "badge": "Jawami' Dua 49",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْماً نَافِعاً ، وَأَعُوذُ بِكَ مِنْ عِلْمٍ لا يَنْفَعُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْماً نَافِعاً ، وَأَعُوذُ بِكَ مِنْ عِلْمٍ لا يَنْفَعُ.",
+        "english": "O Allah, I ask You for beneficial knowledge and seek refuge in You from knowledge that does not benefit."
     },
     {
         "id": "j_50",
         "badge": "Jawami' Dua 50",
-        "arabic": "اللَّهُمَّ ثَبِّتْنِي وَاجْعَلْنِي هَادِياً مَهْدِيّاً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ ثَبِّتْنِي وَاجْعَلْنِي هَادِياً مَهْدِيّاً.",
+        "english": "O Allah, make me steadfast and make me a guide who is himself guided."
     },
     {
         "id": "j_51",
         "badge": "Jawami' Dua 51",
-        "arabic": "اللَّهُمَّ لَكَ أَسْلَمْتُ ، وَبِكَ آمَنْتُ ، وَعَلَيكَ تَوَكَّلْتُ ، وَإِلَيكَ أَنَبْتُ ، وَبِكَ خَاصَمْتُ، أَعُوذُ بِعِزَّتِكَ ، لا إِلَهَ إِلاَّ أَنْتَ ، أَنْ تُضِلَّنِي ، أَنْتَ الحَيُّ الَّذِي لا يَمُوتُ ، وَالجِنُّ وَالإنْسُ يَمُوتُونَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ لَكَ أَسْلَمْتُ ، وَبِكَ آمَنْتُ ، وَعَلَيكَ تَوَكَّلْتُ ، وَإِلَيكَ أَنَبْتُ ، وَبِكَ خَاصَمْتُ، أَعُوذُ بِعِزَّتِكَ ، لا إِلَهَ إِلاَّ أَنْتَ ، أَنْ تُضِلَّنِي ، أَنْتَ الحَيُّ الَّذِي لا يَمُوتُ ، وَالجِنُّ وَالإنْسُ يَمُوتُونَ.",
+        "english": "O Allah, to You I have submitted, in You I have believed, upon You I have relied, to You I have turned, and by Your help I have contended. I seek refuge in Your might — there is no deity but You — from being led astray. You are the Ever-Living Who does not die, while the jinn and humankind die."
     },
     {
         "id": "j_52",
         "badge": "Jawami' Dua 52",
-        "arabic": "اللَّهُمَّ اهْدِنِي لأَحْسَنِ الأَخْلاَقِ لا يَهْدِي لأَحْسَنِهَا إِلاَّ أَنْتَ ، وَاصْرِفْ عَنِّي سَيِّئَها لا يَصْرِفُ عَنِّي سَيِّئَهَا إِلاَّ أَنْتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اهْدِنِي لأَحْسَنِ الأَخْلاَقِ لا يَهْدِي لأَحْسَنِهَا إِلاَّ أَنْتَ ، وَاصْرِفْ عَنِّي سَيِّئَها لا يَصْرِفُ عَنِّي سَيِّئَهَا إِلاَّ أَنْتَ.",
+        "english": "O Allah, guide me to the best of character — none guides to the best of it but You — and turn away from me its worst — none turns it away from me but You."
     },
     {
         "id": "j_53",
         "badge": "Jawami' Dua 53",
-        "arabic": "اللَّهُمَّ كَمَا أَحْسَنْتَ خَلْقِي فَأَحْسِنْ خُلُقِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ كَمَا أَحْسَنْتَ خَلْقِي فَأَحْسِنْ خُلُقِي.",
+        "english": "O Allah, just as You have perfected my physical form, perfect my character."
     },
     {
         "id": "j_56",
         "badge": "Jawami' Dua 56",
-        "arabic": "اللَّهُمَّ جَلَّتْ قُدْرَتُكَ ، وَتَعَالَتْ حِكْمَتُكَ ، وَتَبَارَكَ اسْمُكَ ، وَتَعَالَى جَدُّكَ ، وَلا إِلَهَ غَيْرُكَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ جَلَّتْ قُدْرَتُكَ ، وَتَعَالَتْ حِكْمَتُكَ ، وَتَبَارَكَ اسْمُكَ ، وَتَعَالَى جَدُّكَ ، وَلا إِلَهَ غَيْرُكَ.",
+        "english": "O Allah, Your power is magnificent, Your wisdom is supreme, Your name is blessed, Your majesty is exalted, and there is no deity but You."
     },
     {
         "id": "j_57",
         "badge": "Jawami' Dua 57",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِأَنَّ لَكَ الحَمْدَ ، لا إِلَهَ إِلاَّ أَنْتَ ، المَنَّانُ ، بَدِيعُ السَّمَاوَات وَالأَرْضِ، ذُو الجَلالِ وَالإِكْرَامِ ، يَا حَيُّ يَا قَيُّومُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِأَنَّ لَكَ الحَمْدَ ، لا إِلَهَ إِلاَّ أَنْتَ ، المَنَّانُ ، بَدِيعُ السَّمَاوَات وَالأَرْضِ، ذُو الجَلالِ وَالإِكْرَامِ ، يَا حَيُّ يَا قَيُّومُ.",
+        "english": "O Allah, I ask You — for to You belongs all praise, there is no deity but You, the Bestower of blessings, the Originator of the heavens and the earth, the Possessor of Majesty and Honor — O Ever-Living, O Sustainer of all."
     },
     {
         "id": "j_58",
         "badge": "Jawami' Dua 58",
-        "arabic": "اللَّهُمَّ ارْزُقْنَا رِزْقًا يَزِيدُنَا لَكَ شُكْراً ، وَإِلَيكَ فَاقَةً وَفَقْراً ، وَبِكَ عَمَّنْ سِوَاكَ غِنىً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ ارْزُقْنَا رِزْقًا يَزِيدُنَا لَكَ شُكْراً ، وَإِلَيكَ فَاقَةً وَفَقْراً ، وَبِكَ عَمَّنْ سِوَاكَ غِنىً.",
+        "english": "O Allah, provide us with provision that increases our gratitude to You, our neediness and poverty before You, and our self-sufficiency through You from all else."
     },
     {
         "id": "j_59",
         "badge": "Jawami' Dua 59",
-        "arabic": "اللَّهُمَّ اجْعَلْ أَوْسَعَ رِزْقِكَ عَلَيَّ عِنْدَ كِبَرِ سِنِّي ، وَانْقِطَاعِ عُمُرِي.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اجْعَلْ أَوْسَعَ رِزْقِكَ عَلَيَّ عِنْدَ كِبَرِ سِنِّي ، وَانْقِطَاعِ عُمُرِي.",
+        "english": "O Allah, make Your provision most abundant upon me at the time of my old age and the ending of my life."
     },
     {
         "id": "j_60",
         "badge": "Jawami' Dua 60",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ فَإِنَّهُ لا يَمْلِكُهَا إِلاَّ أَنْتَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ فَإِنَّهُ لا يَمْلِكُهَا إِلاَّ أَنْتَ.",
+        "english": "O Allah, I ask You from Your bounty and mercy, for none possesses them but You."
     },
     {
         "id": "j_61",
         "badge": "Jawami' Dua 61",
-        "arabic": "اللَّهُمَّ رَبِّ لا تَذَرْنِي فَرْداً وَأَنْتَ خَيْرُ الْوَارِثِينَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ لا تَذَرْنِي فَرْداً وَأَنْتَ خَيْرُ الْوَارِثِينَ.",
+        "english": "O Allah, my Lord, do not leave me alone, for You are the best of inheritors."
     },
     {
         "id": "j_62",
         "badge": "Jawami' Dua 62",
-        "arabic": "اللَّهُمَّ رَبِّ هَبْ لِيْ مِنَ الصَّالِحِينَ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ هَبْ لِيْ مِنَ الصَّالِحِينَ.",
+        "english": "O Allah, my Lord, grant me offspring from the righteous."
     },
     {
         "id": "j_63",
         "badge": "Jawami' Dua 63",
-        "arabic": "اللَّهُمَّ قَنِّعْنِي بِمَا رَزَقْتَنِي ، وَبَارِكْ لِي فِيْهِ ، وَاخْلُفْ عَلَيَّ كُلّ غَائِبَةٍ لِي مِنْكَ بِخَيرٍ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ قَنِّعْنِي بِمَا رَزَقْتَنِي ، وَبَارِكْ لِي فِيْهِ ، وَاخْلُفْ عَلَيَّ كُلّ غَائِبَةٍ لِي مِنْكَ بِخَيرٍ.",
+        "english": "O Allah, make me content with what You have provided me, bless me in it, and compensate me with good for every absent blessing I have."
     },
     {
         "id": "j_64",
         "badge": "Jawami' Dua 64",
-        "arabic": "اللَّهُمَّ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّة أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَاماً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّة أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَاماً.",
+        "english": "O Allah, our Lord, grant us from our spouses and offspring comfort to our eyes, and make us a leader for the righteous."
     },
     {
         "id": "j_71",
         "badge": "Jawami' Dua 71",
-        "arabic": "اللَّهُمَّ أَنْتَ البَادِئُ بِالإِحْسَانِ مِنْ قَبْلِ تَوَجُّهِ العَابِدِينَ ، وَأَنْتَ البَادِئُ بِالعَطَايَا قَبْلَ طَلَبِ الطَّالِبِينَ وَأَنْتَ الوَهَّابُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَنْتَ البَادِئُ بِالإِحْسَانِ مِنْ قَبْلِ تَوَجُّهِ العَابِدِينَ ، وَأَنْتَ البَادِئُ بِالعَطَايَا قَبْلَ طَلَبِ الطَّالِبِينَ وَأَنْتَ الوَهَّابُ.",
+        "english": "O Allah, You are the One Who initiates goodness before the worshippers even turn to You, and You are the One Who begins giving before the seekers even ask — and You are the Bestower."
     },
     {
         "id": "j_72",
         "badge": "Jawami' Dua 72",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّة وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ وَعَمَلٍ ، وَأَعُوذُ بِكَ مَنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ وَعَمَلٍ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّة وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ وَعَمَلٍ ، وَأَعُوذُ بِكَ مَنَ النَّارِ وَمَا قَرَّبَ إِلَيْهَا مِنْ قَوْلٍ وَعَمَلٍ.",
+        "english": "O Allah, I ask You for Paradise and for whatever words and deeds bring one closer to it, and I seek refuge in You from the Fire and from whatever words and deeds bring one closer to it."
     },
     {
         "id": "j_73",
         "badge": "Jawami' Dua 73",
-        "arabic": "اللَّهُمَّ رَبِّ ابْنِ لِي عِنْدَكَ بَيْتاً فِي الجَنَّةِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ ابْنِ لِي عِنْدَكَ بَيْتاً فِي الجَنَّةِ.",
+        "english": "O Allah, my Lord, build for me a home near You in Paradise."
     },
     {
         "id": "j_74",
         "badge": "Jawami' Dua 74",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ رِضَاكَ وَالجَنَّةَ ، وَأَعُوذُ بِكَ مِنْ سَخَطِكَ وَالنَّارِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ رِضَاكَ وَالجَنَّةَ ، وَأَعُوذُ بِكَ مِنْ سَخَطِكَ وَالنَّارِ.",
+        "english": "O Allah, I ask You for Your pleasure and Paradise, and I seek refuge in You from Your displeasure and the Fire."
     },
     {
         "id": "j_75",
         "badge": "Jawami' Dua 75",
-        "arabic": "اللَّهُمَّ أَحْسِنْ عَاقِبَتِنَا فِي الأُمُورِ كُلِّهَا ، وَأَجِرْنَا مِنْ خِزْيِ الدُّنْيَا وَعَذَابِ الآخِرَةِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ أَحْسِنْ عَاقِبَتِنَا فِي الأُمُورِ كُلِّهَا ، وَأَجِرْنَا مِنْ خِزْيِ الدُّنْيَا وَعَذَابِ الآخِرَةِ.",
+        "english": "O Allah, make the outcome of all our affairs good, and save us from the disgrace of this world and the punishment of the Hereafter."
     },
     {
         "id": "j_76",
         "badge": "Jawami' Dua 76",
-        "arabic": "اللَّهُمَّ رَبَّنَا اصْرِفْ عَنَّا عَذَاب جَهَنَّم إِنَّ عَذَابَهَا كَانَ غَرَاماً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا اصْرِفْ عَنَّا عَذَاب جَهَنَّم إِنَّ عَذَابَهَا كَانَ غَرَاماً.",
+        "english": "O Allah, our Lord, avert from us the punishment of Hellfire — indeed, its punishment is ever-clinging."
     },
     {
         "id": "j_77",
         "badge": "Jawami' Dua 77",
-        "arabic": "اللَّهُمَّ رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَاب النَّارِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَاب النَّارِ.",
+        "english": "O Allah, our Lord, we have believed, so forgive us our sins and protect us from the punishment of the Fire."
     },
     {
         "id": "j_78",
         "badge": "Jawami' Dua 78",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّةَ ، وَأسْتَجِيرُ بِكَ مِنَ النَّارِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الجَنَّةَ ، وَأسْتَجِيرُ بِكَ مِنَ النَّارِ.",
+        "english": "O Allah, I ask You for Paradise and I seek Your protection from the Fire."
     },
     {
         "id": "j_79",
         "badge": "Jawami' Dua 79",
-        "arabic": "اللَّهُمَّ رَبَّنَا وَآتِنَا مَا وَعَدْتَنَا عَلَى رُسِلِكَ وَلا تُخْزِنَا يَومَ القِيامَة إِنَّكَ لا تُخْلِفُ المِيعَادِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبَّنَا وَآتِنَا مَا وَعَدْتَنَا عَلَى رُسِلِكَ وَلا تُخْزِنَا يَومَ القِيامَة إِنَّكَ لا تُخْلِفُ المِيعَادِ.",
+        "english": "O Allah, our Lord, grant us what You have promised us through Your messengers, and do not disgrace us on the Day of Resurrection — indeed, You do not break Your promise."
     },
     {
         "id": "j_80",
         "badge": "Jawami' Dua 80",
-        "arabic": "اللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً.",
-        "english": ""
+        "arabic": "اللَّهُمَّ حَاسِبْنِي حِسَاباً يَسِيراً.",
+        "english": "O Allah, call me to an easy account."
     },
     {
         "id": "j_81",
         "badge": "Jawami' Dua 81",
-        "arabic": "اللَّهُمَّ إِنَّا نَعُوذُ بِكَ أَنْ نُشْرِكَ بِكَ شَيْئاً نَعْلَمُهُ ، وَنَسْتَغْفِرُكَ لِمَا لا نَعْلَمُهُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنَّا نَعُوذُ بِكَ أَنْ نُشْرِكَ بِكَ شَيْئاً نَعْلَمُهُ ، وَنَسْتَغْفِرُكَ لِمَا لا نَعْلَمُهُ.",
+        "english": "O Allah, we seek refuge in You from knowingly associating any partner with You, and we seek Your forgiveness for what we do not know of."
     },
     {
         "id": "j_82",
         "badge": "Jawami' Dua 82",
-        "arabic": "اللَّهُمَّ إنِّيْ أعُوذُ بِكَ مِنْ جَهْدِ البَلاء ، ودَرَكِ الشّــَقَاء ، وســوء القضاء ، وشَمَاتَة الأعْدَاء ، يَا سَمِيْع الدُّعَاء.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إنِّيْ أعُوذُ بِكَ مِنْ جَهْدِ البَلاء ، ودَرَكِ الشّــَقَاء ، وســوء القضاء ، وشَمَاتَة الأعْدَاء ، يَا سَمِيْع الدُّعَاء.",
+        "english": "O Allah, I seek refuge in You from the severity of trials, the descent of misery, evil fate, and the gloating of enemies — O You Who hears all supplications."
     },
     {
         "id": "j_85",
         "badge": "Jawami' Dua 85",
-        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ فِتْنَةِ النَّارِ وَعَذَابِ النَّارِ ، وَفِتْنَةِ القَبْرِ ، وَعَذَابِ القَبْرِ ، وَشَرِّ فِتْنَةِ الغِنَى ، وَشَرِّ فِتْنَةِ الفَقْرِ ،",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ فِتْنَةِ النَّارِ وَعَذَابِ النَّارِ ، وَفِتْنَةِ القَبْرِ ، وَعَذَابِ القَبْرِ ، وَشَرِّ فِتْنَةِ الغِنَى ، وَشَرِّ فِتْنَةِ الفَقْرِ ،",
+        "english": "O Allah, I seek refuge in You from the trial of the Fire and its punishment, from the trial of the grave and its punishment, from the evil of the trial of wealth, and from the evil of the trial of poverty."
     },
     {
         "id": "j_86",
         "badge": "Jawami' Dua 86",
-        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِّ فِتْنَةِ المَسِيحِ الدَّجَّالِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِّ فِتْنَةِ المَسِيحِ الدَّجَّالِ.",
+        "english": "O Allah, I seek refuge in You from the evil of the trial of the Antichrist (Al-Masih Ad-Dajjal)."
     },
     {
         "id": "j_87",
         "badge": "Jawami' Dua 87",
-        "arabic": "اللَّهُمَّ اغْسِلْ قَلْبِي بِمَاءِ الثَّلْجِ وَالْبَرَدِ ، وَنَقِّ قَلْبِيَ مِنْ الخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ ، وَبَاعِدْ بَيْنِي وَبيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ المَشْرِقِ وَالمَغْرِبِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ اغْسِلْ قَلْبِي بِمَاءِ الثَّلْجِ وَالْبَرَدِ ، وَنَقِّ قَلْبِيَ مِنْ الخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ ، وَبَاعِدْ بَيْنِي وَبيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ المَشْرِقِ وَالمَغْرِبِ.",
+        "english": "O Allah, wash my heart with water of snow and hail, cleanse my heart of sins as a white garment is cleansed of filth, and distance me from my sins as You have distanced the east from the west."
     },
     {
         "id": "j_88",
         "badge": "Jawami' Dua 88",
-        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الكَسَلِ وَالمَأْثَمِ وَالمَغْرَمِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الكَسَلِ وَالمَأْثَمِ وَالمَغْرَمِ.",
+        "english": "O Allah, I seek refuge in You from laziness, sin, and debt."
     },
     {
         "id": "j_89",
         "badge": "Jawami' Dua 89",
-        "arabic": "اللَّهُمَّ رَبِّ جِبْرَائِيلَ ، وَمِيكَائِيلَ ، وَرَبِّ إِسْرَافِيلَ ، أَعُوذُ بِكَ مِنْ حَرِّ النَّارِ وَمِنْ عَذَابِ القَبْرِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ رَبِّ جِبْرَائِيلَ ، وَمِيكَائِيلَ ، وَرَبِّ إِسْرَافِيلَ ، أَعُوذُ بِكَ مِنْ حَرِّ النَّارِ وَمِنْ عَذَابِ القَبْرِ.",
+        "english": "O Allah, Lord of Jibra'il, Mika'il, and Israfil — I seek refuge in You from the heat of the Fire and the punishment of the grave."
     },
     {
         "id": "j_90",
         "badge": "Jawami' Dua 90",
-        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ جَارِ السُّوءِ فِي دَارِ المُقَامَةِ ، فَإِنَّ جَارَ البَادِيَةِ يَتَحَوَّلُ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ جَارِ السُّوءِ فِي دَارِ المُقَامَةِ ، فَإِنَّ جَارَ البَادِيَةِ يَتَحَوَّلُ.",
+        "english": "O Allah, I seek refuge in You from an evil neighbor in a permanent abode, for the neighbor of the desert moves on."
     },
     {
         "id": "j_91",
         "badge": "Jawami' Dua 91",
-        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ العَجْزِ وَالكَسَلِ ، وَالجُبْنِ وَالبُخْلِ ، وَالهَرَمِ وَالقَسْوَةِ ، وَالغَفْلَةِ وَالعَيْلَةِ وَالذِّلَّةِ ، وَالمَسْكَنَةِ ، وَأَعُوذُ بِكَ مِنَ الفَقْرِ وَالكُفْرِ ، وَالفُسُوقِ وَالشِّقَاقِ وَالنِّفَاقِ، وَالسُّمْعَةِ وَالرِّيَاءِ ، وَأَعُوذُ بِكَ مِنَ الصَّمَمِ وَالبَكَمِ ، وَالجُنُونِ ، وَالجِذَامِ ، وَالبَرَصِ ، وَسَيِّئِ الأَسْقَامِ.",
-        "english": ""
+        "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ العَجْزِ وَالكَسَلِ ، وَالجُبْنِ وَالبُخْلِ ، وَالهَرَمِ وَالقَسْوَةِ ، وَالغَفْلَةِ وَالعَيْلَةِ وَالذِّلَّةِ ، وَالمَسْكَنَةِ ، وَأَعُوذُ بِكَ مِنَ الفَقْرِ وَالكُفْرِ ، وَالفُسُوقِ وَالشِّقَاقِ وَالنِّفَاقِ، وَالسُّمْعَةِ وَالرِّيَاءِ ، وَأَعُوذُ بِكَ مِنَ الصَّمَمِ وَالبَكَمِ ، وَالجُنُونِ ، وَالجِذَامِ ، وَالبَرَصِ ، وَسَيِّئِ الأَسْقَامِ.",
+        "english": "O Allah, I seek refuge in You from incapacity and laziness, cowardice and miserliness, extreme old age and hard-heartedness, heedlessness, poverty, and humiliation, and wretchedness. I seek refuge in You from destitution and disbelief, wickedness, discord, and hypocrisy, showing off and ostentation. I seek refuge in You from deafness and muteness, madness, leprosy, vitiligo, and all serious diseases."
     },
     {
         "id": "j_friday_1",
         "badge": "Friday Blessings",
         "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
-        "english": ""
+        "english": "O Allah, send blessings upon Muhammad and upon the family of Muhammad, as You sent blessings upon Ibrahim and upon the family of Ibrahim. Indeed, You are Praiseworthy, Glorious."
     },
     {
         "id": "j_friday_2",
         "badge": "Friday Guidance",
         "arabic": "اللَّهُمَّ اجْعَلْ لَنَا فِي هَذَا الْيَوْمِ دَعْوَةً لَا تُرَدُّ، وَرِزْقًا لَا يُعَدُّ، وَبَابًا فِي الْجَنَّةِ لَا يُسَدُّ",
-        "english": ""
+        "english": "O Allah, grant us on this day a supplication that is not rejected, provision that is beyond count, and a gate in Paradise that is never closed."
     },
     {
         "id": "j_friday_3",
         "badge": "Friday Forgiveness",
         "arabic": "اللَّهُمَّ اغْفِرْ لِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَالْمُسْلِمِينَ وَالْمُسْلِمَاتِ، الْأَحْيَاءِ مِنْهُمْ وَالْأَمْوَاتِ",
-        "english": ""
+        "english": "O Allah, forgive the believing men and women, and the Muslim men and women, both the living among them and the dead."
     },
     {
         "id": "j_friday_4",
         "badge": "Friday Blessings",
-        "arabic": "إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا",
-        "english": ""
+        "arabic": "إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا",
+        "english": "Indeed, Allah and His angels send blessings upon the Prophet. O you who have believed, ask Allah to confer blessing upon him and ask Allah to grant him peace. (Quran 33:56)"
     }
 ];
 
