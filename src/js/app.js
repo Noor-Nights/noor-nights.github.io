@@ -4517,7 +4517,7 @@ const DAILY_FOCUS = [
 const _ADHKAR_STATE_KEY = 'noor_adhkar_v1';
 const _ADHKAR_PANE_KEY  = 'noor_dhikr_pane';
 const _ADHKAR_COUNT = 12;
-const _SLEEP_COUNT  = 10;
+const _SLEEP_COUNT  = 11;
 const _ADHKAR_SECTION_COUNT = { morning: _ADHKAR_COUNT, evening: _ADHKAR_COUNT, sleep: _SLEEP_COUNT };
 
 function switchDhikrPane(name) {
