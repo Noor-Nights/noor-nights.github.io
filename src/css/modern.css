@@ -4398,3 +4398,322 @@ h2 {
     color: var(--gold2);
 }
 .ob-lang-btn-ar { font-family: var(--fa); font-size: 16px; }
+
+/* ── Dhikr Inner Tabs (GH-196) ── */
+.dhikr-inner-tabs {
+    display: flex;
+    gap: 3px;
+    background: var(--bg2);
+    border-radius: 11px;
+    padding: 4px;
+    margin: 12px 16px 10px;
+}
+.dhikr-itab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 3px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--cream2);
+    font-family: var(--fn);
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+}
+.dhikr-itab .ti { font-size: 12px; }
+.dhikr-itab-active {
+    background: var(--teal);
+    color: #fff;
+    font-weight: 600;
+}
+.dhikr-inner-tabs[data-activepane="morning"] .dhikr-itab[data-pane="morning"] {
+    background: var(--gold);
+    color: var(--bg2);
+}
+.dhikr-inner-tabs[data-activepane="evening"] .dhikr-itab[data-pane="evening"] {
+    background: #7fa8d8;
+    color: var(--bg2);
+}
+.dhikr-inner-tabs[data-activepane="special"] .dhikr-itab[data-pane="special"] {
+    background: #9B59B6;
+    color: #fff;
+}
+.dhikr-inner-tabs[data-activepane="sleep"] .dhikr-itab[data-pane="sleep"] {
+    background: #3B5998;
+    color: #fff;
+}
+.dhikr-pane { padding-bottom: 8px; }
+.dhikr-pane-hidden { display: none; }
+
+/* ── Counter Pane Header ── */
+.dhikr-today-hdr {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 4px 16px 0;
+}
+.dhikr-today-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+    margin: 0;
+}
+.dhikr-today-sub {
+    font-size: 11px;
+    color: var(--cream2);
+    margin: 1px 0 0;
+}
+.dhikr-today-hdr .tasbeeh-total-row {
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    font-size: 12px;
+}
+
+/* ── Counter Surface Card (GH-201) ── */
+#tasbeeh-container {
+    background: var(--bg2);
+    border-radius: 14px;
+    border: 0.5px solid var(--border);
+    padding: 4px 12px 12px;
+    margin: 8px 16px 10px;
+}
+
+/* ── Adhkar Counter Shortcut Cards ── */
+.adhkar-shortcut {
+    margin: 0 16px 8px;
+    background: var(--bg2);
+    border-radius: 12px;
+    padding: 11px 14px;
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.adhkar-shortcut:active { background: var(--bg3); }
+.adhkar-shortcut-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.adhkar-shortcut-icon { font-size: 20px; flex-shrink: 0; }
+.adhkar-morning-icon { color: var(--gold2); }
+.adhkar-evening-icon { color: #7fa8d8; }
+.adhkar-shortcut-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cream);
+    margin: 0;
+}
+.adhkar-shortcut-sub {
+    font-size: 11px;
+    color: var(--cream2);
+    margin: 2px 0 0;
+}
+.adhkar-shortcut-action {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+.adhkar-shortcut-action .ti { font-size: 13px; }
+.adhkar-shortcut.adhkar-done {
+    border-color: var(--tealborder);
+    background: var(--tealfaint);
+}
+.adhkar-shortcut.adhkar-done .adhkar-shortcut-sub { color: var(--teal); }
+
+/* ── Adhkar Progress Header ── */
+.adhkar-prog-hdr {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 8px 16px 6px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 0.5px solid;
+}
+.adhkar-morning-hdr {
+    background: rgba(197,163,82,.06);
+    border-color: var(--goldborder);
+}
+.adhkar-evening-hdr {
+    background: rgba(127,168,216,.06);
+    border-color: rgba(127,168,216,.2);
+}
+.adhkar-sleep-hdr {
+    background: rgba(59,89,152,.08);
+    border-color: rgba(59,89,152,.25);
+}
+.adhkar-prog-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+}
+.adhkar-morning-hdr .adhkar-prog-title { color: var(--gold2); }
+.adhkar-evening-hdr .adhkar-prog-title { color: #7fa8d8; }
+.adhkar-sleep-hdr .adhkar-prog-title { color: #7a9fd6; }
+.adhkar-prog-sub {
+    font-size: 11.5px;
+    color: var(--cream2);
+    margin: 2px 0 0;
+}
+.adhkar-prog-count {
+    font-size: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.adhkar-morning-hdr .adhkar-prog-count { color: var(--gold2); }
+.adhkar-evening-hdr .adhkar-prog-count { color: #7fa8d8; }
+.adhkar-sleep-hdr .adhkar-prog-count { color: #7a9fd6; }
+.adhkar-prog-bar-wrap {
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 16px 10px;
+}
+.adhkar-prog-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+#morning-prog-bar { background: var(--gold); }
+#evening-prog-bar { background: #7fa8d8; }
+#sleep-prog-bar { background: #3B5998; }
+
+/* ── Adhkar Checklist Cards ── */
+.adhkar-card {
+    background: var(--bg2);
+    border-radius: 12px;
+    padding: 12px 12px 12px 10px;
+    margin: 0 16px 8px;
+    border: 0.5px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.2s, background 0.2s;
+}
+.adhkar-card.adhkar-checked {
+    border-color: var(--tealborder);
+    background: var(--tealfaint);
+}
+.adhkar-check {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(242,237,230,.2);
+    background: transparent;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    padding: 0;
+    color: transparent;
+}
+.adhkar-checked .adhkar-check {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+}
+.adhkar-check .ti { font-size: 13px; }
+.adhkar-body { flex: 1; min-width: 0; }
+.adhkar-checked .dhikr-arabic {
+    opacity: 0.5;
+    text-decoration: line-through;
+    text-decoration-color: var(--teal);
+}
+.adhkar-checked .dhikr-translation { opacity: 0.5; }
+.adhkar-footer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.adhkar-badge {
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.adhkar-badge .ti { font-size: 10px; }
+.adhkar-badge-repeat {
+    background: var(--goldfaint);
+    color: var(--gold2);
+}
+.adhkar-badge-source {
+    background: var(--tealfaint);
+    color: var(--teal);
+}
+.adhkar-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 3px;
+}
+.adhkar-card .dhikr-counter { margin-top: 8px; }
+
+/* ── Special Pane ── */
+.spec-section-label {
+    font-size: 10.5px;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--cream2);
+    margin: 12px 16px 6px;
+    display: block;
+}
+.spec-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.spec-card-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--goldfaint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.spec-card-icon .ti { font-size: 17px; color: var(--gold2); }
+.spec-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+    margin: 0;
+}
+.spec-card-sub {
+    font-size: 11px;
+    color: var(--cream2);
+    margin: 2px 0 0;
+}
+
+[dir="rtl"] .dhikr-inner-tabs { direction: rtl; }
+[dir="rtl"] .adhkar-footer { flex-direction: row-reverse; }
+[dir="rtl"] .adhkar-actions { margin-left: 0; margin-right: auto; }
