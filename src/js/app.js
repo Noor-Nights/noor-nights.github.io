@@ -4553,9 +4553,9 @@ function _saveAdhkarState(state) {
 
 function _getOrCreateAdhkarState() {
     const today = new Date().toISOString().slice(0,10);
-    const state = _loadAdhkarState();
-    if (state) return state;
-    return { date: today, morning: {}, evening: {}, sleep: {} };
+    const state = _loadAdhkarState() || { date: today };
+    Object.keys(_ADHKAR_SECTION_COUNT).forEach(k => { if (!state[k]) state[k] = {}; });
+    return state;
 }
 
 function toggleAdhkarCheck(section, index, cardEl) {
