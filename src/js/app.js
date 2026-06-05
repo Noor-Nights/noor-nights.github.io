@@ -616,7 +616,7 @@ function renderDuaCarousel(list, containerId, prefix) {
     track.className = 'dua-carousel-track';
 
     const isAr = currentLang === 'ar';
-    let showTranslation = true;
+    let showTranslation = false;
 
     list.forEach((dua, idx) => {
         const pal = WATERCOLOR_PALETTES[idx % WATERCOLOR_PALETTES.length];
@@ -635,6 +635,7 @@ function renderDuaCarousel(list, containerId, prefix) {
         const tagHtml = duaTags
             ? `<div class="dua-tags-row">${(isAr ? duaTags.ar : duaTags.en).map(tag => `<span class="dua-tag">${tag}</span>`).join('')}</div>`
             : '';
+        const showTranslationLabel = isAr ? 'إظهار الترجمة' : 'Show translation';
         slide.innerHTML = `
             <div class="dua-slide-inner">
                 ${nightHTML}
@@ -651,9 +652,9 @@ function renderDuaCarousel(list, containerId, prefix) {
                         ${_shareIconSvg}
                         <span class="slide-btn-label">${t('actShareCard')}</span>
                     </button>
-                    <button class="slide-btn jaw-arabic-only-btn" aria-label="${isAr ? 'عربي فقط' : 'Arabic only'}">
-                        <i class="ti ti-eye-off" aria-hidden="true"></i>
-                        <span class="slide-btn-label">${isAr ? 'عربي فقط' : 'Arabic only'}</span>
+                    <button class="slide-btn jaw-arabic-only-btn jaw-arabic-only-active" aria-label="${showTranslationLabel}">
+                        <i class="ti ti-eye" aria-hidden="true"></i>
+                        <span class="slide-btn-label">${showTranslationLabel}</span>
                     </button>
                 </div>
             </div>`;
