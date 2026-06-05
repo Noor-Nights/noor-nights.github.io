@@ -4516,9 +4516,11 @@ const DAILY_FOCUS = [
 const _ADHKAR_STATE_KEY = 'noor_adhkar_v1';
 const _ADHKAR_PANE_KEY  = 'noor_dhikr_pane';
 const _ADHKAR_COUNT = 12;
+const _SLEEP_COUNT  = 7;
+const _ADHKAR_SECTION_COUNT = { morning: _ADHKAR_COUNT, evening: _ADHKAR_COUNT, sleep: _SLEEP_COUNT };
 
 function switchDhikrPane(name) {
-    const VALID = ['counter','morning','evening','special'];
+    const VALID = ['counter','morning','evening','special','sleep'];
     if (!VALID.includes(name)) return;
     document.querySelectorAll('.dhikr-pane').forEach(p => p.classList.add('dhikr-pane-hidden'));
     document.querySelectorAll('.dhikr-itab').forEach(t => {
@@ -4553,7 +4555,7 @@ function _getOrCreateAdhkarState() {
     const today = new Date().toISOString().slice(0,10);
     const state = _loadAdhkarState();
     if (state) return state;
-    return { date: today, morning: {}, evening: {} };
+    return { date: today, morning: {}, evening: {}, sleep: {} };
 }
 
 function toggleAdhkarCheck(section, index, cardEl) {
@@ -4571,8 +4573,8 @@ function _applyAdhkarCardState(cardEl, checked) {
 }
 
 function _updateAdhkarProgress(section, state) {
-    const count = Object.values(state[section]).filter(Boolean).length;
-    const total = _ADHKAR_COUNT;
+    const count = Object.values(state[section] || {}).filter(Boolean).length;
+    const total = _ADHKAR_SECTION_COUNT[section] || _ADHKAR_COUNT;
     const pct = Math.round((count / total) * 100);
 
     const countEl = document.getElementById(section + '-prog-count');
@@ -4588,20 +4590,21 @@ function _updateAdhkarProgress(section, state) {
 
 function _syncAdhkarToTracker(section, state) {
     if (!worshipTracker) return;
-    const count = Object.values(state[section]).filter(Boolean).length;
-    const field = section === 'morning' ? 'morningAdhkar' : 'eveningAdhkar';
+    const trackerField = { morning: 'morningAdhkar', evening: 'eveningAdhkar' };
+    if (!trackerField[section]) return;
+    const total = _ADHKAR_SECTION_COUNT[section] || _ADHKAR_COUNT;
+    const count = Object.values(state[section] || {}).filter(Boolean).length;
     const key = worshipTracker.getTodayKey();
-    if (count === _ADHKAR_COUNT) {
-        worshipTracker.updateActivity(key, field, true);
-    }
+    worshipTracker.updateActivity(key, trackerField[section], count === total);
 }
 
 function initDhikrPanes() {
     const state = _getOrCreateAdhkarState();
-    ['morning','evening'].forEach(section => {
-        for (let i = 0; i < _ADHKAR_COUNT; i++) {
-            const cardEl = document.getElementById('adhkar-' + section[0] + '-' + i);
-            if (cardEl && state[section][i]) _applyAdhkarCardState(cardEl, true);
+    const PREFIX = { morning: 'm', evening: 'e', sleep: 's' };
+    Object.entries(_ADHKAR_SECTION_COUNT).forEach(([section, total]) => {
+        for (let i = 0; i < total; i++) {
+            const cardEl = document.getElementById('adhkar-' + PREFIX[section] + '-' + i);
+            if (cardEl && state[section] && state[section][i]) _applyAdhkarCardState(cardEl, true);
         }
         _updateAdhkarProgress(section, state);
     });
