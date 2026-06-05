@@ -242,199 +242,423 @@ header{display:flex;flex-direction:row;align-items:center;justify-content:space-
         <!-- ══════════════════════════════════════════ -->
         <div class="tab-content" id="tab-dhikr">
 
-            <!-- ÷<div class="section-label">Dhikr</div> -->
-
-            <div class="card" id="tasbeeh-container">
-                <div class="section-heading-row">
-                  <div class="section-icon-chip"><img src="assets/icons/tasbeeh.svg" alt="" aria-hidden="true" width="24" height="24"></div>
-                  <h2 data-i18n="tasbeehTitle">Tasbeeh Counter</h2>
-                </div>
-                <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
-                <div id="tasbeeh-grid" class="tasbeeh-grid"></div>
-                <div class="tasbeeh-actions">
-                    <button class="btn btn-outline" onclick="resetTasbeeh()" data-i18n="tasbeehReset">Reset All</button>
-                </div>
-                <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap a circle to count • Space = active circle</p>
+            <!-- ── Inner tab navigation ── -->
+            <div class="dhikr-inner-tabs" role="tablist" aria-label="Dhikr sections">
+                <button class="dhikr-itab dhikr-itab-active" role="tab" aria-selected="true" data-pane="counter" onclick="switchDhikrPane('counter')">
+                    <i class="ti ti-circles" aria-hidden="true"></i><span>Counter</span>
+                </button>
+                <button class="dhikr-itab" role="tab" aria-selected="false" data-pane="morning" onclick="switchDhikrPane('morning')">
+                    <i class="ti ti-sun" aria-hidden="true"></i><span>Morning</span>
+                </button>
+                <button class="dhikr-itab" role="tab" aria-selected="false" data-pane="evening" onclick="switchDhikrPane('evening')">
+                    <i class="ti ti-moon" aria-hidden="true"></i><span>Evening</span>
+                </button>
+                <button class="dhikr-itab" role="tab" aria-selected="false" data-pane="special" onclick="switchDhikrPane('special')">
+                    <i class="ti ti-star" aria-hidden="true"></i><span>Special</span>
+                </button>
             </div>
 
-            <!-- ── Takbeer ── -->
-            <div class="dhikr-section" data-section="takbeer">
-                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-takbeer')" data-i18n="dhikrSectionDhulHijjah">Takbeer <span class="dhikr-chevron">▾</span></button>
-                <div class="dhikr-section-body" id="dhs-takbeer">
-                    <div class="card dhikr-card dhikr-card-gold">
-                        <div class="dhikr-arabic">اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، وَلِلَّهِ الْحَمْدُ</div>
-                        <div class="dhikr-transliteration">Allāhu Akbar, Allāhu Akbar, Lā ilāha illallāh, wallāhu Akbar, Allāhu Akbar, wa lillāhil-ḥamd</div>
-                        <div class="dhikr-translation">Allah is the Greatest, Allah is the Greatest. None has the right to be worshipped except Allah. And Allah is the Greatest, Allah is the Greatest. And all praise is due to Allah</div>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Ibn ʿUmar and Abu Hurayrah would proclaim Takbeer aloud in the markets, and the people would make Takbeer with them. — Bukhārī (muʿallaq)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: كان ابن عمر وأبو هريرة رضي الله عنهما يجهران بالتكبير في الأسواق فيكبّر الناس بتكبيرهم. — البخاري (معلقاً)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
+            <!-- ══════════ COUNTER PANE ══════════ -->
+            <div class="dhikr-pane" id="dhikr-pane-counter" role="tabpanel">
+
+                <div class="dhikr-today-hdr">
+                    <div>
+                        <p class="dhikr-today-title" data-i18n="tasbeehTitle">Tasbeeh Counter</p>
+                        <p class="dhikr-today-sub">Tap a circle to count</p>
+                    </div>
+                    <div class="tasbeeh-total-row" id="tasbeeh-total">Total: 0 dhikr</div>
+                </div>
+
+                <div id="tasbeeh-container">
+                    <div id="tasbeeh-grid" class="tasbeeh-grid"></div>
+                    <div class="tasbeeh-actions">
+                        <button class="btn btn-outline" onclick="resetTasbeeh()" data-i18n="tasbeehReset">Reset All</button>
+                    </div>
+                    <p class="tasbeeh-hint" data-i18n="tasbeehIncrement">Tap a circle to count • Space = active circle</p>
+                </div>
+
+                <!-- Morning adhkar progress shortcut -->
+                <div class="adhkar-shortcut" id="adhkar-shortcut-morning" onclick="switchDhikrPane('morning')">
+                    <div class="adhkar-shortcut-info">
+                        <i class="ti ti-sun adhkar-shortcut-icon adhkar-morning-icon" aria-hidden="true"></i>
+                        <div>
+                            <p class="adhkar-shortcut-title">Morning adhkar</p>
+                            <p class="adhkar-shortcut-sub" id="morning-adhkar-progress-text">0 of 6 completed</p>
+                        </div>
+                    </div>
+                    <div class="adhkar-shortcut-action">
+                        <span>Continue</span>
+                        <i class="ti ti-chevron-right" aria-hidden="true"></i>
                     </div>
                 </div>
-            </div>
-
-            <!-- ── Most Virtuous Remembrances ── -->
-            <div class="dhikr-section" data-section="virtuous">
-                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-virtuous')" data-i18n="dhikrSectionVirtuous">Most Virtuous Remembrances <span class="dhikr-chevron">▾</span></button>
-                <div class="dhikr-section-body" id="dhs-virtuous">
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ</div>
-                        <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi, SubḥānAllāhil-ʿAẓīm</div>
-                        <div class="dhikr-translation">Glory be to Allah and all praise is due to Him; Glory be to Allah, the Magnificent</div>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: "Two words light on the tongue, heavy on the Scale, beloved to the Most Merciful." — Bukhārī & Muslim</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: "كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن." — البخاري ومسلم</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
+                <!-- Evening adhkar progress shortcut -->
+                <div class="adhkar-shortcut" id="adhkar-shortcut-evening" onclick="switchDhikrPane('evening')">
+                    <div class="adhkar-shortcut-info">
+                        <i class="ti ti-moon adhkar-shortcut-icon adhkar-evening-icon" aria-hidden="true"></i>
+                        <div>
+                            <p class="adhkar-shortcut-title">Evening adhkar</p>
+                            <p class="adhkar-shortcut-sub" id="evening-adhkar-progress-text">0 of 6 completed</p>
+                        </div>
                     </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
-                        <div class="dhikr-transliteration">Lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shay'in qadīr</div>
-                        <div class="dhikr-translation">None has the right to be worshipped except Allah alone, no partner has He; His is the dominion and His is the praise and He is over all things All-Powerful</div>
-                        <button class="dhikr-counter" data-target="100" data-key="tahleel-100" onclick="tapDhikrCounter(this)">
-                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
-                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
-                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
-                        </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Equivalent to freeing ten slaves, 100 good deeds written, 100 sins erased, protection from Shaytān all day. — Bukhārī</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: تعدل عتق عشر رقاب، وتُكتب له مئة حسنة، وتُمحى عنه مئة سيئة، وتكون حرزاً من الشيطان يومه. — البخاري</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
-                    </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
-                        <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi</div>
-                        <div class="dhikr-translation">Glory be to Allah and all praise is due to Him</div>
-                        <button class="dhikr-counter" data-target="100" data-key="sbh-bihamdihi-100" onclick="tapDhikrCounter(this)">
-                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
-                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
-                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
-                        </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Sins forgiven even if they are as much as the foam of the sea. — Muslim</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: حُطَّت خطاياه وإن كانت مثل زبد البحر. — مسلم</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
-                    </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ</div>
-                        <div class="dhikr-transliteration">Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik</div>
-                        <div class="dhikr-translation">O Allah, help me to remember You, to be grateful to You, and to worship You in the best manner</div>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: The Prophet ﷺ commanded Muʿādh ibn Jabal to say this after every prayer. — Abū Dāwūd (Ṣaḥīḥ)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أوصى به النبي ﷺ معاذ بن جبل أن يقوله دُبُر كل صلاة. — أبو داود (صحيح)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
+                    <div class="adhkar-shortcut-action">
+                        <span>Continue</span>
+                        <i class="ti ti-chevron-right" aria-hidden="true"></i>
                     </div>
                 </div>
-            </div>
 
-            <!-- ── Morning & Evening ── -->
-            <div class="dhikr-section" data-section="morning">
-                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-morning')" data-i18n="dhikrSectionMorningEvening">Morning & Evening <span class="dhikr-chevron">▾</span></button>
-                <div class="dhikr-section-body" id="dhs-morning">
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</div>
-                        <div class="dhikr-transliteration">Ḥasbiyallāhu lā ilāha illā huwa, ʿalayhi tawakkaltu wa huwa rabbul-ʿarshil-ʿaẓīm</div>
-                        <div class="dhikr-translation">Allah is sufficient for me; there is no deity except Him. I have relied upon Him, and He is Lord of the Magnificent Throne</div>
-                        <button class="dhikr-counter" data-target="7" data-key="hasbiyallah-7" onclick="tapDhikrCounter(this)">
+            </div><!-- /counter pane -->
+
+            <!-- ══════════ MORNING PANE ══════════ -->
+            <div class="dhikr-pane dhikr-pane-hidden" id="dhikr-pane-morning" role="tabpanel">
+
+                <div class="adhkar-prog-hdr adhkar-morning-hdr">
+                    <div>
+                        <p class="adhkar-prog-title">Morning adhkar</p>
+                        <p class="adhkar-prog-sub">After Fajr · 6 remembrances</p>
+                    </div>
+                    <span class="adhkar-prog-count" id="morning-prog-count">0/6</span>
+                </div>
+                <div class="adhkar-prog-bar-wrap">
+                    <div class="adhkar-prog-bar" id="morning-prog-bar" style="width:0%"></div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-m-0" onclick="toggleAdhkarCheck('morning',0,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ</p>
+                        <p class="dhikr-translation">We have reached the morning and at this very time the dominion belongs to Allah. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>Once</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-m-1" onclick="toggleAdhkarCheck('morning',1,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ</p>
+                        <p class="dhikr-translation">O Allah, by Your leave we have reached the morning and by Your leave we have reached the evening, by Your leave we live and die, and unto You is our resurrection.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>Once</span>
+                            <span class="adhkar-badge adhkar-badge-source">Tirmidhī · Ḥasan</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-m-2" onclick="toggleAdhkarCheck('morning',2,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</p>
+                        <p class="dhikr-translation">Allah is sufficient for me; there is no deity except Him. I have relied upon Him, and He is Lord of the Magnificent Throne.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>7×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ṣaḥīḥ</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="7" data-key="hasbiyallah-m-7" onclick="event.stopPropagation();tapDhikrCounter(this)">
                             <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">7</span>
                             <span class="dc-times" data-i18n="dhikrTimes">times</span>
                             <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
                         </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Allah will suffice him in whatever worries him of this world and the Hereafter. — Abū Dāwūd (Ṣaḥīḥ)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: كفاه الله ما أهمه من أمر الدنيا والآخرة. — أبو داود (صحيح)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
-                    </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
-                        <div class="dhikr-transliteration">Aṣbaḥnā wa aṣbaḥal-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shay'in qadīr</div>
-                        <div class="dhikr-translation">We have reached the morning and at this very time the dominion belongs to Allah. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner</div>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: From the morning adhkar of the Prophet ﷺ. — Abū Dāwūd</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: من أذكار الصباح النبوية. — أبو داود</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
-                    </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ</div>
-                        <div class="dhikr-transliteration">Allāhumma bika aṣbaḥnā, wa bika amsaynā, wa bika naḥyā, wa bika namūtu, wa ilaykan-nushūr</div>
-                        <div class="dhikr-translation">O Allah, by Your leave we have reached the morning, and by Your leave we have reached the evening, by Your leave we live and die, and unto You is our resurrection</div>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Morning adhkar of the Prophet ﷺ. — Tirmidhī (Ḥasan)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: من أذكار الصباح النبوية. — الترمذي (حسن)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ── Daily Protection ── -->
-            <div class="dhikr-section" data-section="protection">
-                <button class="dhikr-section-header" onclick="toggleDhikrSection(this,'dhs-protection')" data-i18n="dhikrSectionProtection">Daily Protection <span class="dhikr-chevron">▾</span></button>
-                <div class="dhikr-section-body" id="dhs-protection">
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</div>
-                        <div class="dhikr-transliteration">Bismillāhil-ladhī lā yaḍurru maʿasmihi shay'un fil-arḍi wa lā fis-samā'i wa huwas-samīʿul-ʿalīm</div>
-                        <div class="dhikr-translation">In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, All-Knowing</div>
-                        <button class="dhikr-counter" data-target="3" data-key="bismillah-3" onclick="tapDhikrCounter(this)">
+                <div class="adhkar-card" id="adhkar-m-3" onclick="toggleAdhkarCheck('morning',3,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</p>
+                        <p class="dhikr-translation">In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, All-Knowing.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>3×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ṣaḥīḥ</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="3" data-key="bismillah-m-3" onclick="event.stopPropagation();tapDhikrCounter(this)">
                             <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
                             <span class="dc-times" data-i18n="dhikrTimes">times</span>
                             <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
                         </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: Nothing will harm him. — Abū Dāwūd & Tirmidhī (Ṣaḥīḥ)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: لم يضره شيء. — أبو داود والترمذي (صحيح)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
                     </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</div>
-                        <div class="dhikr-transliteration">Aʿūdhu bikalimātillāhit-tāmmāti min sharri mā khalaq</div>
-                        <div class="dhikr-translation">I seek refuge in the Perfect Words of Allah from the evil of what He has created</div>
-                        <button class="dhikr-counter" data-target="3" data-key="awdhu-3" onclick="tapDhikrCounter(this)">
+                </div>
+
+                <div class="adhkar-card" id="adhkar-m-4" onclick="toggleAdhkarCheck('morning',4,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</p>
+                        <p class="dhikr-translation">I seek refuge in the Perfect Words of Allah from the evil of what He has created.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>3×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Muslim</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="3" data-key="awdhu-m-3" onclick="event.stopPropagation();tapDhikrCounter(this)">
                             <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
                             <span class="dc-times" data-i18n="dhikrTimes">times</span>
                             <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
                         </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: No harm from anything will afflict him until he moves on from that place. — Muslim</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: لم يضره شيء حتى يرتحل من مكانه ذلك. — مسلم</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
                     </div>
-                    <div class="card dhikr-card">
-                        <div class="dhikr-arabic">اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</div>
-                        <div class="dhikr-transliteration">Allāhumma innī aṣbaḥtu ushhiduka, wa ushhidu ḥamalata ʿarshika, wa malā'ikataka, wa jamīʿa khalqika, annaka antallāhu lā ilāha illā anta waḥdaka lā sharīka lak, wa anna Muḥammadan ʿabduka wa rasūluk</div>
-                        <div class="dhikr-translation">O Allah, I have risen to bear witness — with the bearers of Your Throne, Your angels, and all creation — that You are Allah, none has the right to be worshipped except You alone, no partner have You, and that Muḥammad is Your servant and Messenger</div>
-                        <button class="dhikr-counter" data-target="4" data-key="ushhiduka-4" onclick="tapDhikrCounter(this)">
+                </div>
+
+                <div class="adhkar-card" id="adhkar-m-5" onclick="toggleAdhkarCheck('morning',5,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</p>
+                        <p class="dhikr-translation">O Allah, I have risen to bear witness — with the bearers of Your Throne, Your angels, and all creation — that You are Allah, none has the right to be worshipped except You alone, no partner have You, and that Muḥammad is Your servant and Messenger.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>4×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ḥasan</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="4" data-key="ushhiduka-m-4" onclick="event.stopPropagation();tapDhikrCounter(this)">
                             <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">4</span>
                             <span class="dc-times" data-i18n="dhikrTimes">times</span>
                             <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
                         </button>
-                        <div class="dhikr-virtue dhikr-virtue-en">Virtue: A quarter of himself will be freed from the Fire. — Abū Dāwūd (Ḥasan)</div>
-                        <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أعتق الله ربعه من النار. — أبو داود (حسن)</div>
-                        <div class="dhikr-share-row">
-                                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
-                                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-                                    </div>
                     </div>
                 </div>
-            </div>
+
+            </div><!-- /morning pane -->
+
+            <!-- ══════════ EVENING PANE ══════════ -->
+            <div class="dhikr-pane dhikr-pane-hidden" id="dhikr-pane-evening" role="tabpanel">
+
+                <div class="adhkar-prog-hdr adhkar-evening-hdr">
+                    <div>
+                        <p class="adhkar-prog-title">Evening adhkar</p>
+                        <p class="adhkar-prog-sub">After Asr · 6 remembrances</p>
+                    </div>
+                    <span class="adhkar-prog-count" id="evening-prog-count">0/6</span>
+                </div>
+                <div class="adhkar-prog-bar-wrap">
+                    <div class="adhkar-prog-bar" id="evening-prog-bar" style="width:0%"></div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-0" onclick="toggleAdhkarCheck('evening',0,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ</p>
+                        <p class="dhikr-translation">We have reached the evening and at this very time the dominion belongs to Allah. All praise is for Allah. None has the right to be worshipped except Allah, alone, without partner.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>Once</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-1" onclick="toggleAdhkarCheck('evening',1,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ</p>
+                        <p class="dhikr-translation">O Allah, by Your leave we have reached the evening and by Your leave we have reached the morning, by Your leave we live and die, and to You is our return.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>Once</span>
+                            <span class="adhkar-badge adhkar-badge-source">Tirmidhī · Ḥasan</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-2" onclick="toggleAdhkarCheck('evening',2,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ</p>
+                        <p class="dhikr-translation">Allah is sufficient for me; there is no deity except Him. I have relied upon Him, and He is Lord of the Magnificent Throne.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>7×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ṣaḥīḥ</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="7" data-key="hasbiyallah-e-7" onclick="event.stopPropagation();tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">7</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-3" onclick="toggleAdhkarCheck('evening',3,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ</p>
+                        <p class="dhikr-translation">In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, All-Knowing.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>3×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ṣaḥīḥ</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="3" data-key="bismillah-e-3" onclick="event.stopPropagation();tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-4" onclick="toggleAdhkarCheck('evening',4,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</p>
+                        <p class="dhikr-translation">I seek refuge in the Perfect Words of Allah from the evil of what He has created.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>3×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Muslim</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="3" data-key="awdhu-e-3" onclick="event.stopPropagation();tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">3</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="adhkar-card" id="adhkar-e-5" onclick="toggleAdhkarCheck('evening',5,this)">
+                    <button class="adhkar-check" aria-label="Mark done"><i class="ti ti-check" aria-hidden="true"></i></button>
+                    <div class="adhkar-body">
+                        <p class="dhikr-arabic">اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ</p>
+                        <p class="dhikr-translation">O Allah, I have reached the evening bearing witness — with the bearers of Your Throne, Your angels, and all creation — that You are Allah, none has the right to be worshipped except You alone, no partner have You, and that Muḥammad is Your servant and Messenger.</p>
+                        <div class="adhkar-footer">
+                            <span class="adhkar-badge adhkar-badge-repeat"><i class="ti ti-refresh" aria-hidden="true"></i>4×</span>
+                            <span class="adhkar-badge adhkar-badge-source">Abū Dāwūd · Ḥasan</span>
+                            <div class="adhkar-actions">
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                                <button class="dhikr-share-btn" onclick="event.stopPropagation();shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="14" height="14" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                            </div>
+                        </div>
+                        <button class="dhikr-counter" data-target="4" data-key="ushhiduka-e-4" onclick="event.stopPropagation();tapDhikrCounter(this)">
+                            <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">4</span>
+                            <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                            <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /evening pane -->
+
+            <!-- ══════════ SPECIAL PANE ══════════ -->
+            <div class="dhikr-pane dhikr-pane-hidden" id="dhikr-pane-special" role="tabpanel">
+
+                <p class="spec-section-label" data-i18n="dhikrSectionDhulHijjah">Takbeer al-Tashreeq</p>
+
+                <div class="card dhikr-card dhikr-card-gold">
+                    <div class="spec-card-header">
+                        <div class="spec-card-icon">
+                            <i class="ti ti-volume" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <p class="spec-card-title">Takbeer al-Tashreeq</p>
+                            <p class="spec-card-sub">Dhul Hijjah 9–13 · After every fard prayer</p>
+                        </div>
+                    </div>
+                    <div class="dhikr-arabic">اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، وَلِلَّهِ الْحَمْدُ</div>
+                    <div class="dhikr-transliteration">Allāhu Akbar, Allāhu Akbar, Lā ilāha illallāh, wallāhu Akbar, Allāhu Akbar, wa lillāhil-ḥamd</div>
+                    <div class="dhikr-translation">Allah is the Greatest, Allah is the Greatest. None has the right to be worshipped except Allah. And Allah is the Greatest, Allah is the Greatest. And all praise is due to Allah</div>
+                    <div class="dhikr-virtue dhikr-virtue-en">Virtue: Ibn ʿUmar and Abu Hurayrah would proclaim Takbeer aloud in the markets, and the people would make Takbeer with them. — Bukhārī (muʿallaq)</div>
+                    <div class="dhikr-virtue dhikr-virtue-ar">الفضل: كان ابن عمر وأبو هريرة رضي الله عنهما يجهران بالتكبير في الأسواق فيكبّر الناس بتكبيرهم. — البخاري (معلقاً)</div>
+                    <div class="dhikr-share-row">
+                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
+
+                <p class="spec-section-label" data-i18n="dhikrSectionVirtuous">Most Virtuous Remembrances</p>
+
+                <div class="card dhikr-card">
+                    <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ سُبْحَانَ اللَّهِ الْعَظِيمِ</div>
+                    <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi, SubḥānAllāhil-ʿAẓīm</div>
+                    <div class="dhikr-translation">Glory be to Allah and all praise is due to Him; Glory be to Allah, the Magnificent</div>
+                    <div class="dhikr-virtue dhikr-virtue-en">Virtue: "Two words light on the tongue, heavy on the Scale, beloved to the Most Merciful." — Bukhārī & Muslim</div>
+                    <div class="dhikr-virtue dhikr-virtue-ar">الفضل: "كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن." — البخاري ومسلم</div>
+                    <div class="dhikr-share-row">
+                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
+
+                <div class="card dhikr-card">
+                    <div class="dhikr-arabic">لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</div>
+                    <div class="dhikr-transliteration">Lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ʿalā kulli shay'in qadīr</div>
+                    <div class="dhikr-translation">None has the right to be worshipped except Allah alone, no partner has He; His is the dominion and His is the praise and He is over all things All-Powerful</div>
+                    <button class="dhikr-counter" data-target="100" data-key="tahleel-100" onclick="tapDhikrCounter(this)">
+                        <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
+                        <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                        <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                    </button>
+                    <div class="dhikr-virtue dhikr-virtue-en">Virtue: Equivalent to freeing ten slaves, 100 good deeds written, 100 sins erased, protection from Shaytān all day. — Bukhārī</div>
+                    <div class="dhikr-virtue dhikr-virtue-ar">الفضل: تعدل عتق عشر رقاب، وتُكتب له مئة حسنة، وتُمحى عنه مئة سيئة، وتكون حرزاً من الشيطان يومه. — البخاري</div>
+                    <div class="dhikr-share-row">
+                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
+
+                <div class="card dhikr-card">
+                    <div class="dhikr-arabic">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
+                    <div class="dhikr-transliteration">SubḥānAllāhi wa biḥamdihi</div>
+                    <div class="dhikr-translation">Glory be to Allah and all praise is due to Him</div>
+                    <button class="dhikr-counter" data-target="100" data-key="sbh-bihamdihi-100" onclick="tapDhikrCounter(this)">
+                        <span class="dc-curr">0</span><span class="dc-slash">/</span><span class="dc-tgt">100</span>
+                        <span class="dc-times" data-i18n="dhikrTimes">times</span>
+                        <span class="dc-reset-btn" onclick="event.stopPropagation();resetDhikrCounter(this.closest('.dhikr-counter'))">↺</span>
+                    </button>
+                    <div class="dhikr-virtue dhikr-virtue-en">Virtue: Sins forgiven even if they are as much as the foam of the sea. — Muslim</div>
+                    <div class="dhikr-virtue dhikr-virtue-ar">الفضل: حُطَّت خطاياه وإن كانت مثل زبد البحر. — مسلم</div>
+                    <div class="dhikr-share-row">
+                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
+
+                <div class="card dhikr-card">
+                    <div class="dhikr-arabic">اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ</div>
+                    <div class="dhikr-transliteration">Allāhumma aʿinnī ʿalā dhikrika wa shukrika wa ḥusni ʿibādatik</div>
+                    <div class="dhikr-translation">O Allah, help me to remember You, to be grateful to You, and to worship You in the best manner</div>
+                    <div class="dhikr-virtue dhikr-virtue-en">Virtue: The Prophet ﷺ commanded Muʿādh ibn Jabal to say this after every prayer. — Abū Dāwūd (Ṣaḥīḥ)</div>
+                    <div class="dhikr-virtue dhikr-virtue-ar">الفضل: أوصى به النبي ﷺ معاذ بن جبل أن يقوله دُبُر كل صلاة. — أبو داود (صحيح)</div>
+                    <div class="dhikr-share-row">
+                        <button class="dhikr-share-btn" onclick="copyDhikrCard(this)" aria-label="Copy dhikr"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><rect x="5.5" y="1.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="4.5" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="var(--bg3)"/></svg></button>
+                        <button class="dhikr-share-btn" onclick="shareDhikrCard(this)" aria-label="Share card"><svg viewBox="0 0 16 16" fill="none" width="15" height="15" aria-hidden="true"><path d="M8 1v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 3.5L8 1l3 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8v5a1 1 0 001 1h8a1 1 0 001-1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
+
+            </div><!-- /special pane -->
 
         </div><!-- /tab-dhikr -->
 
