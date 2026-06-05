@@ -1326,7 +1326,7 @@ async function shareImage(type, idx) {
 
 
 async function shareDhikrCard(btn) {
-    const card = btn.closest('.dhikr-card');
+    const card = btn.closest('.dhikr-card, .adhkar-card');
     if (!card) return;
 
     const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
@@ -1370,7 +1370,7 @@ async function shareDhikrCard(btn) {
 }
 
 function copyDhikrCard(btn) {
-    const card = btn.closest('.dhikr-card');
+    const card = btn.closest('.dhikr-card, .adhkar-card');
     if (!card) return;
     const arabic = card.querySelector('.dhikr-arabic')?.textContent?.trim() || '';
     const translation = card.querySelector('.dhikr-translation')?.textContent?.trim() || '';
@@ -4512,6 +4512,107 @@ const DAILY_FOCUS = [
     { day: 10, en: { theme: 'Sacrifice',    focus: 'Eid al-Adha — the day of Udhiyah. Reflect on the sacrifice of Ibrahim ﷺ and give generously.', ayah: '"It is not their meat nor their blood that reaches Allah — it is your piety." — Quran 22:37' }, ar: { theme: 'الأضحية',    focus: 'عيد الأضحى — يوم الأضحية. تأمّل في تضحية إبراهيم ﷺ وأعطِ بسخاء.',      ayah: '«لَن يَنَالَ ٱللَّهَ لُحُومُهَا… وَلَـٰكِن يَنَالُهُ ٱلتَّقۡوَىٰ» — الحج: ٣٧' } },
 ];
 
+// ── Dhikr Inner Panes (GH-196) ────────────────────────
+const _ADHKAR_STATE_KEY = 'noor_adhkar_v1';
+const _ADHKAR_PANE_KEY  = 'noor_dhikr_pane';
+const _ADHKAR_COUNT = 12;
+
+function switchDhikrPane(name) {
+    const VALID = ['counter','morning','evening','special'];
+    if (!VALID.includes(name)) return;
+    document.querySelectorAll('.dhikr-pane').forEach(p => p.classList.add('dhikr-pane-hidden'));
+    document.querySelectorAll('.dhikr-itab').forEach(t => {
+        t.classList.remove('dhikr-itab-active');
+        t.setAttribute('aria-selected', 'false');
+    });
+    const pane = document.getElementById('dhikr-pane-' + name);
+    if (pane) pane.classList.remove('dhikr-pane-hidden');
+    const tab = document.querySelector('.dhikr-itab[data-pane="' + name + '"]');
+    if (tab) { tab.classList.add('dhikr-itab-active'); tab.setAttribute('aria-selected', 'true'); }
+    const tabsEl = document.querySelector('.dhikr-inner-tabs');
+    if (tabsEl) tabsEl.dataset.activepane = name;
+    try { localStorage.setItem(_ADHKAR_PANE_KEY, name); } catch(e) {}
+}
+
+function _loadAdhkarState() {
+    try {
+        const raw = localStorage.getItem(_ADHKAR_STATE_KEY);
+        if (!raw) return null;
+        const obj = JSON.parse(raw);
+        const today = new Date().toISOString().slice(0,10);
+        if (obj.date !== today) return null;
+        return obj;
+    } catch(e) { return null; }
+}
+
+function _saveAdhkarState(state) {
+    try { localStorage.setItem(_ADHKAR_STATE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function _getOrCreateAdhkarState() {
+    const today = new Date().toISOString().slice(0,10);
+    const state = _loadAdhkarState();
+    if (state) return state;
+    return { date: today, morning: {}, evening: {} };
+}
+
+function toggleAdhkarCheck(section, index, cardEl) {
+    const state = _getOrCreateAdhkarState();
+    const wasChecked = !!state[section][index];
+    state[section][index] = !wasChecked;
+    _saveAdhkarState(state);
+    _applyAdhkarCardState(cardEl, !wasChecked);
+    _updateAdhkarProgress(section, state);
+    _syncAdhkarToTracker(section, state);
+}
+
+function _applyAdhkarCardState(cardEl, checked) {
+    cardEl.classList.toggle('adhkar-checked', checked);
+}
+
+function _updateAdhkarProgress(section, state) {
+    const count = Object.values(state[section]).filter(Boolean).length;
+    const total = _ADHKAR_COUNT;
+    const pct = Math.round((count / total) * 100);
+
+    const countEl = document.getElementById(section + '-prog-count');
+    const barEl   = document.getElementById(section + '-prog-bar');
+    const textEl  = document.getElementById(section + '-adhkar-progress-text');
+    const shortEl = document.getElementById('adhkar-shortcut-' + section);
+
+    if (countEl) countEl.textContent = count + '/' + total;
+    if (barEl)   barEl.style.width = pct + '%';
+    if (textEl)  textEl.textContent = count + ' of ' + total + ' completed';
+    if (shortEl) shortEl.classList.toggle('adhkar-done', count === total);
+}
+
+function _syncAdhkarToTracker(section, state) {
+    if (!worshipTracker) return;
+    const count = Object.values(state[section]).filter(Boolean).length;
+    const field = section === 'morning' ? 'morningAdhkar' : 'eveningAdhkar';
+    const key = worshipTracker.getTodayKey();
+    if (count === _ADHKAR_COUNT) {
+        worshipTracker.updateActivity(key, field, true);
+    }
+}
+
+function initDhikrPanes() {
+    const state = _getOrCreateAdhkarState();
+    ['morning','evening'].forEach(section => {
+        for (let i = 0; i < _ADHKAR_COUNT; i++) {
+            const cardEl = document.getElementById('adhkar-' + section[0] + '-' + i);
+            if (cardEl && state[section][i]) _applyAdhkarCardState(cardEl, true);
+        }
+        _updateAdhkarProgress(section, state);
+    });
+    try {
+        const saved = localStorage.getItem(_ADHKAR_PANE_KEY);
+        if (saved && document.getElementById('dhikr-pane-' + saved)) {
+            switchDhikrPane(saved);
+        }
+    } catch(e) {}
+}
+
 // ── Collapsible Dhikr Sections ────────────────────────
 const _DHIKR_SECTIONS_KEY = 'noor-dhikr-sections';
 function _dhikrSectionState() {
@@ -5424,6 +5525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         _updateSettingsCard();
         initDhikrSections();
+        initDhikrPanes();
         checkDayChange();
         setInterval(checkDayChange, 60000);
         rotateYoussefDua();
