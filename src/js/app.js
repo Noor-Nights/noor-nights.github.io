@@ -5290,7 +5290,9 @@ function updateTasbeehUI() {
         toggleBtn.id = 'tb-view-toggle';
         toggleBtn.className = 'tb-view-toggle';
         toggleBtn.onclick = () => { _tbExpandedView = !_tbExpandedView; updateTasbeehUI(); };
-        grid.parentElement.insertBefore(toggleBtn, grid);
+        const actions = document.querySelector('.tasbeeh-actions');
+        if (actions) actions.insertBefore(toggleBtn, actions.firstChild);
+        else grid.parentElement.insertBefore(toggleBtn, grid);
     }
     toggleBtn.textContent = _tbExpandedView
         ? (isAr ? '◾ عرض مضغوط' : '◾ Compact view')

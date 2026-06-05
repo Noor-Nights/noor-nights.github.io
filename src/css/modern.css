@@ -954,10 +954,10 @@ html[lang="ar"] .dhikr-virtue-ar { display: block; }
 
 /* View toggle button */
 .tb-view-toggle {
-    display: block; width: 100%; margin: 8px 0 4px;
-    font-size: 0.72rem; padding: 5px 12px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.1); background: transparent;
-    color: var(--text-muted); cursor: pointer; font-family: var(--fn);
+    flex: 1;
+    font-size: 12px; padding: 8px 12px; border-radius: 8px;
+    border: 0.5px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04);
+    color: var(--cream2); cursor: pointer; font-family: var(--fn);
     text-align: center; transition: background 0.2s, border-color 0.2s;
 }
 .tb-view-toggle:hover { border-color: var(--goldborder); color: var(--gold2); }
@@ -4522,11 +4522,14 @@ h2 {
 .adhkar-shortcut-action {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     font-size: 12px;
-    color: var(--teal);
     font-weight: 500;
     flex-shrink: 0;
+    background: var(--teal);
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 12px;
 }
 .adhkar-shortcut-action .ti { font-size: 13px; }
 .adhkar-shortcut.adhkar-done {
