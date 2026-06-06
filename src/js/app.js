@@ -239,6 +239,26 @@ const TRANSLATIONS = {
         dhikrVirtue: 'Virtue',
         dhikrTimes: 'times',
 
+        dhikrTabCounter: 'Counter',
+        dhikrTabMorning: 'Morning',
+        dhikrTabEvening: 'Evening',
+        dhikrTabSpecial: 'Special',
+        dhikrTabSleep: 'Sleep',
+        dhikrTapToCount: 'Tap a circle to count',
+        morningAdhkarLabel: 'Morning adhkar',
+        morningAdhkarSub: 'After Fajr · 12 remembrances',
+        eveningAdhkarLabel: 'Evening adhkar',
+        eveningAdhkarSub: 'After Asr · 12 remembrances',
+        sleepAdhkarLabel: 'Sleep adhkar',
+        sleepAdhkarSub: 'Before sleeping · 13 remembrances',
+        adhkarContinue: 'Continue',
+        adhkarOnce: 'Once',
+        adhkarNOfCompleted: (n, total) => `${n} of ${total} completed`,
+        specTakbeerTitle: 'Takbeer al-Tashreeq',
+        specTakbeerSub: 'Dhul Hijjah 9–13 · After every fard prayer',
+        specSectionReliance: 'Reliance & Protection',
+        specSectionSayyid: 'Sayyid al-Istighfār',
+
     },
     ar: {
         appName: 'ليالي النور',
@@ -460,6 +480,26 @@ const TRANSLATIONS = {
         dhikrSectionProtection: 'الحماية اليومية',
         dhikrVirtue: 'الفضل',
         dhikrTimes: 'مرة',
+
+        dhikrTabCounter: 'العداد',
+        dhikrTabMorning: 'الصباح',
+        dhikrTabEvening: 'المساء',
+        dhikrTabSpecial: 'خاص',
+        dhikrTabSleep: 'النوم',
+        dhikrTapToCount: 'اضغط على الدائرة للعدّ',
+        morningAdhkarLabel: 'أذكار الصباح',
+        morningAdhkarSub: 'بعد الفجر · ١٢ ذكراً',
+        eveningAdhkarLabel: 'أذكار المساء',
+        eveningAdhkarSub: 'بعد العصر · ١٢ ذكراً',
+        sleepAdhkarLabel: 'أذكار النوم',
+        sleepAdhkarSub: 'قبل النوم · ١٣ ذكراً',
+        adhkarContinue: 'متابعة',
+        adhkarOnce: 'مرة',
+        adhkarNOfCompleted: (n, total) => `${n} من ${total} مكتمل`,
+        specTakbeerTitle: 'تكبيرات التشريق',
+        specTakbeerSub: 'ذو الحجة ٩–١٣ · بعد كل صلاة فريضة',
+        specSectionReliance: 'التوكل والحماية',
+        specSectionSayyid: 'سيد الاستغفار',
 
     }
 };
@@ -4584,7 +4624,7 @@ function _updateAdhkarProgress(section, state) {
 
     if (countEl) countEl.textContent = count + '/' + total;
     if (barEl)   barEl.style.width = pct + '%';
-    if (textEl)  textEl.textContent = count + ' of ' + total + ' completed';
+    if (textEl)  textEl.textContent = t('adhkarNOfCompleted', count, total);
     if (shortEl) shortEl.classList.toggle('adhkar-done', count === total);
 }
 
