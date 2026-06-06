@@ -4114,7 +4114,6 @@ function renderHomeExtras() {
                 sug = { icon: 'ti-sparkles', text: isAr ? 'قم للتهجد' : 'Rise for Tahajjud', sub: isAr ? 'آخر الليل وقت الإجابة' : 'The last third of night — duaa is answered' };
             } else {
                 sugEl.innerHTML = '';
-                return;
             }
         }
         sugEl.innerHTML = `
