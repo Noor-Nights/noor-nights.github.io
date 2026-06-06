@@ -140,7 +140,6 @@ body {
     max-width: 430px;
     margin: 0 auto;
     padding: 0;
-    padding-bottom: calc(var(--nav) + 16px);
 }
 
 header {
