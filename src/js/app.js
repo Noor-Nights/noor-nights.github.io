@@ -254,6 +254,10 @@ const TRANSLATIONS = {
         adhkarContinue: 'Continue',
         adhkarOnce: 'Once',
         adhkarNOfCompleted: (n, total) => `${n} of ${total} completed`,
+        specTakbeerTitle: 'Takbeer al-Tashreeq',
+        specTakbeerSub: 'Dhul Hijjah 9–13 · After every fard prayer',
+        specSectionReliance: 'Reliance & Protection',
+        specSectionSayyid: 'Sayyid al-Istighfār',
 
     },
     ar: {
@@ -492,6 +496,10 @@ const TRANSLATIONS = {
         adhkarContinue: 'متابعة',
         adhkarOnce: 'مرة',
         adhkarNOfCompleted: (n, total) => `${n} من ${total} مكتمل`,
+        specTakbeerTitle: 'تكبيرات التشريق',
+        specTakbeerSub: 'ذو الحجة ٩–١٣ · بعد كل صلاة فريضة',
+        specSectionReliance: 'التوكل والحماية',
+        specSectionSayyid: 'سيد الاستغفار',
 
     }
 };
