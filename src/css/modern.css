@@ -4258,7 +4258,7 @@ h2 {
    CHANGE 25 — Footer bottom padding (clear nav bar)
    ═══════════════════════════════════════════════════ */
 .tab-content { padding-bottom: calc(var(--nav) + 8px); }
-.app-bottom-info { padding-bottom: calc(var(--nav) + 8px); }
+.app-bottom-info { padding-bottom: 0; }
 
 /* ═══════════════════════════════════════════════════
    PERF — CLS Prevention: reserve height for JS-injected content
