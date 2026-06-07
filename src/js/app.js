@@ -3698,12 +3698,13 @@ class PrayerTimesAPI {
     getCurrentPrayer(times) {
         const now = new Date(getCurrentTime());
         const cur = now.getHours() * 60 + now.getMinutes();
-        let current = 'fajr';
+        let current = null;
         for (const p of _PT_PRAYERS_LIST) {
             const [h, m] = times[p].split(':').map(Number);
             if (cur >= h * 60 + m) current = p;
         }
-        return current;
+        // Between midnight and Fajr no prayer has passed yet — Isha is the last active prayer
+        return current || 'isha';
     }
 
     getNextPrayer(times) {
