@@ -4,11 +4,11 @@ import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-const files = [
-    'sw.js', 'OneSignalSDKWorker.js',
-    ...readdirSync('src/js').filter((f) => f.endsWith('.js')).map((f) => join('src/js', f)),
-    ...readdirSync('scripts').filter((f) => f.endsWith('.js')).map((f) => join('scripts', f)),
-];
+const jsFilesIn = (dir) => readdirSync(dir, { recursive: true })
+    .filter((f) => f.endsWith('.js') && !f.split(/[\\/]/).includes('vendor'))
+    .map((f) => join(dir, f));
+
+const files = ['sw.js', 'OneSignalSDKWorker.js', ...jsFilesIn('src/js'), ...jsFilesIn('scripts')];
 
 let failed = 0;
 for (const file of files) {

@@ -36,7 +36,7 @@ Chosen: **Playwright + `tests/serve.mjs`**, because it tests the app exactly as 
 ## Consequences
 
 - `npm test` runs the suite locally; `npm run check` does a `node --check` syntax pass.
-- `main` branch protection requires the `Syntax check + Playwright E2E` check, so red PRs can't merge (and therefore can't deploy). Admins can still bypass in an emergency.
+- Deploy is **not** yet gated on CI: `deploy.yml` still runs on every push to `main`. Making `Syntax check + Playwright E2E` a required status check in `main` branch protection is tracked in #217 (needs repo-admin permission).
 - New runtime files at the repo root must be added to the `deploy.yml` allowlist or they won't be published.
 - Unit coverage of pure helpers (`numFmt`, prayer-time baking, verse fetching) remains a follow-up.
 - `.mcp.json` registers `@playwright/mcp` so the suite can be extended interactively from Claude Code.

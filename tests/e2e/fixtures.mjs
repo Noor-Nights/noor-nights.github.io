@@ -20,13 +20,23 @@ export const test = base.extend({
     consoleErrors: async ({}, use) => { await use([]); },
     page: async ({ page, onboarded, lang, pageErrors, consoleErrors }, use) => {
         await page.route((url) => url.hostname !== '127.0.0.1', (route) => route.abort());
+        // Supabase URL is a deploy-time placeholder (`__SUPABASE_URL__`, see deploy.yml),
+        // so locally it resolves same-origin. Stub it as an empty REST response.
+        await page.route('**/__SUPABASE_URL__/**', (route) =>
+            route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
         await page.clock.setFixedTime(FIXED_NOW);
         page.on('pageerror', (err) => pageErrors.push(err));
         page.on('console', (msg) => {
             if (msg.type() !== 'error') return;
             const text = msg.text();
-            // Expected noise: requests we deliberately abort above.
-            if (/Failed to load resource|net::ERR_|Failed to fetch|NetworkError/i.test(text)) return;
+            // Expected noise from the third-party requests we abort above:
+            //  - resource-load errors whose source URL is off-loopback
+            //  - the app logging its own failed fetch() calls to those hosts
+            // Same-origin 404s (e.g. a missing local asset) still fail the test.
+            const src = msg.location().url || '';
+            const offOrigin = src && !src.startsWith('http://127.0.0.1');
+            if (offOrigin && /Failed to load resource|net::ERR_/i.test(text)) return;
+            if (/Failed to fetch|NetworkError/i.test(text)) return;
             consoleErrors.push(text);
         });
         await page.addInitScript(({ onboarded, lang }) => {
