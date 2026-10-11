@@ -2,8 +2,18 @@
   "name": "noor-nights",
   "version": "1.0.0",
   "private": true,
-  "description": "GitHub Actions dependencies for Noor Nights push notifications",
+  "description": "Noor Nights PWA — GitHub Actions dependencies and E2E test tooling",
+  "scripts": {
+    "serve": "node tests/serve.mjs",
+    "check": "node tests/check-syntax.mjs",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
+  },
   "dependencies": {
     "google-auth-library": "^10.6.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
   }
 }

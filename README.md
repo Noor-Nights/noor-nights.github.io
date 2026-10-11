@@ -100,3 +100,17 @@ This project is created to honor the memory of **Youssef Abdelkader**. We ask Al
 ---
 
 *Made with ❤️ for Dhul Hijjah.*
+
+## Testing
+
+End-to-end tests use [Playwright](https://playwright.dev) and run against a local static server (no build step).
+
+```bash
+npm install
+npx playwright install chromium
+npm test            # headless, desktop + mobile
+npm run test:ui     # interactive UI mode
+npm run check       # JS syntax check
+```
+
+All third-party network calls are blocked and the clock is pinned, so the suite runs offline and deterministically. CI runs the same suite on every PR via `.github/workflows/ci.yml`. See `docs/agdr/AgDR-0020-playwright-e2e-and-ci-pipeline.md`.
