@@ -6,20 +6,29 @@ export const FIXED_NOW = new Date('2026-05-25T21:30:00+03:00');
 
 /**
  * Shared fixture:
- *  - blocks every non-localhost request (Supabase, Firebase, GoatCounter,
+ *  - blocks every non-loopback request (Supabase, Firebase, GoatCounter,
  *    prayer-time APIs, CDNs) so the suite is offline-safe and deterministic
  *  - pins the clock to FIXED_NOW
- *  - collects uncaught page errors so specs can assert on them
+ *  - collects uncaught page errors and console.error messages so specs can
+ *    assert on them (network failures from the blocked hosts are filtered out)
  *  - `onboarded` option (default true) skips the first-run overlay
  */
 export const test = base.extend({
     onboarded: [true, { option: true }],
     lang: ['en', { option: true }],
     pageErrors: async ({}, use) => { await use([]); },
-    page: async ({ page, onboarded, lang, pageErrors }, use) => {
-        await page.route((url) => url.hostname !== 'localhost', (route) => route.abort());
+    consoleErrors: async ({}, use) => { await use([]); },
+    page: async ({ page, onboarded, lang, pageErrors, consoleErrors }, use) => {
+        await page.route((url) => url.hostname !== '127.0.0.1', (route) => route.abort());
         await page.clock.setFixedTime(FIXED_NOW);
         page.on('pageerror', (err) => pageErrors.push(err));
+        page.on('console', (msg) => {
+            if (msg.type() !== 'error') return;
+            const text = msg.text();
+            // Expected noise: requests we deliberately abort above.
+            if (/Failed to load resource|net::ERR_|Failed to fetch|NetworkError/i.test(text)) return;
+            consoleErrors.push(text);
+        });
         await page.addInitScript(({ onboarded, lang }) => {
             // Seed once per test; later reloads must keep what the app saved.
             if (sessionStorage.getItem('__seeded')) return;

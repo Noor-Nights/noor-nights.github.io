@@ -18,7 +18,7 @@ test.describe('first-run onboarding', () => {
         await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     });
 
-    test('is skipped once already onboarded', async ({ page }) => {
+    test('choosing English keeps LTR and is not shown again', async ({ page }) => {
         await page.goto('/');
         await page.locator('.ob-lang-btn[data-lang="en"]').click();
         await page.reload();

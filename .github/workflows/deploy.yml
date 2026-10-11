@@ -75,13 +75,22 @@ jobs:
           sed -i "s/noor-nights-v[0-9]*/noor-nights-${SHA}/" OneSignalSDKWorker.js
           echo "SW cache stamped: noor-nights-${SHA}"
 
+      - name: Assemble site (runtime files only)
+        # Allowlist — tooling, tests, docs, node_modules and server-side
+        # scripts must not be published to Pages.
+        run: |
+          mkdir _site
+          cp index.html manifest.json sw.js OneSignalSDK.sw.js OneSignalSDKWorker.js _site/
+          cp -R src assets _site/
+          echo "Publishing $(find _site -type f | wc -l) files"
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment

@@ -25,6 +25,8 @@ test.describe('tasbeeh counter', () => {
         await row(page, 'subhanallah').click();
         await row(page, 'alhamdulillah').click();
         await row(page, 'alhamdulillah').click();
+        await expect(count(page, 'subhanallah')).toHaveText(/^1\//);
+        await expect(count(page, 'alhamdulillah')).toHaveText(/^2\//);
         const { counts } = await stored(page);
         expect(counts.subhanallah).toBe(1);
         expect(counts.alhamdulillah).toBe(2);

@@ -28,12 +28,16 @@ Chosen: **Playwright + `tests/serve.mjs`**, because it tests the app exactly as 
 - Service workers blocked so interception is reliable.
 - Two projects: Desktop Chrome + Pixel 7 (the app is mobile-first).
 - CI: new `ci.yml` (not merged into `deploy.yml`) so PRs get a gate without touching the deploy path. Browsers cached by lockfile hash; report uploaded only on failure.
-- Existing workflows switched to `npm ci --omit=dev` / `npm install --omit=dev` so Playwright never installs in scheduled jobs or ships in the Pages artifact.
+- Existing workflows switched to `npm ci --omit=dev` / `npm install --omit=dev` so Playwright never installs in scheduled jobs.
+- `deploy.yml` now publishes an **allowlisted `_site/`** (`index.html`, `manifest.json`, service workers, `src/`, `assets/`) instead of the repo root, so `tests/`, `node_modules/`, `docs/`, server-side scripts and tooling config are no longer served on Pages.
+- The test server binds to `127.0.0.1` only and refuses dot-paths, so `.git/` / `.env` are never exposed on the LAN.
+- CI actions are pinned by commit SHA.
 
 ## Consequences
 
 - `npm test` runs the suite locally; `npm run check` does a `node --check` syntax pass.
-- Deploy is **not** yet gated on CI (deploy still runs on push to `main`). Make `CI` a required status check in branch protection to enforce it.
+- `main` branch protection requires the `Syntax check + Playwright E2E` check, so red PRs can't merge (and therefore can't deploy). Admins can still bypass in an emergency.
+- New runtime files at the repo root must be added to the `deploy.yml` allowlist or they won't be published.
 - Unit coverage of pure helpers (`numFmt`, prayer-time baking, verse fetching) remains a follow-up.
 - `.mcp.json` registers `@playwright/mcp` so the suite can be extended interactively from Claude Code.
 

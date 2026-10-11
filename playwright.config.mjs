@@ -10,7 +10,7 @@ export default defineConfig({
     workers: process.env.CI ? 2 : undefined,
     reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list'], ['html', { open: 'never' }]],
     use: {
-        baseURL: `http://localhost:${PORT}`,
+        baseURL: `http://127.0.0.1:${PORT}`,
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         // The app registers a push service worker; keep it out of tests so
@@ -24,7 +24,7 @@ export default defineConfig({
     ],
     webServer: {
         command: `node tests/serve.mjs`,
-        url: `http://localhost:${PORT}`,
+        url: `http://127.0.0.1:${PORT}`,
         env: { PORT: String(PORT) },
         reuseExistingServer: !process.env.CI,
     },
