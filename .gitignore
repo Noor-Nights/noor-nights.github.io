@@ -41,3 +41,9 @@ node_modules/
 # Generated at deploy/CI time — not tracked in source control
 src/js/cairo-times.json
 
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
