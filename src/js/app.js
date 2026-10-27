@@ -949,11 +949,33 @@ function getCurrentNight() {
 async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     await document.fonts.ready;
 
-    const W = 1080, H = 1350;
+    const W = 1080;
+    const GOLD = '#c5a352';
+
+    // ── Measure text first so the canvas grows to fit long content ──
+    const cleanAr = arabic.replace(/<br>/g, ' ').replace(/\n+/g, ' ');
+    const tmpC = document.createElement('canvas').getContext('2d');
+    let arFs = cleanAr.length > 200 ? 46 : cleanAr.length > 100 ? 52 : 58;
+    tmpC.font = `${arFs}px "Amiri", serif`;
+    let arLines = getWrappedLines(tmpC, cleanAr, 920);
+    if (arLines.length > 5) { arFs = 42; tmpC.font = `${arFs}px "Amiri", serif`; arLines = getWrappedLines(tmpC, cleanAr, 920); }
+    const arLH = Math.round(arFs * 1.8);
+    const arStartY = 380;
+
+    const enText = english ? `"${english}"` : '';
+    tmpC.font = '30px "Mulish", sans-serif';
+    const enLines = english ? getWrappedLines(tmpC, enText, 900) : [];
+
+    let contentBottom = arStartY + arLines.length * arLH + 36 + 46;
+    if (enLines.length) contentBottom += enLines.length * 46 + 30;
+
+    // Footer is drawn at H - 155 and needs a gap above it
+    const FOOTER_H = 155, FOOTER_GAP = 40;
+    const H = Math.max(1350, contentBottom + FOOTER_GAP + FOOTER_H);
+
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
-    const GOLD = '#c5a352';
 
     // ── Background ────────────────────────────────────────
     const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -1019,18 +1041,9 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     _vcSep(ctx, W / 2, 320, 320, GOLD);
 
     // ── Arabic text ───────────────────────────────────────
-    const cleanAr = arabic.replace(/<br>/g, ' ').replace(/\n+/g, ' ');
-    const tmpC = document.createElement('canvas').getContext('2d');
-    let arFs = cleanAr.length > 200 ? 46 : cleanAr.length > 100 ? 52 : 58;
-    tmpC.font = `${arFs}px "Amiri", serif`;
-    let arLines = getWrappedLines(tmpC, cleanAr, 920);
-    if (arLines.length > 5) { arFs = 42; tmpC.font = `${arFs}px "Amiri", serif`; arLines = getWrappedLines(tmpC, cleanAr, 920); }
-    const arLH = Math.round(arFs * 1.8);
-
     ctx.direction = 'rtl';
     ctx.font = `${arFs}px "Amiri", serif`;
     ctx.fillStyle = '#f2ece0';
-    const arStartY = 380;
     arLines.forEach((line, i) => ctx.fillText(line, W / 2, arStartY + i * arLH + arLH / 2));
     ctx.direction = 'ltr';
 
@@ -1041,10 +1054,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     curY += 46;
 
     // ── English translation ───────────────────────────────
-    if (english) {
-        const enText = `"${english}"`;
-        tmpC.font = '30px "Mulish", sans-serif';
-        const enLines = getWrappedLines(tmpC, enText, 900);
+    if (enLines.length) {
         ctx.font = '30px "Mulish", sans-serif';
         ctx.fillStyle = 'rgba(240,225,190,0.85)';
         enLines.forEach((line, i) => ctx.fillText(line, W / 2, curY + 20 + i * 46));
@@ -1052,7 +1062,7 @@ async function generateCanvasBlob(arabic, english, badge, isYoussef) {
     }
 
     // ── Footer ────────────────────────────────────────────
-    await _drawAppIconFooter(ctx, W, H - 155);
+    await _drawAppIconFooter(ctx, W, H - FOOTER_H);
 
     return new Promise(resolve => {
         try { canvas.toBlob(resolve, 'image/jpeg', 0.92); }
